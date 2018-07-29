@@ -1,1 +1,0 @@
-# mathpig.github.io
