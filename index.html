@@ -68,6 +68,11 @@ You deliver orders to make money, to buy new planes and there is a little story 
 <script>
 function BaseMultiplicationTable() {
   var box = document.getElementById('base');
-  console.log(box.value);
+  var base = parseInt(box.value);
+  for (var i=0; i<base; i++) {
+    for (var j=0; j<base; j++) {
+      console.log(i*j);
+    }
+  }
 }
 </script>
