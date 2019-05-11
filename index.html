@@ -72,25 +72,25 @@ function BaseMultiplicationTable() {
   var box = document.getElementById('base');
   var base = parseInt(box.value);
   var table = document.getElementById('table');
-  table.innerText = '      ';
+  table.innerHTML = '';
   for (var j=0; j<=base; j++) {
     var n = '   ' + (j).toString(base);
     if (j == base) {
-      table.innerText += n.substr(n.length-4, 4);
+      table.innerHTML += '<b>' + n.substr(n.length-4, 4) + '</b>';
     } else {
-      table.innerText += n.substr(n.length-3, 3);
+      table.innerHTML += '<b>' + n.substr(n.length-3, 3) + '</b>';
     }
   }
   for (var i=0; i<=base; i++) {
-    table.innerText += '\n';
+    table.innerHTML += '\n';
     var n = '   ' + (i).toString(base);
-    table.innerText += n.substr(n.length-2, 2) + '    ';
+    table.innerHTML += '<b>' + n.substr(n.length-2, 2) + '</b>';
     for (var j=0; j<=base; j++) {
       var n = '   ' + (i*j).toString(base);
       if (j == base) {
-        table.innerText += n.substr(n.length-4, 4);
+        table.innerHTML += n.substr(n.length-4, 4);
       } else {
-        table.innerText += n.substr(n.length-3, 3);
+        table.innerHTML += n.substr(n.length-3, 3);
       }
     }
   }
