@@ -76,7 +76,7 @@ function BaseMultiplicationTable() {
   for (var i=0; i<=base; i++) {
     table.innerText += '\n';
     for (var j=0; j<=base; j++) {
-      table.innerText += (i*j).toString(base) + ' ';
+      table.innerText += ((i*j).toString(base) + '  ').substr(0, 3);
     }
   }
 }
