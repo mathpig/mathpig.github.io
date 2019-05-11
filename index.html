@@ -72,9 +72,19 @@ function BaseMultiplicationTable() {
   var box = document.getElementById('base');
   var base = parseInt(box.value);
   var table = document.getElementById('table');
-  table.innerText = '';
+  table.innerText = '      ';
+  for (var j=0; j<=base; j++) {
+    var n = '   ' + (j).toString(base);
+    if (j == base) {
+      table.innerText += n.substr(n.length-4, 4);
+    } else {
+      table.innerText += n.substr(n.length-3, 3);
+    }
+  }
   for (var i=0; i<=base; i++) {
     table.innerText += '\n';
+    var n = '   ' + (i).toString(base);
+    table.innerText += n.substr(n.length-2, 2) + '    ';
     for (var j=0; j<=base; j++) {
       var n = '   ' + (i*j).toString(base);
       if (j == base) {
