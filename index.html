@@ -10,7 +10,7 @@
 I like video games a <font size=500>LOT!!!</font>
 <font color=green>The mine in Township is </font><font color=red>READY!!!</font>
 
-<hr>
+<hr/>
 
 <h2> Base Multiplication Table (Bases 2-36):<h2>
 <select id="base" onchange="BaseMultiplicationTable()">
@@ -48,13 +48,13 @@ I like video games a <font size=500>LOT!!!</font>
   <option value="33">33 </option>
   <option value="34">34 </option>
   <option value="35">35 </option>
-  <option value="36">36 </option>  
+  <option value="36">36 </option>
 </select>
 
 <pre id="table">
 </pre>
 
-<hr>
+<hr/>
 
 <h2>Cookie Clicker</h2>
 <a href="http://orteil.dashnet.org/cookieclicker/"
@@ -63,7 +63,9 @@ I like video games a <font size=500>LOT!!!</font>
 You play cookie clicker by buying upgrade and buildings.
 The goal is to make infinite cookies. At the start, you should click
 the big cookie to make 1 cookie at a time. Each upgrade or building
-adds on to your cookies per second which is wrote as Cps. I use to have 15 sextillion cookies (15*10^21), but I spent a bunch.
+adds on to your cookies per second which is written as Cps. I use to have 15 sextillion cookies (15*10^21), but I spent a bunch.
+
+<hr/>
 
 <h2>Burning Cargo</h2>
 <a href="http://www.burningcargo.com/"
@@ -73,6 +75,8 @@ Burning Cargo teaches you touch typing while having fun.
 The touch typing gets tougher as you go, and I finsished the game!
 You deliver orders to make money, to buy new planes and there is a little story along the way.
 </p>
+
+<hr/>
 
 <h2>Castle Crush 2</h2>
 <a href="https://armorgames.com/play/6137/crush-the-castle-2"
@@ -84,7 +88,31 @@ You fire objects at a castle and try to kill all the people (you need to run fla
 </p>
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3B-SqN3UnK3HgjKbtMtQetCww42bZdUOGRHD8ZVHVsfI-jlKWtA" width=500 height=300>
 
+<hr/>
+
+<h2>Word Match Checker</h2>
+
+<p>
+Checks if four or more words in a row match.
+</p>
+
+<p>
+  Source:<br/>
+  <textarea id="source" cols="40" rows="8"></textarea>
+</p>
+
+<p>
+  Revised:<br/>
+  <textarea id="revised" cols="40" rows="8"></textarea>
+</p>
+
+<p>
+  Duplicates:<br/>
+  <div id="duplicates"></div>
+</p>
+
 <script>
+
 function BaseMultiplicationTable() {
   var box = document.getElementById('base');
   var base = parseInt(box.value);
@@ -98,7 +126,7 @@ function BaseMultiplicationTable() {
       table.innerHTML += '<b>' + n.substr(n.length-3, 3) + '</b>';
     }
   }
-  for (var i=0; i<=base; i++) {
+  for (var i = 0; i <= base; i++) {
     table.innerHTML += '\n';
     var n = '   ' + (i).toString(base);
     table.innerHTML += '<b>' + n.substr(n.length-2, 2) + '</b>';
@@ -113,4 +141,37 @@ function BaseMultiplicationTable() {
   }
 }
 BaseMultiplicationTable();
+
+function CheckMatches() {
+  var source = document.getElementById('source').value;
+  var revised = document.getElementById('revised').value;
+  var duplicates = document.getElementById('duplicates');
+  var source_words = source.replace(/[^A-Za-z']+/g, ' ')
+    .replace(/[ ]+/g, ' ').toLowerCase().split(' ')
+    .filter(x => x != '');
+  var revised_words = revised.replace(/[^A-Za-z']+/g, ' ')
+    .replace(/[ ]+/g, ' ').toLowerCase().split(' ')
+    .filter(x => x != '');
+
+  var flagged = [];
+  for (var i = 0; i < revised_words.length - 3; ++i) {
+    for (var j = 0; j < source_words.length - 3; ++j) {
+      var k = 0;
+      for (k = 0; k < 4; ++k) {
+        if (revised_words[i + k] != source_words[j + k]) {
+          break;
+        }
+      }
+      if (k == 4) {
+        flagged.push(source_words.slice(j, j + 4).join(' '));
+      }
+    }
+  }
+  duplicates.innerText = flagged.join('\n');
+}
+document.getElementById('source').onchange = CheckMatches;
+document.getElementById('revised').onchange = CheckMatches;
+document.getElementById('source').onkeyup = CheckMatches;
+document.getElementById('revised').onkeyup = CheckMatches;
+
 </script>
