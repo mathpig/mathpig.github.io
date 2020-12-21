@@ -107,7 +107,7 @@ Checks if four or more words in a row match.
 </p>
 
 <p>
-  Duplicates:<br/>
+  Duplicates / Banned:<br/>
   <div id="duplicates"></div>
 </p>
 
@@ -142,6 +142,18 @@ function BaseMultiplicationTable() {
 }
 BaseMultiplicationTable();
 
+var WORDS_TO_REPLACE = [
+  'go', 'went', 'going',
+  'come', 'came', 'coming',
+  'say', 'said', 'saying',
+  'get', 'got', 'getting',
+  'good', 'bad',
+  'nice', 'mean',
+  'pretty', 'ugly',
+  'happy', 'sad',
+  'big', 'lot',
+];
+
 function CheckMatches() {
   var source = document.getElementById('source').value;
   var revised = document.getElementById('revised').value;
@@ -165,6 +177,12 @@ function CheckMatches() {
       if (k == 4) {
         flagged.push(source_words.slice(j, j + 4).join(' '));
       }
+    }
+  }
+  
+  for (var i = 0; i < revised_words.length; ++i) {
+    if (WORDS_TO_REPLACE.indexOf(revised_words[i]) >= 0) {
+      flagged.push(revised_words[i]);
     }
   }
   duplicates.innerText = flagged.join('\n');
