@@ -25,7 +25,14 @@ function Tick() {
   if (y + pig.height > canvas.height) { vy = -Math.abs(vy) * 0.9; y = canvas.height - pig.height; }
   ctx.fillStyle = '#030';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(pig, x, y);
+  if (vx < 0) {
+    ctx.save();
+    ctx.scale(-1, 1);
+    ctx.drawImage(pig, -x - pig.width, y);
+    ctx.restore();
+  } else {
+    ctx.drawImage(pig, x, y);
+  }
 }
 
 window.onkeydown = function(e) {
