@@ -4,17 +4,17 @@ const FRICTION = 0.9;
 const DAMPING = 0.7;
 const LEVELS = [
   [
-    'LLLLLLLLLLLLLLL',
-    'L             L',
-    'L             L',
-    'L     #       L',
-    'L S           L',
-    'L ###         L',
-    'L      LL#LLE L',
-    'L             L',
-    'L             L',
-    'L    B        L',
-    'LLLLLLLLLLLLLLL',
+    'LLLLLLLLLLLLLLLLL',
+    'L               L',
+    'L               L',
+    'L       #       L',
+    'L S             L',
+    'L ###           L',
+    'L        LL#LLE L',
+    'L               L',
+    'L               L',
+    'L     B         L',
+    'LLLLLLLLLLLLLLLLL',
   ],
   [
     'LLLLLLLLLLLLLLL',
@@ -108,7 +108,7 @@ class GravityEntity extends Entity {
   }
 }
 
-class FixedEntity extends Entity {
+class BlockEntity extends Entity {
   tick() {
   }
 
@@ -116,7 +116,7 @@ class FixedEntity extends Entity {
   }
 }
 
-class LavaEntity extends FixedEntity {
+class LavaEntity extends BlockEntity {
   repel(e) {
     if (e === user && this.intersect(e)) {
       user.x = start[0];
@@ -127,7 +127,15 @@ class LavaEntity extends FixedEntity {
   }
 }
 
-class EndEntity extends FixedEntity {
+class BounceEntity extends BlockEntity {
+  repel(e) {
+    if (e === user && this.intersect(e)) {
+      user.vy = -25;
+    }
+  }
+}
+
+class EndEntity extends BlockEntity {
   repel(e) {
     if (e === user && this.intersect(e)) {
       LoadLevel(LEVELS[++level]);
@@ -151,10 +159,10 @@ function LoadLevel(level) {
           entities.push(new LavaEntity(i * scale, j * scale, scale, scale, 0, 0, 'lava'));
           break;
         case 'B':
-          entities.push(new FixedEntity(i * scale, j * scale, scale, scale, 0, 0, 'bounce'));
+          entities.push(new BounceEntity(i * scale, j * scale, scale, scale, 0, 0, 'bounce'));
           break;
         case '#':
-          entities.push(new FixedEntity(i * scale, j * scale, scale, scale, 0, 0, 'block'));
+          entities.push(new BlockEntity(i * scale, j * scale, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
           user = new GravityEntity(i * scale, j * scale, 150, 120, 0, 0, 'pig');
