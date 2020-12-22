@@ -4,15 +4,35 @@ const FRICTION = 0.9;
 const DAMPING = 0.7;
 const LEVELS = [
   [
-    '    #      ',
-    'S          ',
-    '###       E',
-    '     LL#LL#',
-    '           ',
-    '           ',
-    '   B       ',
+    'LLLLLLLLLLLLLLL',
+    'L             L',
+    'L             L',
+    'L     #       L',
+    'L S           L',
+    'L ###         L',
+    'L      LL#LLE L',
+    'L             L',
+    'L             L',
+    'L    B        L',
+    'LLLLLLLLLLLLLLL',
+  ],
+  [
+    'LLLLLLLLLLLLLLL',
+    'L             L',
+    'L      S      L',
+    'L  #L#L#L#L#  L',
+    'L             L',
+    'LB           BL',
+    'L #LL#EE#LL#  L',
+    'LLLLLLLLLLLLLLL',
   ],
 ];
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var entities = [];
+var user;
+var level = 0;
 
 class Entity {
   constructor(x, y, w, h, vx, vy, shape) {
@@ -90,15 +110,13 @@ class FixedEntity extends Entity {
   }
 }
 
-var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d');
-var entities = [];
-var user;
-
-window.setInterval(Tick, 30);
-window.onresize = Resize;
-Resize();
-LoadLevel(LEVELS[0]);
+class EndEntity extends FixedEntity {
+  repel(e) {
+    if (e === user && this.intersect(e)) {
+      LoadLevel(LEVELS[++level]);
+    }
+  }
+}
 
 function Resize() {
   canvas.width = window.innerWidth;
@@ -122,8 +140,11 @@ function LoadLevel(level) {
           entities.push(new FixedEntity(i * scale, j * scale, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
-          user = new GravityEntity(i * scale, j * scale, 300, 240, 0, 0, 'pig');
+          user = new GravityEntity(i * scale, j * scale, 225, 180, 0, 0, 'pig');
           entities.push(user);
+          break;
+        case 'E':
+          entities.push(new EndEntity(i * scale, j * scale, scale, scale, 0, 0, 'end'));
           break;
       }
     }
@@ -175,3 +196,8 @@ window.onkeydown = function(e) {
     user.vy += 0.4;
   }
 };
+
+window.setInterval(Tick, 30);
+window.onresize = Resize;
+Resize();
+LoadLevel(LEVELS[level]);
