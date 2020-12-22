@@ -10,7 +10,7 @@ const LEVELS = [
     'L       #       L',
     'L S             L',
     'L ###           L',
-    'L        LL#LLE L',
+    'L        L # LE L',
     'L               L',
     'L               L',
     'L     B         L',
