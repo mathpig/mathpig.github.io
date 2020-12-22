@@ -20,7 +20,7 @@ const LEVELS = [
     'LLLLLLLLLLLLLLL',
     'L             L',
     'L      S      L',
-    'L  #L#L#L#L#  L',
+    'L  #L# # #L#  L',
     'L             L',
     'LB           BL',
     'L #LL#EE#LL#  L',
@@ -33,6 +33,7 @@ var ctx = canvas.getContext('2d');
 var entities = [];
 var user;
 var level = 0;
+var start;
 
 class Entity {
   constructor(x, y, w, h, vx, vy, shape) {
@@ -110,6 +111,17 @@ class FixedEntity extends Entity {
   }
 }
 
+class LavaEntity extends FixedEntity {
+  repel(e) {
+    if (e === user && this.intersect(e)) {
+      user.x = start[0];
+      user.y = start[1];
+      user.vx = 0;
+      user.vy = 0;
+    }
+  }
+}
+
 class EndEntity extends FixedEntity {
   repel(e) {
     if (e === user && this.intersect(e)) {
@@ -131,7 +143,7 @@ function LoadLevel(level) {
       var ch = level[j][i];
       switch (ch) {
         case 'L':
-          entities.push(new FixedEntity(i * scale, j * scale, scale, scale, 0, 0, 'lava'));
+          entities.push(new LavaEntity(i * scale, j * scale, scale, scale, 0, 0, 'lava'));
           break;
         case 'B':
           entities.push(new FixedEntity(i * scale, j * scale, scale, scale, 0, 0, 'bounce'));
@@ -140,8 +152,9 @@ function LoadLevel(level) {
           entities.push(new FixedEntity(i * scale, j * scale, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
-          user = new GravityEntity(i * scale, j * scale, 225, 180, 0, 0, 'pig');
+          user = new GravityEntity(i * scale, j * scale, 150, 120, 0, 0, 'pig');
           entities.push(user);
+          start = [user.x, user.y];
           break;
         case 'E':
           entities.push(new EndEntity(i * scale, j * scale, scale, scale, 0, 0, 'end'));
