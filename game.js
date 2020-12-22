@@ -1,7 +1,7 @@
 'use strict';
 
-const FRICTION = 0.9;
-const DAMPING = 0.7;
+const FRICTION = 0.95;
+const DAMPING = 0.4;
 const LEVELS = [
   [
     'LLLLLLLLLLLLLLLLL',
@@ -20,7 +20,7 @@ const LEVELS = [
     'LLLLLLLLLLLLLLL',
     'L             L',
     'L      S      L',
-    'L  #L# # #L#  L',
+    'L  #LL###LL#  L',
     'L             L',
     'LB           BL',
     'L #LL#EE#LL#  L',
@@ -39,6 +39,7 @@ var entities = [];
 var user;
 var level = 0;
 var start;
+var joystick = [0, 0, 0, 0];
 
 class Entity {
   constructor(x, y, w, h, vx, vy, shape) {
@@ -63,6 +64,9 @@ class Entity {
     this.y += dy;
   }
 
+  touchdown() {
+  }
+
   repel(e) {
     if (!this.intersect(e)) {
       return;
@@ -79,6 +83,10 @@ class Entity {
     ];
     options.sort(function(a, b) { return a[0] - b[0]; });
     e.adjust(options[0][1], options[0][2]);
+    // 3 is when you get pushed up, so you're touching the ground
+    if (options[0][5] == 3) {
+      e.touchdown();
+    }
     e.vx = options[0][3];
     e.vy = options[0][4];
   }
@@ -88,9 +96,13 @@ class Entity {
     this.y += this.vy;
   }
 
+  facing() {
+    return this.vx;
+  }
+
   draw() {
     var img = document.getElementById(this.shape);
-    if (this.vx < 0) {
+    if (this.facing() < 0) {
       ctx.save();
       ctx.scale(-1, 1);
       ctx.drawImage(img, -this.x - this.w, this.y, this.w, this.h);
@@ -105,6 +117,47 @@ class GravityEntity extends Entity {
   tick() {
     super.tick();
     this.vy += 0.2;
+  }
+}
+
+class PigEntity extends GravityEntity {
+  constructor(x, y, w, h, vx, vy, shape) {
+    super(x, y, w, h, vx, vy, shape);
+    this.direction = 0;
+    this.mvy = 0;
+    this.jump_limit = 0;
+  }
+
+  facing() {
+    return this.direction;
+  }
+
+  touchdown() {
+    this.jump_limit = 0;
+  }
+
+  tick() {
+    super.tick();
+    if (joystick[0]) {
+      this.vx -= 0.5;
+      this.direction = -1;
+    }
+    if (joystick[1]) {
+      this.vx += 0.5;
+      this.direction = 1;
+    }
+    if (joystick[2]) {
+      if (this.jump_limit < 10) {
+        this.vy -= 1;
+        this.jump_limit += 1;
+      }
+    } else {
+      // Once you let go of the jump button, no more jump.
+      if (this.jump_limit != 0) {
+        this.jump_limit = 1000;
+      }
+    }
+    this.vx = Math.max(-6, Math.min(6, this.vx));
   }
 }
 
@@ -165,7 +218,7 @@ function LoadLevel(level) {
           entities.push(new BlockEntity(i * scale, j * scale, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
-          user = new GravityEntity(i * scale, j * scale, 150, 120, 0, 0, 'pig');
+          user = new PigEntity(i * scale, j * scale, 150, 120, 0, 0, 'pig');
           entities.push(user);
           start = [user.x, user.y];
           break;
@@ -213,17 +266,29 @@ function Tick() {
 
 window.onkeydown = function(e) {
   if (e.keyCode == 37) {
-    user.vx -= 0.4;
+    joystick[0] = 1;
   } else if (e.keyCode == 39) {
-    user.vx += 0.4;
+    joystick[1] = 1;
   } else if (e.keyCode == 38) {
-    user.vy -= 0.4;
+    joystick[2] = 1; 
   } else if (e.keyCode == 40) {
-    user.vy += 0.4;
+    joystick[3] = 1;
   }
 };
 
-window.setInterval(Tick, 30);
+window.onkeyup = function(e) {
+  if (e.keyCode == 37) {
+    joystick[0] = 0;
+  } else if (e.keyCode == 39) {
+    joystick[1] = 0;
+  } else if (e.keyCode == 38) {
+    joystick[2] = 0; 
+  } else if (e.keyCode == 40) {
+    joystick[3] = 0;
+  }
+};
+
+window.setInterval(Tick, 20);
 window.onresize = Resize;
 Resize();
 LoadLevel(LEVELS[level]);
