@@ -22,6 +22,7 @@ const LEVELS = [
     'L      S      L',
     'L  #  ###  #  L',
     'L   LL   LL   L',
+    'L             L',
     'LB           BL',
     'L #  #EE#  #  L',
     'LLLLLLLLLLLLLLL',
