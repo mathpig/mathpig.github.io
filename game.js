@@ -26,6 +26,14 @@ const LEVELS = [
     'L #LL#EE#LL#  L',
     'LLLLLLLLLLLLLLL',
   ],
+  [
+    'LLLLLLLLLLLLLLL',
+    'L             L',
+    'L      S      L',
+    'L      #      L',
+    'L             L',
+    'LLLLLLLLLLLLLLL',
+  ],
 ];
 
 var canvas = document.getElementById('canvas');
