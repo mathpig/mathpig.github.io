@@ -2,6 +2,7 @@
 
 const FRICTION = 0.95;
 const DAMPING = 0.4;
+const DELTA = 0.1;
 const LEVELS = [
   [
     'LLLLLLLLLLLLLLLLL',
@@ -24,7 +25,7 @@ const LEVELS = [
     'L   LL   LL   L',
     'L             L',
     'LB           BL',
-    'L #  #EE#  #  L',
+    'L  #  #E#  #  L',
     'LLLLLLLLLLLLLLL',
   ],
   [
@@ -70,7 +71,22 @@ class Entity {
   touchdown() {
   }
 
+  bouncable() {
+    return false;
+  }
+
+  affects(e) {
+    return true;
+  }
+
+  affectedBy(e) {
+    return true;
+  }
+
   repel(e) {
+    if (!this.affects(e) || !e.affectedBy(this)) {
+      return;
+    }
     if (!this.intersect(e)) {
       return;
     }
@@ -79,19 +95,41 @@ class Entity {
     var up = e.y + e.h - this.y;
     var down = this.y + this.h - e.y;
     var options = [
-      [left, -left, 0, -Math.abs(e.vx) * DAMPING, e.vy * FRICTION, 1],
-      [right, right, 0, Math.abs(e.vx) * DAMPING, e.vy * FRICTION, 2],
-      [up, 0, -up, e.vx * FRICTION, -Math.abs(e.vy) * DAMPING, 3],
-      [down, 0, down, e.vx * FRICTION, Math.abs(e.vy) * DAMPING, 4],
+      [left, -1, 0, 1],
+      [right, 1, 0, 2],
+      [up, 0, -1, 3],
+      [down, 0, 1, 4],
     ];
     options.sort(function(a, b) { return a[0] - b[0]; });
-    e.adjust(options[0][1], options[0][2]);
+    var dist = options[0][0];
+    var dx = options[0][1];
+    var dy = options[0][2];
+    var dir = options[0][3];
+    e.adjust(dx * (dist + DELTA), dy * (dist + DELTA));
     // 3 is when you get pushed up, so you're touching the ground
-    if (options[0][5] == 3) {
+    if (dir == 3) {
       e.touchdown();
     }
-    e.vx = options[0][3];
-    e.vy = options[0][4];
+    if (!e.affects(this) || !this.affectedBy(e)) {
+      if (dx) {
+        e.vx = -e.vx * DAMPING;
+        e.vy = e.vy * FRICTION;
+      } else {
+        e.vx = e.vx * FRICTION;
+        e.vy = -e.vy * DAMPING;
+      }
+    } else {
+      if (dx) {
+        var t = e.vx;
+        e.vx = this.vx;
+        this.vx = t;
+      }
+      if (dy) {
+        var t = e.vy;
+        e.vy = this.vy;
+        this.vy = t;
+      }
+    }
   }
 
   tick() {
@@ -121,12 +159,51 @@ class GravityEntity extends Entity {
     super.tick();
     this.vy += 0.2;
   }
+  bouncable() {
+    return true;
+  }
+}
+
+class CannonballEntity extends GravityEntity {
+  constructor(x, y, w, h, vx, vy, shape) {
+    super(x, y, w, h, vx, vy, shape);
+    this.timer = 0;
+  }
+
+  tick() {
+    super.tick();
+    this.timer++;
+    if (this.timer > 50 * 5) {
+      var index = entities.indexOf(this);
+      if (index >= 0) {
+        entities.splice(index, 1);
+      }
+    }
+  }
+
+  facing() {
+    return 1;
+  }
+
+  affects(e) {
+    if (e === user) {
+      return false;
+    }
+    return true;
+  }
+
+  affectedBy(e) {
+    if (e === user && this.timer < 10) {
+      return false;
+    }
+    return true;
+  }
 }
 
 class PigEntity extends GravityEntity {
   constructor(x, y, w, h, vx, vy, shape) {
     super(x, y, w, h, vx, vy, shape);
-    this.direction = 0;
+    this.direction = 1;
     this.mvy = 0;
     this.jump_limit = 0;
   }
@@ -170,23 +247,31 @@ class BlockEntity extends Entity {
 
   adjust(x, y) {
   }
+
+  affectedBy(e) {
+    return false;
+  }
 }
 
 class LavaEntity extends BlockEntity {
   repel(e) {
-    if (e === user && this.intersect(e)) {
-      user.x = start[0];
-      user.y = start[1];
-      user.vx = 0;
-      user.vy = 0;
+    if (e === user) {
+      if (this.intersect(e)) {
+        user.x = start[0];
+        user.y = start[1];
+        user.vx = 0;
+        user.vy = 0;
+      }
+    } else {
+      super.repel(e);
     }
   }
 }
 
 class BounceEntity extends BlockEntity {
   repel(e) {
-    if (e === user && this.intersect(e)) {
-      user.vy = -25;
+    if (e.bouncable() && this.intersect(e)) {
+      e.vy = -25;
     }
   }
 }
@@ -288,6 +373,9 @@ window.onkeyup = function(e) {
     joystick[2] = 0; 
   } else if (e.keyCode == 40) {
     joystick[3] = 0;
+  } else if (e.keyCode == 16) {
+    entities.push(new CannonballEntity(user.x + user.w / 2 - 32 + user.direction * 30, user.y,
+                                       64, 64, user.vx + user.direction * 30, user.vy - 10, 'cannonball'));
   }
 };
 
