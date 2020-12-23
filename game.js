@@ -29,6 +29,17 @@ const LEVELS = [
     'LLLLLLLLLLLLLLL',
   ],
   [
+    'LLLLLLLLLLLLLLLLLLL',
+    'L                 L',
+    'L        S        L',
+    'L # # # # ### # # L',
+    'L                 L',
+    'L # # # #L# # # # L',
+    'L                 L',
+    'L # # #  E  # # # L',
+    'LLLLLLLBBLBBLLLLLLL',
+  ],
+  [
     'LLLLL',
     'L###L',
     'L#S#L',
@@ -186,7 +197,7 @@ class CannonballEntity extends GravityEntity {
   }
 
   affects(e) {
-    if (e === user) {
+    if (e === user && this.timer < 10) {
       return false;
     }
     return true;
