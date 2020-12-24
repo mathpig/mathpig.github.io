@@ -32,25 +32,31 @@ const LEVELS = [
     'LLLLLLLLLLLLLLLLLLLLL',
     'L                   L',
     'L                   L',
-    'L S     #W       #  L',
+    'L S     # W      #  L',
     'L##  #  ##########  L',
     'L  LL LL            L',
     'L                   L',
     'L                   L',
-    'L  #W      #        L',
+    'L  # W     #        L',
     'L  #########  #  #LLL',
     'L           LL LL   L',
     'L                   L',
     'L                   L',
     'L                   L',
-    'L  #W #             L',
-    'L  ####   E         L',
-    'LLLLLLLLLL#LLLLLLLLLL',
+    'L  # W         #    L',
+    'L  #############   EL',
+    'LLLLLLLLLLLLLLLLLLL#L',
   ],
   [
-    '###',
-    '#S#',
-    '###',
+    '############',
+    '#          #',
+    '#          #',
+    '#          #',
+    '#          #',
+    '#          #',
+    '#          #',
+    '#SSSSSSSSSS#',
+    '#BBBBBBBBBB#',
   ],
 ];
 
@@ -319,6 +325,10 @@ class WolfEntity extends GravityEntity {
     }
   }
 
+  facing() {
+    return this.direction;
+  }
+
   tick() {
     this.vx += this.direction * 0.3;
     this.vx = Math.max(-2, Math.min(2, this.vx));
@@ -329,11 +339,13 @@ class WolfEntity extends GravityEntity {
     if (e === user) {
       user.kill();
     }
-    if (dir == 1) {
-      this.direction = -1;
-    }
-    if (dir == 2) {
-      this.direction = 1;
+    if (!e.affectedBy(this)) {
+      if (dir == 1) {
+        this.direction = -1;
+      }
+      if (dir == 2) {
+        this.direction = 1;
+      }
     }
   }
 }
@@ -436,7 +448,7 @@ window.onkeyup = function(e) {
     entities.push(new CannonballEntity(user.x + user.w / 2 - 32 + user.direction * 30, user.y,
                                        64, 64, user.vx + user.direction * 30, user.vy - 10, 'cannonball'));
   } else if (e.keyCode == 221) {
-    level = 2;
+    level = 3;
     LoadLevel(level);
   }
 };
