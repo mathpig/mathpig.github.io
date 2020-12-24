@@ -29,15 +29,21 @@ const LEVELS = [
     'LLLLLLLLLLLLLLL',
   ],
   [
-    'LLLLLLLLLLLLLLLLLLL',
-    'L                 L',
-    'L        S        L',
-    'L # # # # ### # # L',
-    'L                 L',
-    'L # # # #L# # # # L',
-    'L                 L',
-    'L # # #  E  # # # L',
-    'LLLLLLLBBLBBLLLLLLL',
+    'LLLLLLLLLLLLLLLLLLLLL',
+    'L                   L',
+    'L                   L',
+    'L S     W        #  L',
+    'L##  #  ##########  L',
+    'L  LL LL            L',
+    'L                   L',
+    'L  W       #        L',
+    'L  #########  #  #LLL',
+    'L           LL LL   L',
+    'L                   L',
+    'L                   L',
+    'L  W  #             L',
+    'L  ####   E         L',
+    'LLLLLLLLLL#LLLLLLLLLL',
   ],
   [
     'LLLLL',
@@ -53,7 +59,6 @@ var ctx = canvas.getContext('2d');
 var entities = [];
 var user;
 var level = 0;
-var start;
 var joystick = [0, 0, 0, 0];
 
 class Entity {
@@ -92,6 +97,9 @@ class Entity {
 
   affectedBy(e) {
     return true;
+  }
+
+  touched(e) {
   }
 
   repel(e) {
@@ -141,6 +149,8 @@ class Entity {
         this.vy = t;
       }
     }
+    e.touched(this, dir);
+    this.touched(e, dir);
   }
 
   tick() {
@@ -215,8 +225,11 @@ class PigEntity extends GravityEntity {
   constructor(x, y, w, h, vx, vy, shape) {
     super(x, y, w, h, vx, vy, shape);
     this.direction = 1;
-    this.mvy = 0;
     this.jump_limit = 0;
+  }
+
+  kill() {
+    LoadLevel(level);
   }
 
   facing() {
@@ -265,32 +278,44 @@ class BlockEntity extends Entity {
 }
 
 class LavaEntity extends BlockEntity {
-  repel(e) {
+  touched(e) {
     if (e === user) {
-      if (this.intersect(e)) {
-        user.x = start[0];
-        user.y = start[1];
-        user.vx = 0;
-        user.vy = 0;
-      }
-    } else {
-      super.repel(e);
+      user.kill();
     }
   }
 }
 
 class BounceEntity extends BlockEntity {
-  repel(e) {
-    if (e.bouncable() && this.intersect(e)) {
+  touched(e) {
+    if (e.bouncable()) {
       e.vy = -25;
     }
   }
 }
 
 class EndEntity extends BlockEntity {
-  repel(e) {
-    if (e === user && this.intersect(e)) {
-      LoadLevel(LEVELS[++level]);
+  touched(e) {
+    if (e === user) {
+      LoadLevel(++level);
+    }
+  }
+}
+
+class WolfEntity extends GravityEntity {
+  constructor(x, y, w, h, vx, vy, shape) {
+    super(x, y, w, h, vx, vy, shape);
+    this.direction = 1;
+  }
+
+  tick() {
+    this.vx += this.direction * 0.3;
+    this.vx = Math.max(-2, Math.min(2, this.vx));
+    super.tick();
+  }
+
+  touched(e) {
+    if (e === user) {
+      user.kill();
     }
   }
 }
@@ -300,30 +325,34 @@ function Resize() {
   canvas.height = window.innerHeight;
 }
 
-function LoadLevel(level) {
+function LoadLevel(levelNum) {
+  var level = LEVELS[levelNum];
   const scale = 256;
   entities = [];
   for (var j = 0; j < level.length; ++j) {
+    var y = j * scale;
     for (var i = 0; i < level[j].length; ++i) {
+      var x = i * scale;
       var ch = level[j][i];
       switch (ch) {
         case 'L':
-          entities.push(new LavaEntity(i * scale, j * scale, scale, scale, 0, 0, 'lava'));
+          entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));
           break;
         case 'B':
-          entities.push(new BounceEntity(i * scale, j * scale, scale, scale, 0, 0, 'bounce'));
+          entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
           break;
         case '#':
-          entities.push(new BlockEntity(i * scale, j * scale, scale, scale, 0, 0, 'block'));
+          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
-          user = new PigEntity(i * scale, j * scale, 150, 120, 0, 0, 'pig');
+          user = new PigEntity(x, y, 150, 120, 0, 0, 'pig');
           entities.push(user);
-          start = [user.x, user.y];
           break;
         case 'E':
-          entities.push(new EndEntity(i * scale, j * scale, scale, scale, 0, 0, 'end'));
+          entities.push(new EndEntity(x, y, scale, scale, 0, 0, 'end'));
           break;
+        case 'W':
+          entities.push(new WolfEntity(i * 225, j * 180, 225, 180, 0, 0, 'wolf'));
       }
     }
   }
@@ -387,10 +416,13 @@ window.onkeyup = function(e) {
   } else if (e.keyCode == 16) {
     entities.push(new CannonballEntity(user.x + user.w / 2 - 32 + user.direction * 30, user.y,
                                        64, 64, user.vx + user.direction * 30, user.vy - 10, 'cannonball'));
+  } else if (e.keyCode == 221) {
+    level = 2;
+    LoadLevel(level);
   }
 };
 
 window.setInterval(Tick, 20);
 window.onresize = Resize;
 Resize();
-LoadLevel(LEVELS[level]);
+LoadLevel(level);
