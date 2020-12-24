@@ -445,13 +445,10 @@ window.onkeyup = function(e) {
   } else if (e.keyCode == 40) {
     joystick[3] = 0;
   } else if (e.keyCode == 16) {
-    entities.push(new CannonballEntity(user.x + user.w / 2 - 32 + user.direction * 30, user.y,
-                                       64, 64, user.vx + user.direction * 30, user.vy - 10, 'cannonball'));
-  } else if (e.keyCode == 221) {
-    level = 3;
-    LoadLevel(level);
-  }
-};
+    entities.push(new CannonballEntity(user.x + user.w / 2 - 32 + user.direction * 30, user.y, 64, 64, user.vx + user.direction * 30,
+user.vy - 10, 'cannonball'));
+    }
+  };
 
 window.setInterval(Tick, 20);
 window.onresize = Resize;
