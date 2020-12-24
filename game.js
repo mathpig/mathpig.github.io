@@ -32,25 +32,25 @@ const LEVELS = [
     'LLLLLLLLLLLLLLLLLLLLL',
     'L                   L',
     'L                   L',
-    'L S     W        #  L',
+    'L S     #W       #  L',
     'L##  #  ##########  L',
     'L  LL LL            L',
     'L                   L',
-    'L  W       #        L',
+    'L                   L',
+    'L  #W      #        L',
     'L  #########  #  #LLL',
     'L           LL LL   L',
     'L                   L',
     'L                   L',
-    'L  W  #             L',
+    'L                   L',
+    'L  #W #             L',
     'L  ####   E         L',
     'LLLLLLLLLL#LLLLLLLLLL',
   ],
   [
-    'LLLLL',
-    'L###L',
-    'L#S#L',
-    'L###L',
-    'LLLLL',
+    '###',
+    '#S#',
+    '###',
   ],
 ];
 
@@ -99,6 +99,9 @@ class Entity {
     return true;
   }
 
+  kill() {
+  }
+
   touched(e) {
   }
 
@@ -124,7 +127,9 @@ class Entity {
     var dx = options[0][1];
     var dy = options[0][2];
     var dir = options[0][3];
+
     e.adjust(dx * (dist + DELTA), dy * (dist + DELTA));
+
     // 3 is when you get pushed up, so you're touching the ground
     if (dir == 3) {
       e.touchdown();
@@ -164,6 +169,8 @@ class Entity {
 
   draw() {
     var img = document.getElementById(this.shape);
+    //ctx.fillStyle = '#f00';
+    //ctx.fillRect(this.x, this.y, this.w, this.h);
     if (this.facing() < 0) {
       ctx.save();
       ctx.scale(-1, 1);
@@ -279,9 +286,7 @@ class BlockEntity extends Entity {
 
 class LavaEntity extends BlockEntity {
   touched(e) {
-    if (e === user) {
-      user.kill();
-    }
+    e.kill();
   }
 }
 
@@ -307,15 +312,28 @@ class WolfEntity extends GravityEntity {
     this.direction = 1;
   }
 
+  kill() {
+    var index = entities.indexOf(this);
+    if (index >= 0) {
+      entities.splice(index, 1);
+    }
+  }
+
   tick() {
     this.vx += this.direction * 0.3;
     this.vx = Math.max(-2, Math.min(2, this.vx));
     super.tick();
   }
 
-  touched(e) {
+  touched(e, dir) {
     if (e === user) {
       user.kill();
+    }
+    if (dir == 1) {
+      this.direction = -1;
+    }
+    if (dir == 2) {
+      this.direction = 1;
     }
   }
 }
@@ -352,7 +370,8 @@ function LoadLevel(levelNum) {
           entities.push(new EndEntity(x, y, scale, scale, 0, 0, 'end'));
           break;
         case 'W':
-          entities.push(new WolfEntity(i * 225, j * 180, 225, 180, 0, 0, 'wolf'));
+          entities.push(new WolfEntity(x, y, 225, 180, 0, 0, 'wolf'));
+          break;
       }
     }
   }
