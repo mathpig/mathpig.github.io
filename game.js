@@ -111,6 +111,14 @@ class Entity {
   touched(e) {
   }
 
+  frame() {
+    return '';
+  }
+
+  overhang() {
+    return 0;
+  }
+
   repel(e) {
     if (!this.affects(e) || !e.affectedBy(this)) {
       return;
@@ -174,16 +182,16 @@ class Entity {
   }
 
   draw() {
-    var img = document.getElementById(this.shape);
+    var img = document.getElementById(this.shape + this.frame());
     //ctx.fillStyle = '#f00';
     //ctx.fillRect(this.x, this.y, this.w, this.h);
     if (this.facing() < 0) {
       ctx.save();
       ctx.scale(-1, 1);
-      ctx.drawImage(img, -this.x - this.w, this.y, this.w, this.h);
+      ctx.drawImage(img, -this.x - this.w, this.y + this.overhang(), this.w, this.h);
       ctx.restore();
     } else {
-      ctx.drawImage(img, this.x, this.y, this.w, this.h);
+      ctx.drawImage(img, this.x, this.y + this.overhang(), this.w, this.h);
     }
   }
 }
@@ -237,6 +245,7 @@ class CannonballEntity extends GravityEntity {
 class PigEntity extends GravityEntity {
   constructor(x, y, w, h, vx, vy, shape) {
     super(x, y, w, h, vx, vy, shape);
+    this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
   }
@@ -253,8 +262,19 @@ class PigEntity extends GravityEntity {
     this.jump_limit = 0;
   }
 
+  frame() {
+    return Math.floor(this.frameNum / 4);
+  }
+
+  overhang() {
+    return 16;
+  }
+
   tick() {
     super.tick();
+    if (joystick[0] || joystick[1]) {
+      this.frameNum = (this.frameNum + 1) % 16;
+    }
     if (joystick[0]) {
       this.vx -= 0.5;
       this.direction = -1;
