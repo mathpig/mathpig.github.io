@@ -11,8 +11,9 @@ const LEVELS = [
     'L                  L',
     'L        #         L',
     'L S A              L',
-    'L #W#              L',
     'L ###              L',
+    'L DWD              L',
+    'L DDD              L',
     'L           L # LE L',
     'L                  L',
     'L                  L',
@@ -25,8 +26,8 @@ const LEVELS = [
     'L               L',
     'L      FSA      L',
     'L      ###      L',
-    'L  F   #W#   A  L',
-    'L  #   ###   #  L',
+    'L  F   DWD   A  L',
+    'L  #   DDD   #  L',
     'L   LLL   LLL   L',
     'L               L',
     'L               L',
@@ -39,20 +40,27 @@ const LEVELS = [
     'L                   L',
     'L                A  L',
     'L S     # W W W  #  L',
-    'L##  #  ##########  L',
+    'L##  #  D########D  L',
     'L  LL LL            L',
     'L                   L',
     'L  F                L',
     'L  # W W W #        L',
-    'L  #########  #  #LLL',
+    'L  D#######D  #  #LLL',
     'L           LL LL   L',
     'L                   L',
     'L                   L',
     'L                   L',
     'L  # W   W   W #    L',
-    'L  #############   EL',
+    'L  D###########D   EL',
     'LsssssssssssssssssssL',
     'L###################L',
+  ],
+  [
+    'GGGGGGGGGGGGGGGGGGGGG',
+    'D                   D',
+    'D                   D',
+    'DSf    f 1 f2   f  ED',
+    'DDDDDDDDDDDDDDDDDDDDD',
   ],
   [
     'GGGGGGGGGGGG',
@@ -74,7 +82,7 @@ var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var entities = [];
 var user;
-var level = 0;
+var currentLevel = 0;
 var joystick = [0, 0, 0, 0];
 
 class Entity {
@@ -267,7 +275,7 @@ class PigEntity extends GravityEntity {
   }
 
   kill() {
-    LoadLevel(level);
+    LoadLevel(currentLevel);
   }
 
   facing() {
@@ -346,9 +354,6 @@ class Decoration extends BlockEntity {
   affects(e) {
     return false;
   }
-  overhang() {
-    return 16;
-  }
 }
 
 class FlippedDecoration extends Decoration {
@@ -371,7 +376,7 @@ class BounceEntity extends BlockEntity {
 class EndEntity extends BlockEntity {
   touched(e) {
     if (e === user) {
-      LoadLevel(++level);
+      LoadLevel(currentLevel + 1);
     }
   }
 }
@@ -420,23 +425,36 @@ function Resize() {
 }
 
 function LoadLevel(levelNum) {
-  var level = LEVELS[levelNum];
+  currentLevel = levelNum;
+  var items = LEVELS[levelNum];
   const scale = 256;
   entities = [];
-  for (var j = 0; j < level.length; ++j) {
+  for (var j = 0; j < items.length; ++j) {
     var y = j * scale;
-    for (var i = 0; i < level[j].length; ++i) {
+    for (var i = 0; i < items[j].length; ++i) {
       var x = i * scale;
-      var ch = level[j][i];
+      var ch = items[j][i];
       switch (ch) {
         case 'L':
           entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));
+          break;
+        case 'D':
+          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt4'));
           break;
         case 's':
           entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'spikes'));
           break;
         case 'A':
           entities.push(new Decoration(x, y, scale, scale, 0, 0, 'arrow'));
+          break;
+        case '1':
+          entities.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub1'));
+          break;
+        case '2':
+          entities.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub2'));
+          break;
+        case 'f':
+          entities.push(new Decoration(x, y + 128, 128, 128, 0, 0, 'flower1'));
           break;
         case 'F':
           entities.push(new FlippedDecoration(x, y, scale, scale, 0, 0, 'arrow'));
@@ -538,4 +556,4 @@ window.onkeyup = function(e) {
 window.setInterval(Tick, 20);
 window.onresize = Resize;
 Resize();
-LoadLevel(level);
+LoadLevel(0);
