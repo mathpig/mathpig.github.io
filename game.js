@@ -17,7 +17,7 @@ const LEVELS = [
     'L                  L',
     'L                  L',
     'L      B           L',
-    'LLLLLLLLLLLLLLLLLLLL',
+    'LssssssssssssssssssL',
   ],
   [
     'LLLLLLLLLLLLLLLLL',
@@ -30,7 +30,7 @@ const LEVELS = [
     'L               L',
     'L               L',
     'LB #  # E #  # BL',
-    'LLLLLLLLLLLLLLLLL',
+    'LsssssssssssssssL',
   ],
   [
     'LLLLLLLLLLLLLLLLLLLLL',
@@ -49,10 +49,13 @@ const LEVELS = [
     'L                   L',
     'L  # W   W   W #    L',
     'L  #############   EL',
-    'LLLLLLLLLLLLLLLLLLLLL',
+    'LsssssssssssssssssssL',
   ],
   [
     'GGGGGGGGGGGG',
+    '#          #',
+    '#          #',
+    '#          #',
     '#          #',
     '#          #',
     '#          #',
@@ -425,6 +428,9 @@ function LoadLevel(levelNum) {
       switch (ch) {
         case 'L':
           entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));
+          break;
+        case 's':
+          entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'spikes'));
           break;
         case 'A':
           entities.push(new Decoration(x, y, scale, scale, 0, 0, 'arrow'));
