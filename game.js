@@ -20,17 +20,17 @@ const LEVELS = [
     'LLLLLLLLLLLLLLLLLLLL',
   ],
   [
-    'LLLLLLLLLLLLLLL',
-    'L             L',
-    'L     FSA     L',
-    'L     ###     L',
-    'L  F  #W#  A  L',
-    'L  #  ###  #  L',
-    'L   LL   LL   L',
-    'L             L',
-    'LB           BL',
-    'L  #  #E#  #  L',
-    'LLLLLLLLLLLLLLL',
+    'LLLLLLLLLLLLLLLLL',
+    'L               L',
+    'L      FSA      L',
+    'L      ###      L',
+    'L  F   #W#   A  L',
+    'L  #   ###   #  L',
+    'L   LLL   LLL   L',
+    'L               L',
+    'L               L',
+    'LB #  # E #  # BL',
+    'LLLLLLLLLLLLLLLLL',
   ],
   [
     'LLLLLLLLLLLLLLLLLLLLL',
@@ -436,7 +436,8 @@ function LoadLevel(levelNum) {
           entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
           break;
         case 'G':
-          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'grass'));
+          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'grass2'));
+          break;
         case '#':
           entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'block'));
           break;
