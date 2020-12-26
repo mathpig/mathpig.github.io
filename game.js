@@ -18,6 +18,7 @@ const LEVELS = [
     'L                  L',
     'L      B           L',
     'LssssssssssssssssssL',
+    'L##################L',
   ],
   [
     'LLLLLLLLLLLLLLLLL',
@@ -31,6 +32,7 @@ const LEVELS = [
     'L               L',
     'LB #  # E #  # BL',
     'LsssssssssssssssL',
+    'L###############L',
   ],
   [
     'LLLLLLLLLLLLLLLLLLLLL',
@@ -50,6 +52,7 @@ const LEVELS = [
     'L  # W   W   W #    L',
     'L  #############   EL',
     'LsssssssssssssssssssL',
+    'L###################L',
   ],
   [
     'GGGGGGGGGGGG',
