@@ -75,9 +75,7 @@ const LEVELS = [
     'D          D',
     'DSSSSSSSSSSD',
     'DBBBBBBBBBBD',
-    'DDDDDDDDDDDD',
     'bbbbbbbbbbbb',
-    'ssssssssssss',
   ],
 ];
 
