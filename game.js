@@ -9,7 +9,7 @@ const LEVELS = [
     'L               L',
     'L               L',
     'L       #       L',
-    'L S             L',
+    'L S A           L',
     'L ###           L',
     'L        L # LE L',
     'L               L',
@@ -20,7 +20,7 @@ const LEVELS = [
   [
     'LLLLLLLLLLLLLLL',
     'L             L',
-    'L      S      L',
+    'L  F   S   A  L',
     'L  #  ###  #  L',
     'L   LL   LL   L',
     'L             L',
@@ -31,12 +31,12 @@ const LEVELS = [
   [
     'LLLLLLLLLLLLLLLLLLLLL',
     'L                   L',
-    'L                   L',
+    'L                A  L',
     'L S     # W      #  L',
     'L##  #  ##########  L',
     'L  LL LL            L',
     'L                   L',
-    'L                   L',
+    'L  F                L',
     'L  # W     #        L',
     'L  #########  #  #LLL',
     'L           LL LL   L',
@@ -316,6 +316,27 @@ class LavaEntity extends BlockEntity {
   }
 }
 
+class Decoration extends BlockEntity {
+  affectedBy(e) {
+    return false;
+  }
+  affects(e) {
+    return false;
+  }
+  overhang() {
+    return 16;
+  }
+}
+
+class FlippedDecoration extends Decoration {
+  facing() {
+    return -1;
+  }
+  overhang() {
+    return 16;
+  }
+}
+
 class BounceEntity extends BlockEntity {
   touched(e) {
     if (e.bouncable()) {
@@ -387,6 +408,12 @@ function LoadLevel(levelNum) {
       switch (ch) {
         case 'L':
           entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));
+          break;
+        case 'A':
+          entities.push(new Decoration(x, y, scale, scale, 0, 0, 'arrow'));
+          break;
+        case 'F':
+          entities.push(new FlippedDecoration(x, y, scale, scale, 0, 0, 'arrow'));
           break;
         case 'B':
           entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
