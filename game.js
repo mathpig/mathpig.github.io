@@ -478,7 +478,7 @@ function LoadLevel(levelNum) {
           entities.push(new TurfEntity(x, y, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
-          user = new PigEntity(x, y, 150, 120, 0, 0, 'pig');
+          user = new PigEntity(x, y, 225, 180, 0, 0, 'pig');
           entities.push(user);
           break;
         case 'E':
