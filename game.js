@@ -407,7 +407,10 @@ function Tick() {
   // Fill Background
   ctx.fillStyle = '#030';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+  
+  var background = document.getElementById('back1');
+  ctx.drawImage(background, -user.x / 10, -user.y / 10, 716 * 3, 340 * 3);
+  
   ctx.save();
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.scale(0.5, 0.5);
