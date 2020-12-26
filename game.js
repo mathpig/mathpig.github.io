@@ -64,17 +64,20 @@ const LEVELS = [
   ],
   [
     'GGGGGGGGGGGG',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#          #',
-    '#SSSSSSSSSS#',
-    '#BBBBBBBBBB#',
+    'D          D',
+    'D          D',
+    'D          D',
+    'D          D',
+    'D          D',
+    'D          D',
+    'D          D',
+    'D          D',
+    'D          D',
+    'DSSSSSSSSSSD',
+    'DBBBBBBBBBBD',
+    'DDDDDDDDDDDD',
+    'bbbbbbbbbbbb',
+    'ssssssssssss',
   ],
 ];
 
@@ -206,10 +209,12 @@ class Entity {
     if (this.facing() < 0) {
       ctx.save();
       ctx.scale(-1, 1);
-      ctx.drawImage(img, -this.x - this.w, this.y + this.overhang(), this.w, this.h);
+      ctx.drawImage(img, -this.x - this.w, this.y + this.overhang(),
+                    this.w, this.h + Math.abs(this.overhang()));
       ctx.restore();
     } else {
-      ctx.drawImage(img, this.x, this.y + this.overhang(), this.w, this.h);
+      ctx.drawImage(img, this.x, this.y + this.overhang(),
+                    this.w, this.h + Math.abs(this.overhang()));
     }
   }
 }
@@ -298,7 +303,7 @@ class PigEntity extends GravityEntity {
   }
 
   overhang() {
-    return 16;
+    return 8;
   }
 
   tick() {
@@ -341,6 +346,12 @@ class BlockEntity extends Entity {
   }
 }
 
+class TurfEntity extends BlockEntity {
+  overhang() {
+    return -16;
+  }
+}
+
 class LavaEntity extends BlockEntity {
   touched(e) {
     e.kill();
@@ -359,9 +370,6 @@ class Decoration extends BlockEntity {
 class FlippedDecoration extends Decoration {
   facing() {
     return -1;
-  }
-  overhang() {
-    return 16;
   }
 }
 
@@ -438,6 +446,9 @@ function LoadLevel(levelNum) {
         case 'L':
           entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));
           break;
+        case 'b':
+          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt5'));
+          break;
         case 'D':
           entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt4'));
           break;
@@ -463,10 +474,10 @@ function LoadLevel(levelNum) {
           entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
           break;
         case 'G':
-          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'grass2'));
+          entities.push(new TurfEntity(x, y, scale, scale, 0, 0, 'grass2'));
           break;
         case '#':
-          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'block'));
+          entities.push(new TurfEntity(x, y, scale, scale, 0, 0, 'block'));
           break;
         case 'S':
           user = new PigEntity(x, y, 150, 120, 0, 0, 'pig');
