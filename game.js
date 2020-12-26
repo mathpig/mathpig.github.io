@@ -5,22 +5,26 @@ const DAMPING = 0.4;
 const DELTA = 0.1;
 const LEVELS = [
   [
-    'LLLLLLLLLLLLLLLLL',
-    'L               L',
-    'L               L',
-    'L       #       L',
-    'L S A           L',
-    'L ###           L',
-    'L        L # LE L',
-    'L               L',
-    'L               L',
-    'L     B         L',
-    'LLLLLLLLLLLLLLLLL',
+    'LLLLLLLLLLLLLLLLLLLL',
+    'L                  L',
+    'L                  L',
+    'L                  L',
+    'L        #         L',
+    'L S A              L',
+    'L #W#              L',
+    'L ###              L',
+    'L           L # LE L',
+    'L                  L',
+    'L                  L',
+    'L      B           L',
+    'LLLLLLLLLLLLLLLLLLLL',
   ],
   [
     'LLLLLLLLLLLLLLL',
     'L             L',
-    'L  F   S   A  L',
+    'L     FSA     L',
+    'L     ###     L',
+    'L  F  #W#  A  L',
     'L  #  ###  #  L',
     'L   LL   LL   L',
     'L             L',
@@ -32,23 +36,23 @@ const LEVELS = [
     'LLLLLLLLLLLLLLLLLLLLL',
     'L                   L',
     'L                A  L',
-    'L S     # W      #  L',
+    'L S     # W W W  #  L',
     'L##  #  ##########  L',
     'L  LL LL            L',
     'L                   L',
     'L  F                L',
-    'L  # W     #        L',
+    'L  # W W W #        L',
     'L  #########  #  #LLL',
     'L           LL LL   L',
     'L                   L',
     'L                   L',
     'L                   L',
-    'L  # W         #    L',
+    'L  # W   W   W #    L',
     'L  #############   EL',
-    'LLLLLLLLLLLLLLLLLLL#L',
+    'LLLLLLLLLLLLLLLLLLLLL',
   ],
   [
-    '############',
+    'GGGGGGGGGGGG',
     '#          #',
     '#          #',
     '#          #',
@@ -204,6 +208,11 @@ class GravityEntity extends Entity {
   bouncable() {
     return true;
   }
+
+  shoot() {
+    entities.push(new CannonballEntity(this.x + this.w / 2 - 32 + this.direction * 30,
+                                       this.y, 64, 64, this.vx + this.direction * 30, this.vy - 10, 'cannonball'));
+  }
 }
 
 class CannonballEntity extends GravityEntity {
@@ -248,6 +257,7 @@ class PigEntity extends GravityEntity {
     this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
+    this.cannonballs = 5;
   }
 
   kill() {
@@ -260,6 +270,13 @@ class PigEntity extends GravityEntity {
 
   touchdown() {
     this.jump_limit = 0;
+  }
+
+  shoot() {
+    if (this.cannonballs > 0) {
+      this.cannonballs--;
+      super.shoot();
+    }
   }
 
   frame() {
@@ -340,7 +357,7 @@ class FlippedDecoration extends Decoration {
 class BounceEntity extends BlockEntity {
   touched(e) {
     if (e.bouncable()) {
-      e.vy = -25;
+      e.vy = -30;
     }
   }
 }
@@ -418,6 +435,8 @@ function LoadLevel(levelNum) {
         case 'B':
           entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
           break;
+        case 'G':
+          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'grass'));
         case '#':
           entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'block'));
           break;
@@ -471,6 +490,13 @@ function Tick() {
   }
 
   ctx.restore();
+
+  // Draw status
+  ctx.font = '40px san-serif';
+  ctx.fillStyle = '#000';
+  ctx.fillText('Cannonballs: ' + user.cannonballs, 22, 102);
+  ctx.fillStyle = '#ff0';
+  ctx.fillText('Cannonballs: ' + user.cannonballs, 20, 100);
 }
 
 window.onkeydown = function(e) {
@@ -495,8 +521,7 @@ window.onkeyup = function(e) {
   } else if (e.keyCode == 40) {
     joystick[3] = 0;
   } else if (e.keyCode == 16) {
-    entities.push(new CannonballEntity(user.x + user.w / 2 - 32 + user.direction * 30, user.y, 64, 64, user.vx + user.direction * 30,
-user.vy - 10, 'cannonball'));
+    user.shoot();
     }
   };
 
