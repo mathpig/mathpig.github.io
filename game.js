@@ -8,8 +8,8 @@ const LEVELS = [
     'LLLLLLLLLLLLLLLLLLLL',
     'L                  L',
     'L                  L',
-    'L                  L',
     'L        #         L',
+    'L                  L',
     'L S A              L',
     'L ###              L',
     'L DWD              L',
@@ -39,18 +39,18 @@ const LEVELS = [
     'LLLLLLLLLLLLLLLLLLLLL',
     'L                   L',
     'L                A  L',
-    'L S     # W W W  #  L',
+    'L S     # W      #  L',
     'L##  #  D########D  L',
     'L  LL LL            L',
     'L                   L',
     'L  F                L',
-    'L  # W W W #        L',
+    'L  # W     #        L',
     'L  D#######D  #  #LLL',
     'L           LL LL   L',
     'L                   L',
     'L                   L',
     'L                   L',
-    'L  # W   W   W #    L',
+    'L  # W         #    L',
     'L  D###########D   EL',
     'LsssssssssssssssssssL',
     'L###################L',
@@ -59,7 +59,7 @@ const LEVELS = [
     'GGGGGGGGGGGGGGGGGGGGG',
     'D                   D',
     'D                   D',
-    'DSf    f 1 f2   f  ED',
+    'DSf  3  f 1 f2  f 4ED',
     'DDDDDDDDDDDDDDDDDDDDD',
   ],
   [
@@ -110,6 +110,10 @@ class Entity {
   }
 
   touchdown() {
+  }
+
+  depth() {
+    return 0;
   }
 
   bouncable() {
@@ -363,6 +367,9 @@ class Decoration extends BlockEntity {
   affects(e) {
     return false;
   }
+  depth() {
+    return -1;
+  }
 }
 
 class FlippedDecoration extends Decoration {
@@ -471,6 +478,12 @@ function LoadLevel(levelNum) {
         case 'B':
           entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
           break;
+        case '3':
+          entities.push(new BlockEntity(x, y, scale, scale,  0, 0, 'shrub1'));
+          break;
+        case '4':
+          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'shrub2'));
+          break;
         case 'G':
           entities.push(new TurfEntity(x, y, scale, scale, 0, 0, 'grass2'));
           break;
@@ -520,6 +533,9 @@ function Tick() {
   ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
   ctx.translate(canvas.width / 2 - (user.x + user.w / 2), canvas.height / 2 - (user.y + user.h / 2));
+
+  // Sort by depth
+  entities.sort(function(a, b) { return a.depth() - b.depth(); });
 
   // Draw each entity
   for (var i = 0; i < entities.length; ++i) {
