@@ -91,13 +91,13 @@ var currentLevel = 0;
 var joystick = [0, 0, 0, 0];
 
 class Entity {
-  constructor(x, y, w, h, vx, vy, shape) {
+  constructor(x, y, w, h, shape) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.vx = vx;
-    this.vy = vy;
+    this.vx = 0;
+    this.vy = 0;
     this.shape = shape;
   }
 
@@ -245,14 +245,16 @@ class GravityEntity extends Entity {
   }
 
   shoot() {
-    entities.push(new CannonballEntity(this.x + this.w / 2 - 32 + this.direction * 30,
-                                       this.y, 64, 64, this.vx + this.direction * 30, this.vy - 10, 'cannonball'));
+    var ball = new CannonballEntity(this.x + this.w / 2 - 32 + this.direction * 30, this.y, 64, 64, 'cannonball');
+    ball.vx = this.vx + this.direction * 30;
+    ball.vy = this.vy - 10;
+    entities.push(ball);
   }
 }
 
 class CannonballEntity extends GravityEntity {
-  constructor(x, y, w, h, vx, vy, shape) {
-    super(x, y, w, h, vx, vy, shape);
+  constructor(x, y, w, h, shape) {
+    super(x, y, w, h, shape);
     this.timer = 0;
   }
 
@@ -287,8 +289,8 @@ class CannonballEntity extends GravityEntity {
 }
 
 class PigEntity extends GravityEntity {
-  constructor(x, y, w, h, vx, vy, shape) {
-    super(x, y, w, h, vx, vy, shape);
+  constructor(x, y, w, h, shape) {
+    super(x, y, w, h, shape);
     this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
@@ -409,8 +411,8 @@ class EndEntity extends BlockEntity {
 }
 
 class WolfEntity extends GravityEntity {
-  constructor(x, y, w, h, vx, vy, shape) {
-    super(x, y, w, h, vx, vy, shape);
+  constructor(x, y, w, h, shape) {
+    super(x, y, w, h, shape);
     this.direction = 1;
   }
 
@@ -455,22 +457,22 @@ function LoadPalette() {
   var x = 0;
   var y = 0;
   var scale = 64;
-  palette.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));  x += scale;
-  palette.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt5'));  x += scale;
-  palette.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt4'));  x += scale;
-  palette.push(new LavaEntity(x, y, scale, scale, 0, 0, 'spikes'));  x += scale;
-  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'arrow'));  x += scale;
-  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub1'));  x += scale;
-  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub2'));  x += scale;
-  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'flower1'));  x += scale;
-  palette.push(new FlippedDecoration(x, y, scale, scale, 0, 0, 'arrow'));  x += scale;
-  palette.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));  x += scale;
-  palette.push(new BlockEntity(x, y, scale, scale,  0, 0, 'shrub1'));  x += scale;
-  palette.push(new BlockEntity(x, y, scale, scale, 0, 0, 'shrub2'));  x += scale;
-  palette.push(new TurfEntity(x, y, scale, scale, 0, 0, 'grass2'));  x += scale;
-  palette.push(new TurfEntity(x, y, scale, scale, 0, 0, 'block'));  x += scale;
-  palette.push(new EndEntity(x, y, scale, scale, 0, 0, 'end'));  x += scale;
-  palette.push(new WolfEntity(x, y, scale, scale, 0, 0, 'wolf'));  x += scale;
+  palette.push(new LavaEntity(x, y, scale, scale, 'lava'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 'dirt5'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 'dirt4'));  x += scale;
+  palette.push(new LavaEntity(x, y, scale, scale, 'spikes'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 'arrow'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 'shrub1'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 'shrub2'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 'flower1'));  x += scale;
+  palette.push(new FlippedDecoration(x, y, scale, scale, 'arrow'));  x += scale;
+  palette.push(new BounceEntity(x, y, scale, scale, 'bounce'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 'shrub1'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 'shrub2'));  x += scale;
+  palette.push(new TurfEntity(x, y, scale, scale, 'grass2'));  x += scale;
+  palette.push(new TurfEntity(x, y, scale, scale, 'block'));  x += scale;
+  palette.push(new EndEntity(x, y, scale, scale, 'end'));  x += scale;
+  palette.push(new WolfEntity(x, y, scale, scale, 'wolf'));  x += scale;
   selection = palette[0];
 }   
 
@@ -486,56 +488,56 @@ function LoadLevel(levelNum) {
       var ch = items[j][i];
       switch (ch) {
         case 'L':
-          entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));
+          entities.push(new LavaEntity(x, y, scale, scale, 'lava'));
           break;
         case 'b':
-          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt5'));
+          entities.push(new BlockEntity(x, y, scale, scale, 'dirt5'));
           break;
         case 'D':
-          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt4'));
+          entities.push(new BlockEntity(x, y, scale, scale, 'dirt4'));
           break;
         case 's':
-          entities.push(new LavaEntity(x, y, scale, scale, 0, 0, 'spikes'));
+          entities.push(new LavaEntity(x, y, scale, scale, 'spikes'));
           break;
         case 'A':
-          entities.push(new Decoration(x, y, scale, scale, 0, 0, 'arrow'));
+          entities.push(new Decoration(x, y, scale, scale, 'arrow'));
           break;
         case '1':
-          entities.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub1'));
+          entities.push(new Decoration(x, y, scale, scale, 'shrub1'));
           break;
         case '2':
-          entities.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub2'));
+          entities.push(new Decoration(x, y, scale, scale, 'shrub2'));
           break;
         case 'f':
-          entities.push(new Decoration(x, y + 128, 128, 128, 0, 0, 'flower1'));
+          entities.push(new Decoration(x, y + 128, 128, 128, 'flower1'));
           break;
         case 'F':
-          entities.push(new FlippedDecoration(x, y, scale, scale, 0, 0, 'arrow'));
+          entities.push(new FlippedDecoration(x, y, scale, scale, 'arrow'));
           break;
         case 'B':
-          entities.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));
+          entities.push(new BounceEntity(x, y, scale, scale, 'bounce'));
           break;
         case '3':
-          entities.push(new BlockEntity(x, y, scale, scale,  0, 0, 'shrub1'));
+          entities.push(new BlockEntity(x, y, scale, scale, 'shrub1'));
           break;
         case '4':
-          entities.push(new BlockEntity(x, y, scale, scale, 0, 0, 'shrub2'));
+          entities.push(new BlockEntity(x, y, scale, scale, 'shrub2'));
           break;
         case 'G':
-          entities.push(new TurfEntity(x, y, scale, scale, 0, 0, 'grass2'));
+          entities.push(new TurfEntity(x, y, scale, scale, 'grass2'));
           break;
         case '#':
-          entities.push(new TurfEntity(x, y, scale, scale, 0, 0, 'block'));
+          entities.push(new TurfEntity(x, y, scale, scale, 'block'));
           break;
         case 'S':
-          user = new PigEntity(x, y, 225, 180, 0, 0, 'pig');
+          user = new PigEntity(x, y, 225, 180, 'pig');
           entities.push(user);
           break;
         case 'E':
-          entities.push(new EndEntity(x, y, scale, scale, 0, 0, 'end'));
+          entities.push(new EndEntity(x, y, scale, scale, 'end'));
           break;
         case 'W':
-          entities.push(new WolfEntity(x, y, 225, 180, 0, 0, 'wolf'));
+          entities.push(new WolfEntity(x, y, 225, 180, 'wolf'));
           break;
       }
     }
