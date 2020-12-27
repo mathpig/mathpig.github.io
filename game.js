@@ -82,6 +82,10 @@ const LEVELS = [
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 var entities = [];
+var palette = [];
+var selection;
+var paletteOpen = false;
+var worldTransform;
 var user;
 var currentLevel = 0;
 var joystick = [0, 0, 0, 0];
@@ -218,6 +222,16 @@ class Entity {
       ctx.drawImage(img, this.x, this.y + this.overhang(),
                     this.w, this.h + Math.abs(this.overhang()));
     }
+  }
+
+  highlight() {
+    ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+    ctx.fillRect(this.x, this.y, this.w, this.h);
+  }
+
+  inside(x, y) {
+    return x >= this.x && x <= this.x + this.w &&
+           y >= this.y && y <= this.y + this.h;
   }
 }
 
@@ -437,6 +451,29 @@ function Resize() {
   canvas.height = window.innerHeight;
 }
 
+function LoadPalette() {
+  var x = 0;
+  var y = 0;
+  var scale = 64;
+  palette.push(new LavaEntity(x, y, scale, scale, 0, 0, 'lava'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt5'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 0, 0, 'dirt4'));  x += scale;
+  palette.push(new LavaEntity(x, y, scale, scale, 0, 0, 'spikes'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'arrow'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub1'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'shrub2'));  x += scale;
+  palette.push(new Decoration(x, y, scale, scale, 0, 0, 'flower1'));  x += scale;
+  palette.push(new FlippedDecoration(x, y, scale, scale, 0, 0, 'arrow'));  x += scale;
+  palette.push(new BounceEntity(x, y, scale, scale, 0, 0, 'bounce'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale,  0, 0, 'shrub1'));  x += scale;
+  palette.push(new BlockEntity(x, y, scale, scale, 0, 0, 'shrub2'));  x += scale;
+  palette.push(new TurfEntity(x, y, scale, scale, 0, 0, 'grass2'));  x += scale;
+  palette.push(new TurfEntity(x, y, scale, scale, 0, 0, 'block'));  x += scale;
+  palette.push(new EndEntity(x, y, scale, scale, 0, 0, 'end'));  x += scale;
+  palette.push(new WolfEntity(x, y, scale, scale, 0, 0, 'wolf'));  x += scale;
+  selection = palette[0];
+}   
+
 function LoadLevel(levelNum) {
   currentLevel = levelNum;
   var items = LEVELS[levelNum];
@@ -528,11 +565,15 @@ function Tick() {
   ctx.drawImage(background, -user.x / 10, -user.y / 10, 716 * 3, 340 * 3);
   
   ctx.save();
+
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.scale(0.5, 0.5);
   ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
   ctx.translate(canvas.width / 2 - (user.x + user.w / 2), canvas.height / 2 - (user.y + user.h / 2));
+
+  // Save world transform for later.
+  worldTransform = ctx.getTransform().invertSelf();
 
   // Sort by depth
   entities.sort(function(a, b) { return a.depth() - b.depth(); });
@@ -550,6 +591,14 @@ function Tick() {
   ctx.fillText('Cannonballs: ' + user.cannonballs, 22, 102);
   ctx.fillStyle = '#ff0';
   ctx.fillText('Cannonballs: ' + user.cannonballs, 20, 100);
+
+  if (paletteOpen) {
+    // Draw palette
+    for (var i = 0; i < palette.length; ++i) {
+      palette[i].draw();
+    }
+    selection.highlight();
+  }
 }
 
 window.onkeydown = function(e) {
@@ -575,10 +624,35 @@ window.onkeyup = function(e) {
     joystick[3] = 0;
   } else if (e.keyCode == 16) {
     user.shoot();
+  } else if (e.keyCode == 80) {
+    paletteOpen = !paletteOpen;
+  }
+};
+
+window.onmousedown = function(e) {
+  if (paletteOpen) {
+    for (var i = 0; i < palette.length; ++i) {
+      if (palette[i].inside(e.clientX, e.clientY)) {
+        selection = palette[i];
+        return;
+      }
     }
-  };
+  }
+  const scale = 256;
+  var p = new DOMPoint(e.clientX, e.clientY);
+  var tp = p.matrixTransform(worldTransform);
+  var x = Math.floor(tp.x / scale) * scale;
+  var y = Math.floor(tp.y / scale) * scale;
+  var e = Object.assign(Object.create(Object.getPrototypeOf(selection)), selection);
+  e.x = x;
+  e.y = y;
+  e.w = scale;
+  e.h = scale;
+  entities.push(e);
+};
 
 window.setInterval(Tick, 20);
 window.onresize = Resize;
 Resize();
+LoadPalette();
 LoadLevel(0);
