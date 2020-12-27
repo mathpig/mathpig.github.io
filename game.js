@@ -1,5 +1,6 @@
 'use strict';
 
+const SCALE = 256;
 const FRICTION = 0.95;
 const DAMPING = 0.4;
 const DELTA = 0.1;
@@ -86,24 +87,46 @@ var palette = [];
 var selection;
 var paletteOpen = false;
 var worldTransform;
+var paletteTransform;
 var user;
 var currentLevel = 0;
 var joystick = [0, 0, 0, 0];
 
 class Entity {
-  constructor(x, y, shape) {
-    this.x = x;
-    this.y = y;
+  constructor() {
+    this.x = 0;
+    this.y = 0;
     this.w = 256;
     this.h = 256;
     this.vx = 0;
     this.vy = 0;
+    this.shape = null;
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  setGridPosition(x, y) {
+    return this.setPosition(x + SCALE / 2 - this.w / 2, y + SCALE - this.h);
+  }
+
+  setShape(shape) {
     this.shape = shape;
+    return this;
   }
 
   setSize(w, h) {
     this.w = w;
     this.h = h;
+    return this;
+  }
+
+  setVelocity(vx, vy) {
+    this.vx = vx;
+    this.vy = vy;
     return this;
   }
 
@@ -251,10 +274,10 @@ class GravityEntity extends Entity {
   }
 
   shoot() {
-    var ball = new CannonballEntity(this.x + this.w / 2 - 32 + this.direction * 30, this.y, 'cannonball').setSize(64, 64);
-    ball.vx = this.vx + this.direction * 30;
-    ball.vy = this.vy - 10;
-    entities.push(ball);
+    entities.push(new CannonballEntity()
+                  .setPosition(this.x + this.w / 2 - 32 + this.direction * 30, this.y)
+                  .setShape('cannonball')
+                  .setVelocity(this.vx + this.direction * 30, this.vy - 10));
   }
 }
 
@@ -262,6 +285,7 @@ class CannonballEntity extends GravityEntity {
   constructor(x, y, w, h, shape) {
     super(x, y, w, h, shape);
     this.timer = 0;
+    this.setSize(64, 64);
   }
 
   tick() {
@@ -301,6 +325,8 @@ class PigEntity extends GravityEntity {
     this.direction = 1;
     this.jump_limit = 0;
     this.cannonballs = 5;
+    this.setSize(225, 180);
+    user = this;
   }
 
   kill() {
@@ -400,6 +426,13 @@ class FlippedDecoration extends Decoration {
   }
 }
 
+class FlowerDecoration extends Decoration {
+  constructor(x, y, shape) {
+    super(x, y, shape);
+    this.setSize(128, 128);
+  }
+}
+
 class BounceEntity extends BlockEntity {
   touched(e) {
     if (e.bouncable()) {
@@ -420,6 +453,7 @@ class WolfEntity extends GravityEntity {
   constructor(x, y, w, h, shape) {
     super(x, y, w, h, shape);
     this.direction = 1;
+    this.setSize(225, 180);
   }
 
   kill() {
@@ -459,94 +493,54 @@ function Resize() {
   canvas.height = window.innerHeight;
 }
 
+const OBJECT_TABLE = [
+  ['L', LavaEntity, 'lava'],
+  ['b', BlockEntity, 'dirt5'],
+  ['D', BlockEntity, 'dirt4'],
+  ['s', LavaEntity, 'spikes'],
+  ['A', Decoration, 'arrow'],
+  ['1', Decoration, 'shrub1'],
+  ['2', Decoration, 'shrub2'],
+  ['f', FlowerDecoration, 'flower1'],
+  ['F', FlippedDecoration, 'arrow'],
+  ['B', BounceEntity, 'bounce'],
+  ['3', BlockEntity, 'shrub1'],
+  ['4', BlockEntity, 'shrub2'],
+  ['G', TurfEntity, 'grass2'],
+  ['#', TurfEntity, 'block'],
+  ['S', PigEntity, 'pig'],
+  ['E', EndEntity, 'end'],
+  ['W', WolfEntity, 'wolf'],
+];
+
 function LoadPalette() {
   var x = 0;
   var y = 0;
-  var scale = 64;
-  palette.push(new LavaEntity(x, y, 'lava'));  x += scale;
-  palette.push(new BlockEntity(x, y, 'dirt5'));  x += scale;
-  palette.push(new BlockEntity(x, y, 'dirt4'));  x += scale;
-  palette.push(new LavaEntity(x, y, 'spikes'));  x += scale;
-  palette.push(new Decoration(x, y, 'arrow'));  x += scale;
-  palette.push(new Decoration(x, y, 'shrub1'));  x += scale;
-  palette.push(new Decoration(x, y, 'shrub2'));  x += scale;
-  palette.push(new Decoration(x, y, 'flower1'));  x += scale;
-  palette.push(new FlippedDecoration(x, y, 'arrow'));  x += scale;
-  palette.push(new BounceEntity(x, y, 'bounce'));  x += scale;
-  palette.push(new BlockEntity(x, y, 'shrub1'));  x += scale;
-  palette.push(new BlockEntity(x, y, 'shrub2'));  x += scale;
-  palette.push(new TurfEntity(x, y, 'grass2'));  x += scale;
-  palette.push(new TurfEntity(x, y, 'block'));  x += scale;
-  palette.push(new EndEntity(x, y, 'end'));  x += scale;
-  palette.push(new WolfEntity(x, y, 'wolf'));  x += scale;
-  palette.forEach(e => e.setSize(64, 64));
+  OBJECT_TABLE.forEach(i => {
+    var [ch, classObject, shape] = i;
+    palette.push(new classObject().setShape(shape).setPosition(x, y));
+    x += SCALE;
+  }); 
   selection = palette[0];
 }   
 
 function LoadLevel(levelNum) {
   currentLevel = levelNum;
-  const scale = 256;
   var items = LEVELS[levelNum];
   entities = [];
   for (var j = 0; j < items.length; ++j) {
-    var y = j * scale;
+    var y = j * SCALE;
     for (var i = 0; i < items[j].length; ++i) {
-      var x = i * scale;
+      var x = i * SCALE;
       var ch = items[j][i];
-      switch (ch) {
-        case 'L':
-          entities.push(new LavaEntity(x, y, 'lava'));
-          break;
-        case 'b':
-          entities.push(new BlockEntity(x, y, 'dirt5'));
-          break;
-        case 'D':
-          entities.push(new BlockEntity(x, y, 'dirt4'));
-          break;
-        case 's':
-          entities.push(new LavaEntity(x, y, 'spikes'));
-          break;
-        case 'A':
-          entities.push(new Decoration(x, y, 'arrow'));
-          break;
-        case '1':
-          entities.push(new Decoration(x, y, 'shrub1'));
-          break;
-        case '2':
-          entities.push(new Decoration(x, y, 'shrub2'));
-          break;
-        case 'f':
-          entities.push(new Decoration(x, y + 128, 'flower1').setSize(128, 128));
-          break;
-        case 'F':
-          entities.push(new FlippedDecoration(x, y, 'arrow'));
-          break;
-        case 'B':
-          entities.push(new BounceEntity(x, y, 'bounce'));
-          break;
-        case '3':
-          entities.push(new BlockEntity(x, y, 'shrub1'));
-          break;
-        case '4':
-          entities.push(new BlockEntity(x, y, 'shrub2'));
-          break;
-        case 'G':
-          entities.push(new TurfEntity(x, y, 'grass2'));
-          break;
-        case '#':
-          entities.push(new TurfEntity(x, y, 'block'));
-          break;
-        case 'S':
-          user = new PigEntity(x, y, 'pig').setSize(225, 180);
-          entities.push(user);
-          break;
-        case 'E':
-          entities.push(new EndEntity(x, y, 'end'));
-          break;
-        case 'W':
-          entities.push(new WolfEntity(x, y, 'wolf').setSize(225, 180));
-          break;
-      }
+      OBJECT_TABLE.forEach(i => {
+        var [tch, classObject, shape] = i;
+        if (ch == tch) {
+          var e = new classObject().setShape(shape);
+          e.setGridPosition(x, y);
+          entities.push(e);
+        }
+      });
     }
   }
 }
@@ -602,11 +596,17 @@ function Tick() {
   ctx.fillText('Cannonballs: ' + user.cannonballs, 20, 100);
 
   if (paletteOpen) {
+    ctx.save();
+    ctx.scale(0.25, 0.25);
+    paletteTransform = ctx.getTransform().invertSelf();
+
     // Draw palette
     for (var i = 0; i < palette.length; ++i) {
       palette[i].draw();
     }
     selection.highlight();
+
+    ctx.restore();
   }
 }
 
@@ -639,24 +639,21 @@ window.onkeyup = function(e) {
 };
 
 window.onmousedown = function(e) {
+  var p = new DOMPoint(e.clientX, e.clientY);
   if (paletteOpen) {
+    var tp = p.matrixTransform(paletteTransform);
     for (var i = 0; i < palette.length; ++i) {
-      if (palette[i].inside(e.clientX, e.clientY)) {
+      if (palette[i].inside(tp.x, tp.y)) {
         selection = palette[i];
         return;
       }
     }
   }
-  const scale = 256;
-  var p = new DOMPoint(e.clientX, e.clientY);
   var tp = p.matrixTransform(worldTransform);
-  var x = Math.floor(tp.x / scale) * scale;
-  var y = Math.floor(tp.y / scale) * scale;
   var e = Object.assign(Object.create(Object.getPrototypeOf(selection)), selection);
-  e.x = x;
-  e.y = y;
-  e.w = scale;
-  e.h = scale;
+  var x = Math.floor(tp.x / SCALE) * SCALE;
+  var y = Math.floor(tp.y / SCALE) * SCALE;
+  e.setGridPosition(x, y);
   entities.push(e);
 };
 
