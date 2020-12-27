@@ -103,6 +103,10 @@ class Entity {
     this.shape = null;
   }
 
+  clone() {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
+
   setPosition(x, y) {
     this.x = x;
     this.y = y;
@@ -327,6 +331,12 @@ class PigEntity extends GravityEntity {
     this.cannonballs = 5;
     this.setSize(225, 180);
     user = this;
+  }
+
+  clone() {
+    var o = super.clone();
+    user = o;
+    return user;
   }
 
   kill() {
@@ -656,7 +666,7 @@ window.onmousedown = function(e) {
       return;
     }
   }
-  var e = Object.assign(Object.create(Object.getPrototypeOf(selection)), selection);
+  var e = selection.clone();
   var x = Math.floor(tp.x / SCALE) * SCALE;
   var y = Math.floor(tp.y / SCALE) * SCALE;
   e.setGridPosition(x, y);
