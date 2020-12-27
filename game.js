@@ -146,6 +146,10 @@ class Entity {
     this.y += dy;
   }
 
+  isPlayer() {
+    return false;
+  }
+
   touchdown() {
   }
 
@@ -308,14 +312,14 @@ class CannonballEntity extends GravityEntity {
   }
 
   affects(e) {
-    if (e === user && this.timer < 10) {
+    if (e.isPlayer() && this.timer < 10) {
       return false;
     }
     return true;
   }
 
   affectedBy(e) {
-    if (e === user && this.timer < 10) {
+    if (e.isPlayer() && this.timer < 10) {
       return false;
     }
     return true;
@@ -345,6 +349,10 @@ class PigEntity extends GravityEntity {
 
   facing() {
     return this.direction;
+  }
+
+  isPlayer() {
+    return true;
   }
 
   touchdown() {
@@ -453,7 +461,7 @@ class BounceEntity extends BlockEntity {
 
 class EndEntity extends BlockEntity {
   touched(e) {
-    if (e === user) {
+    if (e.isPlayer()) {
       LoadLevel(currentLevel + 1);
     }
   }
@@ -484,7 +492,7 @@ class WolfEntity extends GravityEntity {
   }
 
   touched(e, dir) {
-    if (e === user) {
+    if (e.isPlayer()) {
       user.kill();
     }
     if (!e.affectedBy(this)) {
