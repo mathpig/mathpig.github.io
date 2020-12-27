@@ -650,6 +650,12 @@ window.onmousedown = function(e) {
     }
   }
   var tp = p.matrixTransform(worldTransform);
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i].inside(tp.x, tp.y)) {
+      entities.splice(i, 1);
+      return;
+    }
+  }
   var e = Object.assign(Object.create(Object.getPrototypeOf(selection)), selection);
   var x = Math.floor(tp.x / SCALE) * SCALE;
   var y = Math.floor(tp.y / SCALE) * SCALE;
