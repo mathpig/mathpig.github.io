@@ -367,7 +367,11 @@ class PigEntity extends GravityEntity {
   }
 
   frame() {
-    return Math.floor(this.frameNum / 4);
+    if (joystick[0] || joystick[1]) {
+      return Math.floor(this.frameNum / 4);
+    } else {
+      return 4;
+    }
   }
 
   overhang() {
