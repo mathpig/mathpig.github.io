@@ -333,7 +333,7 @@ class PigEntity extends GravityEntity {
     this.direction = 1;
     this.jump_limit = 0;
     this.cannonballs = 5;
-    this.setSize(225, 180);
+    this.setSize(507 * 0.4, 256 * 0.4);
     user = this;
   }
 
@@ -371,7 +371,7 @@ class PigEntity extends GravityEntity {
   }
 
   overhang() {
-    return 8;
+    return 2;
   }
 
   tick() {
@@ -416,7 +416,7 @@ class BlockEntity extends Entity {
 
 class TurfEntity extends BlockEntity {
   overhang() {
-    return -16;
+    return -8;
   }
 }
 
