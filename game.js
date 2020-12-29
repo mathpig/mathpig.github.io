@@ -246,7 +246,9 @@ class Entity {
   }
 
   draw() {
-    var img = document.getElementById(this.shape + this.frame());
+    var imageName = this.shape + this.frame();
+    var img = document.getElementById(imageName);
+    if (img === null) { throw 'cannot find ' + imageName; }
     //ctx.fillStyle = '#f00';
     //ctx.fillRect(this.x, this.y, this.w, this.h);
     if (this.facing() < 0) {
@@ -424,6 +426,12 @@ class TurfEntity extends BlockEntity {
   }
 }
 
+class UphillSlant extends BlockEntity {
+}
+
+class DownhillSlant extends BlockEntity {
+}
+
 class LavaEntity extends BlockEntity {
   touched(e) {
     e.kill();
@@ -522,22 +530,55 @@ function Resize() {
 }
 
 const OBJECT_TABLE = [
-  ['L', LavaEntity, 'lava'],
-  ['b', BlockEntity, 'dirt5'],
-  ['D', BlockEntity, 'dirt4'],
-  ['s', LavaEntity, 'spikes'],
-  ['A', Decoration, 'arrow'],
   ['1', Decoration, 'shrub1'],
   ['2', Decoration, 'shrub2'],
-  ['f', FlowerDecoration, 'flower1'],
-  ['F', FlippedDecoration, 'arrow'],
-  ['B', BounceEntity, 'bounce'],
   ['3', BlockEntity, 'shrub1'],
   ['4', BlockEntity, 'shrub2'],
-  ['G', TurfEntity, 'grass2'],
-  ['#', TurfEntity, 'block'],
-  ['S', PigEntity, 'pig'],
+  ['#', TurfEntity, 'dirt2'],
+  ['a', UphillSlant, 'dirt1'],
+  ['b', BlockEntity, 'dirt5'],
+  ['c', DownhillSlant, 'dirt3'],
+  ['d', Decoration, 'door1'],
+  ['e', UphillSlant, 'grass1'],
+  ['f', FlowerDecoration, 'flower1'],
+  ['g', DownhillSlant, 'grass3'],
+  ['h', BlockEntity, 'rock1'],
+  ['i', Decoration, 'egg1'],
+  ['j', Decoration, 'cheese1'],
+  ['k', Decoration, 'cannon1'],
+  ['l', Decoration, 'can1'],
+  ['m', BlockEntity, 'fence1'],
+  ['n', Decoration, 'ladder1'],
+  ['o', Decoration, 'grave'],
+  ['p', LavaEntity, 'lava'],
+  ['q', LavaEntity, 'lava1'],
+  ['r', LavaEntity, 'lava3'],
+  ['s', LavaEntity, 'spikes'],
+  ['t', Decoration, 'pole1'],
+  ['u', Decoration, 'pole2'],
+  ['v', UphillSlant, 'shingle1'],
+  ['w', BlockEntity, 'shingle2'],
+  ['x', DownhillSlant, 'shingle3'],
+  ['y', UphillSlant, 'wood1'],
+  ['z', BlockEntity, 'wood2'],
+  ['A', Decoration, 'arrow'],
+  ['B', BounceEntity, 'bounce'],
+  ['C', DownhillSlant, 'straw3'],
+  ['D', BlockEntity, 'dirt4'],
   ['E', EndEntity, 'end'],
+  ['F', FlippedDecoration, 'arrow'],
+  ['G', TurfEntity, 'grass2'],
+  ['H', DownhillSlant, 'wood3'],
+  ['I', BlockEntity, 'wood4'],
+  ['J', UphillSlant, 'straw1'],
+  ['K', BlockEntity, 'straw2'],
+  ['L', LavaEntity, 'lava2'],
+  ['M', BlockEntity, 'straw4'],
+  ['N', Decoration, 'water1'],
+  ['O', Decoration, 'water2'],
+  ['P', Decoration, 'water3'],
+  ['R', BlockEntity, 'brick1'],
+  ['S', PigEntity, 'pig'],
   ['W', WolfEntity, 'wolf'],
 ];
 
@@ -548,6 +589,10 @@ function LoadPalette() {
     var [ch, classObject, shape] = i;
     palette.push(new classObject().setShape(shape).setPosition(x, y));
     x += SCALE;
+    if (x > SCALE * 16) {
+      x = 0;
+      y += SCALE;
+    }
   }); 
   selection = palette[0];
 }   
@@ -619,9 +664,9 @@ function Tick() {
   // Draw status
   ctx.font = '40px san-serif';
   ctx.fillStyle = '#000';
-  ctx.fillText('Cannonballs: ' + user.cannonballs, 22, 102);
+  ctx.fillText('Cannonballs: ' + user.cannonballs, 22, 52);
   ctx.fillStyle = '#ff0';
-  ctx.fillText('Cannonballs: ' + user.cannonballs, 20, 100);
+  ctx.fillText('Cannonballs: ' + user.cannonballs, 20, 50);
 
   if (paletteOpen) {
     ctx.save();
