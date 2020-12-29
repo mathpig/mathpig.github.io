@@ -101,6 +101,7 @@ class Entity {
     this.vx = 0;
     this.vy = 0;
     this.shape = null;
+    this.charCode = '%';
   }
 
   clone() {
@@ -121,7 +122,12 @@ class Entity {
     this.shape = shape;
     return this;
   }
-
+  
+  setCharCode(code) {
+    this.charCode = code;
+    return this;
+  }
+  
   setSize(w, h) {
     this.w = w;
     this.h = h;
@@ -448,6 +454,10 @@ class UphillSlant extends BlockEntity {
     return 10000;
   }
 
+  rightIdent(e) {
+    return 10000;
+  }
+
   intersect(e) {
     if (!super.intersect(e)) { return false; }
     var p = Math.min(1, (e.x + e.w - this.x) / this.w);
@@ -459,6 +469,10 @@ class DownhillSlant extends BlockEntity {
   sunk(e) {
     var p = Math.min(1, (e.x - this.x) / this.w);
     return p * this.h;
+  }
+
+  leftIdent(e) {
+    return 10000;
   }
 
   rightIndent(e) {
@@ -614,9 +628,9 @@ const OBJECT_TABLE = [
   ['K', BlockEntity, 'straw2'],
   ['L', LavaEntity, 'lava2'],
   ['M', BlockEntity, 'straw4'],
-  ['N', Decoration, 'water1'],
+  ['N', DownhillSlant, 'water1'],
   ['O', Decoration, 'water2'],
-  ['P', Decoration, 'water3'],
+  ['P', UphillSlant, 'water3'],
   ['R', BlockEntity, 'brick1'],
   ['S', PigEntity, 'pig'],
   ['W', WolfEntity, 'wolf'],
@@ -627,7 +641,10 @@ function LoadPalette() {
   var y = 0;
   OBJECT_TABLE.forEach(i => {
     var [ch, classObject, shape] = i;
-    palette.push(new classObject().setShape(shape).setPosition(x, y));
+    palette.push(new classObject()
+                 .setCharCode(ch)
+                 .setShape(shape)
+                 .setPosition(x, y));
     x += SCALE;
     if (x > SCALE * 16) {
       x = 0;
@@ -649,13 +666,57 @@ function LoadLevel(levelNum) {
       OBJECT_TABLE.forEach(i => {
         var [tch, classObject, shape] = i;
         if (ch == tch) {
-          var e = new classObject().setShape(shape);
+          var e = new classObject().setShape(shape).setCharCode(tch);
           e.setGridPosition(x, y);
           entities.push(e);
         }
       });
     }
   }
+}
+
+function LevelExtent() {
+  var lowestX = 0;
+  var lowestY = 0;
+  var highestX = 0;
+  var highestY = 0;
+  for (var i = 0; i < entities.length; ++i) {
+    lowestX = Math.min(lowestX, entities[i].x);
+    lowestY = Math.min(lowestY, entities[i].y);
+    highestX = Math.max(highestX, entities[i].x);
+    highestY = Math.max(highestY, entities[i].y);
+  }
+  return [Math.floor(lowestX / SCALE),
+          Math.floor(lowestY / SCALE),
+          Math.floor(highestX / SCALE),
+          Math.floor(highestY / SCALE)];
+}
+
+function SaveLevel() {
+  var [lowestX, lowestY, highestX, highestY] = LevelExtent();
+  var width = highestX + 1 - lowestX;
+  var height = highestY + 1 - lowestY;
+  var map = [];
+  for (var j = 0; j < height; ++j) {
+    var row = [];
+    for (var i = 0; i < width; ++i) {
+      row.push(' ');
+    }
+    map.push(row);
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    var x = Math.floor(entities[i].x / SCALE) + lowestX;
+    var y = Math.floor(entities[i].y / SCALE) + lowestY;
+    map[y][x] = entities[i].charCode;
+  }
+  for (var j = 0; j < height; ++j) {
+    map[j] = map[j].join('');
+  }
+  var result = JSON.stringify(map, null, '    ').replace(/"/g, "'");
+  var w = window.open('about:blank');
+  setTimeout(function() {
+    w.document.write('<pre>\n' + result);
+  }, 0); 
 }
 
 function Tick() {
@@ -748,6 +809,8 @@ window.onkeyup = function(e) {
     user.shoot();
   } else if (e.keyCode == 80) {
     paletteOpen = !paletteOpen;
+  } else if (e.keyCode == 83) {
+    SaveLevel();
   }
 };
 
