@@ -475,7 +475,8 @@ class WolfEntity extends GravityEntity {
   constructor(x, y, w, h, shape) {
     super(x, y, w, h, shape);
     this.direction = 1;
-    this.setSize(225, 180);
+    this.setSize(552 / 3, 256 / 3);
+    this.frameNum = 0;
   }
 
   kill() {
@@ -486,10 +487,15 @@ class WolfEntity extends GravityEntity {
   }
 
   facing() {
-    return this.direction;
+    return -this.direction;
+  }
+
+  frame() {
+    return Math.floor(this.frameNum / 4);
   }
 
   tick() {
+    this.frameNum = (this.frameNum + 1) % 16;
     this.vx += this.direction * 0.3;
     this.vx = Math.max(-2, Math.min(2, this.vx));
     super.tick();
