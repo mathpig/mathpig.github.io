@@ -183,6 +183,18 @@ class Entity {
     return 0;
   }
 
+  sunk(e) {
+    return 0;
+  }
+
+  leftIndent(e) {
+    return 0;
+  }
+
+  rightIndent(e) {
+    return 0;
+  }
+
   repel(e) {
     if (!this.affects(e) || !e.affectedBy(this)) {
       return;
@@ -190,9 +202,9 @@ class Entity {
     if (!this.intersect(e)) {
       return;
     }
-    var left = e.x + e.w - this.x;
-    var right = this.x + this.w - e.x;
-    var up = e.y + e.h - this.y;
+    var left = e.x + e.w - this.x + this.leftIndent(e);
+    var right = this.x + this.w - e.x + this.rightIndent(e);
+    var up = e.y + e.h - this.y - this.sunk(e);
     var down = this.y + this.h - e.y;
     var options = [
       [left, -1, 0, 1],
@@ -249,7 +261,7 @@ class Entity {
     var imageName = this.shape + this.frame();
     var img = document.getElementById(imageName);
     if (img === null) { throw 'cannot find ' + imageName; }
-    //ctx.fillStyle = '#f00';
+    //ctx.fillStyle = 'rgba(255,0,0,0.4)';
     //ctx.fillRect(this.x, this.y, this.w, this.h);
     if (this.facing() < 0) {
       ctx.save();
@@ -427,9 +439,37 @@ class TurfEntity extends BlockEntity {
 }
 
 class UphillSlant extends BlockEntity {
+  sunk(e) {
+    var p = Math.min(1, (e.x + e.w - this.x) / this.w);
+    return (1 - p) * this.h;
+  }
+
+  leftIdent(e) {
+    return 10000;
+  }
+
+  intersect(e) {
+    if (!super.intersect(e)) { return false; }
+    var p = Math.min(1, (e.x + e.w - this.x) / this.w);
+    return e.y + e.h > this.y + (1 - p) * this.h;
+  }
 }
 
 class DownhillSlant extends BlockEntity {
+  sunk(e) {
+    var p = Math.min(1, (e.x - this.x) / this.w);
+    return p * this.h;
+  }
+
+  rightIndent(e) {
+    return 10000;
+  }
+
+  intersect(e) {
+    if (!super.intersect(e)) { return false; }
+    var p = Math.min(1, (e.x - this.x) / this.w);
+    return e.y + e.h > this.y + p * this.h;
+  }
 }
 
 class LavaEntity extends BlockEntity {
