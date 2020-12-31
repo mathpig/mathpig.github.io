@@ -64,17 +64,17 @@ const LEVELS = [
     'DDDDDDDDDDDDDDDDDDDDD',
   ],
   [
-    '                            JC                                 vx   ',
-    '                           JKKC               yH              vwwx  ',
-    '                          JKKKKC             yzzH            vwwwwx ',
-    '                         JKKKKKKC           yzzzzH          vwwwwwwx',
-    '                        JKKKKKKKKC          I    I          R      R',
-    '                        M        M          I    I   4      R      R',
-    '           DDD          M        M          I    I  eGg     R      R',
-    '           DWDS         d        d       12 d    d  GGG  3  d      R',
-    '           DDDGGCOOOOJGGMMMMMMMMMMGNOOOPGGGGIIIIIIGGGGGGGGGGRRRRRRRR',
-    '                KCOOJK            DDNOPDD                           ',
-    '                 DBBD             DDDBDDD                           ',
+    '                 JC                                 vx   ',
+    '                JKKC               yH              vwwx  ',
+    '               JKKKKC             yzzH            vwwwwx ',
+    '              JKKKKKKC           yzzzzH          vwwwwwwx',
+    '             JKKKKKKKKC          I    I          R      R',
+    '             M        M          I    I   4      R      R',
+    '             M        M          I    I  eGg     R      R',
+    'DWDS         d        d       12 d    d  GGG  3  d      R',
+    'DDDGGCOOOOJGGMMMMMMMMMMGNOOOPGGGGIIIIIIGGGGGGGGGGRRRRRRRR',
+    '     KCOOJK            DDNOPDD                           ',
+    '      DBBD             DDDBDDD                           ',
   ],
   [
     'GGGGGGGGGGGG',
@@ -517,6 +517,15 @@ class Decoration extends BlockEntity {
   }
 }
 
+class Ladder extends Decoration {
+  repel(e) {
+    super.repel(e);
+    if (this.intersect(e) && e.isPlayer() && joystick[2]) {
+      e.vy = -5;
+    }
+  }
+}
+
 class FlippedDecoration extends Decoration {
   facing() {
     return -1;
@@ -615,7 +624,7 @@ const OBJECT_TABLE = [
   ['k', Decoration, 'cannon1'],
   ['l', Decoration, 'can1'],
   ['m', BlockEntity, 'fence1'],
-  ['n', Decoration, 'ladder1'],
+  ['n', Ladder, 'ladder1'],
   ['o', Decoration, 'grave'],
   ['p', LavaEntity, 'lava'],
   ['q', LavaEntity, 'lava1'],
@@ -718,8 +727,8 @@ function SaveLevel() {
     map.push(row);
   }
   for (var i = 0; i < entities.length; ++i) {
-    var x = Math.floor(entities[i].x / SCALE) + lowestX;
-    var y = Math.floor(entities[i].y / SCALE) + lowestY;
+    var x = Math.floor(entities[i].x / SCALE) - lowestX;
+    var y = Math.floor(entities[i].y / SCALE) - lowestY;
     map[y][x] = entities[i].charCode;
   }
   for (var j = 0; j < height; ++j) {
