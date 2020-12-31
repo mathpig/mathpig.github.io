@@ -520,8 +520,14 @@ class Decoration extends BlockEntity {
 class Ladder extends Decoration {
   repel(e) {
     super.repel(e);
-    if (this.intersect(e) && e.isPlayer() && joystick[2]) {
-      e.vy = -5;
+    if (this.intersect(e) && e.isPlayer()) {
+      if (joystick[2]) {
+        e.vy = -10;
+      } else if (joystick[3]) {
+        e.vy = 10;
+      } else {
+        e.vy = 0;
+      }
     }
   }
 }
@@ -630,8 +636,8 @@ const OBJECT_TABLE = [
   ['q', LavaEntity, 'lava1'],
   ['r', LavaEntity, 'lava3'],
   ['s', LavaEntity, 'spikes'],
-  ['t', Decoration, 'pole1'],
-  ['u', Decoration, 'pole2'],
+  ['t', BlockEntity, 'pole1'],
+  ['u', Ladder, 'pole2'],
   ['v', UphillSlant, 'shingle1'],
   ['w', BlockEntity, 'shingle2'],
   ['x', DownhillSlant, 'shingle3'],
