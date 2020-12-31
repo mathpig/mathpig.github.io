@@ -492,6 +492,10 @@ class UphillSlant extends BlockEntity {
     var p = Math.min(1, (e.x + e.w - this.x) / this.w);
     return e.y + e.h > this.y + (1 - p) * this.h;
   }
+
+  depth() {
+    return -1;
+  }
 }
 
 class DownhillSlant extends BlockEntity {
@@ -512,6 +516,10 @@ class DownhillSlant extends BlockEntity {
     if (!super.intersect(e)) { return false; }
     var p = Math.min(1, (e.x - this.x) / this.w);
     return e.y + e.h > this.y + p * this.h;
+  }
+
+  depth() {
+    return -1;
   }
 }
 
