@@ -25,6 +25,7 @@ function Reset() {
   if (vx < 5 && vx > -5 || vy < 3 && vy > -3) {
     Reset();
   }
+  pings = 0;
 }
 
 window.onresize = Resize;
@@ -79,7 +80,6 @@ function Tick() {
   }
   if (pings >= 5) {
     Reset();
-    pings = 0;
   }
   Draw();
 }
