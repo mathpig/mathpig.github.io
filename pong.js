@@ -61,7 +61,7 @@ function Tick() {
     x = 25;
     pings++;
   }
-  if (x <= screen.width && x > screen.width - 25 && a <= y && a + 100 + 25 >= y) {
+  if (x <= screen.width && x > screen.width - 25 - 25 && a <= y && a + 100 + 25 >= y) {
     vx = -vx;
     x = screen.width - 25 - 25;
     pings++;
