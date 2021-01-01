@@ -77,7 +77,7 @@ function Tick() {
   if (y >= screen.height - 25 || y <= 0) {
     vy = -vy;
   }
-  if (pings > 5) {
+  if (pings >= 5) {
     Reset();
     pings = 0;
   }
