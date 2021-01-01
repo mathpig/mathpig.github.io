@@ -2,20 +2,30 @@
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
-
+var pings = 0;
 var x = window.innerWidth / 2;
 var y = window.innerHeight / 2;
 var z = window.innerHeight / 2;
-var vx = -5;
-var vy = 3;
+var a = window.innerHeight / 2;
+var vx = Math.random() * 20 - 10;
+var vy = Math.random() * 20 - 10;
 var score1 = 0;
 var score2 = 0;
 
 function Resize() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
-  Draw();
-};
+}
+
+function Reset() {
+  x = screen.width / 2;
+  y = screen.height / 2;
+  vx = Math.random() * 20 - 10;
+  vy = Math.random() * 20 - 10;
+  if (vx < 5 && vx > -5 || vy < 3 && vy > -3) {
+    Reset();
+  }
+}
 
 window.onresize = Resize;
 Resize();
@@ -28,29 +38,48 @@ function Draw() {
   ctx.fillText('Score: ' + score1 + ', ' + score2, 20, 50);
   ctx.fillRect(x, y, 25, 25);
   ctx.fillRect(0, z, 25, 100);
+  ctx.fillRect(screen.width - 25, a, 25, 100);
 }
 
 function Tick() {
   x += vx;
   y += vy;
+  if (a + 100 < y + 25) {
+    a += 4;
+  }
+  if (a > y) {
+    a -= 4;
+  }
   if (z < 0) {
     z = 0;
   }
-  if (z > window.innerHeight - 100) {
-    z = window.innerHeight - 100;
+  if (z > screen.height - 100) {
+    z = screen.height - 100;
+  }
+  if (x >= 0 && x < 25 && z <= y && z + 100 + 25 >= y) {
+    vx = -vx;
+    x = 25;
+    pings++;
+  }
+  if (x <= screen.width && x > screen.width - 25 && a <= y && a + 100 + 25 >= y) {
+    vx = -vx;
+    x = screen.width - 25 - 25;
+    pings++;
   }
   if (x <= 0) {
     score2 += 1;
-    x = window.innerWidth / 2;
-    y = window.innerHeight / 2;
+    Reset();
   }
-  if (x + 25 >= window.innerWidth) {
+  if (x + 25 >= screen.width) {
     score1 += 1;
-    x = window.innerWidth / 2;
-    y = window.innerHeight / 2;
+    Reset();
   }
-  if (y >= window.innerHeight - 25 || y <= 0) {
+  if (y >= screen.height - 25 || y <= 0) {
     vy = -vy;
+  }
+  if (pings > 5) {
+    Reset();
+    pings = 0;
   }
   Draw();
 }
