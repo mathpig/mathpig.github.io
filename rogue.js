@@ -24,6 +24,10 @@ function Restart() {
   currentLevel = NewLevel();
 }
 
+function IsEnemy(kind) {
+  return ['wolf0', 'wolf4'].indexOf(kind) >= 0;
+}
+
 function NewLevel() {
   var level = [];
   for (var j = 0; j < HEIGHT; ++j) {
@@ -188,8 +192,8 @@ function Draw() {
   ctx.fillText('HP: ' + hp, 100, 50);
 }
 
-function Move(level, fromX, fromY, toX, toY) {
-  level[toY][toX] = level[fromY][fromX];
+function Move(level, kind, fromX, fromY, toX, toY) {
+  level[toY][toX] = kind;
   level[fromY][fromX] = '';
 }
 
@@ -200,17 +204,20 @@ function TickCell(level, i, j) {
       return;
     }
     if (pigX < i && level[j][i - 1] == '') {
-      Move(level, i, j, i - 1, j);
+      Move(level, 'wolf0', i, j, i - 1, j);
     }
     else if (pigX > i && level[j][i + 1] == '') {
-      Move(level, i, j, i + 1, j);
+      Move(level, 'wolf0', i, j, i + 1, j);
     }
     else if (pigY < j && level[j - 1][i] == '') {
-      Move(level, i, j, i, j - 1);
+      Move(level, 'wolf0', i, j, i, j - 1);
     }
     else if (pigY > j && level[j + 1][i] == '') {
-      Move(level, i, j, i, j + 1);
+      Move(level, 'wolf0', i, j, i, j + 1);
     }
+  }
+  else if (cell == 'wolf0') {
+    level[j][i] = 'wolf4';
   }
   else if (cell == 'grave' && ticks % 10 == 1) {
     var x = i + Math.floor(Math.random() * 3) - 1;
@@ -250,7 +257,7 @@ function TickBullets(level) {
     y += Math.sin(dir) * speed;
     var cellX = Math.floor(x / SCALE - 0.5);
     var cellY = Math.floor(y / SCALE - 0.5);
-    if (level[cellY][cellX] == 'wolf4') {
+    if (IsEnemy(level[cellY][cellX])) {
       level[cellY][cellX] = '';
       age = 1000;
     }
@@ -276,7 +283,7 @@ function Tick() {
   TickWorld(currentLevel);
   TurnPig();
   TickBullets(currentLevel);
-  if (currentLevel[pigY][pigX] == 'wolf4') {
+  if (IsEnemy(currentLevel[pigY][pigX])) {
     currentLevel[pigY][pigX] = '';
     hp -= 10;
     if (hp <= 0) {
