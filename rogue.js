@@ -47,7 +47,11 @@ function NewLevel() {
     RandomBox(level);
   }
   WorldEdge(level);
-  level[Math.floor(pigY)][Math.floor(pigX)] = 'open';
+  for (var j = -1 ; j <= 1; ++j) {
+    for (var i = -1 ; i <= 1; ++i) {
+      level[Math.floor(pigY) + i][Math.floor(pigX) + j] = 'open';
+    }
+  }
   ConnectLevel(level);
   for (var i = 0; i < 100; ++i) {
     AddObject(level, 'wolf4');
@@ -210,16 +214,16 @@ function TickCell(level, i, j) {
     if (Distance(pigX, pigY, i, j) > 10) {
       return;
     }
-    if (pigX < i && level[j][i - 1] == '') {
+    if (pigX < i + 0.5 && level[j][i - 1] == '') {
       Move(level, 'wolf0', i, j, i - 1, j);
     }
-    else if (pigX > i && level[j][i + 1] == '') {
+    else if (pigX > i + 0.5 && level[j][i + 1] == '') {
       Move(level, 'wolf0', i, j, i + 1, j);
     }
-    else if (pigY < j && level[j - 1][i] == '') {
+    else if (pigY < j + 0.5 && level[j - 1][i] == '') {
       Move(level, 'wolf0', i, j, i, j - 1);
     }
-    else if (pigY > j && level[j + 1][i] == '') {
+    else if (pigY > j + 0.5 && level[j + 1][i] == '') {
       Move(level, 'wolf0', i, j, i, j + 1);
     }
   }
@@ -262,8 +266,8 @@ function TickBullets(level) {
     var [x, y, dir, age] = bullets[i];
     x += Math.cos(dir) * speed;
     y += Math.sin(dir) * speed;
-    var cellX = Math.floor(x / SCALE - 0.5);
-    var cellY = Math.floor(y / SCALE - 0.5);
+    var cellX = Math.floor(x / SCALE);
+    var cellY = Math.floor(y / SCALE);
     if (IsEnemy(level[cellY][cellX])) {
       level[cellY][cellX] = '';
       age = 1000;
