@@ -7,12 +7,22 @@ const MOVE_DELAY = 7;
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
-var pigX = Math.floor(WIDTH / 2);
-var pigY = Math.floor(HEIGHT / 2);
-var delay = 0;
-var ticks = 0;
+var pigX, pigY, pigDirection, hp, delay, ticks;
+var bullets = [];
 var joystick = [0, 0, 0, 0, 0];
-var currentLevel = NewLevel();
+var currentLevel;
+Restart();
+
+function Restart() {
+  pigX = Math.floor(WIDTH / 2);
+  pigY = Math.floor(HEIGHT / 2);
+  pigDirection = 0;
+  bullets = [];
+  hp = 2500;
+  delay = 0;
+  ticks = 0;
+  currentLevel = NewLevel();
+}
 
 function NewLevel() {
   var level = [];
@@ -35,10 +45,10 @@ function NewLevel() {
   WorldEdge(level);
   level[pigY][pigX] = 'open';
   ConnectLevel(level);
-  for (var i = 0; i < 25; ++i) {
+  for (var i = 0; i < 100; ++i) {
     AddMonster(level, 'wolf4');
   }
-  for (var i = 0; i < 10; ++i) {
+  for (var i = 0; i < 25; ++i) {
     AddMonster(level, 'grave');
   }
   return level;
@@ -160,8 +170,22 @@ function Draw() {
   ctx.translate(-pigX * SCALE + screen.width / 2 - SCALE / 2,
                 -pigY * SCALE + screen.height / 2 - SCALE / 2);
   DrawLevel(currentLevel);
-  ctx.drawImage(pig, pigX * SCALE, pigY * SCALE, SCALE, SCALE);
+  ctx.save();
+  ctx.translate((pigX + 0.5) * SCALE, (pigY + 0.5) * SCALE);
+  ctx.rotate(pigDirection);
+  ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
   ctx.restore();
+  var cannonball = document.getElementById('cannonball');
+  for (var i = 0; i < bullets.length; ++i) {
+    var [x, y, dir, age] = bullets[i];
+    ctx.drawImage(cannonball, x - 5, y - 5, 10, 10);
+  }
+  ctx.restore();
+  ctx.font = '40px san-serif';
+  ctx.fillStyle = '#000';
+  ctx.fillText('HP: ' + hp, 102, 52);
+  ctx.fillStyle = '#ff0';
+  ctx.fillText('HP: ' + hp, 100, 50);
 }
 
 function Move(level, fromX, fromY, toX, toY) {
@@ -188,7 +212,7 @@ function TickCell(level, i, j) {
       Move(level, i, j, i, j + 1);
     }
   }
-  else if (cell == 'grave' && ticks % 50 == 1) {
+  else if (cell == 'grave' && ticks % 10 == 1) {
     var x = i + Math.floor(Math.random() * 3) - 1;
     var y = j + Math.floor(Math.random() * 3) - 1;
     if (level[y][x] == '' && Distance(pigX, pigY, x, y) < 10) {
@@ -205,9 +229,60 @@ function TickWorld(level) {
   } 
 }
 
+function TurnPig() {
+  var dx = 0;
+  var dy = 0;
+  if (joystick[0]) { dx--; }
+  if (joystick[1]) { dx++; }
+  if (joystick[2]) { dy--; }
+  if (joystick[3]) { dy++; }
+  if (dx != 0 || dy != 0) {
+    pigDirection = Math.atan2(dy, dx);
+  }
+}
+
+function TickBullets(level) {
+  const speed = 10;
+  var newBullets = [];
+  for (var i = 0; i < bullets.length; ++i) {
+    var [x, y, dir, age] = bullets[i];
+    x += Math.cos(dir) * speed;
+    y += Math.sin(dir) * speed;
+    var cellX = Math.floor(x / SCALE - 0.5);
+    var cellY = Math.floor(y / SCALE - 0.5);
+    if (level[cellY][cellX] == 'wolf4') {
+      level[cellY][cellX] = '';
+      age = 1000;
+    }
+    if (level[cellY][cellX] == 'grave') {
+      if (Math.random() < 0.1) {
+        level[cellY][cellX] = '';
+      } 
+      age = 1000;
+    }
+    if (level[cellY][cellX] != '') {
+      age = 1000;
+    }
+    age++;
+    if (age < 40) {
+      newBullets.push([x, y, dir, age]);
+    }
+  }
+  bullets = newBullets;
+}
+
 function Tick() {
   ticks++;
   TickWorld(currentLevel);
+  TurnPig();
+  TickBullets(currentLevel);
+  if (currentLevel[pigY][pigX] == 'wolf4') {
+    currentLevel[pigY][pigX] = '';
+    hp -= 10;
+    if (hp <= 0) {
+      Restart();
+    }
+  }
   if (delay > 0) {
     --delay;
   } else {
@@ -243,7 +318,11 @@ window.onkeydown = function(e) {
   } else if (e.keyCode == 40) {
     joystick[3] = 1;
   } else if (e.keyCode == 16) {
-    joystick[4] = 1;
+    if (bullets.length < 4) {
+      var dx = Math.cos(pigDirection) * 0.5;
+      var dy = Math.sin(pigDirection) * 0.5;
+      bullets.push([(pigX + dx + 0.5) * SCALE, (pigY + dy + 0.5) * SCALE, pigDirection, 0]);
+    }
   }
 };
 
@@ -256,8 +335,6 @@ window.onkeyup = function(e) {
     joystick[2] = 0; 
   } else if (e.keyCode == 40) {
     joystick[3] = 0;
-  } else if (e.keyCode == 16) {
-    joystick[4] = 0;
   }
 };
 
