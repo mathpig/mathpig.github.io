@@ -4,24 +4,162 @@ const WIDTH = 100;
 const HEIGHT = 100;
 const SCALE = 48;
 const PIG_SPEED = 1/7;
+const START_X = Math.floor(WIDTH / 2);
+const START_Y = Math.floor(HEIGHT / 2);
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
-var pigX, pigY, pigDirection, hp, potions, ticks;
-var bullets = [];
-var joystick = [0, 0, 0, 0, 0];
+
+var ticks;
 var currentLevel;
-Restart();
+var players = [];
+
+class Player {
+  constructor() {
+    this.x = START_X;
+    this.y = START_Y;
+    this.direction = 0;
+    this.bullets = [];
+    this.hp = 500;
+    this.potions = 0;
+    this.joystick = [0, 0, 0, 0, 0];
+  }
+
+  draw() {
+    var pig = document.getElementById('pig4');
+    for (var i = 0; i < players.length; ++i) {
+      ctx.save();
+      ctx.translate(this.x * SCALE, this.y * SCALE);
+      ctx.rotate(this.direction);
+      ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
+      ctx.restore();
+    }
+    var cannonball = document.getElementById('cannonball');
+    for (var i = 0; i < this.bullets.length; ++i) {
+      var [x, y, dir, age] = this.bullets[i];
+      ctx.drawImage(cannonball, x - 5, y - 5, 10, 10);
+    }
+  }
+
+  updateTurn() {
+    var dx = 0;
+    var dy = 0;
+    if (this.joystick[0]) { dx--; }
+    if (this.joystick[1]) { dx++; }
+    if (this.joystick[2]) { dy--; }
+    if (this.joystick[3]) { dy++; }
+    if (dx != 0 || dy != 0) {
+      this.direction = Math.atan2(dy, dx);
+    }
+  }
+
+  tickBullets() {
+    var level = currentLevel;
+    const speed = 10;
+    var newBullets = [];
+    for (var i = 0; i < this.bullets.length; ++i) {
+      var [x, y, dir, age] = this.bullets[i];
+      x += Math.cos(dir) * speed;
+      y += Math.sin(dir) * speed;
+      var cellX = Math.floor(x / SCALE);
+      var cellY = Math.floor(y / SCALE);
+      if (IsEnemy(level[cellY][cellX])) {
+        level[cellY][cellX] = '';
+        age = 1000;
+        //this.hp++;
+      }
+      if (level[cellY][cellX] == 'grave') {
+        if (Math.random() < 0.1) {
+          level[cellY][cellX] = '';
+          //this.hp++;
+        } 
+        age = 1000;
+      }
+      if (level[cellY][cellX] != '') {
+        age = 1000;
+      }
+      age++;
+      if (age < 40) {
+        newBullets.push([x, y, dir, age]);
+      }
+    }
+    this.bullets = newBullets;
+  }
+
+  tick() {
+    this.updateTurn();
+    this.tickBullets();
+    var px = Math.floor(this.x);
+    var py = Math.floor(this.y);
+    if (IsEnemy(currentLevel[py][px])) {
+      currentLevel[py][px] = '';
+      this.hp -= 10;
+      if (this.hp <= 0) {
+        Restart();
+      }
+    }
+    if (currentLevel[py][px] == 'cheese1') {
+      currentLevel[py][px] = '';
+      this.hp += 25;
+    }
+    if (currentLevel[py][px] == 'can1') {
+      currentLevel[py][px] = '';
+      this.potions += 1;
+    }
+    if (this.joystick[0] &&
+        CanPigGo(currentLevel, this.x - 0.5, this.y) &&
+        CanPigGo(currentLevel, this.x - 0.5, this.y - 0.2) &&
+        CanPigGo(currentLevel, this.x - 0.5, this.y + 0.2)) {
+      this.x -= PIG_SPEED;
+    }
+    if (this.joystick[1] &&
+        CanPigGo(currentLevel, this.x + 0.5, this.y) &&
+        CanPigGo(currentLevel, this.x + 0.5, this.y - 0.2) &&
+        CanPigGo(currentLevel, this.x + 0.5, this.y + 0.2)) {
+      this.x += PIG_SPEED;
+    }
+    if (this.joystick[2] &&
+        CanPigGo(currentLevel, this.x, this.y - 0.5) &&
+        CanPigGo(currentLevel, this.x - 0.2, this.y - 0.5) &&
+        CanPigGo(currentLevel, this.x + 0.2, this.y - 0.5)) {
+      this.y -= PIG_SPEED;
+    }
+    if (this.joystick[3] &&
+        CanPigGo(currentLevel, this.x, this.y + 0.5) &&
+        CanPigGo(currentLevel, this.x - 0.2, this.y + 0.5) &&
+        CanPigGo(currentLevel, this.x + 0.2, this.y + 0.5)) {
+      this.y += PIG_SPEED;
+    }
+  }
+
+  triggerPotion() {
+    if (this.potions <= 0) {
+      return;
+    } 
+    this.potions--;
+    for (var j = 0; j < HEIGHT; ++j) {
+      for (var i = 0; i < WIDTH; ++i) {
+        if (AffectedByPotion(currentLevel[j][i]) &&
+            Distance(i, j, this.x, this.y) < 10) {
+          currentLevel[j][i] = '';
+        }
+      }
+    }
+  }
+
+  shoot() {
+    if (this.bullets.length < 4) {
+      var dx = Math.cos(this.direction) * 0.5;
+      var dy = Math.sin(this.direction) * 0.5;
+      this.bullets.push([(this.x + dx) * SCALE, (this.y + dy) * SCALE, this.direction, 0]);
+    }
+  }
+}
 
 function Restart() {
-  pigX = Math.floor(WIDTH / 2);
-  pigY = Math.floor(HEIGHT / 2);
-  pigDirection = 0;
-  bullets = [];
-  hp = 500;
-  potions = 0;
   ticks = 0;
   currentLevel = NewLevel();
+  players = [new Player()];
 }
 
 function IsEnemy(kind) {
@@ -49,11 +187,6 @@ function NewLevel() {
     RandomBox(level);
   }
   WorldEdge(level);
-  for (var j = -1 ; j <= 1; ++j) {
-    for (var i = -1 ; i <= 1; ++i) {
-      level[Math.floor(pigY) + i][Math.floor(pigX) + j] = 'open';
-    }
-  }
   ConnectLevel(level);
   AddObjects(level, 'wolf4', 100);
   AddObjects(level, 'grave', 25);
@@ -84,7 +217,7 @@ function AddObject(level, kind) {
     if (level[y][x] != '' && level[y][x] != 'open') {
       continue;
     }
-    if (Distance(pigX, pigY, x, y) < 10) {
+    if (Distance(START_X, START_Y, x, y) < 10) {
       continue;
     }
     level[y][x] = kind;
@@ -177,31 +310,25 @@ function DrawLevel(level) {
 function Draw() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
-  var pig = document.getElementById('pig4');
   ctx.fillStyle = '#070';
   ctx.fillRect(0, 0, screen.width, screen.height);
+
   ctx.save();
-  ctx.translate(-pigX * SCALE + screen.width / 2 - SCALE / 2,
-                -pigY * SCALE + screen.height / 2 - SCALE / 2);
+  ctx.translate(-players[0].x * SCALE + screen.width / 2 - SCALE / 2,
+                -players[0].y * SCALE + screen.height / 2 - SCALE / 2);
   DrawLevel(currentLevel);
-  ctx.save();
-  ctx.translate(pigX * SCALE, pigY * SCALE);
-  ctx.rotate(pigDirection);
-  ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
-  ctx.restore();
-  var cannonball = document.getElementById('cannonball');
-  for (var i = 0; i < bullets.length; ++i) {
-    var [x, y, dir, age] = bullets[i];
-    ctx.drawImage(cannonball, x - 5, y - 5, 10, 10);
+  for (var i = 0; i < players.length; ++i) {
+    players[i].draw();
   }
   ctx.restore();
+
   ctx.font = '40px san-serif';
-  var text = 'HP: ' + hp;
+  var text = 'HP: ' + players[0].hp;
   ctx.fillStyle = '#000';
   ctx.fillText(text, 52, 52);
   ctx.fillStyle = '#ff0';
   ctx.fillText(text, 50, 50);
-  for (var i = 0; i < potions; ++i) {
+  for (var i = 0; i < players[0].potions; ++i) {
     ctx.drawImage(can1, 50 + 50 * i, 55, 50, 50);
   }
 }
@@ -211,22 +338,33 @@ function Move(level, kind, fromX, fromY, toX, toY) {
   level[fromY][fromX] = '';
 }
 
+function ClosestPig(x, y) {
+  var best = players[0];
+  for (var i = 0; i < players.length; ++i) {
+    if (Distance(players[i].x, players[i].y, x, y) < Distance(best.x, best.y, x, y)) {
+      best = players[i];
+    }
+  }
+  return best;
+}
+
 function TickCell(level, i, j) {
   var cell = level[j][i];
+  var closest = ClosestPig(i, j);
   if (cell == 'wolf4' && ticks % 20 == 0) {
-    if (Distance(pigX, pigY, i, j) > 10) {
+    if (Distance(closest.x, closest.y, i, j) > 10) {
       return;
     }
-    if (Math.floor(pigX) < i && level[j][i - 1] == '') {
+    if (Math.floor(closest.x) < i && level[j][i - 1] == '') {
       Move(level, 'wolf0', i, j, i - 1, j);
     }
-    else if (Math.floor(pigX) > i && level[j][i + 1] == '') {
+    else if (Math.floor(closest.x) > i && level[j][i + 1] == '') {
       Move(level, 'wolf0', i, j, i + 1, j);
     }
-    else if (Math.floor(pigY) < j && level[j - 1][i] == '') {
+    else if (Math.floor(closest.y) < j && level[j - 1][i] == '') {
       Move(level, 'wolf0', i, j, i, j - 1);
     }
-    else if (Math.floor(pigY) > j && level[j + 1][i] == '') {
+    else if (Math.floor(closest.y) > j && level[j + 1][i] == '') {
       Move(level, 'wolf0', i, j, i, j + 1);
     }
   }
@@ -236,7 +374,7 @@ function TickCell(level, i, j) {
   else if (cell == 'grave' && ticks % 10 == 1) {
     var x = i + Math.floor(Math.random() * 3) - 1;
     var y = j + Math.floor(Math.random() * 3) - 1;
-    if (level[y][x] == '' && Distance(pigX, pigY, x, y) < 10) {
+    if (level[y][x] == '' && Distance(closest.x, closest.y, x, y) < 10) {
       level[y][x] = 'wolf4';
     }
   }
@@ -250,63 +388,8 @@ function TickWorld(level) {
   }
 }
 
-function TurnPig() {
-  var dx = 0;
-  var dy = 0;
-  if (joystick[0]) { dx--; }
-  if (joystick[1]) { dx++; }
-  if (joystick[2]) { dy--; }
-  if (joystick[3]) { dy++; }
-  if (dx != 0 || dy != 0) {
-    pigDirection = Math.atan2(dy, dx);
-  }
-}
-
-function TickBullets(level) {
-  const speed = 10;
-  var newBullets = [];
-  for (var i = 0; i < bullets.length; ++i) {
-    var [x, y, dir, age] = bullets[i];
-    x += Math.cos(dir) * speed;
-    y += Math.sin(dir) * speed;
-    var cellX = Math.floor(x / SCALE);
-    var cellY = Math.floor(y / SCALE);
-    if (IsEnemy(level[cellY][cellX])) {
-      level[cellY][cellX] = '';
-      age = 1000;
-      //hp++;
-    }
-    if (level[cellY][cellX] == 'grave') {
-      if (Math.random() < 0.1) {
-        level[cellY][cellX] = '';
-        //hp++;
-      } 
-      age = 1000;
-    }
-    if (level[cellY][cellX] != '') {
-      age = 1000;
-    }
-    age++;
-    if (age < 40) {
-      newBullets.push([x, y, dir, age]);
-    }
-  }
-  bullets = newBullets;
-}
-
 function AffectedByPotion(kind) {
   return IsEnemy(kind) || kind == 'grave';
-}
-
-function TriggerPotion() {
-  for (var j = 0; j < HEIGHT; ++j) {
-    for (var i = 0; i < WIDTH; ++i) {
-      if (AffectedByPotion(currentLevel[j][i]) &&
-          Distance(i, j, pigX, pigY) < 10) {
-        currentLevel[j][i] = '';
-      }
-    }
-  }
 }
 
 function CanPigGo(level, x, y) {
@@ -317,84 +400,40 @@ function CanPigGo(level, x, y) {
 function Tick() {
   ticks++;
   TickWorld(currentLevel);
-  TurnPig();
-  TickBullets(currentLevel);
-  var px = Math.floor(pigX);
-  var py = Math.floor(pigY);
-  if (IsEnemy(currentLevel[py][px])) {
-    currentLevel[py][px] = '';
-    hp -= 10;
-    if (hp <= 0) {
-      Restart();
-    }
-  }
-  if (currentLevel[py][px] == 'cheese1') {
-    currentLevel[py][px] = '';
-    hp += 25;
-  }
-  if (currentLevel[py][px] == 'can1') {
-    currentLevel[py][px] = '';
-    potions += 1;
-  }
-  if (joystick[0] &&
-      CanPigGo(currentLevel, pigX - 0.5, pigY) &&
-      CanPigGo(currentLevel, pigX - 0.5, pigY - 0.2) &&
-      CanPigGo(currentLevel, pigX - 0.5, pigY + 0.2)) {
-    pigX -= PIG_SPEED;
-  }
-  if (joystick[1] &&
-      CanPigGo(currentLevel, pigX + 0.5, pigY) &&
-      CanPigGo(currentLevel, pigX + 0.5, pigY - 0.2) &&
-      CanPigGo(currentLevel, pigX + 0.5, pigY + 0.2)) {
-    pigX += PIG_SPEED;
-  }
-  if (joystick[2] &&
-      CanPigGo(currentLevel, pigX, pigY - 0.5) &&
-      CanPigGo(currentLevel, pigX - 0.2, pigY - 0.5) &&
-      CanPigGo(currentLevel, pigX + 0.2, pigY - 0.5)) {
-    pigY -= PIG_SPEED;
-  }
-  if (joystick[3] &&
-      CanPigGo(currentLevel, pigX, pigY + 0.5) &&
-      CanPigGo(currentLevel, pigX - 0.2, pigY + 0.5) &&
-      CanPigGo(currentLevel, pigX + 0.2, pigY + 0.5)) {
-    pigY += PIG_SPEED;
+  for (var i = 0; i < players.length; ++i) {
+    players[i].tick();
   }
   Draw();
 }
 
+Restart();
 setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
   if (e.keyCode == 37) {
-    joystick[0] = 1;
+    players[0].joystick[0] = 1;
   } else if (e.keyCode == 39) {
-    joystick[1] = 1;
+    players[0].joystick[1] = 1;
   } else if (e.keyCode == 38) {
-    joystick[2] = 1; 
+    players[0].joystick[2] = 1; 
   } else if (e.keyCode == 40) {
-    joystick[3] = 1;
+    players[0].joystick[3] = 1;
   } else if (e.keyCode == 16) {
-    if (bullets.length < 4) {
-      var dx = Math.cos(pigDirection) * 0.5;
-      var dy = Math.sin(pigDirection) * 0.5;
-      bullets.push([(pigX + dx) * SCALE, (pigY + dy) * SCALE, pigDirection, 0]);
-    }
-  } else if (e.keyCode == 80 && potions > 0) {
-    potions--;
-    TriggerPotion();
+    players[0].shoot();
+  } else if (e.keyCode == 80) {
+    players[0].triggerPotion();
   }
 };
 
 window.onkeyup = function(e) {
   if (e.keyCode == 37) {
-    joystick[0] = 0;
+    players[0].joystick[0] = 0;
   } else if (e.keyCode == 39) {
-    joystick[1] = 0;
+    players[0].joystick[1] = 0;
   } else if (e.keyCode == 38) {
-    joystick[2] = 0; 
+    players[0].joystick[2] = 0; 
   } else if (e.keyCode == 40) {
-    joystick[3] = 0;
+    players[0].joystick[3] = 0;
   }
 };
 
