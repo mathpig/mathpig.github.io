@@ -36,7 +36,10 @@ function NewLevel() {
   level[pigY][pigX] = 'open';
   ConnectLevel(level);
   for (var i = 0; i < 25; ++i) {
-    AddWolf(level);
+    AddMonster(level, 'wolf4');
+  }
+  for (var i = 0; i < 10; ++i) {
+    AddMonster(level, 'grave');
   }
   return level;
 }
@@ -56,7 +59,7 @@ function Distance(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 }
 
-function AddWolf(level) {
+function AddMonster(level, kind) {
   for (;;) {
     var x = Math.floor(Math.random() * WIDTH);
     var y = Math.floor(Math.random() * HEIGHT);
@@ -66,7 +69,7 @@ function AddWolf(level) {
     if (Distance(pigX, pigY, x, y) < 10) {
       continue;
     }
-    level[y][x] = 'wolf4';
+    level[y][x] = kind;
     break;
   }
 }
@@ -183,6 +186,13 @@ function TickCell(level, i, j) {
     }
     else if (pigY > j && level[j + 1][i] == '') {
       Move(level, i, j, i, j + 1);
+    }
+  }
+  else if (cell == 'grave' && ticks % 50 == 1) {
+    var x = i + Math.floor(Math.random() * 3) - 1;
+    var y = j + Math.floor(Math.random() * 3) - 1;
+    if (level[y][x] == '' && Distance(pigX, pigY, x, y) < 10) {
+      level[y][x] = 'wolf4';
     }
   }
 }
