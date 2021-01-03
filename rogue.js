@@ -18,7 +18,7 @@ function Restart() {
   pigY = Math.floor(HEIGHT / 2);
   pigDirection = 0;
   bullets = [];
-  hp = 2500;
+  hp = 500;
   potions = 0;
   ticks = 0;
   currentLevel = NewLevel();
@@ -214,16 +214,16 @@ function TickCell(level, i, j) {
     if (Distance(pigX, pigY, i, j) > 10) {
       return;
     }
-    if (pigX < i + 0.5 && level[j][i - 1] == '') {
+    if (Math.floor(pigX) < i && level[j][i - 1] == '') {
       Move(level, 'wolf0', i, j, i - 1, j);
     }
-    else if (pigX > i + 0.5 && level[j][i + 1] == '') {
+    else if (Math.floor(pigX) > i && level[j][i + 1] == '') {
       Move(level, 'wolf0', i, j, i + 1, j);
     }
-    else if (pigY < j + 0.5 && level[j - 1][i] == '') {
+    else if (Math.floor(pigY) < j && level[j - 1][i] == '') {
       Move(level, 'wolf0', i, j, i, j - 1);
     }
-    else if (pigY > j + 0.5 && level[j + 1][i] == '') {
+    else if (Math.floor(pigY) > j && level[j + 1][i] == '') {
       Move(level, 'wolf0', i, j, i, j + 1);
     }
   }
