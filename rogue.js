@@ -55,6 +55,9 @@ function NewLevel() {
   for (var i = 0; i < 25; ++i) {
     AddMonster(level, 'grave');
   }
+  for (var i = 0; i < 50; ++i) {
+    AddMonster(level, 'cheese1');
+  }
   return level;
 }
 
@@ -278,6 +281,11 @@ function TickBullets(level) {
   bullets = newBullets;
 }
 
+function CanPigGo(level, x, y) {
+  var cell = level[y][x];
+  return cell == '' || cell == 'cheese1';
+}
+
 function Tick() {
   ticks++;
   TickWorld(currentLevel);
@@ -290,22 +298,26 @@ function Tick() {
       Restart();
     }
   }
+  if (currentLevel[pigY][pigX] == 'cheese1') {
+    currentLevel[pigY][pigX] = '';
+    hp += 25;
+  }
   if (delay > 0) {
     --delay;
   } else {
-    if (joystick[0] && currentLevel[pigY][pigX-1] == '') {
+    if (joystick[0] && CanPigGo(currentLevel, pigX - 1, pigY)) {
       pigX -= 1;
       delay = MOVE_DELAY;
     }
-    if (joystick[1] && currentLevel[pigY][pigX+1] == '') {
+    if (joystick[1] && CanPigGo(currentLevel, pigX + 1, pigY)) {
       pigX += 1;
       delay = MOVE_DELAY;
     }
-    if (joystick[2] && currentLevel[pigY-1][pigX] == '') {
+    if (joystick[2] && CanPigGo(currentLevel, pigX, pigY - 1)) {
       pigY -= 1;
       delay = MOVE_DELAY;
     }
-    if (joystick[3] && currentLevel[pigY+1][pigX] == '') {
+    if (joystick[3] && CanPigGo(currentLevel, pigX, pigY + 1)) {
       pigY += 1;
       delay = MOVE_DELAY;
     }
