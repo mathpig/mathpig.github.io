@@ -43,6 +43,8 @@ function NewLevel() {
     }
     level.push(row);
   }
+  AddObjects(level, 'shrub1', 50);
+  AddObjects(level, 'shrub2', 50);
   for (var i = 0; i < 100; ++i) {
     RandomBox(level);
   }
@@ -53,18 +55,10 @@ function NewLevel() {
     }
   }
   ConnectLevel(level);
-  for (var i = 0; i < 100; ++i) {
-    AddObject(level, 'wolf4');
-  }
-  for (var i = 0; i < 25; ++i) {
-    AddObject(level, 'grave');
-  }
-  for (var i = 0; i < 25; ++i) {
-    AddObject(level, 'cheese1');
-  }
-  for (var i = 0; i < 10; ++i) {
-    AddObject(level, 'can1');
-  }
+  AddObjects(level, 'wolf4', 100);
+  AddObjects(level, 'grave', 25);
+  AddObjects(level, 'cheese1', 25);
+  AddObjects(level, 'can1', 10);
   return level;
 }
 
@@ -87,7 +81,7 @@ function AddObject(level, kind) {
   for (;;) {
     var x = Math.floor(Math.random() * WIDTH);
     var y = Math.floor(Math.random() * HEIGHT);
-    if (level[y][x] != '') {
+    if (level[y][x] != '' && level[y][x] != 'open') {
       continue;
     }
     if (Distance(pigX, pigY, x, y) < 10) {
@@ -95,6 +89,12 @@ function AddObject(level, kind) {
     }
     level[y][x] = kind;
     break;
+  }
+}
+
+function AddObjects(level, kind, number) {
+  for (var i = 0; i < number; ++i) {
+    AddObject(level, kind);
   }
 }
 
@@ -196,11 +196,14 @@ function Draw() {
   }
   ctx.restore();
   ctx.font = '40px san-serif';
-  var text = 'HP: ' + hp + '     Potions: ' + potions;
+  var text = 'HP: ' + hp;
   ctx.fillStyle = '#000';
   ctx.fillText(text, 52, 52);
   ctx.fillStyle = '#ff0';
   ctx.fillText(text, 50, 50);
+  for (var i = 0; i < potions; ++i) {
+    ctx.drawImage(can1, 50 + 50 * i, 55, 50, 50);
+  }
 }
 
 function Move(level, kind, fromX, fromY, toX, toY) {
