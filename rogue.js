@@ -41,28 +41,25 @@ class Player {
     return this;
   }
 
-  setColor(color, hue) {
-    this.color = color;
+  setColor(hue) {
     this.hue = hue;
     return this;
   }
 
   draw() {
-    var pig = document.getElementById('pig4');
-    for (var i = 0; i < players.length; ++i) {
-      ctx.save();
-      ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
-      ctx.translate(this.x * SCALE, this.y * SCALE);
-      ctx.rotate(this.direction);
-      ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
-      ctx.filter = '';
-      ctx.restore();
-    }
-    var cannonball = document.getElementById('cannonball');
+    var pig = document.getElementById('pigbright4');
+    ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
+    ctx.save();
+    ctx.translate(this.x * SCALE, this.y * SCALE);
+    ctx.rotate(this.direction);
+    ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
+    ctx.restore();
+    var cannonball = document.getElementById('fireball1');
     for (var i = 0; i < this.bullets.length; ++i) {
       var [x, y, dir, age] = this.bullets[i];
-      ctx.drawImage(cannonball, x - 5, y - 5, 10, 10);
+      ctx.drawImage(cannonball, x - 10, y - 10, 20, 20);
     }
+    ctx.filter = 'none';
   }
 
   drawStatus(index) {
@@ -71,8 +68,10 @@ class Player {
     var text = 'HP: ' + this.hp;
     ctx.fillStyle = '#000';
     ctx.fillText(text, x + 52, 52);
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = '#f00';
+    ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
     ctx.fillText(text, x + 50, 50);
+    ctx.filter = 'none';
     for (var i = 0; i < this.potions; ++i) {
       ctx.drawImage(can1, x + 50 + 50 * i, 55, 50, 50);
     }
@@ -223,7 +222,7 @@ function Restart() {
   currentLevel = NewLevel();
   players = [
     new Player().setKeys('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight', 'KeyP')
-                .setColor('#ff0', 90),
+                .setColor(0),
   ];
 }
 
@@ -516,7 +515,7 @@ window.onkeydown = function(e) {
     if (players.length < 2) {
       players.push(new Player().setPosition(players[0].x, players[0].y)
                                .setKeys('KeyA', 'KeyD', 'KeyW', 'KeyS', 'ShiftLeft', 'KeyQ')
-                               .setColor('#f00', 0));
+                               .setColor(240));
     }
   }
 };
