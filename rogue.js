@@ -59,7 +59,7 @@ function NewLevel() {
   for (var i = 0; i < 25; ++i) {
     AddObject(level, 'grave');
   }
-  for (var i = 0; i < 50; ++i) {
+  for (var i = 0; i < 25; ++i) {
     AddObject(level, 'cheese1');
   }
   for (var i = 0; i < 10; ++i) {
