@@ -271,10 +271,12 @@ function TickBullets(level) {
     if (IsEnemy(level[cellY][cellX])) {
       level[cellY][cellX] = '';
       age = 1000;
+      //hp++;
     }
     if (level[cellY][cellX] == 'grave') {
       if (Math.random() < 0.1) {
         level[cellY][cellX] = '';
+        //hp++;
       } 
       age = 1000;
     }
