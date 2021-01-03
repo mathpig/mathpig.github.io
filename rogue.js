@@ -2,7 +2,7 @@
 
 const WIDTH = 100;
 const HEIGHT = 100;
-const SCALE = 64;
+const SCALE = 48;
 const MOVE_DELAY = 7;
 
 var screen = document.getElementById('screen');
@@ -10,6 +10,7 @@ var ctx = screen.getContext('2d');
 var pigX = Math.floor(WIDTH / 2);
 var pigY = Math.floor(HEIGHT / 2);
 var delay = 0;
+var ticks = 0;
 var joystick = [0, 0, 0, 0, 0];
 var currentLevel = NewLevel();
 
@@ -34,6 +35,9 @@ function NewLevel() {
   WorldEdge(level);
   level[pigY][pigX] = 'open';
   ConnectLevel(level);
+  for (var i = 0; i < 25; ++i) {
+    AddWolf(level);
+  }
   return level;
 }
 
@@ -45,6 +49,25 @@ function WorldEdge(level) {
   for (var i = 0; i < WIDTH; ++i) {
     level[0][i] = 'brick1';
     level[HEIGHT-1][i] = 'brick1';
+  }
+}
+
+function Distance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+}
+
+function AddWolf(level) {
+  for (;;) {
+    var x = Math.floor(Math.random() * WIDTH);
+    var y = Math.floor(Math.random() * HEIGHT);
+    if (level[y][x] != '') {
+      continue;
+    }
+    if (Distance(pigX, pigY, x, y) < 10) {
+      continue;
+    }
+    level[y][x] = 'wolf4';
+    break;
   }
 }
 
@@ -124,7 +147,7 @@ function DrawLevel(level) {
   }
 }
 
-function Tick() {
+function Draw() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
   var pig = document.getElementById('pig4');
@@ -136,7 +159,45 @@ function Tick() {
   DrawLevel(currentLevel);
   ctx.drawImage(pig, pigX * SCALE, pigY * SCALE, SCALE, SCALE);
   ctx.restore();
+}
 
+function Move(level, fromX, fromY, toX, toY) {
+  level[toY][toX] = level[fromY][fromX];
+  level[fromY][fromX] = '';
+}
+
+function TickCell(level, i, j) {
+  var cell = level[j][i];
+  if (cell == 'wolf4' && ticks % 20 == 0) {
+    if (Distance(pigX, pigY, i, j) > 10) {
+      return;
+    }
+    if (pigX < i && level[j][i - 1] == '') {
+      Move(level, i, j, i - 1, j);
+    }
+    else if (pigX > i && level[j][i + 1] == '') {
+      Move(level, i, j, i + 1, j);
+    }
+    else if (pigY < j && level[j - 1][i] == '') {
+      Move(level, i, j, i, j - 1);
+    }
+    else if (pigY > j && level[j + 1][i] == '') {
+      Move(level, i, j, i, j + 1);
+    }
+  }
+}
+
+function TickWorld(level) {
+  for (var j = 0; j < HEIGHT; ++j) {
+    for (var i = 0; i < WIDTH; ++i) {
+      TickCell(level, i, j);
+    }
+  } 
+}
+
+function Tick() {
+  ticks++;
+  TickWorld(currentLevel);
   if (delay > 0) {
     --delay;
   } else {
@@ -157,6 +218,7 @@ function Tick() {
       delay = MOVE_DELAY;
     }
   }
+  Draw();
 }
 
 setInterval(Tick, 20);
