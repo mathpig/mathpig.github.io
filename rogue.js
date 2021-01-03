@@ -7,7 +7,7 @@ const MOVE_DELAY = 7;
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
-var pigX, pigY, pigDirection, hp, delay, ticks;
+var pigX, pigY, pigDirection, hp, potions, delay, ticks;
 var bullets = [];
 var joystick = [0, 0, 0, 0, 0];
 var currentLevel;
@@ -19,6 +19,7 @@ function Restart() {
   pigDirection = 0;
   bullets = [];
   hp = 2500;
+  potions = 0;
   delay = 0;
   ticks = 0;
   currentLevel = NewLevel();
@@ -50,13 +51,16 @@ function NewLevel() {
   level[pigY][pigX] = 'open';
   ConnectLevel(level);
   for (var i = 0; i < 100; ++i) {
-    AddMonster(level, 'wolf4');
+    AddObject(level, 'wolf4');
   }
   for (var i = 0; i < 25; ++i) {
-    AddMonster(level, 'grave');
+    AddObject(level, 'grave');
   }
   for (var i = 0; i < 50; ++i) {
-    AddMonster(level, 'cheese1');
+    AddObject(level, 'cheese1');
+  }
+  for (var i = 0; i < 10; ++i) {
+    AddObject(level, 'can1');
   }
   return level;
 }
@@ -76,7 +80,7 @@ function Distance(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 }
 
-function AddMonster(level, kind) {
+function AddObject(level, kind) {
   for (;;) {
     var x = Math.floor(Math.random() * WIDTH);
     var y = Math.floor(Math.random() * HEIGHT);
@@ -189,10 +193,11 @@ function Draw() {
   }
   ctx.restore();
   ctx.font = '40px san-serif';
+  var text = 'HP: ' + hp + '     Potions: ' + potions;
   ctx.fillStyle = '#000';
-  ctx.fillText('HP: ' + hp, 102, 52);
+  ctx.fillText(text, 52, 52);
   ctx.fillStyle = '#ff0';
-  ctx.fillText('HP: ' + hp, 100, 50);
+  ctx.fillText(text, 50, 50);
 }
 
 function Move(level, kind, fromX, fromY, toX, toY) {
@@ -236,7 +241,7 @@ function TickWorld(level) {
     for (var i = 0; i < WIDTH; ++i) {
       TickCell(level, i, j);
     }
-  } 
+  }
 }
 
 function TurnPig() {
@@ -281,9 +286,24 @@ function TickBullets(level) {
   bullets = newBullets;
 }
 
+function AffectedByPotion(kind) {
+  return IsEnemy(kind) || kind == 'grave';
+}
+
+function TriggerPotion() {
+  for (var j = 0; j < HEIGHT; ++j) {
+    for (var i = 0; i < WIDTH; ++i) {
+      if (AffectedByPotion(currentLevel[j][i]) &&
+          Distance(i, j, pigX, pigY) < 10) {
+        currentLevel[j][i] = '';
+      }
+    }
+  }
+}
+
 function CanPigGo(level, x, y) {
   var cell = level[y][x];
-  return cell == '' || cell == 'cheese1';
+  return cell == '' || cell == 'cheese1' || cell == 'can1';
 }
 
 function Tick() {
@@ -301,6 +321,10 @@ function Tick() {
   if (currentLevel[pigY][pigX] == 'cheese1') {
     currentLevel[pigY][pigX] = '';
     hp += 25;
+  }
+  if (currentLevel[pigY][pigX] == 'can1') {
+    currentLevel[pigY][pigX] = '';
+    potions += 1;
   }
   if (delay > 0) {
     --delay;
@@ -342,6 +366,9 @@ window.onkeydown = function(e) {
       var dy = Math.sin(pigDirection) * 0.5;
       bullets.push([(pigX + dx + 0.5) * SCALE, (pigY + dy + 0.5) * SCALE, pigDirection, 0]);
     }
+  } else if (e.keyCode == 80 && potions > 0) {
+    potions--;
+    TriggerPotion();
   }
 };
 
