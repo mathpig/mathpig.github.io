@@ -72,7 +72,7 @@ const LEVELS = [
     '             M        M          I    I   4      R      R',
     '             M        M          I    I  eGg     R      R',
     'DWDS         d        d       12 d    d  GGG  3  d      R',
-    'DDDGGCOOOOJGGMMMMMMMMMMGNOOOPGGGGIIIIIIGGGGGGGGGGRRRRRRRR',
+    'DDDGECOOOOJGGMMMMMMMMMMGNOOOPGGGGIIIIIIGGGGGGGGGGRRRRRRRR',
     '     KCOOJK            DDNOPDD                           ',
     '      DBBD             DDDBDDD                           ',
   ],
