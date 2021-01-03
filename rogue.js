@@ -3,11 +3,11 @@
 const WIDTH = 100;
 const HEIGHT = 100;
 const SCALE = 48;
-const MOVE_DELAY = 7;
+const PIG_SPEED = 1/7;
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
-var pigX, pigY, pigDirection, hp, potions, delay, ticks;
+var pigX, pigY, pigDirection, hp, potions, ticks;
 var bullets = [];
 var joystick = [0, 0, 0, 0, 0];
 var currentLevel;
@@ -20,7 +20,6 @@ function Restart() {
   bullets = [];
   hp = 2500;
   potions = 0;
-  delay = 0;
   ticks = 0;
   currentLevel = NewLevel();
 }
@@ -48,7 +47,7 @@ function NewLevel() {
     RandomBox(level);
   }
   WorldEdge(level);
-  level[pigY][pigX] = 'open';
+  level[Math.floor(pigY)][Math.floor(pigX)] = 'open';
   ConnectLevel(level);
   for (var i = 0; i < 100; ++i) {
     AddObject(level, 'wolf4');
@@ -182,7 +181,7 @@ function Draw() {
                 -pigY * SCALE + screen.height / 2 - SCALE / 2);
   DrawLevel(currentLevel);
   ctx.save();
-  ctx.translate((pigX + 0.5) * SCALE, (pigY + 0.5) * SCALE);
+  ctx.translate(pigX * SCALE, pigY * SCALE);
   ctx.rotate(pigDirection);
   ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
   ctx.restore();
@@ -302,7 +301,7 @@ function TriggerPotion() {
 }
 
 function CanPigGo(level, x, y) {
-  var cell = level[y][x];
+  var cell = level[Math.floor(y)][Math.floor(x)];
   return cell == '' || cell == 'cheese1' || cell == 'can1';
 }
 
@@ -311,40 +310,46 @@ function Tick() {
   TickWorld(currentLevel);
   TurnPig();
   TickBullets(currentLevel);
-  if (IsEnemy(currentLevel[pigY][pigX])) {
-    currentLevel[pigY][pigX] = '';
+  var px = Math.floor(pigX);
+  var py = Math.floor(pigY);
+  if (IsEnemy(currentLevel[py][px])) {
+    currentLevel[py][px] = '';
     hp -= 10;
     if (hp <= 0) {
       Restart();
     }
   }
-  if (currentLevel[pigY][pigX] == 'cheese1') {
-    currentLevel[pigY][pigX] = '';
+  if (currentLevel[py][px] == 'cheese1') {
+    currentLevel[py][px] = '';
     hp += 25;
   }
-  if (currentLevel[pigY][pigX] == 'can1') {
-    currentLevel[pigY][pigX] = '';
+  if (currentLevel[py][px] == 'can1') {
+    currentLevel[py][px] = '';
     potions += 1;
   }
-  if (delay > 0) {
-    --delay;
-  } else {
-    if (joystick[0] && CanPigGo(currentLevel, pigX - 1, pigY)) {
-      pigX -= 1;
-      delay = MOVE_DELAY;
-    }
-    if (joystick[1] && CanPigGo(currentLevel, pigX + 1, pigY)) {
-      pigX += 1;
-      delay = MOVE_DELAY;
-    }
-    if (joystick[2] && CanPigGo(currentLevel, pigX, pigY - 1)) {
-      pigY -= 1;
-      delay = MOVE_DELAY;
-    }
-    if (joystick[3] && CanPigGo(currentLevel, pigX, pigY + 1)) {
-      pigY += 1;
-      delay = MOVE_DELAY;
-    }
+  if (joystick[0] &&
+      CanPigGo(currentLevel, pigX - 0.5, pigY) &&
+      CanPigGo(currentLevel, pigX - 0.5, pigY - 0.2) &&
+      CanPigGo(currentLevel, pigX - 0.5, pigY + 0.2)) {
+    pigX -= PIG_SPEED;
+  }
+  if (joystick[1] &&
+      CanPigGo(currentLevel, pigX + 0.5, pigY) &&
+      CanPigGo(currentLevel, pigX + 0.5, pigY - 0.2) &&
+      CanPigGo(currentLevel, pigX + 0.5, pigY + 0.2)) {
+    pigX += PIG_SPEED;
+  }
+  if (joystick[2] &&
+      CanPigGo(currentLevel, pigX, pigY - 0.5) &&
+      CanPigGo(currentLevel, pigX - 0.2, pigY - 0.5) &&
+      CanPigGo(currentLevel, pigX + 0.2, pigY - 0.5)) {
+    pigY -= PIG_SPEED;
+  }
+  if (joystick[3] &&
+      CanPigGo(currentLevel, pigX, pigY + 0.5) &&
+      CanPigGo(currentLevel, pigX - 0.2, pigY + 0.5) &&
+      CanPigGo(currentLevel, pigX + 0.2, pigY + 0.5)) {
+    pigY += PIG_SPEED;
   }
   Draw();
 }
@@ -364,7 +369,7 @@ window.onkeydown = function(e) {
     if (bullets.length < 4) {
       var dx = Math.cos(pigDirection) * 0.5;
       var dy = Math.sin(pigDirection) * 0.5;
-      bullets.push([(pigX + dx + 0.5) * SCALE, (pigY + dy + 0.5) * SCALE, pigDirection, 0]);
+      bullets.push([(pigX + dx) * SCALE, (pigY + dy) * SCALE, pigDirection, 0]);
     }
   } else if (e.keyCode == 80 && potions > 0) {
     potions--;
