@@ -4,6 +4,7 @@ const WIDTH = 100;
 const HEIGHT = 100;
 const SCALE = 48;
 const PIG_SPEED = 1/7;
+const CAMERA_SPEED = 1/7;
 const START_X = Math.floor(WIDTH / 2);
 const START_Y = Math.floor(HEIGHT / 2);
 
@@ -12,6 +13,7 @@ var ctx = screen.getContext('2d');
 
 var ticks;
 var currentLevel;
+var cameraX = START_X, cameraY = START_Y;
 var players = [];
 
 class Player {
@@ -22,22 +24,51 @@ class Player {
     this.bullets = [];
     this.hp = 500;
     this.potions = 0;
-    this.joystick = [0, 0, 0, 0, 0];
+    this.joystick = [0, 0, 0, 0, 0, 0];
+    this.keys = [0, 0, 0, 0, 0, 0];
+    this.color = 0;
+    this.hue = 0;
+  }
+
+  setKeys(left, right, up, down, shoot, potion) {
+    this.keys = [left, right, up, down, shoot, potion];
+    return this;
+  }
+
+  setColor(color, hue) {
+    this.color = color;
+    this.hue = hue;
+    return this;
   }
 
   draw() {
     var pig = document.getElementById('pig4');
     for (var i = 0; i < players.length; ++i) {
       ctx.save();
+      ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
       ctx.translate(this.x * SCALE, this.y * SCALE);
       ctx.rotate(this.direction);
       ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
+      ctx.filter = '';
       ctx.restore();
     }
     var cannonball = document.getElementById('cannonball');
     for (var i = 0; i < this.bullets.length; ++i) {
       var [x, y, dir, age] = this.bullets[i];
       ctx.drawImage(cannonball, x - 5, y - 5, 10, 10);
+    }
+  }
+
+  drawStatus(index) {
+    var x = index * screen.width / players.length;
+    ctx.font = '40px san-serif';
+    var text = 'HP: ' + this.hp;
+    ctx.fillStyle = '#000';
+    ctx.fillText(text, x + 52, 52);
+    ctx.fillStyle = this.color;
+    ctx.fillText(text, x + 50, 50);
+    for (var i = 0; i < this.potions; ++i) {
+      ctx.drawImage(can1, x + 50 + 50 * i, 55, 50, 50);
     }
   }
 
@@ -107,24 +138,28 @@ class Player {
       this.potions += 1;
     }
     if (this.joystick[0] &&
+        this.x > cameraX - screen.width / 2 / SCALE + 1 &&
         CanPigGo(currentLevel, this.x - 0.5, this.y) &&
         CanPigGo(currentLevel, this.x - 0.5, this.y - 0.2) &&
         CanPigGo(currentLevel, this.x - 0.5, this.y + 0.2)) {
       this.x -= PIG_SPEED;
     }
     if (this.joystick[1] &&
+        this.x < cameraX + screen.width / 2 / SCALE &&
         CanPigGo(currentLevel, this.x + 0.5, this.y) &&
         CanPigGo(currentLevel, this.x + 0.5, this.y - 0.2) &&
         CanPigGo(currentLevel, this.x + 0.5, this.y + 0.2)) {
       this.x += PIG_SPEED;
     }
     if (this.joystick[2] &&
+        this.y > cameraY - screen.height / 2 / SCALE + 1 &&
         CanPigGo(currentLevel, this.x, this.y - 0.5) &&
         CanPigGo(currentLevel, this.x - 0.2, this.y - 0.5) &&
         CanPigGo(currentLevel, this.x + 0.2, this.y - 0.5)) {
       this.y -= PIG_SPEED;
     }
     if (this.joystick[3] &&
+        this.y < cameraY + screen.height / 2 / SCALE &&
         CanPigGo(currentLevel, this.x, this.y + 0.5) &&
         CanPigGo(currentLevel, this.x - 0.2, this.y + 0.5) &&
         CanPigGo(currentLevel, this.x + 0.2, this.y + 0.5)) {
@@ -154,12 +189,38 @@ class Player {
       this.bullets.push([(this.x + dx) * SCALE, (this.y + dy) * SCALE, this.direction, 0]);
     }
   }
+
+  onkeydown(e) {
+    if (e.code == this.keys[4] && this.joystick[4] == 0) {
+      this.shoot();
+    } else if (e.code == this.keys[5] && this.joystick[5] == 0) {
+      this.triggerPotion();
+    }
+    for (var i = 0; i < this.keys.length; ++i) {
+      if (e.code == this.keys[i]) {
+        this.joystick[i] = 1;
+      }
+    }
+  }
+
+  onkeyup(e) {
+    for (var i = 0; i < this.keys.length; ++i) {
+      if (e.code == this.keys[i]) {
+        this.joystick[i] = 0;
+      }
+    }
+  }
 }
 
 function Restart() {
   ticks = 0;
   currentLevel = NewLevel();
-  players = [new Player()];
+  players = [
+    new Player().setKeys('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight', 'KeyP')
+                .setColor('#ff0', 90),
+    new Player().setKeys('KeyA', 'KeyD', 'KeyW', 'KeyS', 'ShiftLeft', 'KeyQ')
+                .setColor('#f00', 0),
+  ];
 }
 
 function IsEnemy(kind) {
@@ -314,22 +375,16 @@ function Draw() {
   ctx.fillRect(0, 0, screen.width, screen.height);
 
   ctx.save();
-  ctx.translate(-players[0].x * SCALE + screen.width / 2 - SCALE / 2,
-                -players[0].y * SCALE + screen.height / 2 - SCALE / 2);
+  ctx.translate(-cameraX * SCALE + screen.width / 2 - SCALE / 2,
+                -cameraY * SCALE + screen.height / 2 - SCALE / 2);
   DrawLevel(currentLevel);
   for (var i = 0; i < players.length; ++i) {
     players[i].draw();
   }
   ctx.restore();
 
-  ctx.font = '40px san-serif';
-  var text = 'HP: ' + players[0].hp;
-  ctx.fillStyle = '#000';
-  ctx.fillText(text, 52, 52);
-  ctx.fillStyle = '#ff0';
-  ctx.fillText(text, 50, 50);
-  for (var i = 0; i < players[0].potions; ++i) {
-    ctx.drawImage(can1, 50 + 50 * i, 55, 50, 50);
+  for (var i = 0; i < players.length; ++i) {
+    players[i].drawStatus(i);
   }
 }
 
@@ -397,12 +452,45 @@ function CanPigGo(level, x, y) {
   return cell == '' || cell == 'cheese1' || cell == 'can1';
 }
 
+function FindPlayerBounds() {
+  var minX = 9e9, minY = 9e9;
+  var maxX = -9e9, maxY = -9e9;
+  for (var i = 0; i < players.length; ++i) {
+    minX = Math.min(minX, players[i].x - 0.5);
+    minY = Math.min(minY, players[i].y - 0.5);
+    maxX = Math.max(maxX, players[i].x + 0.5);
+    maxY = Math.max(maxY, players[i].y + 0.5);
+  }
+  return [minX, minY, maxX, maxY];
+}
+
+function TickCamera() {
+  var [minX, minY, maxX, maxY] = FindPlayerBounds();
+  var cx = (minX + maxX) / 2;
+  var cy = (minY + maxY) / 2;
+  var w = screen.width / SCALE / 2;
+  var h = screen.height / SCALE / 2;
+  if (cx < cameraX && maxX < cameraX + w) {
+    cameraX -= CAMERA_SPEED;
+  }
+  if (cx > cameraX && minX > cameraX - w) {
+    cameraX += CAMERA_SPEED;
+  }
+  if (cy < cameraY && maxY < cameraY + h) {
+    cameraY -= CAMERA_SPEED;
+  }
+  if (cy > cameraY && minY > cameraY - h) {
+    cameraY += CAMERA_SPEED;
+  }
+}
+
 function Tick() {
   ticks++;
   TickWorld(currentLevel);
   for (var i = 0; i < players.length; ++i) {
     players[i].tick();
   }
+  TickCamera();
   Draw();
 }
 
@@ -410,31 +498,14 @@ Restart();
 setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
-  if (e.keyCode == 37) {
-    players[0].joystick[0] = 1;
-  } else if (e.keyCode == 39) {
-    players[0].joystick[1] = 1;
-  } else if (e.keyCode == 38) {
-    players[0].joystick[2] = 1; 
-  } else if (e.keyCode == 40) {
-    players[0].joystick[3] = 1;
-  } else if (e.keyCode == 16) {
-    players[0].shoot();
-  } else if (e.keyCode == 80) {
-    players[0].triggerPotion();
+  for (var i = 0; i < players.length; ++i) {
+    players[i].onkeydown(e);
   }
 };
 
 window.onkeyup = function(e) {
-  if (e.keyCode == 37) {
-    players[0].joystick[0] = 0;
-  } else if (e.keyCode == 39) {
-    players[0].joystick[1] = 0;
-  } else if (e.keyCode == 38) {
-    players[0].joystick[2] = 0; 
-  } else if (e.keyCode == 40) {
-    players[0].joystick[3] = 0;
+  for (var i = 0; i < players.length; ++i) {
+    players[i].onkeyup(e);
   }
 };
-
 
