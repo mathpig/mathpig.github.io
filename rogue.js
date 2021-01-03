@@ -30,6 +30,12 @@ class Player {
     this.hue = 0;
   }
 
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
   setKeys(left, right, up, down, shoot, potion) {
     this.keys = [left, right, up, down, shoot, potion];
     return this;
@@ -218,8 +224,6 @@ function Restart() {
   players = [
     new Player().setKeys('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight', 'KeyP')
                 .setColor('#ff0', 90),
-    new Player().setKeys('KeyA', 'KeyD', 'KeyW', 'KeyS', 'ShiftLeft', 'KeyQ')
-                .setColor('#f00', 0),
   ];
 }
 
@@ -248,7 +252,14 @@ function NewLevel() {
     RandomBox(level);
   }
   WorldEdge(level);
+  // Clear area around initial start position.
+  for (var j = -1 ; j <= 1; ++j) {
+    for (var i = -1 ; i <= 1; ++i) {
+      level[START_X + i][START_Y + j] = 'open';
+    }
+  }
   ConnectLevel(level);
+  // Add objects after wall decided.
   AddObjects(level, 'wolf4', 100);
   AddObjects(level, 'grave', 25);
   AddObjects(level, 'cheese1', 25);
@@ -500,6 +511,13 @@ setInterval(Tick, 20);
 window.onkeydown = function(e) {
   for (var i = 0; i < players.length; ++i) {
     players[i].onkeydown(e);
+  }
+  if (e.code == 'ShiftLeft') {
+    if (players.length < 2) {
+      players.push(new Player().setPosition(players[0].x, players[0].y)
+                               .setKeys('KeyA', 'KeyD', 'KeyW', 'KeyS', 'ShiftLeft', 'KeyQ')
+                               .setColor('#f00', 0));
+    }
   }
 };
 
