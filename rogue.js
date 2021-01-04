@@ -13,21 +13,19 @@ var ctx = screen.getContext('2d');
 
 var ticks;
 var currentLevel;
-var cameraX = START_X, cameraY = START_Y;
+var cameraX, cameraY;
 var players = [];
+var allPlayers = [];
 
 class Player {
   constructor() {
     this.x = START_X;
     this.y = START_Y;
-    this.direction = 0;
-    this.bullets = [];
-    this.hp = 500;
-    this.potions = 0;
     this.joystick = [0, 0, 0, 0, 0, 0];
     this.keys = [0, 0, 0, 0, 0, 0];
-    this.color = 0;
+    this.color = '#f00';
     this.hue = 0;
+    this.reset();
   }
 
   setPosition(x, y) {
@@ -41,19 +39,45 @@ class Player {
     return this;
   }
 
-  setColor(hue) {
+  reset() {
+    this.hp = 500;
+    this.potions = 0;
+    this.bullets = [];
+    this.direction = 0;
+    return this;
+  }
+
+  hurt(change) {
+    this.hp -= change;
+    if (this.hp <= 0) {
+      var index = players.indexOf(this);
+      if (index >= 0) {
+        players.splice(index, 1);
+        if (players.length == 0) {
+          Restart();
+        }
+      }
+    }
+  }
+
+  setColor(color, hue) {
+    this.color = color;
     this.hue = hue;
     return this;
   }
 
   draw() {
     var pig = document.getElementById('pigbright4');
-    ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
+    ctx.filter = 'saturate(150%) hue-rotate(' + this.hue + 'deg)';
     ctx.save();
     ctx.translate(this.x * SCALE, this.y * SCALE);
     ctx.rotate(this.direction);
     ctx.drawImage(pig, -SCALE / 2, -SCALE / 2, SCALE, SCALE);
     ctx.restore();
+    ctx.filter = 'hue-rotate(' + (this.hue - 30) + 'deg)';
+    if (this.color == '#ff0') {
+      ctx.filter = 'sepia() hue-rotate(20deg) saturate(900%)';
+    }
     var cannonball = document.getElementById('fireball1');
     for (var i = 0; i < this.bullets.length; ++i) {
       var [x, y, dir, age] = this.bullets[i];
@@ -68,10 +92,8 @@ class Player {
     var text = 'HP: ' + this.hp;
     ctx.fillStyle = '#000';
     ctx.fillText(text, x + 52, 52);
-    ctx.fillStyle = '#f00';
-    ctx.filter = 'hue-rotate(' + this.hue + 'deg)';
+    ctx.fillStyle = this.color;
     ctx.fillText(text, x + 50, 50);
-    ctx.filter = 'none';
     for (var i = 0; i < this.potions; ++i) {
       ctx.drawImage(can1, x + 50 + 50 * i, 55, 50, 50);
     }
@@ -102,14 +124,22 @@ class Player {
       if (IsEnemy(level[cellY][cellX])) {
         level[cellY][cellX] = '';
         age = 1000;
-        //this.hp++;
       }
       if (level[cellY][cellX] == 'grave') {
         if (Math.random() < 0.1) {
           level[cellY][cellX] = '';
-          //this.hp++;
         } 
         age = 1000;
+      }
+      for (var j = 0; j < players.length; ++j) {
+        if (players[j] == this) {
+          continue;
+        }
+        if (Math.abs(x / SCALE - players[j].x) < 0.5 &&
+            Math.abs(y / SCALE - players[j].y) < 0.5) {
+          players[j].hurt(10);
+          age = 1000;
+        }
       }
       if (level[cellY][cellX] != '') {
         age = 1000;
@@ -129,14 +159,11 @@ class Player {
     var py = Math.floor(this.y);
     if (IsEnemy(currentLevel[py][px])) {
       currentLevel[py][px] = '';
-      this.hp -= 10;
-      if (this.hp <= 0) {
-        Restart();
-      }
+      this.hurt(10);
     }
     if (currentLevel[py][px] == 'cheese1') {
       currentLevel[py][px] = '';
-      this.hp += 25;
+      this.hurt(-25);
     }
     if (currentLevel[py][px] == 'can1') {
       currentLevel[py][px] = '';
@@ -188,6 +215,11 @@ class Player {
   }
 
   shoot() {
+    if (players.indexOf(this) < 0) {
+      var pos = SafePosition();
+      players.push(this.reset().setPosition(pos[0], pos[1]));
+      return;
+    }
     if (this.bullets.length < 4) {
       var dx = Math.cos(this.direction) * 0.5;
       var dy = Math.sin(this.direction) * 0.5;
@@ -217,12 +249,32 @@ class Player {
   }
 }
 
+function SafePosition() {
+  if (players.length > 0) {
+    return [players[0].x, players[0].y];
+  } else {
+    return [START_X, START_Y];
+  }
+}
+
 function Restart() {
   ticks = 0;
   currentLevel = NewLevel();
-  players = [
-    new Player().setKeys('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight', 'KeyP')
-                .setColor(0),
+  cameraX = START_X;
+  cameraY = START_Y;
+  allPlayers = [
+      new Player().setPosition().setKeys('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+                                         'ShiftRight', 'KeyP')
+                                .setColor('#00f', -90),
+      new Player().setPosition().setKeys('KeyA', 'KeyD', 'KeyW', 'KeyS',
+                                         'ShiftLeft', 'KeyQ')
+                                .setColor('#f00', 30),
+      new Player().setPosition().setKeys('KeyJ', 'KeyL', 'KeyI', 'KeyK',
+                                         'KeyN', 'KeyM')
+                                .setColor('#ff0', 90),
+      new Player().setPosition().setKeys('KeyF', 'KeyH', 'KeyT', 'KeyG',
+                                         'KeyC', 'KeyV')
+                                .setColor('#0f0', 120),
   ];
 }
 
@@ -404,6 +456,9 @@ function Move(level, kind, fromX, fromY, toX, toY) {
 }
 
 function ClosestPig(x, y) {
+  if (players.length == 0) {
+    return null;
+  }
   var best = players[0];
   for (var i = 0; i < players.length; ++i) {
     if (Distance(players[i].x, players[i].y, x, y) < Distance(best.x, best.y, x, y)) {
@@ -416,6 +471,9 @@ function ClosestPig(x, y) {
 function TickCell(level, i, j) {
   var cell = level[j][i];
   var closest = ClosestPig(i, j);
+  if (closest == null) {
+    return;
+  }
   if (cell == 'wolf4' && ticks % 20 == 0) {
     if (Distance(closest.x, closest.y, i, j) > 10) {
       return;
@@ -471,6 +529,9 @@ function FindPlayerBounds() {
     maxX = Math.max(maxX, players[i].x + 0.5);
     maxY = Math.max(maxY, players[i].y + 0.5);
   }
+  if (minX == 9e9) {
+    return [START_X, START_Y, START_X, START_Y];
+  }
   return [minX, minY, maxX, maxY];
 }
 
@@ -508,21 +569,14 @@ Restart();
 setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
-  for (var i = 0; i < players.length; ++i) {
-    players[i].onkeydown(e);
-  }
-  if (e.code == 'ShiftLeft') {
-    if (players.length < 2) {
-      players.push(new Player().setPosition(players[0].x, players[0].y)
-                               .setKeys('KeyA', 'KeyD', 'KeyW', 'KeyS', 'ShiftLeft', 'KeyQ')
-                               .setColor(240));
-    }
+  for (var i = 0; i < allPlayers.length; ++i) {
+    allPlayers[i].onkeydown(e);
   }
 };
 
 window.onkeyup = function(e) {
-  for (var i = 0; i < players.length; ++i) {
-    players[i].onkeyup(e);
+  for (var i = 0; i < allPlayers.length; ++i) {
+    allPlayers[i].onkeyup(e);
   }
 };
 
