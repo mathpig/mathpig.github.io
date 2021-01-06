@@ -92,16 +92,16 @@ Reset();
 setInterval(Tick, 200);
 
 window.onkeydown = function(e) {
-  if (e.code == 'ArrowLeft' || e.code == 'A') {
+  if (e.code == 'ArrowLeft' || e.code == 'KeyA') {
     directionX = -1;
     directionY = 0;
-  } else if (e.code == 'ArrowRight' || e.code == 'D') {
+  } else if (e.code == 'ArrowRight' || e.code == 'KeyD') {
     directionX = 1;
     directionY = 0;
-  } else if (e.code == 'ArrowUp' || e.code == 'W') {
+  } else if (e.code == 'ArrowUp' || e.code == 'KeyW') {
     directionX = 0;
     directionY = -1;
-  } else if (e.code == 'ArrowDown' || e.code == 'S') {
+  } else if (e.code == 'ArrowDown' || e.code == 'KeyS') {
     directionX = 0;
     directionY = 1;
   }
