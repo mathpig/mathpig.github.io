@@ -25,6 +25,7 @@ class Player {
     this.keys = [0, 0, 0, 0, 0, 0];
     this.color = '#f00';
     this.hue = 0;
+    this.keys_count = 0;
     this.reset();
   }
 
@@ -88,10 +89,10 @@ class Player {
 
   drawStatus(index) {
     var x = index * screen.width / players.length;
-    ctx.font = '40px san-serif';
-    var text = 'HP: ' + this.hp;
+    ctx.font = '25px san-serif';
+    var text = 'HP: ' + this.hp + '  Keys: ' + this.keys_count;
     ctx.fillStyle = '#000';
-    ctx.fillText(text, x + 52, 52);
+    ctx.fillText(text, x + 51, 51);
     ctx.fillStyle = this.color;
     ctx.fillText(text, x + 50, 50);
     for (var i = 0; i < this.potions; ++i) {
@@ -122,6 +123,10 @@ class Player {
       var cellX = Math.floor(x / SCALE);
       var cellY = Math.floor(y / SCALE);
       if (IsEnemy(level[cellY][cellX])) {
+        level[cellY][cellX] = '';
+        age = 1000;
+      }
+      if (this.canPigGo(level, cellX, cellY, true) && level[cellY][cellX] != '') {
         level[cellY][cellX] = '';
         age = 1000;
       }
@@ -161,6 +166,10 @@ class Player {
       currentLevel[py][px] = '';
       this.hurt(10);
     }
+    if (currentLevel[py][px] == 'end') {
+      currentLevel[py][px] = '';
+      this.keys_count++;
+    }
     if (currentLevel[py][px] == 'cheese1') {
       currentLevel[py][px] = '';
       this.hurt(-25);
@@ -169,32 +178,36 @@ class Player {
       currentLevel[py][px] = '';
       this.potions += 1;
     }
+    if (currentLevel[py][px] == 'door1' && this.keys_count > 0) {
+      currentLevel[py][px] = '';
+      this.keys_count--;
+    }
     if (this.joystick[0] &&
         this.x > cameraX - screen.width / 2 / SCALE + 1 &&
-        CanPigGo(currentLevel, this.x - 0.5, this.y) &&
-        CanPigGo(currentLevel, this.x - 0.5, this.y - 0.2) &&
-        CanPigGo(currentLevel, this.x - 0.5, this.y + 0.2)) {
+        this.canPigGo(currentLevel, this.x - 0.5, this.y) &&
+        this.canPigGo(currentLevel, this.x - 0.5, this.y - 0.2) &&
+        this.canPigGo(currentLevel, this.x - 0.5, this.y + 0.2)) {
       this.x -= PIG_SPEED;
     }
     if (this.joystick[1] &&
         this.x < cameraX + screen.width / 2 / SCALE &&
-        CanPigGo(currentLevel, this.x + 0.5, this.y) &&
-        CanPigGo(currentLevel, this.x + 0.5, this.y - 0.2) &&
-        CanPigGo(currentLevel, this.x + 0.5, this.y + 0.2)) {
+        this.canPigGo(currentLevel, this.x + 0.5, this.y) &&
+        this.canPigGo(currentLevel, this.x + 0.5, this.y - 0.2) &&
+        this.canPigGo(currentLevel, this.x + 0.5, this.y + 0.2)) {
       this.x += PIG_SPEED;
     }
     if (this.joystick[2] &&
         this.y > cameraY - screen.height / 2 / SCALE + 1 &&
-        CanPigGo(currentLevel, this.x, this.y - 0.5) &&
-        CanPigGo(currentLevel, this.x - 0.2, this.y - 0.5) &&
-        CanPigGo(currentLevel, this.x + 0.2, this.y - 0.5)) {
+        this.canPigGo(currentLevel, this.x, this.y - 0.5) &&
+        this.canPigGo(currentLevel, this.x - 0.2, this.y - 0.5) &&
+        this.canPigGo(currentLevel, this.x + 0.2, this.y - 0.5)) {
       this.y -= PIG_SPEED;
     }
     if (this.joystick[3] &&
         this.y < cameraY + screen.height / 2 / SCALE &&
-        CanPigGo(currentLevel, this.x, this.y + 0.5) &&
-        CanPigGo(currentLevel, this.x - 0.2, this.y + 0.5) &&
-        CanPigGo(currentLevel, this.x + 0.2, this.y + 0.5)) {
+        this.canPigGo(currentLevel, this.x, this.y + 0.5) &&
+        this.canPigGo(currentLevel, this.x - 0.2, this.y + 0.5) &&
+        this.canPigGo(currentLevel, this.x + 0.2, this.y + 0.5)) {
       this.y += PIG_SPEED;
     }
   }
@@ -225,6 +238,12 @@ class Player {
       var dy = Math.sin(this.direction) * 0.5;
       this.bullets.push([(this.x + dx) * SCALE, (this.y + dy) * SCALE, this.direction, 0]);
     }
+  }
+
+  canPigGo(level, x, y, excludeDoors) {
+    var cell = level[Math.floor(y)][Math.floor(x)];
+    return cell == '' || cell == 'cheese1' || cell == 'can1' ||
+           cell == 'end' || (!excludeDoors && cell == 'door1' && this.keys_count > 0);
   }
 
   onkeydown(e) {
@@ -315,6 +334,8 @@ function NewLevel() {
   AddObjects(level, 'grave', 25);
   AddObjects(level, 'cheese1', 25);
   AddObjects(level, 'can1', 10);
+  AddObjects(level, 'end', 50);
+   
   return level;
 }
 
@@ -355,8 +376,8 @@ function AddObjects(level, kind, number) {
 }
 
 function RandomBox(level) {
-  var x = Math.floor(Math.random() * WIDTH);
-  var y = Math.floor(Math.random() * HEIGHT);
+  var x = Math.floor(Math.random() * (WIDTH - 4));
+  var y = Math.floor(Math.random() * (HEIGHT - 4));
   var w = Math.floor(Math.random() * 10) + 4;
   var h = Math.floor(Math.random() * 10) + 4;
   w = Math.min(WIDTH - x, w);
@@ -372,6 +393,7 @@ function RandomBox(level) {
     level[y][i] = 'straw4';
     level[y + h - 1][i] = 'straw4';
   }
+  level[y + h - 2][x + w - 1] = 'predoor1';
 }
 
 function Connect(level, x1, y1, x2, y2) {
@@ -385,15 +407,23 @@ function Connect(level, x1, y1, x2, y2) {
   }
 }
 
+function UnvisitedOpen(item) {
+  return item == 'open' || item == 'predoor1';
+}
+
 function FloodFill(level, i, j) {
   var stack = [];
   stack.push([i, j]);
   while (stack.length != 0) {
     var [x, y] = stack.pop();
-    if (level[y] === undefined || level[y][x] != 'open') {
+    if (level[y] === undefined || !UnvisitedOpen(level[y][x])) {
       continue;
     }
-    level[y][x] = '';
+    if (level[y][x] == 'open') {
+      level[y][x] = '';
+    } else {
+      level[y][x] = 'door1';
+    }
     stack.push([x, y - 1]);
     stack.push([x, y + 1]);
     stack.push([x - 1, y]);
@@ -406,7 +436,7 @@ function ConnectLevel(level) {
   var lastAirY = 1;
   for (var j = 0; j < HEIGHT; ++j) {
     for (var i = 0; i < WIDTH; ++i) {
-      if (level[j][i] == 'open') {
+      if (UnvisitedOpen(level[j][i])) {
         FloodFill(level, i, j);
         Connect(level, lastAirX, lastAirY, i, j);
       }
@@ -425,6 +455,9 @@ function DrawLevel(level) {
         continue;
       }
       var image = document.getElementById(level[j][i]);
+      if (image === null) {
+        throw level[j][i];
+      }
       ctx.drawImage(image, i * SCALE, j * SCALE, SCALE, SCALE);
     }
   }
@@ -513,11 +546,6 @@ function TickWorld(level) {
 
 function AffectedByPotion(kind) {
   return IsEnemy(kind) || kind == 'grave';
-}
-
-function CanPigGo(level, x, y) {
-  var cell = level[Math.floor(y)][Math.floor(x)];
-  return cell == '' || cell == 'cheese1' || cell == 'can1';
 }
 
 function FindPlayerBounds() {
