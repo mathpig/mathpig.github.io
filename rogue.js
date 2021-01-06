@@ -334,7 +334,7 @@ function NewLevel() {
   AddObjects(level, 'grave', 25);
   AddObjects(level, 'cheese1', 25);
   AddObjects(level, 'can1', 10);
-  AddObjects(level, 'end', 50);
+  AddObjects(level, 'end', 25);
    
   return level;
 }
