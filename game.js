@@ -73,8 +73,8 @@ const LEVELS = [
     '             M        M          I    I  eGg     R      R',
     'DWDS         d        d       12 d    d  GGG  3  d      R',
     'DDDGECOOOOJGGMMMMMMMMMMGNOOOPGGGGIIIIIIGGGGGGGGGGRRRRRRRR',
-    '     KCOOJK            DDNOPDD                           ',
-    '      DBBD             DDDBDDD                           ',
+    '     DCOOJD            DDNOPDD                           ',
+    '     DDDDDD            DDDDDDD                           ',
   ],
   [
     '                     ',
@@ -85,11 +85,11 @@ const LEVELS = [
     'IMMMMMMnMMM          ',
     'IIIIIIInIII          ',
     'I      niiI          ',
-    'I      njjI    S     ',
-    'I      nllI    t     ',
-    'I      n  d    u     ',
-    'IIIIIIIIIIIDNOOuOOPDI',
-    '          IDDNOuOPDDI',
+    'I      njjI          ',
+    'I      nllI          ',
+    'I      n  dS         ',
+    'IIIIIIIIIIIDNOOOOOPDI',
+    '          IDDNOOOPDDI',
     '          IDDDDDDDDDI',
   ],
   [
@@ -292,6 +292,9 @@ class Entity {
     return this.vx;
   }
 
+  drawFront() {
+  }
+
   draw() {
     var imageName = this.shape + this.frame();
     var img = document.getElementById(imageName);
@@ -489,7 +492,7 @@ class UphillSlant extends BlockEntity {
 
   intersect(e) {
     if (!super.intersect(e)) { return false; }
-    var p = Math.min(1, (e.x + e.w - this.x) / this.w);
+    var p = (e.x + e.w - this.x) / this.w;
     return e.y + e.h > this.y + (1 - p) * this.h;
   }
 
@@ -500,7 +503,7 @@ class UphillSlant extends BlockEntity {
 
 class DownhillSlant extends BlockEntity {
   sunk(e) {
-    var p = Math.min(1, (e.x - this.x) / this.w);
+    var p = Math.max(0, (e.x - this.x) / this.w);
     return p * this.h;
   }
 
@@ -514,7 +517,7 @@ class DownhillSlant extends BlockEntity {
 
   intersect(e) {
     if (!super.intersect(e)) { return false; }
-    var p = Math.min(1, (e.x - this.x) / this.w);
+    var p = (e.x - this.x) / this.w;
     return e.y + e.h > this.y + p * this.h;
   }
 
@@ -582,6 +585,57 @@ class EndEntity extends BlockEntity {
     if (e.isPlayer()) {
       LoadLevel(currentLevel + 1);
     }
+  }
+}
+
+function WaterEffect(me, e) {
+  if (!me.intersect(e)) {
+    return;
+  }
+  if (e.y + e.h / 4 < me.y) {
+    return;
+  }
+  if (Math.abs(e.vy) > 0.5) {
+    e.vy *= 0.99;
+  }
+  if (!e.isPlayer() || !joystick[3]) {
+    e.vy -= 0.15;
+  }
+}
+
+class Water extends Decoration {
+  repel(e) {
+    super.repel(e);
+    WaterEffect(this, e);
+  }
+  drawFront() {
+    ctx.filter = 'opacity(0.4)';
+    super.draw();
+    ctx.filter = '';
+  }
+}
+
+class WaterDownhillSlant extends DownhillSlant {
+  repel(e) {
+    super.repel(e);
+    WaterEffect(this, e);
+  }
+  drawFront() {
+    ctx.filter = 'opacity(0.6)';
+    super.draw();
+    ctx.filter = '';
+  }
+}
+
+class WaterUphillSlant extends UphillSlant {
+  repel(e) {
+    super.repel(e);
+    WaterEffect(this, e);
+  }
+  drawFront() {
+    ctx.filter = 'opacity(0.6)';
+    super.draw();
+    ctx.filter = '';
   }
 }
 
@@ -680,9 +734,9 @@ const OBJECT_TABLE = [
   ['K', BlockEntity, 'straw2'],
   ['L', LavaEntity, 'lava2'],
   ['M', BlockEntity, 'straw4'],
-  ['N', DownhillSlant, 'water1'],
-  ['O', Decoration, 'water2'],
-  ['P', UphillSlant, 'water3'],
+  ['N', WaterDownhillSlant, 'water1'],
+  ['O', Water, 'water2'],
+  ['P', WaterUphillSlant, 'water3'],
   ['R', BlockEntity, 'brick1'],
   ['S', PigEntity, 'pig'],
   ['W', WolfEntity, 'wolf'],
@@ -810,6 +864,10 @@ function Tick() {
   // Draw each entity
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
+  }
+  // Draw upper layer
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].drawFront();
   }
 
   ctx.restore();
