@@ -6,6 +6,7 @@ class Bullet {
     this.y = 0;
     this.vx = 0;
     this.vy = 0;
+    this.age = 0;
   }
 
   setPosition(x, y) {
@@ -32,6 +33,10 @@ class Bullet {
     this.vy -= 1;
     this.x += this.vx;
     this.y += this.vy;
+    this.age++;
+    if (this.y <= -35) {
+      bullets.splice(bullets.indexOf(this), 1);
+    }
   }
 }
 
@@ -39,6 +44,7 @@ class Tank {
   constructor() {
     this.x = 500;
     this.y = 0;
+    this.hp = 1000;
     this.direction = 45 * (Math.PI / 180);
     this.color = '#fff';
     this.controls = null;
@@ -75,7 +81,14 @@ class Tank {
     ctx.restore();
 
     ctx.fillRect(-25, 0, 50, 50);
- 
+
+    ctx.save(); 
+    ctx.scale(1, -1);
+    ctx.font = '30px san-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(this.hp, 0, 30);
+    ctx.restore();
+
     ctx.restore();
   }
 
@@ -105,9 +118,9 @@ var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 var keys = {};
 var tanks = [
-  new Tank().setPosition(800, 0).setColor('#f0f')
+  new Tank().setPosition(800, 50).setColor('#f0f')
             .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight'),
-  new Tank().setPosition(200, 0).setColor('#f00')
+  new Tank().setPosition(200, 50).setColor('#f00')
             .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
 ];
 var bullets = [];
@@ -122,7 +135,7 @@ function DrawScreen() {
   ctx.scale(screen.height / 1000, screen.height / 1000);
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
-
+  
   for (var i = 0; i < bullets.length; ++i) {
     bullets[i].draw();
   }
