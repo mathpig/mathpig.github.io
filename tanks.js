@@ -1,5 +1,40 @@
 'use strict';
 
+class Bullet {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.vx = 0;
+    this.vy = 0;
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  setVelocity(vx, vy) {
+    this.vx = vx;
+    this.vy = vy;
+    return this;
+  }
+
+  draw() {
+    var cannonball = document.getElementById('cannonball');
+    ctx.save();
+    ctx.translate(-5, -5);
+    ctx.drawImage(cannonball, this.x, this.y, 10, 10);
+    ctx.restore();
+  }
+
+  tick() {
+    this.vy -= 1;
+    this.x += this.vx;
+    this.y += this.vy;
+  }
+}
+
 class Tank {
   constructor() {
     this.x = 500;
@@ -57,6 +92,12 @@ class Tank {
     else if (keys[this.controls[1]]) {
       this.x += 4;
     }
+    else if (keys[this.controls[4]]) {
+      const BULLET_VELOCITY = 25;
+      bullets.push(new Bullet().setPosition(this.x, this.y + 35)
+                               .setVelocity(Math.cos(this.direction) * BULLET_VELOCITY,
+                                            Math.sin(this.direction) * BULLET_VELOCITY));
+    }
   }
 }
 
@@ -67,8 +108,9 @@ var tanks = [
   new Tank().setPosition(800, 0).setColor('#f0f')
             .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight'),
   new Tank().setPosition(200, 0).setColor('#f00')
-            .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'ShiftLeft')
+            .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
 ];
+var bullets = [];
 
 function DrawScreen() {
   ctx.fillStyle = '#0ff';
@@ -81,6 +123,10 @@ function DrawScreen() {
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
 
+  for (var i = 0; i < bullets.length; ++i) {
+    bullets[i].draw();
+  }
+
   for (var i = 0; i < tanks.length; ++i) {
     tanks[i].draw();
   }
@@ -89,13 +135,19 @@ function DrawScreen() {
 }
 
 function Tick() {
-  screen.width = window.innerWidth;
-  screen.height = window.innerHeight;
-  DrawScreen();
-  
   for (var i = 0; i < tanks.length; ++i) {
     tanks[i].tick();
   }
+  for (var i = 0; i < bullets.length; ++i) {
+    bullets[i].tick();
+  }
+}
+
+function Update() {
+  screen.width = window.innerWidth;
+  screen.height = window.innerHeight;
+  Tick();
+  DrawScreen();
 }
 
 function KeyDown(e) {
@@ -106,6 +158,6 @@ function KeyUp(e) {
   keys[e.code] = false;
 }
 
-setInterval(Tick, 20);
+setInterval(Update, 20);
 window.onkeydown = KeyDown;
 window.onkeyup = KeyUp;
