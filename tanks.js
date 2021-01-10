@@ -6,6 +6,16 @@ function Distance2(a, b) {
   return dx * dx + dy * dy;
 }
 
+function Reset() {
+  tanks = [
+    new Tank().setPosition(800, 75).setColor('#f0f')
+              .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
+    new Tank().setPosition(200, 75).setColor('#f00')
+              .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
+  ];
+  bullets = [];
+}
+
 class Bullet {
   constructor() {
     this.x = 0;
@@ -76,11 +86,11 @@ class Tank {
     this.controls = arguments;
     return this;
   }
-  
+
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
-  
+
     ctx.fillStyle = this.color;
 
     ctx.save();
@@ -93,7 +103,7 @@ class Tank {
 
     ctx.fillRect(-25, -25, 50, 50);
 
-    ctx.save(); 
+    ctx.save();
     ctx.scale(1, -1);
     ctx.font = '30px san-serif';
     ctx.textAlign = 'center';
@@ -130,18 +140,22 @@ class Tank {
         bullets.push(new Bullet().setPosition(x, y).setVelocity(vx, vy));
       }
     }
+    if (this.direction < - Math.PI / 9) {
+      this.direction = - Math.PI / 9;
+    }
+    else if (this.direction > Math.PI * 10 / 9) {
+      this.direction = Math.PI * 10 / 9;
+    }
+    if (this.hp <= 0) {
+      Reset();
+    }
   }
 }
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 var keys = {};
-var tanks = [
-  new Tank().setPosition(800, 75).setColor('#f0f')
-            .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
-  new Tank().setPosition(200, 75).setColor('#f00')
-            .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
-];
+var tanks = [];
 var bullets = [];
 
 function DrawScreen() {
@@ -154,7 +168,7 @@ function DrawScreen() {
   ctx.scale(screen.height / 1000, screen.height / 1000);
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
-  
+
   for (var i = 0; i < bullets.length; ++i) {
     bullets[i].draw();
   }
@@ -190,6 +204,7 @@ function KeyUp(e) {
   keys[e.code] = false;
 }
 
+Reset();
 setInterval(Update, 20);
 window.onkeydown = KeyDown;
 window.onkeyup = KeyUp;
