@@ -8,7 +8,7 @@ function Distance2(a, b) {
 
 function Reset() {
   tanks = [
-    new Tank().setPosition(800, 75).setColor('#f0f')
+    new Tank().setPosition(1800, 75).setColor('#f0f')
               .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
     new Tank().setPosition(200, 75).setColor('#f00')
               .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
@@ -149,6 +149,12 @@ class Tank {
     if (this.hp <= 0) {
       Reset();
     }
+    if (this.x < 0) {
+      this.x = 0;
+    }
+    if (this.x >= 2000) {
+      this.x = 2000;
+    }
   }
 }
 
@@ -164,7 +170,7 @@ function DrawScreen() {
 
   ctx.save();
 
-  ctx.translate(screen.width / 2 - screen.height / 2, 0);
+  ctx.translate(screen.width / 2 - screen.height, 0);
   ctx.scale(screen.height / 1000, screen.height / 1000);
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
