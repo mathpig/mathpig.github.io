@@ -1,5 +1,11 @@
 'use strict';
 
+function Distance2(a, b) {
+  var dx = a.x - b.x;
+  var dy = a.y - b.y;
+  return dx * dx + dy * dy;
+}
+
 class Bullet {
   constructor() {
     this.x = 0;
@@ -37,6 +43,11 @@ class Bullet {
     if (this.y <= -35) {
       bullets.splice(bullets.indexOf(this), 1);
     }
+    for (var i = 0; i < tanks.length; ++i) {
+      if (Distance2(this, tanks[i]) < 30 * 30) {
+        tanks[i].hp -= 1;
+      }
+    }
   }
 }
 
@@ -65,7 +76,7 @@ class Tank {
     this.controls = arguments;
     return this;
   }
-
+  
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -73,20 +84,20 @@ class Tank {
     ctx.fillStyle = this.color;
 
     ctx.save();
-    ctx.translate(0, 35);
+    ctx.translate(0, 10);
     ctx.rotate(this.direction);
     ctx.filter = 'brightness(80%)';
     ctx.fillRect(-10, -10, 75, 20);
     ctx.filter = '';
     ctx.restore();
 
-    ctx.fillRect(-25, 0, 50, 50);
+    ctx.fillRect(-25, -25, 50, 50);
 
     ctx.save(); 
     ctx.scale(1, -1);
     ctx.font = '30px san-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(this.hp, 0, 30);
+    ctx.fillText(this.hp, 0, 55);
     ctx.restore();
 
     ctx.restore();
@@ -106,10 +117,18 @@ class Tank {
       this.x += 4;
     }
     else if (keys[this.controls[4]]) {
-      const BULLET_VELOCITY = 25;
-      bullets.push(new Bullet().setPosition(this.x, this.y + 35)
-                               .setVelocity(Math.cos(this.direction) * BULLET_VELOCITY,
-                                            Math.sin(this.direction) * BULLET_VELOCITY));
+      const BULLET_VELOCITY = 40;
+      const PERTURB = 3;
+      const RATE = 5;
+      for (var i = 0; i < RATE; ++i) {
+        var vx = Math.cos(this.direction) * BULLET_VELOCITY + PERTURB * (Math.random() - 0.5);
+        var vy = Math.sin(this.direction) * BULLET_VELOCITY + PERTURB * (Math.random() - 0.5);
+        var x = this.x;
+        var y = this.y + 10;
+        x += vx * (i / RATE);
+        y += vy * (i / RATE);
+        bullets.push(new Bullet().setPosition(x, y).setVelocity(vx, vy));
+      }
     }
   }
 }
@@ -118,9 +137,9 @@ var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 var keys = {};
 var tanks = [
-  new Tank().setPosition(800, 50).setColor('#f0f')
-            .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftRight'),
-  new Tank().setPosition(200, 50).setColor('#f00')
+  new Tank().setPosition(800, 75).setColor('#f0f')
+            .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
+  new Tank().setPosition(200, 75).setColor('#f00')
             .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
 ];
 var bullets = [];
