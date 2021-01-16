@@ -99,6 +99,9 @@ class Bullet {
         tanks[i].hp -= 1;
       }
     }
+    if (this.y <= terrain.getAltitude(this.x)) {
+      bullets.splice(bullets.indexOf(this), 1);
+    }
   }
 }
 
