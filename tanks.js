@@ -18,6 +18,7 @@ function Reset() {
               .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
   ];
   bullets = [];
+  terrain = new Terrain();
 }
 
 class Terrain {
@@ -54,6 +55,19 @@ class Terrain {
     var m = (y0 - y1) / (x0 - x1);
     var y = m * (x - x0) + y0;
     return y;
+  }
+
+  hit(x) {
+    var n = this.altitude.length;
+    var i = (n * (500 + x)) / 3000;
+    var i0 = Math.round(i);
+    if (i0 < 0 || i0 >= n) {
+      return;
+    }
+    this.altitude[i0] -= 0.25;
+    if (this.altitude[i0] < 100) {
+      this.altitude[i0] = 100;
+    }
   }
 }
 
@@ -101,6 +115,7 @@ class Bullet {
     }
     if (this.y <= terrain.getAltitude(this.x)) {
       bullets.splice(bullets.indexOf(this), 1);
+      terrain.hit(this.x);
     }
   }
 }
@@ -205,7 +220,7 @@ class Tank {
       this.x = 2000;
     }
     var ground = terrain.getAltitude(this.x);
-    this.y = ground;
+    this.y = ground + 25;
   }
 }
 
