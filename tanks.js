@@ -24,8 +24,29 @@ function Reset() {
 class Terrain {
   constructor() {
     this.altitude = [];
+/*
     for (var i = 0; i < 20; ++i) {
       this.altitude[i] = Math.random() * 500 + 100;
+    }
+*/
+    const n = 400;
+    var a0 = Math.random() * 200;
+    var a1 = Math.random() * 20;
+    var a2 = Math.random() * 200;
+    var a3 = Math.random() * 20;
+    var f0 = Math.random() * Math.PI / n * 4;
+    var f1 = Math.random() * Math.PI / n * 40;
+    var f2 = Math.random() * Math.PI / n * 4;
+    var f3 = Math.random() * Math.PI / n * 40;
+    for (var i = 0; i < n; ++i) {
+      var y = a0 * Math.sin(f0 * i) +
+              a1 * Math.sin(f1 * i) +
+              a2 * Math.cos(f2 * i) +
+              a3 * Math.cos(f3 * i) + 400;
+      if (y < 100) {
+        y = 100;
+      }
+      this.altitude.push(y);
     }
   }
   
@@ -64,7 +85,7 @@ class Terrain {
     if (i0 < 0 || i0 >= n) {
       return;
     }
-    this.altitude[i0] -= 0.25;
+    this.altitude[i0] -= 4;
     if (this.altitude[i0] < 100) {
       this.altitude[i0] = 100;
     }
