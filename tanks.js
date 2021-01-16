@@ -6,14 +6,55 @@ function Distance2(a, b) {
   return dx * dx + dy * dy;
 }
 
+function Deg(angle) {
+  return Math.PI * angle / 180;
+}
+
 function Reset() {
   tanks = [
-    new Tank().setPosition(1800, 75).setColor('#f0f')
+    new Tank().setPosition(1800, 75).setColor('#00f').setDirection(Deg(45))
               .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
-    new Tank().setPosition(200, 75).setColor('#f00')
+    new Tank().setPosition(200, 75).setColor('#f00').setDirection(Deg(135))
               .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
   ];
   bullets = [];
+}
+
+class Terrain {
+  constructor() {
+    this.altitude = [];
+    for (var i = 0; i < 20; ++i) {
+      this.altitude[i] = Math.random() * 500 + 100;
+    }
+  }
+  
+  draw() {
+    ctx.fillStyle = '#0f0';
+    ctx.beginPath();
+    ctx.moveTo(-500, 0);
+    for (var i = 0; i < this.altitude.length; ++i) {
+      ctx.lineTo(i * 3000 / this.altitude.length - 500, this.altitude[i]);
+    }
+    ctx.lineTo(2500, 0);
+    ctx.fill();
+  }
+
+  getAltitude(x) {
+    var n = this.altitude.length;
+    var i = (n * (500 + x)) / 3000;  
+    var i0 = Math.floor(i);
+    var i1 = i0 + 1;
+    if (i0 < 0 || i1 >= n) {
+      return 0;
+    }
+    var y0 = this.altitude[i0];
+    var y1 = this.altitude[i1];
+    var x0 = (3000 * i0) / n - 500;
+    var x1 = (3000 * i1) / n - 500;
+    var m = (y0 - y1) / (x0 - x1);
+    var y = m * (x - x0) + y0;
+    return y;
+  }
 }
 
 class Bullet {
@@ -77,6 +118,11 @@ class Tank {
     return this;
   }
 
+  setDirection(direction) {
+    this.direction = direction;
+    return this;
+  }
+
   setColor(c) {
     this.color = c;
     return this;
@@ -117,16 +163,16 @@ class Tank {
     if (keys[this.controls[2]]) {
       this.direction += Math.PI / 45;
     }
-    else if (keys[this.controls[3]]) {
+    if (keys[this.controls[3]]) {
       this.direction -= Math.PI / 45;
     }
-    else if (keys[this.controls[0]]) {
+    if (keys[this.controls[0]]) {
       this.x -= 4;
     }
-    else if (keys[this.controls[1]]) {
+    if (keys[this.controls[1]]) {
       this.x += 4;
     }
-    else if (keys[this.controls[4]]) {
+    if (keys[this.controls[4]]) {
       const BULLET_VELOCITY = 40;
       const PERTURB = 3;
       const RATE = 5;
@@ -155,6 +201,8 @@ class Tank {
     if (this.x >= 2000) {
       this.x = 2000;
     }
+    var ground = terrain.getAltitude(this.x);
+    this.y = ground;
   }
 }
 
@@ -163,6 +211,7 @@ var ctx = screen.getContext('2d');
 var keys = {};
 var tanks = [];
 var bullets = [];
+var terrain = new Terrain();
 
 function DrawScreen() {
   ctx.fillStyle = '#0ff';
@@ -174,7 +223,9 @@ function DrawScreen() {
   ctx.scale(screen.height / 1000, screen.height / 1000);
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
-
+  
+  terrain.draw();
+  
   for (var i = 0; i < bullets.length; ++i) {
     bullets[i].draw();
   }
