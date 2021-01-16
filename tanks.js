@@ -12,9 +12,9 @@ function Deg(angle) {
 
 function Reset() {
   tanks = [
-    new Tank().setPosition(1800, 75).setColor('#00f').setDirection(Deg(45))
+    new Tank().setPosition(1800, 75).setColor('#f00').setDirection(Deg(45))
               .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
-    new Tank().setPosition(200, 75).setColor('#f00').setDirection(Deg(135))
+    new Tank().setPosition(200, 75).setColor('#00f').setDirection(Deg(135))
               .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
   ];
   bullets = [];
