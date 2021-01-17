@@ -12,10 +12,10 @@ function Deg(angle) {
 
 function Reset() {
   tanks = [
-    new Tank().setPosition(1800, 75).setColor('#f00').setDirection(Deg(45))
-              .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter'),
-    new Tank().setPosition(200, 75).setColor('#00f').setDirection(Deg(135))
-              .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF')
+    new Tank().setPosition(1800, 75).setColor('#00f').setDirection(Deg(45))
+              .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Digit0'),
+    new Tank().setPosition(200, 75).setColor('#f00').setDirection(Deg(135))
+              .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF', 'Digit1'),
   ];
   bullets = [];
   terrain = new Terrain();
@@ -49,7 +49,7 @@ class Terrain {
       this.altitude.push(y);
     }
   }
-  
+
   draw() {
     ctx.fillStyle = '#0f0';
     ctx.beginPath();
@@ -63,7 +63,7 @@ class Terrain {
 
   getAltitude(x) {
     var n = this.altitude.length;
-    var i = (n * (500 + x)) / 3000;  
+    var i = (n * (500 + x)) / 3000;
     var i0 = Math.floor(i);
     var i1 = i0 + 1;
     if (i0 < 0 || i1 >= n) {
@@ -92,13 +92,14 @@ class Terrain {
   }
 }
 
-class Bullet {
+class Particle {
   constructor() {
     this.x = 0;
     this.y = 0;
     this.vx = 0;
     this.vy = 0;
-    this.age = 0;
+    this.radius = 5;
+    this.shape = null;
   }
 
   setPosition(x, y) {
@@ -113,11 +114,20 @@ class Bullet {
     return this;
   }
 
+  setRadius(radius) {
+    this.radius = radius;
+    return this;
+  }
+
+  setShape(shape) {
+    this.shape = document.getElementById(shape);
+    return this;
+  }
+
   draw() {
-    var cannonball = document.getElementById('cannonball');
     ctx.save();
-    ctx.translate(-5, -5);
-    ctx.drawImage(cannonball, this.x, this.y, 10, 10);
+    ctx.translate(-this.radius, -this.radius);
+    ctx.drawImage(this.shape, this.x, this.y, this.radius * 2, this.radius * 2);
     ctx.restore();
   }
 
@@ -125,10 +135,18 @@ class Bullet {
     this.vy -= 1;
     this.x += this.vx;
     this.y += this.vy;
-    this.age++;
-    if (this.y <= -35) {
-      bullets.splice(bullets.indexOf(this), 1);
-    }
+  }
+}
+
+class Bullet extends Particle {
+  constructor() {
+    super();
+    this.setRadius(5);
+    this.setShape('cannonball');
+  }
+
+  tick() {
+    super.tick();
     for (var i = 0; i < tanks.length; ++i) {
       if (Distance2(this, tanks[i]) < 30 * 30) {
         tanks[i].hp -= 1;
@@ -137,6 +155,34 @@ class Bullet {
     if (this.y <= terrain.getAltitude(this.x)) {
       bullets.splice(bullets.indexOf(this), 1);
       terrain.hit(this.x);
+    }
+  }
+}
+
+class SuperBullet extends Particle {
+  constructor() {
+    super();
+    this.setRadius(30);
+    this.setShape('cannonball');
+  }
+
+  tick() {
+    super.tick();
+    if (this.y <= terrain.getAltitude(this.x) + this.radius + 10) {
+      bullets.splice(bullets.indexOf(this), 1);
+      const VELOCITY = 25;
+      for (var i = 0; i < 1000; ++i) {
+        for (;;) {
+          var vx = Math.random() * 2 - 1;
+          var vy = Math.random() * 2 - 1;
+          if (vx * vx + vy * vy < 1) {
+            break;
+          }
+        }
+        vx = vx * VELOCITY + this.vx;
+        vy = vy * VELOCITY + this.vy;
+        bullets.push(new Bullet().setPosition(this.x + vx, this.y + 10 + vy).setVelocity(vx, vy));
+      }
     }
   }
 }
@@ -167,7 +213,7 @@ class Tank {
     return this;
   }
 
-  setControls(moveleft, moveright, turnleft, turnright, shoot) {
+  setControls(moveleft, moveright, turnleft, turnright, shoot, supershoot) {
     this.controls = arguments;
     return this;
   }
@@ -243,6 +289,19 @@ class Tank {
     var ground = terrain.getAltitude(this.x);
     this.y = ground + 25;
   }
+
+  keydown(code) {
+    if (code == this.controls[5]) {
+      const BULLET_VELOCITY = 40;
+      var vx = Math.cos(this.direction) * BULLET_VELOCITY;
+      var vy = Math.sin(this.direction) * BULLET_VELOCITY;
+      var x = this.x;
+      var y = this.y + 10;
+      x += vx;
+      y += vy;
+      bullets.push(new SuperBullet().setPosition(x, y).setVelocity(vx, vy));
+    }
+  }
 }
 
 var screen = document.getElementById('screen');
@@ -262,9 +321,9 @@ function DrawScreen() {
   ctx.scale(screen.height / 1000, screen.height / 1000);
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
-  
+
   terrain.draw();
-  
+
   for (var i = 0; i < bullets.length; ++i) {
     bullets[i].draw();
   }
@@ -293,6 +352,11 @@ function Update() {
 }
 
 function KeyDown(e) {
+  if (!keys[e.code]) {
+    for (var i = 0; i < tanks.length; ++i) {
+      tanks[i].keydown(e.code);
+    }
+  }
   keys[e.code] = true;
 }
 
