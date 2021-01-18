@@ -51,7 +51,7 @@ class Terrain {
   }
 
   draw() {
-    ctx.fillStyle = '#0f0';
+    ctx.fillStyle = '#ca4';
     ctx.beginPath();
     ctx.moveTo(-500, 0);
     for (var i = 0; i < this.altitude.length; ++i) {
@@ -78,17 +78,52 @@ class Terrain {
     return y;
   }
 
-  hit(x) {
+  adjust(i, amount) {
+    const PILE_LIMIT = 25;
+    var n = this.altitude.length;
+    for (;;) {
+      this.altitude[i] += amount;
+      if (i < 0 && i >= n - 1) {
+        return;
+      }
+      if (this.altitude[i] > this.altitude[i - 1] + PILE_LIMIT ||
+          this.altitude[i] > this.altitude[i + 1] + PILE_LIMIT) {
+        this.altitude[i] -= amount;
+        if (this.altitude[i - 1] > this.altitude[i + 1]) {
+          ++i;
+          continue;
+        }
+        else {
+          --i;
+          continue;
+        }
+      }
+      if (this.altitude[i] < this.altitude[i - 1] - PILE_LIMIT ||
+          this.altitude[i] < this.altitude[i + 1] - PILE_LIMIT) {
+        this.altitude[i] += amount;
+        if (this.altitude[i - 1] < this.altitude[i + 1]) {
+          amount = -amount;
+          ++i;
+          continue;
+        }
+        else {
+          amount = -amount;
+          --i;
+          continue;
+        }
+      }
+      break;
+    }
+  }
+
+  hit(x, amount) {
     var n = this.altitude.length;
     var i = (n * (500 + x)) / 3000;
     var i0 = Math.round(i);
     if (i0 < 0 || i0 >= n) {
       return;
     }
-    this.altitude[i0] -= 4;
-    if (this.altitude[i0] < 100) {
-      this.altitude[i0] = 100;
-    }
+    this.adjust(i0, -amount);
   }
 }
 
@@ -138,11 +173,28 @@ class Particle {
   }
 }
 
-class Bullet extends Particle {
+class SolidParticle extends Particle {
+  constructor() {
+    super();
+    this.color = '#fff';
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+  }
+}
+
+class Bullet extends SolidParticle {
   constructor() {
     super();
     this.setRadius(5);
-    this.setShape('cannonball');
+    this.setColor('#111');
   }
 
   tick() {
@@ -152,9 +204,12 @@ class Bullet extends Particle {
         tanks[i].hp -= 1;
       }
     }
+    const DAMPEN = 0.5;
     if (this.y <= terrain.getAltitude(this.x)) {
-      bullets.splice(bullets.indexOf(this), 1);
-      terrain.hit(this.x);
+      terrain.hit(this.x, 4);
+      bullets[bullets.indexOf(this)] = new GroundParticle()
+        .setPosition(this.x, terrain.getAltitude(this.x) + 1)
+        .setVelocity(this.vx * DAMPEN, Math.abs(this.vy) * DAMPEN);
     }
   }
 }
@@ -184,6 +239,22 @@ class SuperBullet extends Particle {
         bullets.push(new Bullet().setPosition(this.x + vx, this.y + 10 + vy).setVelocity(vx, vy));
       }
     }
+  }
+}
+
+class GroundParticle extends SolidParticle {
+  constructor() {
+    super();
+    this.setColor('#ca4');
+    this.setRadius(5);
+  }
+
+  tick() {
+    super.tick();
+    if (this.y <= terrain.getAltitude(this.x) + this.radius + 10) {
+      bullets.splice(bullets.indexOf(this), 1);
+      terrain.hit(this.x, -4);
+    }  
   }
 }
 
