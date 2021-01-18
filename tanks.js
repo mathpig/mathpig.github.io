@@ -27,8 +27,8 @@ function Reset() {
         .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Digit0'),
     ];
   }
-  tanks[0].setPosition(200, 75).setDirection(Deg(135)).resetHealth();
-  tanks[1].setPosition(1800, 75).setDirection(Deg(45)).resetHealth();
+  tanks[0].setPosition(200, 75).setDirection(Deg(135)).resetHealth().resetBombs();
+  tanks[1].setPosition(1800, 75).setDirection(Deg(45)).resetHealth().resetBombs();
   bullets = [];
   terrain = new Terrain();
 }
@@ -276,6 +276,7 @@ class Tank {
     this.y = 0;
     this.hp = 1000;
     this.score = 0;
+    this.bombs = 10;
     this.direction = 45 * (Math.PI / 180);
     this.color = '#fff';
     this.controls = null;
@@ -299,6 +300,11 @@ class Tank {
 
   resetHealth() {
     this.hp = 1000;
+    return this;
+  }
+
+  resetBombs() {
+    this.bombs = 10;
     return this;
   }
 
@@ -336,9 +342,9 @@ class Tank {
   drawStatus() {
     ctx.font = '30px san-serif';
     ctx.fillStyle = '#000';
-    ctx.fillText('Score: ' + this.score, 21, 51);
+    ctx.fillText('Score: ' + this.score + '   Super-bombs: ' + this.bombs, 21, 51);
     ctx.fillStyle = this.color;
-    ctx.fillText('Score: ' + this.score, 20, 50);
+    ctx.fillText('Score: ' + this.score + '   Super-bombs: ' + this.bombs, 21, 51);
   }
 
   tick() {
@@ -389,7 +395,7 @@ class Tank {
   }
 
   keydown(code) {
-    if (code == this.controls[5]) {
+    if (code == this.controls[5] && this.bombs > 0) {
       const BULLET_VELOCITY = 40;
       var vx = Math.cos(this.direction) * BULLET_VELOCITY;
       var vy = Math.sin(this.direction) * BULLET_VELOCITY;
@@ -398,6 +404,7 @@ class Tank {
       x += vx;
       y += vy;
       bullets.push(new SuperBullet().setPosition(x, y).setVelocity(vx, vy));
+      this.bombs--;
     }
   }
 }
