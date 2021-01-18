@@ -10,13 +10,25 @@ function Deg(angle) {
   return Math.PI * angle / 180;
 }
 
+function IncreaseScoreExcept(loser) {
+  for (var i = 0; i < tanks.length; ++i) {
+    if (tanks[i] !== loser) {
+      tanks[i].score++;
+    }
+  }
+}
+
 function Reset() {
-  tanks = [
-    new Tank().setPosition(1800, 75).setColor('#00f').setDirection(Deg(45))
-              .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Digit0'),
-    new Tank().setPosition(200, 75).setColor('#f00').setDirection(Deg(135))
-              .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF', 'Digit1'),
-  ];
+  if (tanks.length == 0) {
+    tanks = [
+      new Tank().setColor('#f00')
+        .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF', 'Digit1'),
+      new Tank().setColor('#00f')
+        .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Digit0'),
+    ];
+  }
+  tanks[0].setPosition(200, 75).setDirection(Deg(135)).resetHealth();
+  tanks[1].setPosition(1800, 75).setDirection(Deg(45)).resetHealth();
   bullets = [];
   terrain = new Terrain();
 }
@@ -263,6 +275,7 @@ class Tank {
     this.x = 500;
     this.y = 0;
     this.hp = 1000;
+    this.score = 0;
     this.direction = 45 * (Math.PI / 180);
     this.color = '#fff';
     this.controls = null;
@@ -281,6 +294,11 @@ class Tank {
 
   setColor(c) {
     this.color = c;
+    return this;
+  }
+
+  resetHealth() {
+    this.hp = 1000;
     return this;
   }
 
@@ -313,6 +331,14 @@ class Tank {
     ctx.restore();
 
     ctx.restore();
+  }
+
+  drawStatus() {
+    ctx.font = '30px san-serif';
+    ctx.fillStyle = '#000';
+    ctx.fillText('Score: ' + this.score, 21, 51);
+    ctx.fillStyle = this.color;
+    ctx.fillText('Score: ' + this.score, 20, 50);
   }
 
   tick() {
@@ -349,6 +375,7 @@ class Tank {
       this.direction = Math.PI * 10 / 9;
     }
     if (this.hp <= 0) {
+      IncreaseScoreExcept(this);
       Reset();
     }
     if (this.x < 0) {
@@ -404,6 +431,13 @@ function DrawScreen() {
   }
 
   ctx.restore();
+
+  for (var i = 0; i < tanks.length; ++i) {
+    ctx.save();
+    ctx.translate(i * screen.width / tanks.length, 0);
+    tanks[i].drawStatus();
+    ctx.restore();
+  }
 }
 
 function Tick() {
