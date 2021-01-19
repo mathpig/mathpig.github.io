@@ -22,9 +22,9 @@ function Reset() {
   if (tanks.length == 0) {
     tanks = [
       new Tank().setColor('#f00')
-        .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyF', 'Digit1'),
+        .setControls('KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyC', 'Digit1'),
       new Tank().setColor('#00f')
-        .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Digit0'),
+        .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Slash', 'Digit0'),
     ];
   }
   terrain = new Terrain();
@@ -223,22 +223,36 @@ class SuperBullet extends Particle {
     this.setShape('cannonball');
   }
 
+  explode() {
+    bullets.splice(bullets.indexOf(this), 1);
+    const VELOCITY = 25;
+    for (var i = 0; i < 1000; ++i) {
+      for (;;) {
+        var vx = Math.random() * 2 - 1;
+        var vy = Math.random() * 2 - 1;
+        if (vx * vx + vy * vy < 1) {
+          break;
+        }
+      }
+      vx = vx * VELOCITY + this.vx;
+      vy = vy * VELOCITY + this.vy;
+      bullets.push(new Bullet().setPosition(this.x + vx, this.y + 10 + vy).setVelocity(vx, vy));
+    }
+  }
+
   tick() {
     super.tick();
     if (this.y <= terrain.getAltitude(this.x) + this.radius + 10) {
-      bullets.splice(bullets.indexOf(this), 1);
-      const VELOCITY = 25;
-      for (var i = 0; i < 1000; ++i) {
-        for (;;) {
-          var vx = Math.random() * 2 - 1;
-          var vy = Math.random() * 2 - 1;
-          if (vx * vx + vy * vy < 1) {
-            break;
-          }
-        }
-        vx = vx * VELOCITY + this.vx;
-        vy = vy * VELOCITY + this.vy;
-        bullets.push(new Bullet().setPosition(this.x + vx, this.y + 10 + vy).setVelocity(vx, vy));
+      this.explode();
+      return;
+    }
+    for (var i = 0; i < tanks.length; ++i) {
+      if (Distance2(this, tanks[i]) < 55 * 55) {
+        var tvx = tanks[i].vx;
+        tanks[i].vx = this.vx;
+        this.vx = tvx;
+        this.explode();
+        return;
       }
     }
   }
