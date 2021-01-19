@@ -203,6 +203,8 @@ class Bullet extends SolidParticle {
     for (var i = 0; i < tanks.length; ++i) {
       if (Distance2(this, tanks[i]) < 30 * 30) {
         tanks[i].hp -= 1;
+        tanks[i].vx += this.vx * 0.01;
+        tanks[i].vy += this.vy * 0.01;
       }
     }
     const DAMPEN = 0.5;
