@@ -93,39 +93,28 @@ class Terrain {
   adjust(i, amount) {
     const PILE_LIMIT = 25;
     var n = this.altitude.length;
-    for (;;) {
-      this.altitude[i] += amount;
-      if (i < 0 && i >= n - 1) {
-        return;
-      }
-      if (this.altitude[i] > this.altitude[i - 1] + PILE_LIMIT ||
-          this.altitude[i] > this.altitude[i + 1] + PILE_LIMIT) {
-        this.altitude[i] -= amount;
-        if (this.altitude[i - 1] > this.altitude[i + 1]) {
-          ++i;
-          continue;
-        }
-        else {
+    if (amount > 0) {
+      if (this.altitude[i - 1] < this.altitude[i + 1]) {
+        while (i > 0 && this.altitude[i] > this.altitude[i - 1] + PILE_LIMIT) {
           --i;
-          continue;
         }
-      }
-      if (this.altitude[i] < this.altitude[i - 1] - PILE_LIMIT ||
-          this.altitude[i] < this.altitude[i + 1] - PILE_LIMIT) {
-        this.altitude[i] += amount;
-        if (this.altitude[i - 1] < this.altitude[i + 1]) {
-          amount = -amount;
+      } else {
+        while (i < n - 1 && this.altitude[i] > this.altitude[i + 1] + PILE_LIMIT) {
           ++i;
-          continue;
-        }
-        else {
-          amount = -amount;
-          --i;
-          continue;
         }
       }
-      break;
+    } else {
+      if (this.altitude[i - 1] > this.altitude[i + 1]) {
+        while (i > 0 && this.altitude[i] < this.altitude[i - 1] - PILE_LIMIT) {
+          --i;
+        }
+      } else {
+        while (i < n - 1 && this.altitude[i] < this.altitude[i + 1] - PILE_LIMIT) {
+          ++i;
+        }
+      }
     }
+    this.altitude[i] += amount;
   }
 
   hit(x, amount) {
@@ -217,11 +206,12 @@ class Bullet extends SolidParticle {
       }
     }
     const DAMPEN = 0.5;
+    const VDAMPEN = 0.4;
     if (this.y <= terrain.getAltitude(this.x)) {
       terrain.hit(this.x, 4);
       bullets[bullets.indexOf(this)] = new GroundParticle()
-        .setPosition(this.x, terrain.getAltitude(this.x) + 1)
-        .setVelocity(this.vx * DAMPEN, Math.abs(this.vy) * DAMPEN);
+        .setPosition(this.x, terrain.getAltitude(this.x) + 0.1)
+        .setVelocity(this.vx * DAMPEN, Math.abs(this.vy) * VDAMPEN);
     }
   }
 }
@@ -257,7 +247,7 @@ class SuperBullet extends Particle {
 class GroundParticle extends SolidParticle {
   constructor() {
     super();
-    this.setColor('#ca4');
+    this.setColor('#ff0');
     this.setRadius(5);
   }
 
