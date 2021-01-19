@@ -27,10 +27,10 @@ function Reset() {
         .setControls('ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Digit0'),
     ];
   }
-  tanks[0].setPosition(200, 75).setDirection(Deg(135)).resetHealth().resetBombs();
-  tanks[1].setPosition(1800, 75).setDirection(Deg(45)).resetHealth().resetBombs();
-  bullets = [];
   terrain = new Terrain();
+  tanks[0].setPosition(200, terrain.getAltitude(200) + 25).setDirection(Deg(135)).reset();
+  tanks[1].setPosition(1800, terrain.getAltitude(1800) + 25).setDirection(Deg(45)).reset();
+  bullets = [];
 }
 
 class Terrain {
@@ -270,22 +270,15 @@ class GroundParticle extends SolidParticle {
   }
 }
 
-class Tank {
+class Tank extends Particle {
   constructor() {
-    this.x = 500;
-    this.y = 0;
+    super();
     this.hp = 1000;
     this.score = 0;
     this.bombs = 10;
     this.direction = 45 * (Math.PI / 180);
     this.color = '#fff';
     this.controls = null;
-  }
-
-  setPosition(x, y) {
-    this.x = x;
-    this.y = y;
-    return this;
   }
 
   setDirection(direction) {
@@ -298,13 +291,11 @@ class Tank {
     return this;
   }
 
-  resetHealth() {
+  reset() {
     this.hp = 1000;
-    return this;
-  }
-
-  resetBombs() {
     this.bombs = 10;
+    this.vx = 0;
+    this.vy = 0;
     return this;
   }
 
@@ -348,17 +339,19 @@ class Tank {
   }
 
   tick() {
+    super.tick();
     if (keys[this.controls[2]]) {
       this.direction += Math.PI / 45;
     }
     if (keys[this.controls[3]]) {
       this.direction -= Math.PI / 45;
     }
-    if (keys[this.controls[0]]) {
-      this.x -= 4;
+    var ground = terrain.getAltitude(this.x);
+    if (this.y - ground < 27 && keys[this.controls[0]]) {
+      this.vx -= 0.5;
     }
-    if (keys[this.controls[1]]) {
-      this.x += 4;
+    if (this.y - ground < 27 && keys[this.controls[1]]) {
+      this.vx += 0.5;
     }
     if (keys[this.controls[4]]) {
       const BULLET_VELOCITY = 40;
@@ -367,8 +360,8 @@ class Tank {
       for (var i = 0; i < RATE; ++i) {
         var vx = Math.cos(this.direction) * BULLET_VELOCITY + PERTURB * (Math.random() - 0.5);
         var vy = Math.sin(this.direction) * BULLET_VELOCITY + PERTURB * (Math.random() - 0.5);
-        var x = this.x;
-        var y = this.y + 10;
+        var x = this.x + Math.cos(this.direction) * 20;
+        var y = this.y + 10 + Math.sin(this.direction) * 20;
         x += vx * (i / RATE);
         y += vy * (i / RATE);
         bullets.push(new Bullet().setPosition(x, y).setVelocity(vx, vy));
@@ -386,19 +379,24 @@ class Tank {
     }
     if (this.x < 0) {
       this.x = 0;
+      this.vx = Math.abs(this.vx);
     }
     if (this.x >= 2000) {
       this.x = 2000;
+      this.vx = -Math.abs(this.vx);
     }
-    var ground = terrain.getAltitude(this.x);
-    this.y = ground + 25;
+    if (this.y < ground + 25) {
+      this.y = ground + 25;
+      this.vx *= 0.9;
+      this.vy = Math.abs(this.vy) * 0.4;
+    }
   }
 
   keydown(code) {
     if (code == this.controls[5] && this.bombs > 0) {
       const BULLET_VELOCITY = 40;
-      var vx = Math.cos(this.direction) * BULLET_VELOCITY;
-      var vy = Math.sin(this.direction) * BULLET_VELOCITY;
+      var vx = this.vx + Math.cos(this.direction) * BULLET_VELOCITY;
+      var vy = this.vy + Math.sin(this.direction) * BULLET_VELOCITY;
       var x = this.x;
       var y = this.y + 10;
       x += vx;
