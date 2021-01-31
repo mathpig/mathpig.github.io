@@ -132,8 +132,8 @@ function DrawScreen() {
   if (players) {
     for (var player in players) {
       var p = players[player];
-      ctx.translate(p.x, p.y);
       ctx.save();
+      ctx.translate(p.x, p.y);
       ctx.scale(1, -1);
       ctx.drawImage(pig, 0, 0, pig.width / 3, pig.height / 3);
       ctx.restore();
