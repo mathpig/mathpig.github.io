@@ -1,5 +1,7 @@
 'use strict';
 
+var nameBox = document.getElementById('nameBox');
+
 var firebaseConfig = {
   apiKey: "AIzaSyBCZBtI9hsU_F03ijDmlDDyfO-k8iQee1A",
   authDomain: "piggies.firebaseapp.com",
@@ -31,12 +33,14 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     userId = user.uid;
     console.log('my id is: ' + userId);
+    firebase.database().ref('users').child(userId).child('name').once('value').then((snapshot) => {
+      nameBox.value = snapshot.val();
+    });
   } else {
     console.log('logged out');
   }
 });
 
-var nameBox = document.getElementById('nameBox');
 nameBox.oninput = function() {
   if (!userId) {
     return;
