@@ -1,5 +1,7 @@
 'use strict';
 
+const SPEED = 2;
+
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 var keys = {};
@@ -130,7 +132,11 @@ function DrawScreen() {
   if (players) {
     for (var player in players) {
       var p = players[player];
-      ctx.drawImage(pig, p.x, p.y, pig.width, pig.height);
+      ctx.translate(p.x, p.y);
+      ctx.save();
+      ctx.scale(1, -1);
+      ctx.drawImage(pig, 0, 0, pig.width / 3, pig.height / 3);
+      ctx.restore();
     }
   }
 
@@ -138,6 +144,37 @@ function DrawScreen() {
 }
 
 function Tick() {
+  if (!roomState['players']) {
+    return;
+  }
+  var me = roomState.players[userId];
+  if (!me) {
+    return;
+  }
+  var dirty = false;
+  if (keys['ArrowLeft']) {
+    me.x -= SPEED;
+    dirty = true;
+  }
+  if (keys['ArrowRight']) {
+    me.x += SPEED;
+    dirty = true;
+  }
+  if (keys['ArrowDown']) {
+    me.y -= SPEED;
+    dirty = true;
+  }
+  if (keys['ArrowUp']) {
+    me.y += SPEED;
+    dirty = true;
+  }
+  if (dirty) {
+    var meRef = roomRef.child('players').child(userId);
+      meRef.update({
+      x: me.x,
+      y: me.y,
+    });
+  }
 }
 
 function Update() {
