@@ -1,45 +1,59 @@
 <!DOCTYPE html>
+<head>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+div {
+  margin: 0px 20px;
+  padding: 5px;
+}
+#game_screen {
+  margin: 0;
+  padding: 0;
+}
+</style>
+</head>
 <body>
-<div id="main_screen">
+<div id="main_screen" class="screen">
   <h1>Pig Murder</h1>
   <button id="create_game_button">Create Game</button><br/><br/>
   <button id="find_game_button">Find Game</button><br/><br/>
-  <button id="enter_code_button">Enter Code</button>
+  <button id="enter_code_button">Enter Code</button><br/><br/>
+  <button id="settings_button">Settings</button>
 </div>
-
-<div id="settings_screen" style="display:none">
+<div id="settings_screen" class="screen" style="display:none">
   <h1>Settings</h1>
   Your Name:<br/>
   <input id="nameBox" size="40" maxlength="40"><br/><br/>
   <button id="settings_back">Back</button>
 </div>
-
-<div id="create_game_screen" style="display:none">
+<div id="create_game_screen" class="screen" style="display:none">
   <h1>Create New Game</h1>
-  <button id="create_game_go">Create</button><br/><br/>
+  <button id="create_game_go_button">Create</button><br/><br/>
   <button id="create_game_back">Back</button>
 </div>
-
-<div id="find_game_screen" style="display:none">
+<div id="find_game_screen" class="screen" style="display:none">
   <h1>Join Public Game</h1>
   Game List:<br/>
-  <pre id="userList"></pre>
+  <div id="game_list"></div>
   <button id="find_game_back">Back</button>
 </div>
-
-<div id="enter_code_screen" style="display:none">
+<div id="enter_code_screen" class="screen" style="display:none">
   <h1>Enter a Private Code</h1>
   Enter Code:<br/>
   <input id="codeBox" size="10" maxlength="10">
-  <button id="enter_code_go">Enter</button>
+  <button id="enter_code_go">Start</button>
   <br/><br/>
   <button id="enter_code_back">Back</button>
 </div>
-
+<img id="pig4" src="images/pig4.png" style="display: none">
+<canvas id="screen" class="screen" style="display:none"></canvas>
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-database.js"></script>
 <script src="pigmurder.js"></script>
-
 </body>
