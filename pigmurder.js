@@ -102,13 +102,10 @@ function JoinGame(roomId) {
   ShowScreen(screen);
   roomRef = firebase.database().ref('rooms').child(roomId);
   roomRef.on('value', RoomChange);
-  roomRef.update({
-    players: {
-      [userId]: {
-        x: Math.random() * 1000,
-        y: Math.random() * 1000,
-      },
-    },
+  var me = roomRef.child('players').child(userId);
+  me.update({
+    x: Math.random() * 1000,
+    y: Math.random() * 1000,
   });
 }
 
