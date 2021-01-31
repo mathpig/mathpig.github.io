@@ -1,11 +1,40 @@
 <!DOCTYPE html>
 <body>
-Your Name:<br/>
-<input id="nameBox" size="60">
-<br/>
-<br/>
-User List:<br/>
-<pre id="userList"></pre>
+<div id="main_screen">
+  <h1>Pig Murder</h1>
+  <button id="create_game_button">Create Game</button><br/><br/>
+  <button id="find_game_button">Find Game</button><br/><br/>
+  <button id="enter_code_button">Enter Code</button>
+</div>
+
+<div id="settings_screen" style="display:none">
+  <h1>Settings</h1>
+  Your Name:<br/>
+  <input id="nameBox" size="40" maxlength="40"><br/><br/>
+  <button id="settings_back">Back</button>
+</div>
+
+<div id="create_game_screen" style="display:none">
+  <h1>Create New Game</h1>
+  <button id="create_game_go">Create</button><br/><br/>
+  <button id="create_game_back">Back</button>
+</div>
+
+<div id="find_game_screen" style="display:none">
+  <h1>Join Public Game</h1>
+  Game List:<br/>
+  <pre id="userList"></pre>
+  <button id="find_game_back">Back</button>
+</div>
+
+<div id="enter_code_screen" style="display:none">
+  <h1>Enter a Private Code</h1>
+  Enter Code:<br/>
+  <input id="codeBox" size="10" maxlength="10">
+  <button id="enter_code_go">Enter</button>
+  <br/><br/>
+  <button id="enter_code_back">Back</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
