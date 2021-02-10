@@ -12,6 +12,7 @@ const PITCHS = {
   'f#': -3,
   'g=': -2,
   'a=': 0,
+  'b-': 1,
   'b=': 2,
 };
 
@@ -131,6 +132,11 @@ document.getElementById('play').onclick = function() {
   ^e3.8 f16 d16 c4 r4
   g4 g4 r4 a4
   g32 f7.32 f4 r8 f#8 a8 g8
+  f32 e7.32 e4 r8 e8 g8 e8
+  c#3.8 d16 e16 d4 r8 f8
+  e3.8 f16 g16 f4 r4
+  c^c8 vc^c8 vc^c2 vb8 a8
+  cg8 cg8 cg2 f8 e8
   `);
   var left = Song(now, `
   r8 vvc^c2 vg2
@@ -144,6 +150,11 @@ document.getElementById('play').onclick = function() {
   ^e3.8 f16 d16 c4 r4
   e8 g8 e8 g8 c#8 g8 c#8 g8
   d8 g8 d8 g8 vb8 ^g8 vb8 ^g8
+  c8 g8 c8 g8 e8 g8 e8 g8
+  gb-2 fa4 r4
+  gb-2 a^c4 r4
+  a8 ^c8 va8 ^c8 vf8 ^c8 vf8 ^c8
+  ve8 ^c8 ve8 ^c8 vc8 ^c8 vc8 ^c8
   `); 
   left();
   right();
