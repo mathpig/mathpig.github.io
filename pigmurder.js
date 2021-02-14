@@ -7,6 +7,7 @@ var ctx = screen.getContext('2d');
 var keys = {};
 var roomRef;
 var roomState = {};
+var lastUpdated = new Date().getTime();
 
 var mainScreen = document.getElementById('main_screen');
 var settingsScreen = document.getElementById('settings_screen');
@@ -89,6 +90,7 @@ document.getElementById('create_game_go_button').onclick = function() {
       [userId]: {
         x: Math.random() * 1000,
         y: Math.random() * 1000,
+        lastActive: firebase.database.ServerValue.TIMESTAMP,
       },
     },
   }).then(function() {;
@@ -108,6 +110,7 @@ function JoinGame(roomId) {
   me.update({
     x: Math.random() * 1000,
     y: Math.random() * 1000,
+    lastActive: firebase.database.ServerValue.TIMESTAMP,
   });
 }
 
@@ -168,12 +171,22 @@ function Tick() {
     me.y += SPEED;
     dirty = true;
   }
-  if (dirty) {
+  var now = new Date().getTime();
+  if (dirty || now > lastUpdated + 1000) {
     var meRef = roomRef.child('players').child(userId);
       meRef.update({
       x: me.x,
       y: me.y,
+      lastActive: firebase.database.ServerValue.TIMESTAMP,
     });
+    lastUpdated = now;
+  }
+  for (var i in roomState['players']) {
+    var player = roomState['players'][i];
+    if (player.lastActive > now + 2500) {
+      var ref = roomRef.child('players').child(i);
+      ref.removeValue();
+    }
   }
 }
 
