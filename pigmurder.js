@@ -85,18 +85,11 @@ document.getElementById('create_game_go_button').onclick = function() {
     return;
   }
   HideAllScreens();
-  var ref = firebase.database().ref('rooms').push();
-  ref.set({
+  var roomRef = firebase.database().ref().child('publicRooms').push();
+  roomRef.update({
     name: nameBox.value,
-    players: {
-      [userId]: {
-        x: Math.random() * 1500,
-        y: Math.random() * 1000,
-        lastActive: firebase.database.ServerValue.TIMESTAMP,
-      },
-    },
-  }).then(function() {;
-    JoinGame(ref.key);
+  }).then(function() {
+    JoinGame(roomRef.key);
   });
 };
 
@@ -106,13 +99,14 @@ function RoomChange(snapshot) {
 
 function JoinGame(roomId) {
   ShowScreen(screen);
-  roomRef = firebase.database().ref('rooms').child(roomId);
-  roomRef.on('value', RoomChange);
-  var me = roomRef.child('players').child(userId);
+  var me = firebase.database().ref().child('rooms').child(roomId).child('players').child(userId);
   me.update({
     x: Math.random() * 1500,
     y: Math.random() * 1000,
     lastActive: firebase.database.ServerValue.TIMESTAMP,
+  }).then(function() {
+    roomRef = firebase.database().ref().child('rooms').child(roomId);
+    roomRef.on('value', RoomChange);
   });
 }
 
@@ -254,13 +248,13 @@ nameBox.oninput = function() {
   if (!userId) {
     return;
   }
-  firebase.database().ref('users/' + userId).set({
+  firebase.database().ref('users').child(userId).update({
     name: nameBox.value,
   });
 };
 
-var userListRef = firebase.database().ref('rooms');
-userListRef.on('value', (snapshot) => {
+var publicRoomListRef = firebase.database().ref('publicRooms');
+publicRoomListRef.on('value', (snapshot) => {
   var gameList = document.getElementById('game_list');
   gameList.innerHTML = '';
   const rooms = snapshot.val();
