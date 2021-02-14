@@ -1,6 +1,6 @@
 'use strict';
 
-const SPEED = 2;
+const SPEED = 5;
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
@@ -16,6 +16,8 @@ var findGameScreen = document.getElementById('find_game_screen');
 var enterCodeScreen = document.getElementById('enter_code_screen');
 
 var nameBox = document.getElementById('nameBox');
+  
+var pig = document.getElementById('pig4');
 
 var firebaseConfig = {
   apiKey: "AIzaSyBCZBtI9hsU_F03ijDmlDDyfO-k8iQee1A",
@@ -88,7 +90,7 @@ document.getElementById('create_game_go_button').onclick = function() {
     name: nameBox.value,
     players: {
       [userId]: {
-        x: Math.random() * 1000,
+        x: Math.random() * 1500,
         y: Math.random() * 1000,
         lastActive: firebase.database.ServerValue.TIMESTAMP,
       },
@@ -108,7 +110,7 @@ function JoinGame(roomId) {
   roomRef.on('value', RoomChange);
   var me = roomRef.child('players').child(userId);
   me.update({
-    x: Math.random() * 1000,
+    x: Math.random() * 1500,
     y: Math.random() * 1000,
     lastActive: firebase.database.ServerValue.TIMESTAMP,
   });
@@ -125,18 +127,21 @@ function DrawScreen() {
 
   ctx.save();
 
-  ctx.translate(screen.width / 2 - screen.height, 0);
+  ctx.translate(screen.width / 2 - screen.height / 2 * 1.5, 0);
   ctx.scale(screen.height / 1000, screen.height / 1000);
   ctx.translate(0, 1000);
   ctx.scale(1, -1);
 
-  var pig = document.getElementById('pig4');
+  ctx.fillStyle = '#333';
+  ctx.fillRect(0, 0, 1500, 1000);
+
   var players = roomState['players'];
   if (players) {
     for (var player in players) {
       var p = players[player];
       ctx.save();
       ctx.translate(p.x, p.y);
+      ctx.translate(0, pig.height / 3);
       ctx.scale(1, -1);
       ctx.drawImage(pig, 0, 0, pig.width / 3, pig.height / 3);
       ctx.restore();
@@ -170,6 +175,18 @@ function Tick() {
   if (keys['ArrowUp']) {
     me.y += SPEED;
     dirty = true;
+  }
+  if (me.x < 0) {
+    me.x = 0;
+  }
+  if (me.x + pig.width / 3 > 1500) {
+    me.x = 1500 - pig.width / 3;
+  }
+  if (me.y < 0) {
+    me.y = 0;
+  }
+  if (me.y + pig.height / 3 > 1000) {
+    me.y = 1000 - pig.height / 3;
   }
   var now = new Date().getTime();
   if (dirty || now > lastUpdated + 1000) {
