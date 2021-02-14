@@ -183,7 +183,7 @@ function Tick() {
   }
   for (var i in roomState['players']) {
     var player = roomState['players'][i];
-    if (player.lastActive > now + 2500) {
+    if (player.lastActive < now - 2500) {
       var ref = roomRef.child('players').child(i);
       ref.removeValue();
     }
