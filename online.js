@@ -236,6 +236,11 @@ class Online {
     return roomState;
   }
 
+  start() {
+    var myPublicRoomRef = firebase.database().ref().child('publicRooms').child(userId);
+    myPublicRoomRef.onDisconnect().remove();
+  }
+
   update() {
     var dirty = false;
     var oldState = this.player(this.playerNumber());
@@ -248,7 +253,7 @@ class Online {
       Object.assign(roomState[this.playerNumber()], playerState);
       var meRef = roomRef.child(playerIndex);
       meRef.update(playerState).catch(function() {
-        roomData = {};
+        roomState = {};
         ShowScreen(mainScreen);
       });
     }
