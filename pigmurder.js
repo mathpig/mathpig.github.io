@@ -231,9 +231,11 @@ function Tick() {
   var now = new Date().getTime();
   if (dirty) {
     var meRef = roomRef.child(playerIndex);
-      meRef.update({
+    meRef.update({
       x: me.x,
       y: me.y,
+    }).catch(function() {
+      ShowScreen(mainScreen);
     });
   }
 }
@@ -301,6 +303,9 @@ publicRoomListRef.on('value', (snapshot) => {
   const rooms = snapshot.val();
   for (var r in rooms) {
     var room = rooms[r];
+    if (room[1] && room[2] && room[3] && room[4]) {
+      continue;
+    }
     var item = document.createElement('div');
     var name = document.createElement('span');
     name.innerText = room.name + ' ';
