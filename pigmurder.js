@@ -6,7 +6,10 @@ var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 var keys = {};
 var roomRef;
+var roomPlayersRef;
 var roomState = {};
+var roomPlayersRef;
+var roomPlayers = {};
 var playerIndex = 0;
 
 var mainScreen = document.getElementById('main_screen');
@@ -107,9 +110,28 @@ function CreateGame(e) {
       4: e.target.dataset.playerIndex == 4,
     });
   }).then(function() {
+    roomPlayersRef = firebase.database().ref().child('rooms').child(userId).child('players');
+    roomPlayersRef.on('value', PlayersChange);
     JoinGame(userId, e.target.dataset.playerIndex);
   });
 };
+
+function UpdatePlayers() {
+  var publicRoomRef = firebase.database().ref().child('publicRooms').child(userId);
+  return publicRoomRef.update({
+    name: nameBox.value,
+    lastActive: firebase.database.ServerValue.TIMESTAMP,
+    1: roomPlayers['1'] !== undefined,
+    2: roomPlayers['2'] !== undefined,
+    3: roomPlayers['3'] !== undefined,
+    4: roomPlayers['4'] !== undefined,
+  });
+}
+
+function PlayersChange(snapshot) {
+  roomPlayers = snapshot.val();
+  UpdatePlayers();
+}
 
 function RoomChange(snapshot) {
   roomState = snapshot.val();
@@ -120,7 +142,9 @@ function JoinGame(roomId, index) {
   playersRef.update({
     [index]: userId,
   }).then(function() {
+    playersRef.child(index).onDisconnect().remove();
     var boardRef = firebase.database().ref().child('rooms').child(roomId).child('board').child(index);
+    boardRef.onDisconnect().remove();
     return boardRef.update({    
       x: Math.random() * 1500,
       y: Math.random() * 1000,
@@ -252,6 +276,10 @@ firebase.auth().onAuthStateChanged((user) => {
     firebase.database().ref('users').child(userId).child('name').once('value').then((snapshot) => {
       nameBox.value = snapshot.val();
     });
+    var myRoomRef = firebase.database().ref().child('rooms').child(userId);
+    myRoomRef.onDisconnect().remove();
+    var myPublicRoomRef = firebase.database().ref().child('publicRooms').child(userId);
+    myPublicRoomRef.onDisconnect().remove();
   } else {
     console.log('logged out');
   }
