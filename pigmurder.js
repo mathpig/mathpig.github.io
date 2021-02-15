@@ -7,7 +7,7 @@ var ctx = screen.getContext('2d');
 var keys = {};
 var roomRef;
 var roomState = {};
-var lastUpdated = new Date().getTime();
+var playerIndex = 0;
 
 var mainScreen = document.getElementById('main_screen');
 var settingsScreen = document.getElementById('settings_screen');
@@ -80,16 +80,34 @@ document.getElementById('settings_back').onclick = function() {
   ShowScreen(mainScreen);
 };
 
-document.getElementById('create_game_go_button').onclick = function() {
+document.getElementById('create_game_go_button1').onclick = CreateGame;
+document.getElementById('create_game_go_button2').onclick = CreateGame;
+document.getElementById('create_game_go_button3').onclick = CreateGame;
+document.getElementById('create_game_go_button4').onclick = CreateGame;
+
+function CreateGame(e) {
   if (!userId) {
     return;
   }
   HideAllScreens();
-  var roomRef = firebase.database().ref().child('publicRooms').push();
-  roomRef.update({
-    name: nameBox.value,
+  var newRoom = {
+    lastActive: firebase.database.ServerValue.TIMESTAMP,
+    players: {
+      [e.target.dataset.playerIndex]: userId,
+    }
+  };
+  firebase.database().ref().child('rooms').child(userId).set(newRoom).then(function() {
+    var publicRoomRef = firebase.database().ref().child('publicRooms').child(userId);
+    return publicRoomRef.update({
+      name: nameBox.value,
+      lastActive: firebase.database.ServerValue.TIMESTAMP,
+      1: e.target.dataset.playerIndex == 1,
+      2: e.target.dataset.playerIndex == 2,
+      3: e.target.dataset.playerIndex == 3,
+      4: e.target.dataset.playerIndex == 4,
+    });
   }).then(function() {
-    JoinGame(roomRef.key);
+    JoinGame(userId, e.target.dataset.playerIndex);
   });
 };
 
@@ -97,16 +115,21 @@ function RoomChange(snapshot) {
   roomState = snapshot.val();
 }
 
-function JoinGame(roomId) {
-  ShowScreen(screen);
-  var me = firebase.database().ref().child('rooms').child(roomId).child('players').child(userId);
-  me.update({
-    x: Math.random() * 1500,
-    y: Math.random() * 1000,
-    lastActive: firebase.database.ServerValue.TIMESTAMP,
+function JoinGame(roomId, index) {
+  var playersRef = firebase.database().ref().child('rooms').child(roomId).child('players');
+  playersRef.update({
+    [index]: userId,
   }).then(function() {
-    roomRef = firebase.database().ref().child('rooms').child(roomId);
+    var boardRef = firebase.database().ref().child('rooms').child(roomId).child('board').child(index);
+    return boardRef.update({    
+      x: Math.random() * 1500,
+      y: Math.random() * 1000,
+    });
+  }).then(function() {
+    ShowScreen(screen);
+    roomRef = firebase.database().ref().child('rooms').child(roomId).child('board');
     roomRef.on('value', RoomChange);
+    playerIndex = index;
   });
 }
 
@@ -129,10 +152,9 @@ function DrawScreen() {
   ctx.fillStyle = '#333';
   ctx.fillRect(0, 0, 1500, 1000);
 
-  var players = roomState['players'];
-  if (players) {
-    for (var player in players) {
-      var p = players[player];
+  if (roomState) {
+    for (var player in roomState) {
+      var p = roomState[player];
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.translate(0, pig.height / 3);
@@ -146,10 +168,10 @@ function DrawScreen() {
 }
 
 function Tick() {
-  if (!roomState['players']) {
+  if (!roomState[playerIndex]) {
     return;
   }
-  var me = roomState.players[userId];
+  var me = roomState[playerIndex];
   if (!me) {
     return;
   }
@@ -183,21 +205,12 @@ function Tick() {
     me.y = 1000 - pig.height / 3;
   }
   var now = new Date().getTime();
-  if (dirty || now > lastUpdated + 1000) {
-    var meRef = roomRef.child('players').child(userId);
+  if (dirty) {
+    var meRef = roomRef.child(playerIndex);
       meRef.update({
       x: me.x,
       y: me.y,
-      lastActive: firebase.database.ServerValue.TIMESTAMP,
     });
-    lastUpdated = now;
-  }
-  for (var i in roomState['players']) {
-    var player = roomState['players'][i];
-    if (player.lastActive < now - 2500) {
-      var ref = roomRef.child('players').child(i);
-      ref.remove();
-    }
   }
 }
 
@@ -264,14 +277,20 @@ publicRoomListRef.on('value', (snapshot) => {
     var name = document.createElement('span');
     name.innerText = room.name + ' ';
     item.appendChild(name);
-    var button = document.createElement('button');
-    button.innerText = 'Join';
-    button.gameId = r;
-    button.onclick = function(e) {
-      HideAllScreens();
-      JoinGame(e.target.gameId);
-    };
-    item.appendChild(button);
+    for (var i = 1; i <= 4; ++i) {
+      if (room[i]) {
+        continue;
+      }
+      var button = document.createElement('button');
+      button.innerText = 'Join as Player' + i;
+      button.gameId = r;
+      button.gameIndex = i;
+      button.onclick = function(e) {
+        HideAllScreens();
+        JoinGame(e.target.gameId, e.target.gameIndex);
+      };
+      item.appendChild(button);
+    }
     gameList.appendChild(item);
   }
 });
