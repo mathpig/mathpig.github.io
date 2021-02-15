@@ -13,10 +13,8 @@ var roomPlayers = {};
 var playerIndex = 0;
 
 var mainScreen = document.getElementById('main_screen');
-var settingsScreen = document.getElementById('settings_screen');
 var createGameScreen = document.getElementById('create_game_screen');
 var findGameScreen = document.getElementById('find_game_screen');
-var enterCodeScreen = document.getElementById('enter_code_screen');
 
 var nameBox = document.getElementById('nameBox');
   
@@ -64,22 +62,6 @@ document.getElementById('find_game_button').onclick = function() {
 };
 
 document.getElementById('find_game_back').onclick = function() {
-  ShowScreen(mainScreen);
-};
-
-document.getElementById('enter_code_button').onclick = function() {
-  ShowScreen(enterCodeScreen);
-};
-
-document.getElementById('enter_code_back').onclick = function() {
-  ShowScreen(mainScreen);
-};
-
-document.getElementById('settings_button').onclick = function() {
-  ShowScreen(settingsScreen);
-};
-
-document.getElementById('settings_back').onclick = function() {
   ShowScreen(mainScreen);
 };
 
