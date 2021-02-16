@@ -429,10 +429,18 @@ class PigEntity extends GravityEntity {
   }
 
   frame() {
-    if (joystick[0] || joystick[1]) {
-      return Math.floor(this.frameNum / 4);
+    if (online.playerNumber() == this.playerNumber) {
+      if (joystick[0] || joystick[1]) {
+        return Math.floor(this.frameNum / 4);
+      } else {
+        return 4;
+      }
     } else {
-      return 4;
+      if (Math.abs(this.vx) > 0.1) {
+        return Math.floor(this.frameNum / 4);
+      } else {
+        return 4;
+      }
     }
   }
 
@@ -442,6 +450,9 @@ class PigEntity extends GravityEntity {
 
   tick() {
     super.tick();
+    if (online.playerNumber() != this.playerNumber) {
+      return;
+    }
     if (joystick[0] || joystick[1]) {
       this.frameNum = (this.frameNum + 1) % 16;
     }
@@ -557,7 +568,7 @@ class Decoration extends BlockEntity {
 class Ladder extends Decoration {
   repel(e) {
     super.repel(e);
-    if (this.intersect(e) && e.isPlayer()) {
+    if (this.intersect(e) && e.isPlayer() && e.playerNumber == online.playerNumber()) {
       if (joystick[2]) {
         e.vy = -10;
       } else if (joystick[3]) {
@@ -608,7 +619,7 @@ function WaterEffect(me, e) {
   if (Math.abs(e.vy) > 0.5) {
     e.vy *= 0.99;
   }
-  if (!e.isPlayer() || !joystick[3]) {
+  if (!(e.isPlayer() && this.playerNumber == online.playerNumber()) || !joystick[3]) {
     e.vy -= 0.15;
   }
 }
