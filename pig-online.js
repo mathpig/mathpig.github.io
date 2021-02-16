@@ -890,12 +890,14 @@ function OnlineSync() {
       user = e;
       p.x = Math.floor(e.x);
       p.y = Math.floor(e.y);
-      //p.vx = Math.floor(e.vx);
+      p.angle = e.direction;
+      p.vx = Math.floor(e.vx);
       //p.vy = Math.floor(e.vy);
     } else {
       e.x = p.x;
       e.y = p.y;
-      //e.vx = p.vx;
+      e.direction = p.angle;
+      e.vx = p.vx;
       //e.vy = p.vy;
     }
   }
