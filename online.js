@@ -126,6 +126,12 @@ function JoinGame(roomId, index) {
     return boardRef.update({    
       x: Math.random() * 1500,
       y: Math.random() * 1000,
+      vx: 0,
+      vy: 0,
+      level: 0,
+      angle: 0,
+      fire1: 0,
+      fire2: 0,
     });
   }).then(function() {
     ShowScreen(screen);
