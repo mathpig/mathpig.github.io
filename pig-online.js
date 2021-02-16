@@ -632,7 +632,7 @@ function WaterEffect(me, e) {
   if (Math.abs(e.vy) > 0.5) {
     e.vy *= 0.99;
   }
-  if (!e.isPlayer() || this.playerNumber != online.playerNumber() || !joystick[3]) {
+  if (!e.isPlayer() || (this.playerNumber == online.playerNumber() && !joystick[3])) {
     e.vy -= 0.15;
   }
 }
