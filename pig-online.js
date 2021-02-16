@@ -421,6 +421,16 @@ class PigEntity extends GravityEntity {
     this.jump_limit = 0;
   }
 
+  draw() {
+    if (this.playerNumber == 0) {
+      return;
+    }
+    ctx.save();
+    ctx.filter = 'hue-rotate(' + (this.playerNumber * 90) + 'deg)';
+    super.draw();
+    ctx.restore();
+  }
+
   shoot() {
     if (this.cannonballs > 0) {
       this.cannonballs--;
