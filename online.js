@@ -8,7 +8,16 @@ var roomState = {};
 var roomPlayersRef;
 var roomPlayers = {};
 var playerIndex = 0;
-var playerState = {};
+var playerState = {
+  x: 0,
+  y: 0,
+  vx: 0,
+  vy: 0,
+  level: 0,
+  angle: 0,
+  fire1: 0,
+  fire2: 0,
+};
 
 var screen = document.getElementById('screen');
 var mainScreen = document.getElementById('main_screen');
@@ -123,16 +132,7 @@ function JoinGame(roomId, index) {
     playersRef.child(index).onDisconnect().remove();
     var boardRef = firebase.database().ref().child('rooms').child(roomId).child('board').child(index);
     boardRef.onDisconnect().remove();
-    return boardRef.update({    
-      x: Math.random() * 1500,
-      y: Math.random() * 1000,
-      vx: 0,
-      vy: 0,
-      level: 0,
-      angle: 0,
-      fire1: 0,
-      fire2: 0,
-    });
+    return boardRef.update(playerState);
   }).then(function() {
     ShowScreen(screen);
     roomRef = firebase.database().ref().child('rooms').child(roomId).child('board');
@@ -230,11 +230,13 @@ class Online {
   }
 
   player(i) {
+    if (i == this.playerNumber()) {
+      return this.me();
+    }
     return roomState[i];
   }
 
   me() {
-    Object.assign(playerState, this.player(this.playerNumber()));
     return playerState;
   }
 
