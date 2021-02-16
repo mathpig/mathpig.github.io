@@ -461,6 +461,9 @@ class PigEntity extends GravityEntity {
   tick() {
     super.tick();
     if (online.playerNumber() != this.playerNumber) {
+      if (Math.abs(this.vx) > 1) {
+        this.frameNum = (this.frameNum + 1) % 16;
+      }
       return;
     }
     if (joystick[0] || joystick[1]) {
@@ -892,13 +895,13 @@ function OnlineSync() {
       p.y = Math.floor(e.y);
       p.angle = e.direction;
       p.vx = Math.floor(e.vx);
-      //p.vy = Math.floor(e.vy);
+      p.vy = Math.floor(e.vy * 4) / 4;
     } else {
       e.x = p.x;
       e.y = p.y;
       e.direction = p.angle;
       e.vx = p.vx;
-      //e.vy = p.vy;
+      e.vy = p.vy;
     }
   }
   online.update();
