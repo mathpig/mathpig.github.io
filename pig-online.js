@@ -969,6 +969,9 @@ function Tick() {
 }
 
 window.onkeydown = function(e) {
+  if (!online.playing()) {
+    return;
+  }
   if (e.keyCode == 37) {
     user.joystick[0] = 1;
   } else if (e.keyCode == 39) {
@@ -981,6 +984,9 @@ window.onkeydown = function(e) {
 };
 
 window.onkeyup = function(e) {
+  if (!online.playing()) {
+    return;
+  }
   if (e.keyCode == 37) {
     user.joystick[0] = 0;
   } else if (e.keyCode == 39) {
