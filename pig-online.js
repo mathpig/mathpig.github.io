@@ -852,7 +852,7 @@ function SaveLevel() {
 function OnlineSync() {
   var template;
   for (var i = 0; i < entities.length; ++i) {
-    if (entities[i].isPlayer()) {
+    if (entities[i].isPlayer() && entities[i].playerNumber == 0) {
       template = entities[i];
       break;
     }
@@ -863,21 +863,24 @@ function OnlineSync() {
   var to_remove = [];
   var where = {};
   for (var i = 0; i < entities.length; ++i) {
-    if (entities[i].isPlayer() && entities[i].playerNumber != 0) {
-      var remove = true;
-      for (var player in online.players()) {
-        if (where[player]) {
-          continue;
-        }
-        var p = online.player(player);
-        if (p.level != currentLevel) {
-          continue;
-        }
-        if (entities[i].playerNumber == player) {
-          where[player] = entities[i];
-          remove = false;
-        }
+    if (!entities[i].isPlayer() || entities[i].playerNumber == 0) {
+      continue;
+    }
+    var remove = true;
+    for (var player in online.players()) {
+      if (where[player]) {
+        continue;
       }
+      var p = online.player(player);
+      if (p.level != currentLevel) {
+        continue;
+      }
+      if (entities[i].playerNumber == player) {
+        where[player] = entities[i];
+        remove = false;
+      }
+    }
+    if (remove) {
       to_remove.push(entities[i]);
     }
   }
