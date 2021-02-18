@@ -946,7 +946,12 @@ function Tick() {
       entities[i].repel(entities[j]);
     }
   }
+  if (user) {
+    Draw();
+  }
+}
 
+function Draw() {
   // Fill Background
   ctx.fillStyle = '#030';
   ctx.fillRect(0, 0, canvas.width, canvas.height);

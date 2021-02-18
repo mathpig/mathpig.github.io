@@ -256,6 +256,9 @@ class Online {
   update() {
     var dirty = false;
     var oldState = roomState[this.playerNumber()];
+    if (!oldState) {
+      return;
+    }
     for (var k in playerState) {
       if (oldState[k] != playerState[k]) {
         dirty = true;
