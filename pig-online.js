@@ -404,7 +404,9 @@ class PigEntity extends GravityEntity {
   }
 
   kill() {
-    LoadLevel(currentLevel);
+    if (this.playerNumber == online.playerNumber()) {
+      LoadLevel(currentLevel);
+    }
   }
 
   affectedBy(e) {
@@ -604,7 +606,7 @@ class BounceEntity extends BlockEntity {
 
 class EndEntity extends BlockEntity {
   touched(e) {
-    if (e.isPlayer()) {
+    if (e.isPlayer() && e.playerNumber == online.playerNumber()) {
       LoadLevel(currentLevel + 1);
     }
   }
@@ -858,15 +860,28 @@ function OnlineSync() {
   if (template === undefined) {
     return;
   }
+  var to_remove = [];
   var where = {};
   for (var i = 0; i < entities.length; ++i) {
-    if (entities[i].isPlayer()) {
+    if (entities[i].isPlayer() && entities[i].playerNumber != 0) {
+      var remove = true;
       for (var player in online.players()) {
+        if (where[player]) {
+          continue;
+        }
+        var p = online.player(player);
+        if (p.level != currentLevel) {
+          continue;
+        }
         if (entities[i].playerNumber == player) {
           where[player] = entities[i];
+          remove = false;
         }
       }
     }
+  }
+  for (var i = 0; i < to_remove.length; ++i) {
+    entities.remove(to_remove[i]);
   }
   for (var player in online.players()) {
     if (!where[player]) {
@@ -884,6 +899,7 @@ function OnlineSync() {
       p.angle = e.direction;
       p.vx = Math.floor(e.vx);
       p.vy = Math.floor(e.vy * 4) / 4;
+      p.level = currentLevel;
       for (var i = 0; i < 4; ++i) {
         p['key' + i] = e.joystick[i];
       }
