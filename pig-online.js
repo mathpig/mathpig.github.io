@@ -397,6 +397,12 @@ class PigEntity extends GravityEntity {
     return this;
   }
 
+  clone() {
+    var o = super.clone();
+    o.joystick = Object.assign(Object.create(Object.getPrototypeOf(this.joystick)), this.joystick);
+    return o;
+  }
+
   kill() {
     LoadLevel(currentLevel);
   }
