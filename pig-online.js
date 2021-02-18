@@ -786,6 +786,9 @@ function LoadPalette() {
 
 function LoadLevel(levelNum) {
   currentLevel = levelNum;
+  var me = online.me();
+  me.level = levelNum;
+  online.update();
   var items = LEVELS[levelNum];
   entities = [];
   for (var j = 0; j < items.length; ++j) {
