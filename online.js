@@ -15,8 +15,12 @@ var playerState = {
   vy: 0,
   level: 0,
   angle: 0,
-  fire1: 0,
-  fire2: 0,
+  key0: 0,
+  key1: 0,
+  key2: 0,
+  key3: 0,
+  key4: 0,
+  key5: 0,
 };
 
 var screen = document.getElementById('screen');

@@ -119,7 +119,6 @@ var worldTransform;
 var paletteTransform;
 var user;
 var currentLevel = 0;
-var joystick = [0, 0, 0, 0];
 
 class Entity {
   constructor() {
@@ -151,12 +150,12 @@ class Entity {
     this.shape = shape;
     return this;
   }
-  
+
   setCharCode(code) {
     this.charCode = code;
     return this;
   }
-  
+
   setSize(w, h) {
     this.w = w;
     this.h = h;
@@ -387,6 +386,7 @@ class PigEntity extends GravityEntity {
     this.cannonballs = 5;
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
+    this.joystick = [0, 0, 0, 0];
     user = this;
   }
 
@@ -439,18 +439,10 @@ class PigEntity extends GravityEntity {
   }
 
   frame() {
-    if (online.playerNumber() == this.playerNumber) {
-      if (joystick[0] || joystick[1]) {
-        return Math.floor(this.frameNum / 4);
-      } else {
-        return 4;
-      }
+    if (this.joystick[0] || this.joystick[1]) {
+      return Math.floor(this.frameNum / 4);
     } else {
-      if (Math.abs(this.vx) > 0.1) {
-        return Math.floor(this.frameNum / 4);
-      } else {
-        return 4;
-      }
+      return 4;
     }
   }
 
@@ -460,24 +452,18 @@ class PigEntity extends GravityEntity {
 
   tick() {
     super.tick();
-    if (online.playerNumber() != this.playerNumber) {
-      if (Math.abs(this.vx) > 1) {
-        this.frameNum = (this.frameNum + 1) % 16;
-      }
-      return;
-    }
-    if (joystick[0] || joystick[1]) {
+    if (this.joystick[0] || this.joystick[1]) {
       this.frameNum = (this.frameNum + 1) % 16;
     }
-    if (joystick[0]) {
+    if (this.joystick[0]) {
       this.vx -= 0.5;
       this.direction = -1;
     }
-    if (joystick[1]) {
+    if (this.joystick[1]) {
       this.vx += 0.5;
       this.direction = 1;
     }
-    if (joystick[2]) {
+    if (this.joystick[2]) {
       if (this.jump_limit < 10) {
         this.vy -= 1;
         this.jump_limit += 1;
@@ -581,10 +567,10 @@ class Decoration extends BlockEntity {
 class Ladder extends Decoration {
   repel(e) {
     super.repel(e);
-    if (this.intersect(e) && e.isPlayer() && e.playerNumber == online.playerNumber()) {
-      if (joystick[2]) {
+    if (this.intersect(e) && e.isPlayer()) {
+      if (this.joystick[2]) {
         e.vy = -10;
-      } else if (joystick[3]) {
+      } else if (this.joystick[3]) {
         e.vy = 10;
       } else {
         e.vy = 0;
@@ -632,11 +618,7 @@ function WaterEffect(me, e) {
   if (Math.abs(e.vy) > 0.5) {
     e.vy *= 0.99;
   }
-  // Early out if not the current player.
-  if (e.isPlayer() && e.playerNumber != online.playerNumber()) {
-    return;
-  }
-  if (!e.isPlayer() || !joystick[3]) {
+  if (!e.isPlayer() || !this.joystick[3]) {
     e.vy -= 0.15;
   }
 }
@@ -794,9 +776,9 @@ function LoadPalette() {
       x = 0;
       y += SCALE;
     }
-  }); 
+  });
   selection = palette[0];
-}   
+}
 
 function LoadLevel(levelNum) {
   currentLevel = levelNum;
@@ -860,7 +842,7 @@ function SaveLevel() {
   var w = window.open('about:blank');
   setTimeout(function() {
     w.document.write('<pre>\n' + result);
-  }, 0); 
+  }, 0);
 }
 
 function OnlineSync() {
@@ -886,7 +868,7 @@ function OnlineSync() {
   }
   for (var player in online.players()) {
     if (!where[player]) {
-      where[player] = template.clone().setPlayerNumber(player); 
+      where[player] = template.clone().setPlayerNumber(player);
       entities.push(where[player]);
     }
   }
@@ -900,12 +882,18 @@ function OnlineSync() {
       p.angle = e.direction;
       p.vx = Math.floor(e.vx);
       p.vy = Math.floor(e.vy * 4) / 4;
+      for (var i = 0; i < 4; ++i) {
+        p['key' + i] = e.joystick[i];
+      }
     } else {
       e.x = p.x;
       e.y = p.y;
       e.direction = p.angle;
       e.vx = p.vx;
       e.vy = p.vy;
+      for (var i = 0; i < 4; ++i) {
+        e.joystick[i] = p['key' + i];
+      }
     }
   }
   online.update();
@@ -933,10 +921,10 @@ function Tick() {
   // Fill Background
   ctx.fillStyle = '#030';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   var background = document.getElementById('back1');
   ctx.drawImage(background, -user.x / 10, -user.y / 10, 716 * 3, 340 * 3);
-  
+
   ctx.save();
 
   ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -986,25 +974,25 @@ function Tick() {
 
 window.onkeydown = function(e) {
   if (e.keyCode == 37) {
-    joystick[0] = 1;
+    user.joystick[0] = 1;
   } else if (e.keyCode == 39) {
-    joystick[1] = 1;
+    user.joystick[1] = 1;
   } else if (e.keyCode == 38) {
-    joystick[2] = 1; 
+    user.joystick[2] = 1;
   } else if (e.keyCode == 40) {
-    joystick[3] = 1;
+    user.joystick[3] = 1;
   }
 };
 
 window.onkeyup = function(e) {
   if (e.keyCode == 37) {
-    joystick[0] = 0;
+    user.joystick[0] = 0;
   } else if (e.keyCode == 39) {
-    joystick[1] = 0;
+    user.joystick[1] = 0;
   } else if (e.keyCode == 38) {
-    joystick[2] = 0; 
+    user.joystick[2] = 0;
   } else if (e.keyCode == 40) {
-    joystick[3] = 0;
+    user.joystick[3] = 0;
   } else if (e.keyCode == 16) {
     user.shoot();
   } else if (e.keyCode == 80) {
