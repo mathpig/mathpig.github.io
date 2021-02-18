@@ -387,18 +387,11 @@ class PigEntity extends GravityEntity {
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
-    user = this;
   }
 
   setPlayerNumber(n) {
     this.playerNumber = n;
     return this;
-  }
-
-  clone() {
-    var o = super.clone();
-    user = o;
-    return user;
   }
 
   kill() {
@@ -691,7 +684,7 @@ class WolfEntity extends GravityEntity {
 
   touched(e, dir) {
     if (e.isPlayer()) {
-      user.kill();
+      e.kill();
     }
     if (!e.affectedBy(this)) {
       if (dir == 1) {
