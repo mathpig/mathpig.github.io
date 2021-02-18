@@ -903,6 +903,9 @@ function OnlineSync() {
   for (var player in online.players()) {
     var p = online.player(player);
     var e = where[player];
+    if (!e) {
+      continue;
+    }
     if (player == online.playerNumber()) {
       user = e;
       p.x = Math.floor(e.x);
