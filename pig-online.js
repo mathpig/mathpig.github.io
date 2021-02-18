@@ -888,6 +888,10 @@ function OnlineSync() {
     entities.splice(entities.indexOf(to_remove[i]), 1);
   }
   for (var player in online.players()) {
+    var p = online.player(player);
+    if (p.level != currentLevel) {
+      continue;
+    }
     if (!where[player]) {
       where[player] = template.clone().setPlayerNumber(player);
       entities.push(where[player]);
