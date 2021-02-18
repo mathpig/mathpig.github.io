@@ -878,10 +878,11 @@ function OnlineSync() {
           remove = false;
         }
       }
+      to_remove.push(entities[i]);
     }
   }
   for (var i = 0; i < to_remove.length; ++i) {
-    entities.remove(to_remove[i]);
+    entities.splice(entities.indexOf(to_remove[i]), 1);
   }
   for (var player in online.players()) {
     if (!where[player]) {
