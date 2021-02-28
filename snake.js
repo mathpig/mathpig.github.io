@@ -11,6 +11,7 @@ var length;
 var eggX, eggY;
 var snake = [];
 var directionX, directionY;
+var soundbox = new SoundBox();
 
 function Reset() {
   score = 0;
@@ -67,20 +68,24 @@ function Tick() {
     score += length;
     length++;
     NewEgg();
+    soundbox.flute(3);
   }
   if (head[0] < 0 || head[0] >= WIDTH ||
       head[1] < 0 || head[1] >= HEIGHT) {
+    soundbox.hurt();
     Reset();
     return;
   }
   for (var i = 0; i < snake.length - 1; ++i) {
     if (head[0] == snake[i][0] && head[1] == snake[i][1]) {
+      soundbox.hurt();
       Reset();
       return;
     }
   }
   if (directionX != 0 || directionY != 0) {
     snake.push([head[0] + directionX, head[1] + directionY]);
+    soundbox.hop();
   }
   if (snake.length > length) {
     snake.splice(0, 1);

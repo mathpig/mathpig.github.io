@@ -37,7 +37,11 @@ class SoundBox {
     var freq = Math.pow(2, n / 12) * 220;
     this.waveEffect(1, 0.6, 0.03, 0.3, 0.05, 'sine', freq, freq * 1.01, freq, freq);
   }
-
+  
+  hop() {
+    this.waveEffect(0.3, 0.2, 0.01, 0.01, 0.02, 'square', 110, 110, 110, 110);
+  }
+  
   newContext() {
     while (this.contexts < 40) {
       var c = new AudioContext();
