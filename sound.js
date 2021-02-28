@@ -39,7 +39,7 @@ class SoundBox {
   }
   
   hop() {
-    this.waveEffect(0.3, 0.2, 0.01, 0.01, 0.02, 'square', 110, 110, 110, 110);
+    this.waveEffect(0.075, 0.05, 0.01, 0.01, 0.02, 'square', 110, 110, 110, 110);
   }
   
   newContext() {
