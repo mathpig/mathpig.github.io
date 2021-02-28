@@ -202,8 +202,7 @@ class Bullet extends SolidParticle {
     super.tick();
     for (var i = 0; i < tanks.length; ++i) {
       if (Distance2(this, tanks[i]) < 30 * 30) {
-        soundbox.kill();
-        tanks[i].hp -= 1;
+        tanks[i].hurt();
         tanks[i].vx += this.vx * 0.01;
         tanks[i].vy += this.vy * 0.01;
       }
@@ -312,6 +311,15 @@ class Tank extends Particle {
   setControls(moveleft, moveright, turnleft, turnright, shoot, supershoot) {
     this.controls = arguments;
     return this;
+  }
+
+  hurt() {
+    this.hp -= 1;
+    var now = new Date().getTime();
+    if (now - this.lastSound > 200) {
+      this.lastSound = now;
+      soundbox.hurt();
+    }
   }
 
   draw() {
