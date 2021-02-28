@@ -288,6 +288,7 @@ class Tank extends Particle {
     this.direction = 45 * (Math.PI / 180);
     this.color = '#fff';
     this.controls = null;
+    this.lastSound = 0;
   }
 
   setDirection(direction) {
@@ -374,6 +375,11 @@ class Tank extends Particle {
         x += vx * (i / RATE);
         y += vy * (i / RATE);
         bullets.push(new Bullet().setPosition(x, y).setVelocity(vx, vy));
+      }
+      var now = new Date().getTime();
+      if (now - this.lastSound > 200) {
+        this.lastSound = now;
+        soundbox.gun();
       }
     }
     if (this.direction < - Math.PI / 9) {
