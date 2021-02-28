@@ -920,7 +920,7 @@ window.onkeyup = function(e) {
     joystick[2] = 0; 
   } else if (e.keyCode == 40) {
     joystick[3] = 0;
-  } else if (e.keyCode == 16) {
+  } else if (e.keyCode == 32) {
     user.shoot();
   } else if (e.keyCode == 80) {
     paletteOpen = !paletteOpen;
