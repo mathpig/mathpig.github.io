@@ -22,7 +22,7 @@ class SoundBox {
   }
 
   hiss() {
-    this.noiseEffect(1, 0.3, 0.03, 0.05, 0.2, 'lowpass', 20000, 0, 0);
+    this.noiseEffect(1, 0.3, 0.03, 0.05, 0.2, 'lowpass', 1000000, 0, 0);
   }
 
   blast() {
@@ -30,7 +30,7 @@ class SoundBox {
   }
 
   gun() {
-    this.noiseEffect(1, 0.68, 0.02, 0.04, 0.04, 'peaking', 100, 5, 4);
+    this.noiseEffect(1, 0.7, 0.03, 0.05, 0.2, 'bandpass', 220, 0.5, 0);
   }
 
   flute(n) {
