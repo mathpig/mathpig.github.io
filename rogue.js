@@ -16,6 +16,7 @@ var currentLevel;
 var cameraX, cameraY;
 var players = [];
 var allPlayers = [];
+var soundbox = new SoundBox();
 
 class Player {
   constructor() {
@@ -143,6 +144,7 @@ class Player {
         if (Math.abs(x / SCALE - players[j].x) < 0.5 &&
             Math.abs(y / SCALE - players[j].y) < 0.5) {
           players[j].hurt(10);
+          soundbox.hurt();
           age = 1000;
         }
       }
@@ -165,18 +167,22 @@ class Player {
     if (IsEnemy(currentLevel[py][px])) {
       currentLevel[py][px] = '';
       this.hurt(10);
+      soundbox.hurt();
     }
     if (currentLevel[py][px] == 'end') {
       currentLevel[py][px] = '';
       this.keys_count++;
+      soundbox.flute(3);
     }
     if (currentLevel[py][px] == 'cheese1') {
       currentLevel[py][px] = '';
       this.hurt(-25);
+      soundbox.flute(3);
     }
     if (currentLevel[py][px] == 'can1') {
       currentLevel[py][px] = '';
-      this.potions += 1;
+      this.potions++;
+      soundbox.flute(3);
     }
     if (currentLevel[py][px] == 'door1' && this.keys_count > 0) {
       currentLevel[py][px] = '';
@@ -237,6 +243,7 @@ class Player {
       var dx = Math.cos(this.direction) * 0.5;
       var dy = Math.sin(this.direction) * 0.5;
       this.bullets.push([(this.x + dx) * SCALE, (this.y + dy) * SCALE, this.direction, 0]);
+      soundbox.gun();
     }
   }
 

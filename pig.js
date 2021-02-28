@@ -120,6 +120,7 @@ var paletteTransform;
 var user;
 var currentLevel = 0;
 var joystick = [0, 0, 0, 0];
+var soundbox = new SoundBox();
 
 class Entity {
   constructor() {
@@ -396,6 +397,7 @@ class PigEntity extends GravityEntity {
   }
 
   kill() {
+    soundbox.hurt();
     LoadLevel(currentLevel);
   }
 
@@ -576,6 +578,7 @@ class BounceEntity extends BlockEntity {
   touched(e) {
     if (e.bouncable()) {
       e.vy = -30;
+      soundbox.jump();
     }
   }
 }
@@ -583,6 +586,7 @@ class BounceEntity extends BlockEntity {
 class EndEntity extends BlockEntity {
   touched(e) {
     if (e.isPlayer()) {
+      soundbox.flute(3);
       LoadLevel(currentLevel + 1);
     }
   }
@@ -900,7 +904,7 @@ window.onkeydown = function(e) {
   } else if (e.keyCode == 39) {
     joystick[1] = 1;
   } else if (e.keyCode == 38) {
-    joystick[2] = 1; 
+    joystick[2] = 1;
   } else if (e.keyCode == 40) {
     joystick[3] = 1;
   }
@@ -917,6 +921,7 @@ window.onkeyup = function(e) {
     joystick[3] = 0;
   } else if (e.keyCode == 16) {
     user.shoot();
+    soundbox.gun();
   } else if (e.keyCode == 80) {
     paletteOpen = !paletteOpen;
   } else if (e.keyCode == 83) {
