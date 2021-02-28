@@ -11,6 +11,7 @@ input {
 <button id="hiss">Hiss</button>
 <button id="shoot">Shoot</button>
 <button id="kill">Kill</button>
+<button id="bomb">Bomb</button>
 <button id="blast">Blast</button>
 <button id="flute">Flute</button>
 <br/>
@@ -77,6 +78,10 @@ document.getElementById('kill').onclick = function() {
 
 document.getElementById('blast').onclick = function() {
   sb.blast();
+};
+
+document.getElementById('bomb').onclick = function() {
+  sb.bomb();
 };
 
 document.getElementById('flute').onclick = function() {
