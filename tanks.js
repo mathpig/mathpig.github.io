@@ -202,6 +202,7 @@ class Bullet extends SolidParticle {
     super.tick();
     for (var i = 0; i < tanks.length; ++i) {
       if (Distance2(this, tanks[i]) < 30 * 30) {
+        soundbox.kill();
         tanks[i].hp -= 1;
         tanks[i].vx += this.vx * 0.01;
         tanks[i].vy += this.vy * 0.01;
@@ -223,9 +224,11 @@ class SuperBullet extends Particle {
     super();
     this.setRadius(30);
     this.setShape('cannonball');
+    soundbox.bomb();
   }
 
   explode() {
+    soundbox.blast();
     bullets.splice(bullets.indexOf(this), 1);
     const VELOCITY = 25;
     for (var i = 0; i < 1000; ++i) {
@@ -419,6 +422,7 @@ var keys = {};
 var tanks = [];
 var bullets = [];
 var terrain = new Terrain();
+var soundbox = new SoundBox();
 
 function DrawScreen() {
   ctx.fillStyle = '#0ff';

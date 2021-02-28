@@ -9,7 +9,7 @@ class SoundBox {
     this.waveEffect(1, 0.3, 0.03, 0.05, 0.2, 'square', 220, 110, 220, 440);
   }
   
-  shoot() {
+  laser() {
     this.waveEffect(1, 0.3, 0.03, 0.05, 0.2, 'square', 6400, 1600, 400, 100);
   }
 
@@ -18,7 +18,7 @@ class SoundBox {
   }
 
   bomb() {
-    this.waveEffect(1, 0.07, 1.03, 1.05, 1.2, 'square', 1600, 800, 400, 200);
+    this.waveEffect(1, 0.57, 0.53, 0.55, 0.7, 'square', 1600, 800, 400, 200);
   }
 
   hiss() {
@@ -27,6 +27,10 @@ class SoundBox {
 
   blast() {
     this.noiseEffect(5, 1, 0.03, 0, 1, 'lowpass', 220, 0, 0);
+  }
+
+  gun() {
+    this.noiseEffect(1, 0.68, 0.02, 0.04, 0.04, 'peaking', 100, 5, 4);
   }
 
   flute(n) {

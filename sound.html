@@ -9,11 +9,12 @@ input {
 <body>
 <button id="jump">Jump</button>
 <button id="hiss">Hiss</button>
-<button id="shoot">Shoot</button>
+<button id="laser">Laser</button>
 <button id="kill">Kill</button>
 <button id="bomb">Bomb</button>
 <button id="blast">Blast</button>
 <button id="flute">Flute</button>
+<button id="gun">Gun</button>
 <br/>
 <hr/>
 <br/>
@@ -68,8 +69,8 @@ document.getElementById('hiss').onclick = function() {
   sb.hiss();
 };
 
-document.getElementById('shoot').onclick = function() {
-  sb.shoot();
+document.getElementById('laser').onclick = function() {
+  sb.laser();
 };
 
 document.getElementById('kill').onclick = function() {
@@ -86,6 +87,10 @@ document.getElementById('bomb').onclick = function() {
 
 document.getElementById('flute').onclick = function() {
   sb.flute(3);
+};
+
+document.getElementById('gun').onclick = function() {
+  sb.gun();
 };
 
 document.getElementById('wave_effect').onclick = function() {
