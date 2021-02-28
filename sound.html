@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<head>
+<style>
+input {
+  width: 100px;
+}
+</style>
+</head>
+<body>
+<button id="jump">Jump</button>
+<button id="hiss">Hiss</button>
+<button id="shoot">Shoot</button>
+<button id="kill">Kill</button>
+<button id="blast">Blast</button>
+<button id="flute">Flute</button>
+<br/>
+<hr/>
+<br/>
+<br/>
+Attack Volume:
+<input id="attackVol" type="text" value="1">
+Mid Volume:
+<input id="midVol" type="text" value="0.7">
+<br/>
+<br/>
+Attack Time:
+<input id="attackTime" type="text" value="0.03">
+Mid Time:
+<input id="midTime" type="text" value="0.05">
+Decay Time:
+<input id="decayTime" type="text" value="0.2">
+<br/>
+<hr/>
+<br/>
+Wave Type:
+<input id="waveType" type="text" value="square">
+Start Frequency:
+<input id="startFreq" type="text" value="220">
+Peak Frequency:
+<input id="peakFreq" type="text" value="220">
+Mid Frequency:
+<input id="midFreq" type="text" value="220">
+End Frequency:
+<input id="endFreq" type="text" value="220">
+<button id="wave_effect">WaveEffect</button>
+<br/>
+<br/>
+Filter Type:
+<input id="filterType" type="text" value="lowpass">
+Frequency:
+<input id="freq" type="text" value="220">
+Q:
+<input id="q" type="text" value="220">
+Gain:
+<input id="gain" type="text" value="220">
+<button id="noise_effect">NoiseEffect</button>
+
+<script src="sound.js"></script>
+<script>
+var sb = new SoundBox();
+
+document.getElementById('jump').onclick = function() {
+  sb.jump();
+};
+
+document.getElementById('hiss').onclick = function() {
+  sb.hiss();
+};
+
+document.getElementById('shoot').onclick = function() {
+  sb.shoot();
+};
+
+document.getElementById('kill').onclick = function() {
+  sb.kill();
+};
+
+document.getElementById('blast').onclick = function() {
+  sb.blast();
+};
+
+document.getElementById('flute').onclick = function() {
+  sb.flute(3);
+};
+
+document.getElementById('wave_effect').onclick = function() {
+  sb.waveEffect(parseFloat(document.getElementById('attackVol').value),
+                parseFloat(document.getElementById('midVol').value),
+                parseFloat(document.getElementById('attackTime').value),
+                parseFloat(document.getElementById('midTime').value),
+                parseFloat(document.getElementById('decayTime').value),
+                document.getElementById('waveType').value,
+                parseFloat(document.getElementById('startFreq').value),
+                parseFloat(document.getElementById('peakFreq').value),
+                parseFloat(document.getElementById('midFreq').value),
+                parseFloat(document.getElementById('endFreq').value));
+};
+
+document.getElementById('noise_effect').onclick = function() {
+  sb.noiseEffect(parseFloat(document.getElementById('attackVol').value),
+                parseFloat(document.getElementById('midVol').value),
+                parseFloat(document.getElementById('attackTime').value),
+                parseFloat(document.getElementById('midTime').value),
+                parseFloat(document.getElementById('decayTime').value),
+                document.getElementById('filterType').value,
+                parseFloat(document.getElementById('freq').value),
+                parseFloat(document.getElementById('q').value),
+                parseFloat(document.getElementById('gain').value));
+};
+
+</script>
+</body>
