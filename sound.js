@@ -13,7 +13,7 @@ class SoundBox {
     this.waveEffect(1, 0.3, 0.03, 0.05, 0.2, 'square', 6400, 1600, 400, 100);
   }
 
-  kill() {
+  hurt() {
     this.waveEffect(1, 0.7, 0.03, 0.05, 0.2, 'sawtooth', 220, 220, 440, 220);
   }
 
