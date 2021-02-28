@@ -417,6 +417,7 @@ class PigEntity extends GravityEntity {
     if (this.cannonballs > 0) {
       this.cannonballs--;
       super.shoot();
+      soundbox.gun();
     }
   }
 
@@ -921,7 +922,6 @@ window.onkeyup = function(e) {
     joystick[3] = 0;
   } else if (e.keyCode == 16) {
     user.shoot();
-    soundbox.gun();
   } else if (e.keyCode == 80) {
     paletteOpen = !paletteOpen;
   } else if (e.keyCode == 83) {
