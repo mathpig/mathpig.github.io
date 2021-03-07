@@ -83,9 +83,29 @@ function ShowScreen(screen) {
   screen.style.display = '';
 }
 
+history.replaceState({page: 0}, 'Main Screen');
+
+window.addEventListener('popstate', function(e) {
+  switch (e.state.page) {
+    case 0:
+      ShowScreen(mainScreen);
+      break;
+    case 1:
+      ShowScreen(createGameScreen);
+      break;
+    case 2:
+      ShowScreen(findGameScreen);
+      break;
+    case 3:
+      history.back();
+      break;
+  }
+});
+
 document.getElementById('create_game_button').onclick = function() {
   solo = false;
   ShowScreen(createGameScreen);
+  history.pushState({page: 1}, 'Create Multiplayer Game');
 };
 
 document.getElementById('solo_game_button').onclick = function() {
@@ -93,18 +113,20 @@ document.getElementById('solo_game_button').onclick = function() {
   playerIndex = 1;
   roomState[playerIndex] = playerState;
   ShowScreen(screen);
+  history.pushState({page: 3}, 'Play');
 };
 
 document.getElementById('create_game_back').onclick = function() {
-  ShowScreen(mainScreen);
+  history.back();
 };
 
 document.getElementById('find_game_button').onclick = function() {
   ShowScreen(findGameScreen);
+  history.pushState({page: 2}, 'Find Multiplayer Game');
 };
 
 document.getElementById('find_game_back').onclick = function() {
-  ShowScreen(mainScreen);
+  history.back();
 };
 
 document.getElementById('create_game_go_button1').onclick = CreateGame;
@@ -175,6 +197,7 @@ function JoinGame(roomId, index) {
     roomRef = firebase.database().ref().child('rooms').child(roomId).child('board');
     roomRef.on('value', RoomChange);
     playerIndex = index;
+    history.pushState({page: 3}, 'Play');
   });
 }
 
@@ -319,6 +342,10 @@ class Online {
         ShowScreen(mainScreen);
       });
     }
+  }
+
+  quit() {
+    history.back();
   }
 }
 
