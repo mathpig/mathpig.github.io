@@ -339,6 +339,7 @@ class GravityEntity extends Entity {
                   .setPosition(this.x + this.w / 2 - 32 + this.direction * 30, this.y)
                   .setShape('cannonball')
                   .setVelocity(this.vx + this.direction * 30, this.vy - 10));
+    soundbox.gun();
   }
 }
 
@@ -417,7 +418,6 @@ class PigEntity extends GravityEntity {
     if (this.cannonballs > 0) {
       this.cannonballs--;
       super.shoot();
-      soundbox.gun();
     }
   }
 

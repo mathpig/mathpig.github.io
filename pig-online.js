@@ -121,6 +121,7 @@ var worldTransform;
 var paletteTransform;
 var user;
 var currentLevel = 0;
+var soundbox = new SoundBox();
 
 class Entity {
   constructor() {
@@ -339,6 +340,7 @@ class GravityEntity extends Entity {
                   .setPosition(this.x + this.w / 2 - 32 + this.direction * 30, this.y)
                   .setShape('cannonball')
                   .setVelocity(this.vx + this.direction * 30, this.vy - 10));
+    soundbox.gun();
   }
 }
 
@@ -407,6 +409,7 @@ class PigEntity extends GravityEntity {
 
   kill() {
     if (this.playerNumber == online.playerNumber()) {
+      soundbox.hurt();
       LoadLevel(currentLevel);
     }
   }
@@ -432,7 +435,9 @@ class PigEntity extends GravityEntity {
       return;
     }
     ctx.save();
-    ctx.filter = 'hue-rotate(' + (this.playerNumber * 90) + 'deg)';
+    var col = this.playerNumber - 1;
+    col = ((col + 3) % 4) + 1;
+    ctx.filter = 'hue-rotate(' + (col * 90) + 'deg)';
     super.draw();
     ctx.restore();
   }
@@ -602,6 +607,7 @@ class BounceEntity extends BlockEntity {
   touched(e) {
     if (e.bouncable()) {
       e.vy = -30;
+      soundbox.jump();
     }
   }
 }
@@ -609,6 +615,7 @@ class BounceEntity extends BlockEntity {
 class EndEntity extends BlockEntity {
   touched(e) {
     if (e.isPlayer() && e.playerNumber == online.playerNumber()) {
+      soundbox.flute(3);
       LoadLevel(currentLevel + 1);
     }
   }
