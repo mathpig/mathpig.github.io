@@ -27,6 +27,7 @@ document.write(`
 `);
 
 var solo = false;
+var maxPlayers = 4;
 var roomRef;
 var roomPlayersRef;
 var roomState = {};
@@ -83,29 +84,31 @@ function ShowScreen(screen) {
   screen.style.display = '';
 }
 
-history.replaceState({page: 0}, 'Main Screen');
+history.replaceState({page: 'main'}, 'Main Screen');
 
 window.addEventListener('popstate', function(e) {
+  roomState = {};
   switch (e.state.page) {
-    case 0:
+    case 'main':
       ShowScreen(mainScreen);
       break;
-    case 1:
+    case 'create':
       ShowScreen(createGameScreen);
       break;
-    case 2:
+    case 'find':
       ShowScreen(findGameScreen);
       break;
-    case 3:
+    case 'play':
       history.back();
       break;
   }
+  roomRef.off('value', RoomChange);
 });
 
 document.getElementById('create_game_button').onclick = function() {
   solo = false;
   ShowScreen(createGameScreen);
-  history.pushState({page: 1}, 'Create Multiplayer Game');
+  history.pushState({page: 'create'}, 'Create Multiplayer Game');
 };
 
 document.getElementById('solo_game_button').onclick = function() {
@@ -113,7 +116,7 @@ document.getElementById('solo_game_button').onclick = function() {
   playerIndex = 1;
   roomState[playerIndex] = playerState;
   ShowScreen(screen);
-  history.pushState({page: 3}, 'Play');
+  history.pushState({page: 'game'}, 'Play');
 };
 
 document.getElementById('create_game_back').onclick = function() {
@@ -122,7 +125,7 @@ document.getElementById('create_game_back').onclick = function() {
 
 document.getElementById('find_game_button').onclick = function() {
   ShowScreen(findGameScreen);
-  history.pushState({page: 2}, 'Find Multiplayer Game');
+  history.pushState({page: 'find'}, 'Find Multiplayer Game');
 };
 
 document.getElementById('find_game_back').onclick = function() {
@@ -197,7 +200,7 @@ function JoinGame(roomId, index) {
     roomRef = firebase.database().ref().child('rooms').child(roomId).child('board');
     roomRef.on('value', RoomChange);
     playerIndex = index;
-    history.pushState({page: 3}, 'Play');
+    history.pushState({page: 'play'}, 'Play');
   });
 }
 
@@ -255,7 +258,7 @@ publicRoomListRef.on('value', (snapshot) => {
     var name = document.createElement('span');
     name.innerText = room.name + ' ';
     item.appendChild(name);
-    for (var i = 1; i <= 4; ++i) {
+    for (var i = 1; i <= maxPlayers; ++i) {
       if (room[i]) {
         continue;
       }
@@ -286,6 +289,7 @@ class Online {
   }
 
   setMaxPlayers(n) {
+    maxPlayers = n;
     for (var i = 1; i <= 4; ++i) {
       var button = document.getElementById('create_game_go_button' + i);
       button.style.display = i <= n ? '' : 'none';
