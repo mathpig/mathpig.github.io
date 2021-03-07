@@ -1,7 +1,16 @@
-<!html>
+<!DOCTYPE html>
 <head>
 <style>
 body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+div {
+  margin: 0px 20px;
+  padding: 5px;
+}
+#game_screen {
   margin: 0;
   padding: 0;
 }
@@ -65,6 +74,11 @@ body {
 <img id="wolf2" src="images/wolf2.png" style="display: none">
 <img id="wolf3" src="images/wolf3.png" style="display: none">
 <img id="wolf4" src="images/wolf4.png" style="display: none">
-<canvas id="screen"></canvas>
+<canvas id="screen" class="screen" style="display: none"></canvas>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-database.js"></script>
+<script src="online.js"></script>
 <script src="sound.js"></script>
 <script src="pig.js"></script>

@@ -1,5 +1,7 @@
 'use strict';
 
+online.setTitle('Pig Game');
+online.setMaxPlayers(4);
 const SCALE = 256;
 const FRICTION = 0.95;
 const DAMPING = 0.4;
@@ -119,7 +121,6 @@ var worldTransform;
 var paletteTransform;
 var user;
 var currentLevel = 0;
-var joystick = [0, 0, 0, 0];
 var soundbox = new SoundBox();
 
 class Entity {
@@ -152,12 +153,12 @@ class Entity {
     this.shape = shape;
     return this;
   }
-  
+
   setCharCode(code) {
     this.charCode = code;
     return this;
   }
-  
+
   setSize(w, h) {
     this.w = w;
     this.h = h;
@@ -388,18 +389,33 @@ class PigEntity extends GravityEntity {
     this.jump_limit = 0;
     this.cannonballs = 5;
     this.setSize(507 * 0.4, 256 * 0.4);
-    user = this;
+    this.playerNumber = 0;
+    this.joystick = [0, 0, 0, 0];
+  }
+
+  setPlayerNumber(n) {
+    this.playerNumber = n;
+    if (n == online.playerNumber()) {
+      user = this;
+    }
+    return this;
   }
 
   clone() {
     var o = super.clone();
-    user = o;
-    return user;
+    o.joystick = Object.assign(Object.create(Object.getPrototypeOf(this.joystick)), this.joystick);
+    return o;
   }
 
   kill() {
-    soundbox.hurt();
-    LoadLevel(currentLevel);
+    if (this.playerNumber == online.playerNumber()) {
+      soundbox.hurt();
+      LoadLevel(currentLevel);
+    }
+  }
+
+  affectedBy(e) {
+    return !e.isPlayer();
   }
 
   facing() {
@@ -414,6 +430,18 @@ class PigEntity extends GravityEntity {
     this.jump_limit = 0;
   }
 
+  draw() {
+    if (this.playerNumber == 0) {
+      return;
+    }
+    ctx.save();
+    var col = this.playerNumber - 1;
+    col = ((col + 3) % 4) + 1;
+    ctx.filter = 'hue-rotate(' + (col * 90) + 'deg)';
+    super.draw();
+    ctx.restore();
+  }
+
   shoot() {
     if (this.cannonballs > 0) {
       this.cannonballs--;
@@ -422,7 +450,7 @@ class PigEntity extends GravityEntity {
   }
 
   frame() {
-    if (joystick[0] || joystick[1]) {
+    if (this.joystick[0] || this.joystick[1]) {
       return Math.floor(this.frameNum / 4);
     } else {
       return 4;
@@ -435,18 +463,18 @@ class PigEntity extends GravityEntity {
 
   tick() {
     super.tick();
-    if (joystick[0] || joystick[1]) {
+    if (this.joystick[0] || this.joystick[1]) {
       this.frameNum = (this.frameNum + 1) % 16;
     }
-    if (joystick[0]) {
+    if (this.joystick[0]) {
       this.vx -= 0.5;
       this.direction = -1;
     }
-    if (joystick[1]) {
+    if (this.joystick[1]) {
       this.vx += 0.5;
       this.direction = 1;
     }
-    if (joystick[2]) {
+    if (this.joystick[2]) {
       if (this.jump_limit < 10) {
         this.vy -= 1;
         this.jump_limit += 1;
@@ -551,9 +579,9 @@ class Ladder extends Decoration {
   repel(e) {
     super.repel(e);
     if (this.intersect(e) && e.isPlayer()) {
-      if (joystick[2]) {
+      if (e.joystick[2]) {
         e.vy = -10;
-      } else if (joystick[3]) {
+      } else if (e.joystick[3]) {
         e.vy = 10;
       } else {
         e.vy = 0;
@@ -586,7 +614,7 @@ class BounceEntity extends BlockEntity {
 
 class EndEntity extends BlockEntity {
   touched(e) {
-    if (e.isPlayer()) {
+    if (e.isPlayer() && e.playerNumber == online.playerNumber()) {
       soundbox.flute(3);
       LoadLevel(currentLevel + 1);
     }
@@ -603,7 +631,7 @@ function WaterEffect(me, e) {
   if (Math.abs(e.vy) > 0.5) {
     e.vy *= 0.99;
   }
-  if (!e.isPlayer() || !joystick[3]) {
+  if (!e.isPlayer() || !e.joystick[3]) {
     e.vy -= 0.15;
   }
 }
@@ -676,7 +704,7 @@ class WolfEntity extends GravityEntity {
 
   touched(e, dir) {
     if (e.isPlayer()) {
-      user.kill();
+      e.kill();
     }
     if (!e.affectedBy(this)) {
       if (dir == 1) {
@@ -761,12 +789,15 @@ function LoadPalette() {
       x = 0;
       y += SCALE;
     }
-  }); 
+  });
   selection = palette[0];
-}   
+}
 
 function LoadLevel(levelNum) {
   currentLevel = levelNum;
+  var me = online.me();
+  me.level = levelNum;
+  online.update();
   var items = LEVELS[levelNum];
   entities = [];
   for (var j = 0; j < items.length; ++j) {
@@ -827,10 +858,93 @@ function SaveLevel() {
   var w = window.open('about:blank');
   setTimeout(function() {
     w.document.write('<pre>\n' + result);
-  }, 0); 
+  }, 0);
+}
+
+function OnlineSync() {
+  var template;
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i].isPlayer() && entities[i].playerNumber == 0) {
+      template = entities[i];
+      break;
+    }
+  }
+  if (template === undefined) {
+    return;
+  }
+  var to_remove = [];
+  var where = {};
+  for (var i = 0; i < entities.length; ++i) {
+    if (!entities[i].isPlayer() || entities[i].playerNumber == 0) {
+      continue;
+    }
+    var remove = true;
+    for (var player in online.players()) {
+      if (where[player]) {
+        continue;
+      }
+      var p = online.player(player);
+      if (p.level != currentLevel) {
+        continue;
+      }
+      if (entities[i].playerNumber == player) {
+        where[player] = entities[i];
+        remove = false;
+      }
+    }
+    if (remove) {
+      to_remove.push(entities[i]);
+    }
+  }
+  for (var i = 0; i < to_remove.length; ++i) {
+    entities.splice(entities.indexOf(to_remove[i]), 1);
+  }
+  for (var player in online.players()) {
+    var p = online.player(player);
+    if (p.level != currentLevel) {
+      continue;
+    }
+    if (!where[player]) {
+      where[player] = template.clone().setPlayerNumber(player);
+      entities.push(where[player]);
+    }
+  }
+  for (var player in online.players()) {
+    var p = online.player(player);
+    var e = where[player];
+    if (!e) {
+      continue;
+    }
+    if (player == online.playerNumber()) {
+      user = e;
+      p.x = Math.floor(e.x);
+      p.y = Math.floor(e.y);
+      p.angle = e.direction;
+      p.vx = Math.floor(e.vx);
+      p.vy = Math.floor(e.vy * 4) / 4;
+      p.level = currentLevel;
+      for (var i = 0; i < 4; ++i) {
+        p['key' + i] = e.joystick[i];
+      }
+    } else {
+      e.x = p.x;
+      e.y = p.y;
+      e.direction = p.angle;
+      e.vx = p.vx;
+      e.vy = p.vy;
+      for (var i = 0; i < 4; ++i) {
+        e.joystick[i] = p['key' + i];
+      }
+    }
+  }
+  online.update();
 }
 
 function Tick() {
+  if (!online.playing()) {
+    return;
+  }
+  OnlineSync();
   // Advance physics
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
@@ -844,14 +958,19 @@ function Tick() {
       entities[i].repel(entities[j]);
     }
   }
+  if (user) {
+    Draw();
+  }
+}
 
+function Draw() {
   // Fill Background
   ctx.fillStyle = '#030';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   var background = document.getElementById('back1');
   ctx.drawImage(background, -user.x / 10, -user.y / 10, 716 * 3, 340 * 3);
-  
+
   ctx.save();
 
   ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -900,26 +1019,32 @@ function Tick() {
 }
 
 window.onkeydown = function(e) {
+  if (!online.playing()) {
+    return;
+  }
   if (e.keyCode == 37) {
-    joystick[0] = 1;
+    user.joystick[0] = 1;
   } else if (e.keyCode == 39) {
-    joystick[1] = 1;
+    user.joystick[1] = 1;
   } else if (e.keyCode == 38) {
-    joystick[2] = 1;
+    user.joystick[2] = 1;
   } else if (e.keyCode == 40) {
-    joystick[3] = 1;
+    user.joystick[3] = 1;
   }
 };
 
 window.onkeyup = function(e) {
+  if (!online.playing()) {
+    return;
+  }
   if (e.keyCode == 37) {
-    joystick[0] = 0;
+    user.joystick[0] = 0;
   } else if (e.keyCode == 39) {
-    joystick[1] = 0;
+    user.joystick[1] = 0;
   } else if (e.keyCode == 38) {
-    joystick[2] = 0; 
+    user.joystick[2] = 0;
   } else if (e.keyCode == 40) {
-    joystick[3] = 0;
+    user.joystick[3] = 0;
   } else if (e.keyCode == 32) {
     user.shoot();
   } else if (e.keyCode == 80) {
@@ -930,6 +1055,9 @@ window.onkeyup = function(e) {
 };
 
 window.onmousedown = function(e) {
+  if (!online.playing()) {
+    return;
+  }
   var p = new DOMPoint(e.clientX, e.clientY);
   if (paletteOpen) {
     var tp = p.matrixTransform(paletteTransform);
