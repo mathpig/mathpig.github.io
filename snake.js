@@ -3,22 +3,91 @@
 const WIDTH = 30;
 const HEIGHT = 15;
 
+class Snake {
+  constructor() {
+    this.directionX = 0;
+    this.directionY = 0;
+    this.score = 0;
+    this.body = [];
+    this.headColor = '#ff0';
+    this.bodyColor = '#f00';
+    this.length = 3;
+  }
+
+  setStart(x, y) {
+    this.body = [[x, y]];
+    return this;
+  }
+
+  setColor(head, body) {
+    this.headColor = head;
+    this.bodyColor = body;
+    return this;
+  }
+
+  drawScore() {
+    ctx.fillStyle = '#fff';
+    ctx.font = '40px san-serif';
+    ctx.fillText('Score: ' + this.score, 50, 37.5)
+  }
+
+  draw() {
+    for (var i = 0; i < this.body.length; ++i) {
+      if (i == this.body.length - 1) {
+        ctx.fillStyle = this.headColor;
+      } else {
+        ctx.fillStyle = this.bodyColor;
+      }
+      ctx.fillRect(this.body[i][0], this.body[i][1], 1, 1);
+    }
+  }
+
+  tick() {
+    var head = this.body[this.body.length - 1]; 
+    if (head[0] == eggX && head[1] == eggY) {
+      this.score += this.length;
+      this.length++;
+      NewEgg();
+      soundbox.flute(3);
+    }
+    if (head[0] < 0 || head[0] >= WIDTH ||
+        head[1] < 0 || head[1] >= HEIGHT) {
+      soundbox.hurt();
+      Reset();
+      return;
+    }
+    for (var i = 0; i < this.body.length - 1; ++i) {
+      if (head[0] == this.body[i][0] && head[1] == this.body[i][1]) {
+        soundbox.hurt();
+        Reset();
+        return;
+      }
+    }
+    if (this.directionX != 0 || this.directionY != 0) {
+      this.body.push([head[0] + this.directionX, head[1] + this.directionY]);
+      soundbox.hop();
+    }
+    if (this.body.length > this.length) {
+      this.body.splice(0, 1);
+    }
+  }
+
+  setDirection(x, y) {
+    this.directionX = x;
+    this.directionY = y;
+    return this;
+  }
+}
+
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 
-var score = 0;
-var length;
 var eggX, eggY;
-var snake = [];
-var directionX, directionY;
+var snake;
 var soundbox = new SoundBox();
 
 function Reset() {
-  score = 0;
-  directionX = 0;
-  directionY = 0;
-  length = 3;
-  snake = [[Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2)]];
+  snake = new Snake().setStart(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2));
   NewEgg();
 }
 
@@ -42,54 +111,18 @@ function Draw() {
   ctx.fillStyle = '#030';  
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-  for (var i = 0; i < snake.length; ++i) {
-    if (i == snake.length - 1) {
-      ctx.fillStyle = '#ff0';
-    }
-    else {
-      ctx.fillStyle = '#f00';
-    }
-    ctx.fillRect(snake[i][0], snake[i][1], 1, 1);
-  }
-  
+  snake.draw();
+ 
   var egg1 = document.getElementById('egg1');
   ctx.drawImage(egg1, eggX, eggY, 1, 1);
 
   ctx.restore();
-  
-  ctx.fillStyle = '#fff';
-  ctx.font = '40px san-serif';
-  ctx.fillText('Score: ' + score, 50, 37.5)
+
+  snake.drawScore();
 }
 
 function Tick() {
-  var head = snake[snake.length - 1]; 
-  if (head[0] == eggX && head[1] == eggY) {
-    score += length;
-    length++;
-    NewEgg();
-    soundbox.flute(3);
-  }
-  if (head[0] < 0 || head[0] >= WIDTH ||
-      head[1] < 0 || head[1] >= HEIGHT) {
-    soundbox.hurt();
-    Reset();
-    return;
-  }
-  for (var i = 0; i < snake.length - 1; ++i) {
-    if (head[0] == snake[i][0] && head[1] == snake[i][1]) {
-      soundbox.hurt();
-      Reset();
-      return;
-    }
-  }
-  if (directionX != 0 || directionY != 0) {
-    snake.push([head[0] + directionX, head[1] + directionY]);
-    soundbox.hop();
-  }
-  if (snake.length > length) {
-    snake.splice(0, 1);
-  }
+  snake.tick();
   Draw();
 }
 
@@ -98,16 +131,12 @@ setInterval(Tick, 200);
 
 window.onkeydown = function(e) {
   if (e.code == 'ArrowLeft' || e.code == 'KeyA') {
-    directionX = -1;
-    directionY = 0;
+    snake.setDirection(-1, 0);
   } else if (e.code == 'ArrowRight' || e.code == 'KeyD') {
-    directionX = 1;
-    directionY = 0;
+    snake.setDirection(1, 0);
   } else if (e.code == 'ArrowUp' || e.code == 'KeyW') {
-    directionX = 0;
-    directionY = -1;
+    snake.setDirection(0, -1);
   } else if (e.code == 'ArrowDown' || e.code == 'KeyS') {
-    directionX = 0;
-    directionY = 1;
+    snake.setDirection(0, 1);
   }
 };
