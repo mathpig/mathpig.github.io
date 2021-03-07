@@ -1,5 +1,7 @@
 'use strict';
 
+online.setTitle('Pig Game');
+online.setMaxPlayers(4);
 const SCALE = 256;
 const FRICTION = 0.95;
 const DAMPING = 0.4;

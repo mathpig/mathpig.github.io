@@ -1,7 +1,32 @@
 'use strict';
 
 var online = (function() {
+document.write(`
+<div id="main_screen" class="screen">
+  <h1 id="game_title"></h1>
+  Your Name:<br/>
+  <input id="name_box" size="40" maxlength="40"><br/><br/>
+  <button id="solo_game_button">Single Player Game</button><br/><br/>
+  <button id="create_game_button">Create Multiplayer Game</button><br/><br/>
+  <button id="find_game_button">Find Multiplayer Game</button><br/><br/>
+</div>
+<div id="create_game_screen" class="screen" style="display:none">
+  <h1>Create New Game</h1>
+  <button id="create_game_back">Back</button><br/><br/>
+  <button id="create_game_go_button1" data-player-index="1">Create (Player 1)</button><br/><br/>
+  <button id="create_game_go_button2" data-player-index="2">Create (Player 2)</button><br/><br/>
+  <button id="create_game_go_button3" data-player-index="3">Create (Player 3)</button><br/><br/>
+  <button id="create_game_go_button4" data-player-index="4">Create (Player 4)</button><br/><br/>
+</div>
+<div id="find_game_screen" class="screen" style="display:none">
+  <h1>Join Public Game</h1>
+  Game List:<br/>
+  <div id="game_list"></div>
+  <button id="find_game_back">Back</button>
+</div>
+`);
 
+var solo = false;
 var roomRef;
 var roomPlayersRef;
 var roomState = {};
@@ -59,7 +84,15 @@ function ShowScreen(screen) {
 }
 
 document.getElementById('create_game_button').onclick = function() {
+  solo = false;
   ShowScreen(createGameScreen);
+};
+
+document.getElementById('solo_game_button').onclick = function() {
+  solo = true;
+  playerIndex = 1;
+  roomState[playerIndex] = playerState;
+  ShowScreen(screen);
 };
 
 document.getElementById('create_game_back').onclick = function() {
@@ -225,6 +258,17 @@ class Online {
     this.nameBox = document.getElementById('name_box');
   }
 
+  setTitle(name) {
+    document.getElementById('game_title').innerText = name;
+  }
+
+  setMaxPlayers(n) {
+    for (var i = 1; i <= 4; ++i) {
+      var button = document.getElementById('create_game_go_button' + i);
+      button.style.display = i <= n ? '' : 'none';
+    }
+  }
+
   playerNumber() {
     return playerIndex;
   }
@@ -254,6 +298,9 @@ class Online {
   }
 
   update() {
+    if (solo) {
+      return;
+    }
     var dirty = false;
     var oldState = roomState[this.playerNumber()];
     if (!oldState) {
