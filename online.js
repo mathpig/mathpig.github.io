@@ -149,6 +149,7 @@ function CreateGame(e) {
     lastActive: firebase.database.ServerValue.TIMESTAMP,
     players: {
       [e.target.dataset.playerIndex]: userId,
+      'world': {},
     }
   };
   firebase.database().ref().child('rooms').child(userId).set(newRoom).then(function() {
@@ -322,12 +323,59 @@ class Online {
     return roomState;
   }
 
-  start() {
-    var myPublicRoomRef = firebase.database().ref().child('publicRooms').child(userId);
-    myPublicRoomRef.onDisconnect().remove();
+  headPlayer() {
+    for (var i = 1; i < this.playerNumber(); ++i) {
+      if (roomState[i] !== undefined) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  sync(o) {
+  syncWorld(o) {
+    if (solo) {
+      return;
+    }
+    var world = roomState['world'];
+    if (world === undefined) {
+      return;
+    }
+    world = JSON.parse(world);
+    var unsynced = o['unsynced'];
+    if (unsynced === undefined) {
+      unsynced = [];
+    }
+    if (this.headPlayer()) {
+      var dirty = false;
+      var data = {};
+      for (var key in o) {
+        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+          continue;
+        }
+        data[key] = o[key];
+        if (world[key] != data[key]) {
+          dirty = true;
+        }
+      }
+      if (dirty) {
+        Object.assign(roomState['world'], JSON.stringify(data, Object.keys(data).sort()));
+        var meRef = roomRef.child(playerIndex);
+        meRef.update(playerState).catch(function() {
+          roomState = {};
+          ShowScreen(mainScreen);
+        });
+      }
+    } else {
+      for (var key in o) {
+        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+          continue;
+        }
+        o[key] = world[key];
+      }
+    }
+  }
+
+  syncPlayer(o) {
     if (solo) {
       return;
     }
@@ -346,9 +394,9 @@ class Online {
           continue;
         }
         data[key] = o[key];
-        p.data = JSON.stringify(data, Object.keys(data).sort());
-        this.update();
       }
+      p.data = JSON.stringify(data, Object.keys(data).sort());
+      this.update();
     } else {
       for (var key in o) {
         var data = JSON.parse(p.data);

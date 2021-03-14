@@ -60,10 +60,10 @@ class Snake {
 
   tick() {
     var head = this.body[this.body.length - 1]; 
-    if (head[0] == eggX && head[1] == eggY) {
+    if (head[0] == world.eggX && head[1] == world.eggY) {
       this.score += this.length;
       this.length++;
-      NewEgg();
+      world.newEgg();
       soundbox.flute(3);
     }
     if (head[0] < 0 || head[0] >= WIDTH ||
@@ -95,10 +95,27 @@ class Snake {
   }
 }
 
+class World {
+  constructor() {
+    this.eggX = 0;
+    this.eggY = 0;
+  }
+
+  newEgg() {
+    this.eggX = Math.floor(Math.random() * WIDTH);
+    this.eggY = Math.floor(Math.random() * HEIGHT);
+  }
+
+  drawEgg() {  
+    var egg1 = document.getElementById('egg1');
+    ctx.drawImage(egg1, this.eggX, this.eggY, 1, 1);
+  }
+}
+
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 
-var eggX, eggY;
+var world = new World();
 var snakes = [];
 var soundbox = new SoundBox();
 
@@ -107,12 +124,7 @@ function Reset() {
     new Snake().setNumber(1).setStart(Math.floor(WIDTH / 4), Math.floor(HEIGHT / 2)),
     new Snake().setNumber(2).setStart(Math.floor(WIDTH * 3 / 4), Math.floor(HEIGHT / 2)).setColor('#fff', '#00f'),
   ];
-  NewEgg();
-}
-
-function NewEgg() {
-  eggX = Math.floor(Math.random() * WIDTH);
-  eggY = Math.floor(Math.random() * HEIGHT);
+  world.newEgg();
 }
 
 function Draw() {
@@ -133,9 +145,8 @@ function Draw() {
   for (var i = 0; i < snakes.length; ++i) {
     snakes[i].draw();
   }
-  
-  var egg1 = document.getElementById('egg1');
-  ctx.drawImage(egg1, eggX, eggY, 1, 1);
+
+  world.drawEgg();
 
   ctx.restore();
 
@@ -150,9 +161,12 @@ function Tick() {
   for (var i = 0; i < snakes.length; ++i) {
     snakes[i].tick();
   }
+
   for (var i = 0; i < snakes.length; ++i) {
-    online.sync(snakes[i]);
+    online.syncPlayer(snakes[i]);
   }
+  
+  online.syncWorld(world);
   
   Draw();
 }
