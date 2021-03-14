@@ -149,7 +149,7 @@ function CreateGame(e) {
     lastActive: firebase.database.ServerValue.TIMESTAMP,
     players: {
       [e.target.dataset.playerIndex]: userId,
-      'world': {},
+      world: {},
     }
   };
   firebase.database().ref().child('rooms').child(userId).set(newRoom).then(function() {
@@ -358,9 +358,9 @@ class Online {
         }
       }
       if (dirty) {
-        Object.assign(roomState['world'], JSON.stringify(data, Object.keys(data).sort()));
-        var meRef = roomRef.child(playerIndex);
-        meRef.update(playerState).catch(function() {
+        var worldString = JSON.stringify(data, Object.keys(data).sort());
+        var worldRef = roomRef.child('world');
+        meRef.update(worldString).catch(function() {
           roomState = {};
           ShowScreen(mainScreen);
         });
