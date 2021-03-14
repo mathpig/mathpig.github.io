@@ -102,7 +102,9 @@ window.addEventListener('popstate', function(e) {
       history.back();
       break;
   }
-  roomRef.off('value', RoomChange);
+  if (roomRef !== undefined) {
+    roomRef.off('value', RoomChange);
+  }
 });
 
 document.getElementById('create_game_button').onclick = function() {
