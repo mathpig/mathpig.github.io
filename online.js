@@ -386,7 +386,7 @@ class Online {
     if (solo) {
       return;
     }
-    if (o.playerNumber === undefined) {
+    if (o === undefined) {
       return;
     }
     var p = this.player(o.playerNumber);
