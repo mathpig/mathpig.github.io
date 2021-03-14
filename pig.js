@@ -391,7 +391,7 @@ class PigEntity extends GravityEntity {
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
-    this.unsynced = ['frameNum', 'jump_limit'];
+    this.unsynced = ['frameNum', 'jump_limit', 'charCode', 'shape'];
   }
 
   setPlayerNumber(n) {
@@ -404,7 +404,8 @@ class PigEntity extends GravityEntity {
 
   clone() {
     var o = super.clone();
-    o.joystick = Object.assign(Object.create(Object.getPrototypeOf(this.joystick)), this.joystick);
+    //o.joystick = Object.assign(Object.create(Object.getPrototypeOf(this.joystick)), this.joystick);
+    o.joystick = [this.joystick[0], this.joystick[1], this.joystick[2], this.joystick[3]];
     return o;
   }
 

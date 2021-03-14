@@ -356,7 +356,7 @@ class Online {
       var dirty = false;
       var data = {};
       for (var key in o) {
-        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+        if (key == 'unsynced' || key == 'playerNumber' || unsynced.indexOf(key) >= 0) {
           continue;
         }
         data[key] = o[key];
