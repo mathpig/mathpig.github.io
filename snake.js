@@ -16,7 +16,8 @@ class Snake {
     this.bodyColor = '#f00';
     this.length = 3;
     this.number = 0;
-    this.unsynced = ['headColor', 'bodyColor'];
+    this.start = [0, 0];
+    this.unsynced = ['start', 'headColor', 'bodyColor'];
   }
 
   setNumber(number) {
@@ -25,8 +26,21 @@ class Snake {
   }
 
   setStart(x, y) {
-    this.body = [[x, y]];
+    this.start = [x, y];
+    this.reset();
     return this;
+  }
+
+  reset() {
+    this.body = [[this.start[0], this.start[1]]];
+    this.length = 3;
+    this.directionX = 0;
+    this.directionY = 0;
+  }
+
+  kill() {
+    soundbox.hurt();
+    this.reset();
   }
 
   setColor(head, body) {
@@ -63,19 +77,19 @@ class Snake {
     if (head[0] == world.eggX && head[1] == world.eggY) {
       this.score += this.length;
       this.length++;
-      world.newEgg();
       soundbox.flute(3);
+      if (online.headPlayer()) {
+        world.newEgg();
+      }
     }
     if (head[0] < 0 || head[0] >= WIDTH ||
         head[1] < 0 || head[1] >= HEIGHT) {
-      soundbox.hurt();
-      Reset();
+      this.kill();
       return;
     }
     for (var i = 0; i < this.body.length - 1; ++i) {
       if (head[0] == this.body[i][0] && head[1] == this.body[i][1]) {
-        soundbox.hurt();
-        Reset();
+        this.kill();
         return;
       }
     }
@@ -119,7 +133,7 @@ var world = new World();
 var snakes = [];
 var soundbox = new SoundBox();
 
-function Reset() {
+function Init() {
   snakes = [
     new Snake().setNumber(1).setStart(Math.floor(WIDTH / 4), Math.floor(HEIGHT / 2)),
     new Snake().setNumber(2).setStart(Math.floor(WIDTH * 3 / 4), Math.floor(HEIGHT / 2)).setColor('#fff', '#00f'),
@@ -171,7 +185,7 @@ function Tick() {
   Draw();
 }
 
-Reset();
+Init();
 setInterval(Tick, 200);
 
 window.onkeydown = function(e) {
