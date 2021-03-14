@@ -332,7 +332,7 @@ class Online {
       return;
     }
     var p = this.player(o.number);
-    if (p === undefined) {
+    if (p === undefined || p.data === undefined) {
       return;
     }
     var unsynced = o['unsynced'];
