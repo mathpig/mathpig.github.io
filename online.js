@@ -35,6 +35,7 @@ var roomPlayersRef;
 var roomPlayers = {};
 var playerIndex = 0;
 var playerState = {
+  data: '{}',
   x: 0,
   y: 0,
   vx: 0,
@@ -324,6 +325,41 @@ class Online {
   start() {
     var myPublicRoomRef = firebase.database().ref().child('publicRooms').child(userId);
     myPublicRoomRef.onDisconnect().remove();
+  }
+
+  sync(o) {
+    if (solo) {
+      return;
+    }
+    var p = this.player(o.number);
+    if (p === undefined) {
+      return;
+    }
+    var unsynced = o['unsynced'];
+    if (unsynced === undefined) {
+      unsynced = [];
+    }
+    if (o.number == this.playerNumber()) {
+      var data = {};
+      for (var key in o) {
+        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+          continue;
+        }
+        data[key] = o[key];
+        p.data = JSON.stringify(data, Object.keys(data).sort());
+        this.update();
+      }
+    } else {
+      for (var key in o) {
+        var data = JSON.parse(p.data);
+        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+          continue;
+        }
+        if (data[key] !== undefined) {
+          o[key] = data[key];
+        }
+      }
+    }
   }
 
   update() {

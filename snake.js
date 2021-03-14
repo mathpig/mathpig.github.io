@@ -16,6 +16,7 @@ class Snake {
     this.bodyColor = '#f00';
     this.length = 3;
     this.number = 0;
+    this.unsynced = ['headColor', 'bodyColor'];
   }
 
   setNumber(number) {
@@ -87,28 +88,6 @@ class Snake {
     }
   }
 
-  update() {
-    var p = online.player(this.number);
-    if (p === undefined) { return; }
-    var head = this.body[this.body.length - 1]; 
-    if (this.number == online.playerNumber()) {
-      // save player state
-      p.x = head[0];
-      p.y = head[1];
-      p.vx = this.directionX;
-      p.vy = this.directionY;
-      p.level = this.score;
-      online.update();
-    } else {
-      // restore other player state
-      head[0] = p.x;
-      head[1] = p.y;
-      this.directionX = p.vx;
-      this.directionY = p.vy;
-      this.score = p.level;
-    }
-  }
-
   setDirection(x, y) {
     this.directionX = x;
     this.directionY = y;
@@ -172,7 +151,7 @@ function Tick() {
     snakes[i].tick();
   }
   for (var i = 0; i < snakes.length; ++i) {
-    snakes[i].update();
+    online.sync(snakes[i]);
   }
   
   Draw();
