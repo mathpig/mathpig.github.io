@@ -319,7 +319,13 @@ class Online {
   }
 
   players() {
-    return roomState;
+    var keys = {};
+    for (var i in roomState) {
+      if (i != 'world') {
+        keys[i] = true;
+      }
+    }
+    return keys;
   }
 
   headPlayer() {
@@ -380,7 +386,7 @@ class Online {
     if (solo) {
       return;
     }
-    var p = this.player(o.number);
+    var p = this.player(o.playerNumber);
     if (p === undefined || p.data === undefined) {
       return;
     }
@@ -388,7 +394,7 @@ class Online {
     if (unsynced === undefined) {
       unsynced = [];
     }
-    if (o.number == this.playerNumber()) {
+    if (o.playerNumber == this.playerNumber()) {
       var data = {};
       for (var key in o) {
         if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {

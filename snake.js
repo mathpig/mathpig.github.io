@@ -15,13 +15,13 @@ class Snake {
     this.headColor = '#ff0';
     this.bodyColor = '#f00';
     this.length = 3;
-    this.number = 0;
+    this.playerNumber = 0;
     this.start = [0, 0];
     this.unsynced = ['start', 'headColor', 'bodyColor'];
   }
 
-  setNumber(number) {
-    this.number = number;
+  setPlayerNumber(number) {
+    this.playerNumber = number;
     return this;
   }
 
@@ -135,8 +135,8 @@ var soundbox = new SoundBox();
 
 function Init() {
   snakes = [
-    new Snake().setNumber(1).setStart(Math.floor(WIDTH / 4), Math.floor(HEIGHT / 2)),
-    new Snake().setNumber(2).setStart(Math.floor(WIDTH * 3 / 4), Math.floor(HEIGHT / 2)).setColor('#fff', '#00f'),
+    new Snake().setPlayerNumber(1).setStart(Math.floor(WIDTH / 4), Math.floor(HEIGHT / 2)),
+    new Snake().setPlayerNumber(2).setStart(Math.floor(WIDTH * 3 / 4), Math.floor(HEIGHT / 2)).setColor('#fff', '#00f'),
   ];
   world.newEgg();
 }

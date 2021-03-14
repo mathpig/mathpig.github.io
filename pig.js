@@ -391,6 +391,7 @@ class PigEntity extends GravityEntity {
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
+    this.unsynced = ['frameNum', 'jump_limit'];
   }
 
   setPlayerNumber(n) {
@@ -910,6 +911,11 @@ function OnlineSync() {
     }
   }
   for (var player in online.players()) {
+    var e = where[player];
+    online.syncPlayer(e);
+  }
+  /*
+  for (var player in online.players()) {
     var p = online.player(player);
     var e = where[player];
     if (!e) {
@@ -938,6 +944,7 @@ function OnlineSync() {
     }
   }
   online.update();
+  */
 }
 
 function Tick() {
