@@ -89,6 +89,7 @@ class Snake {
 
   update() {
     var p = online.player(this.number);
+    if (p === undefined) { return; }
     if (this.number == online.playerNumber()) {
       // save player state
       p.vx = this.directionX;
