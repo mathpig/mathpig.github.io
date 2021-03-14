@@ -4,10 +4,24 @@
 body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
+}
+div {
+  margin: 0px 20px;
+  padding: 5px;
+}
+#game_screen {
+  margin: 0;
+  padding: 0;
 }
 </style>
 </head>
 <img id="egg1" src="images/egg1.png" style="display: none">
-<canvas id="screen"></canvas>
+<canvas class="screen" id="screen" style="display: none"></canvas>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-database.js"></script>
+<script src="online.js"></script>
 <script src="sound.js"></script>
 <script src="snake.js"></script>

@@ -1,5 +1,8 @@
 'use strict';
 
+online.setTitle('Snakes');
+online.setMaxPlayers(2);
+
 const WIDTH = 30;
 const HEIGHT = 15;
 
@@ -12,6 +15,12 @@ class Snake {
     this.headColor = '#ff0';
     this.bodyColor = '#f00';
     this.length = 3;
+    this.number = 0;
+  }
+
+  setNumber(number) {
+    this.number = number;
+    return this;
   }
 
   setStart(x, y) {
@@ -26,9 +35,15 @@ class Snake {
   }
 
   drawScore() {
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = this.headColor;
     ctx.font = '40px san-serif';
-    ctx.fillText('Score: ' + this.score, 50, 37.5)
+    if (this.number == 1) {
+      ctx.fillText('Score: ' + this.score, 50, 37.5)
+    } else {
+      ctx.textAlign = 'right';
+      ctx.fillText('Score: ' + this.score, screen.width - 50, 37.5)
+      ctx.textAlign = 'left';
+    }
   }
 
   draw() {
@@ -72,6 +87,20 @@ class Snake {
     }
   }
 
+  update() {
+    var p = online.player(this.number);
+    if (this.number == online.playerNumber()) {
+      // save player state
+      p.vx = this.directionX;
+      p.vy = this.directionY;
+      online.update();
+    } else {
+      // restore other player state
+      this.directionX = p.vx;
+      this.directionY = p.vy;
+    }
+  }
+
   setDirection(x, y) {
     this.directionX = x;
     this.directionY = y;
@@ -83,11 +112,14 @@ var screen = document.getElementById('screen');
 var ctx = screen.getContext('2d');
 
 var eggX, eggY;
-var snake;
+var snakes = [];
 var soundbox = new SoundBox();
 
 function Reset() {
-  snake = new Snake().setStart(Math.floor(WIDTH / 2), Math.floor(HEIGHT / 2));
+  snakes = [
+    new Snake().setNumber(1).setStart(Math.floor(WIDTH / 4), Math.floor(HEIGHT / 2)),
+    new Snake().setNumber(2).setStart(Math.floor(WIDTH * 3 / 4), Math.floor(HEIGHT / 2)).setColor('#fff', '#00f'),
+  ];
   NewEgg();
 }
 
@@ -110,19 +142,31 @@ function Draw() {
 
   ctx.fillStyle = '#030';  
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-  snake.draw();
- 
+  
+  for (var i = 0; i < snakes.length; ++i) {
+    snakes[i].draw();
+  }
+  
   var egg1 = document.getElementById('egg1');
   ctx.drawImage(egg1, eggX, eggY, 1, 1);
 
   ctx.restore();
 
-  snake.drawScore();
+  for (var i = 0; i < snakes.length; ++i) {
+    snakes[i].drawScore();
+  }
 }
 
 function Tick() {
-  snake.tick();
+  if (!online.playing()) { return; }
+
+  for (var i = 0; i < snakes.length; ++i) {
+    snakes[i].tick();
+  }
+  for (var i = 0; i < snakes.length; ++i) {
+    snakes[i].update();
+  }
+  
   Draw();
 }
 
@@ -130,13 +174,15 @@ Reset();
 setInterval(Tick, 200);
 
 window.onkeydown = function(e) {
+  if (!online.playing()) { return; }
+  var user = snakes[online.playerNumber() - 1];
   if (e.code == 'ArrowLeft' || e.code == 'KeyA') {
-    snake.setDirection(-1, 0);
+    user.setDirection(-1, 0);
   } else if (e.code == 'ArrowRight' || e.code == 'KeyD') {
-    snake.setDirection(1, 0);
+    user.setDirection(1, 0);
   } else if (e.code == 'ArrowUp' || e.code == 'KeyW') {
-    snake.setDirection(0, -1);
+    user.setDirection(0, -1);
   } else if (e.code == 'ArrowDown' || e.code == 'KeyS') {
-    snake.setDirection(0, 1);
+    user.setDirection(0, 1);
   }
 };
