@@ -149,7 +149,6 @@ function CreateGame(e) {
     lastActive: firebase.database.ServerValue.TIMESTAMP,
     players: {
       [e.target.dataset.playerIndex]: userId,
-      world: {},
     }
   };
   firebase.database().ref().child('rooms').child(userId).set(newRoom).then(function() {
@@ -338,9 +337,11 @@ class Online {
     }
     var world = roomState['world'];
     if (world === undefined) {
-      return;
+      world = {
+        data: '{}'
+      };
     }
-    world = JSON.parse(world);
+    var worldData = JSON.parse(world['data']);
     var unsynced = o['unsynced'];
     if (unsynced === undefined) {
       unsynced = [];
@@ -353,14 +354,14 @@ class Online {
           continue;
         }
         data[key] = o[key];
-        if (world[key] != data[key]) {
+        if (worldData[key] != data[key]) {
           dirty = true;
         }
       }
       if (dirty) {
-        var worldString = JSON.stringify(data, Object.keys(data).sort());
+        world['data'] = JSON.stringify(data, Object.keys(data).sort());
         var worldRef = roomRef.child('world');
-        meRef.update(worldString).catch(function() {
+        worldRef.update(world).catch(function() {
           roomState = {};
           ShowScreen(mainScreen);
         });
@@ -370,7 +371,7 @@ class Online {
         if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
           continue;
         }
-        o[key] = world[key];
+        o[key] = worldData[key];
       }
     }
   }
