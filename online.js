@@ -356,7 +356,7 @@ class Online {
       var dirty = false;
       var data = {};
       for (var key in o) {
-        if (key == 'unsynced' || key == 'playerNumber' || unsynced.indexOf(key) >= 0) {
+        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
           continue;
         }
         data[key] = o[key];
@@ -400,17 +400,26 @@ class Online {
     if (o.playerNumber == this.playerNumber()) {
       var data = {};
       for (var key in o) {
-        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+        if (key == 'unsynced' || key == 'precision' ||
+            key == 'playerNumber' || unsynced.indexOf(key) >= 0) {
           continue;
         }
         data[key] = o[key];
+        if (o.precision && o.precision[key]) {
+          var bias = 0;
+          if (o.bias && o.bias[key]) {
+            bias = o.bias[key];
+          }
+          data[key] = Math.round(data[key] / o.precision[key] + bias) * o.precision[key];
+        }
       }
       p.data = JSON.stringify(data, Object.keys(data).sort());
       this.update();
     } else {
       for (var key in o) {
         var data = JSON.parse(p.data);
-        if (key == 'unsynced' || unsynced.indexOf(key) >= 0) {
+        if (key == 'unsynced' || key == 'precision' ||
+            key == 'playerNumber' || unsynced.indexOf(key) >= 0) {
           continue;
         }
         if (data[key] !== undefined) {

@@ -391,7 +391,9 @@ class PigEntity extends GravityEntity {
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
-    this.unsynced = ['frameNum', 'jump_limit', 'charCode', 'shape'];
+    this.unsynced = ['frameNum', 'jump_limit', 'charCode', 'shape', 'w', 'h'];
+    this.precision = {'x': 2, 'y': 2, vx: 1, vy: 1};
+    this.bias = {'vy': -0.25};
   }
 
   setPlayerNumber(n) {
