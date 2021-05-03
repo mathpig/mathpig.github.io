@@ -73,6 +73,31 @@ class Bullet extends Entity {
   }
 }
 
+class Enemy extends Entity {
+  constructor() {
+    super();
+    this.vx = 0;
+    this.setSize(150, 75);
+    this.setShape('pig4');
+  }
+  
+  setVelocity(vx) {
+    this.vx = vx;
+    return this;
+  }
+  
+  tick() {
+    this.x += this.vx;
+    if (this.x < -1000) {
+      this.x = 3000;
+    }
+    if (this.x > 3000) {
+      this.x = -1000;
+    }
+    return this;
+  }
+}
+
 function Update() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
@@ -112,6 +137,11 @@ function Init() {
   entities.push(new Turret().setPosition(200, 300));
   entities.push(new Turret().setPosition(1000, 300));
   entities.push(new Turret().setPosition(1800, 300));
+  entities.push(new Enemy().setPosition(0, 875).setVelocity(Math.random() * 20 - 10));
+  entities.push(new Enemy().setPosition(0, 625).setVelocity(Math.random() * 20 - 10));
+  entities.push(new Enemy().setPosition(0, 750).setVelocity(Math.random() * 20 - 10));
+  entities.push(new Enemy().setPosition(0, 1000).setVelocity(Math.random() * 20 - 10));
+  entities.push(new Enemy().setPosition(0, 500).setVelocity(Math.random() * 20 - 10));
 }
 
 Init();
@@ -126,4 +156,3 @@ window.onkeydown = function(e) {
     entities.push(new Bullet().setPosition(1800, 300).setVelocity(-5 * Math.sqrt(3), 5));
   }
 };
-
