@@ -122,8 +122,8 @@ class Bullet extends Entity {
 
     for (var i = 0; i < entities.length; i++) {
       if (entities[i].enemy() &&
-          Math.abs(entities[i].x - this.x) < 60 &&
-          Math.abs(entities[i].y - this.y) < 35) {
+          Math.abs(entities[i].x - this.x) < 100 &&
+          Math.abs(entities[i].y - this.y) < 50) {
         entities.splice(i, 1);
         score += 100;
         if (score % 1000 == 0) {
@@ -206,7 +206,7 @@ function Update() {
     }
   }
   if (enemies == 0) {
-    RandomEnemies(Math.floor(Math.random() * 2) + 4);
+    RandomEnemies(Math.floor(Math.random() * 7) + 7);
   }
 }
 
@@ -263,7 +263,7 @@ function RepairTurret() {
 
 function Init() {
   entities = [];
-  RandomEnemies(3);
+  RandomEnemies(5);
   entities.push(new Turret().setPosition(200, 300).setGun('ArrowLeft', 30, 25));
   entities.push(new Turret().setPosition(1000, 300).setGun('ArrowUp', 90, 25));
   entities.push(new Turret().setPosition(1800, 300).setGun('ArrowRight', 180 - 30, 25));
