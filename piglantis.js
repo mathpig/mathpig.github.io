@@ -206,7 +206,7 @@ function Update() {
     }
   }
   if (enemies == 0) {
-    RandomEnemies(Math.floor(Math.random() * 7) + 7);
+    RandomEnemies(Math.floor(Math.random() * 11) + 20);
   }
 }
 
@@ -263,7 +263,7 @@ function RepairTurret() {
 
 function Init() {
   entities = [];
-  RandomEnemies(5);
+  RandomEnemies(10);
   entities.push(new Turret().setPosition(200, 300).setGun('ArrowLeft', 30, 25));
   entities.push(new Turret().setPosition(1000, 300).setGun('ArrowUp', 90, 25));
   entities.push(new Turret().setPosition(1800, 300).setGun('ArrowRight', 180 - 30, 25));
