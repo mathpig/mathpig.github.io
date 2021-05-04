@@ -122,8 +122,8 @@ class Bullet extends Entity {
 
     for (var i = 0; i < entities.length; i++) {
       if (entities[i].enemy() &&
-          Math.abs(entities[i].x - this.x) < 30 &&
-          Math.abs(entities[i].y - this.y) < 30) {
+          Math.abs(entities[i].x - this.x) < 60 &&
+          Math.abs(entities[i].y - this.y) < 35) {
         entities.splice(i, 1);
         score += 100;
         if (score % 1000 == 0) {
