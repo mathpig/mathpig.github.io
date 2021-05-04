@@ -88,7 +88,7 @@ class Turret extends Entity {
       return;
     }
     var now = new Date().getTime();
-    if (e.code == this.key && now - this.lastShot > 500) {
+    if (e.code == this.key && now - this.lastShot > 1000) {
       this.lastShot = now;
       entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(this.sx, this.sy));
     }
