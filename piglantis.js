@@ -126,7 +126,7 @@ class Bullet extends Entity {
           Math.abs(entities[i].y - this.y) < 50) {
         entities.splice(i, 1);
         score += 100;
-        if (score % 1000 == 0) {
+        if (score % 2500 == 0) {
           RepairTurret();
         }
         i--;
