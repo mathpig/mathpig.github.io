@@ -52,6 +52,10 @@ class Entity {
     return false;
   }
 
+  spawnerCapsule() {
+    return false;
+  }
+
   keyDown(e) {
   }
 }
@@ -122,14 +126,29 @@ class Bullet extends Entity {
 
     for (var i = 0; i < entities.length; i++) {
       if (entities[i].enemy() &&
-          Math.abs(entities[i].x - this.x) < 100 &&
-          Math.abs(entities[i].y - this.y) < 50) {
+          Math.abs(entities[i].x - this.x) < 85 &&
+          Math.abs(entities[i].y - this.y) < 47.5) {
         entities.splice(i, 1);
         score += 100;
         if (score % 2500 == 0) {
           RepairTurret();
         }
         i--;
+      }
+    }
+    for (var i = 0; i < entities.length; i++) {
+      if (entities[i].spawnerCapsule() &&
+          Math.abs(entities[i].x - this.x) < 110 &&
+          Math.abs(entities[i].y - this.y) < 60) {
+        entities[i].hurt(1);
+        if (entities[i].health == 0) {
+          entities.splice(i, 1);
+          score += 300;
+          if (score % 2500 == 0) {
+            RepairTurret();
+          }
+          i--;
+        }
       }
     }
     if (this.y > 1000) {
@@ -194,6 +213,60 @@ class Enemy extends Entity {
   }
 }
 
+class SpawnerCapsule extends Entity {
+  constructor() {
+    super();
+    this.vx = 0;
+    this.health = 3;
+    this.setSize(200, 100);
+    this.setShape('pig4');
+  }
+
+  setVelocity(vx) {
+    this.vx = vx;
+    return this;
+  }
+
+  hurt(health) {
+    this.health = this.health - health;
+    return this;
+  }
+
+  tick() {
+    this.x += this.vx;
+    if (this.x < -1000) {
+      this.x = 3000;
+    }
+    if (this.x > 3000) {
+      this.x = -1000;
+    }
+/*
+    for (var i = 0; i < entities.length; i++) {
+      if (!entities[i].shootable() || !entities[i].alive) {
+        continue;
+      }
+      if (Math.abs(this.x - entities[i].x) < 50) {
+        entities[i].setAlive(false);
+        this.bounces = 0;
+      }
+    }
+*/
+    return this;
+  }
+
+  draw() {
+    super.draw();
+    if (this.bounces == 2) {
+      ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
+      ctx.fillRect(this.x - 20, -75, 40, this.y);
+    }
+  }
+
+  spawnerCapsule() {
+    return true;
+  }
+}
+
 function Update() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
@@ -253,17 +326,28 @@ function RandomEnemies(n) {
   }
 }
 
+function RandomSpawnerCapsules(n) {
+  for (var i = 0; i < n; ++i) {
+    if (Math.random() >= 0.5) {
+      entities.push(new SpawnerCapsule().setPosition(-1000, Math.random() * 500 + 500).setVelocity(Math.random() * 7 + 3));
+    } else {
+      entities.push(new SpawnerCapsule().setPosition(3000, Math.random() * 500 + 500).setVelocity(Math.random() * 7 + 3));
+    }
+  }
+}
+
 function RepairTurret() {
   for (var i = 0; i < entities.length; i++) {
     if (entities[i].shootable() && !entities[i].alive) {
       entities[i].setAlive(true);
+      break;
     }
   }
 }
 
 function Init() {
   entities = [];
-  RandomEnemies(Math.floor(Math.random() * 11) + 5);
+  RandomSpawnerCapsules(Math.floor(Math.random() * 11) + 5);
   entities.push(new Turret().setPosition(200, 300).setGun('ArrowLeft', 30, 25));
   entities.push(new Turret().setPosition(1000, 300).setGun('ArrowUp', 90, 25));
   entities.push(new Turret().setPosition(1800, 300).setGun('ArrowRight', 180 - 30, 25));
