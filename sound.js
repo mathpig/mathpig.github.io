@@ -3,6 +3,7 @@
 class SoundBox {
   constructor() {
     this.contexts = [];
+    this.noise = null;
   }
 
   jump() {
@@ -73,6 +74,9 @@ class SoundBox {
   }
 
   whitenoise(ctx) {
+    if (this.noise !== null) {
+      return this.noise;
+    }
     var bufferSize = 256;
     var whiteNoise = ctx.createScriptProcessor(bufferSize, 1, 1);
     whiteNoise.onaudioprocess = function(e) {
@@ -81,6 +85,7 @@ class SoundBox {
         output[i] = Math.random() * 2 - 1;
       }
     }
+    this.noise = whiteNoise;
     return whiteNoise;
   }
 

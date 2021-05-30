@@ -25,6 +25,11 @@ input.onkeypress = function(e) {
 
 var currentRoom = 'home';
 var THINGS = {
+  'self': {
+    'name': 'yourself',
+    'description': 'You are a twelve year old boy.',
+    'contents': [],
+  },
   'home': {
     'name': 'Your home.',
     'description': 'Your home is simple but cozy.',
@@ -134,10 +139,21 @@ function Look(noun) {
   }
 }
 
+function Get(noun) {
+  var target = Find(noun);
+  if (target) {
+    say(THINGS[target].description);
+  } else {
+    say("From where? I don't see a(n) \"" + noun + "\" here.");
+  }
+}
+
 function Do(verb, noun, target) {
   var room = THINGS[currentRoom];
   if (verb == 'look') {
     Look(noun);
+  } else if (verb == 'get') {
+    Get(noun);
   } else {
     say('Huh?');
   }  
