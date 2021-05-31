@@ -77,14 +77,16 @@ class SoundBox {
     if (this.noise !== null) {
       return this.noise;
     }
-    var bufferSize = 256;
-    var whiteNoise = ctx.createScriptProcessor(bufferSize, 1, 1);
-    whiteNoise.onaudioprocess = function(e) {
-      var output = e.outputBuffer.getChannelData(0);
-      for (var i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
+    var bufferSize = 2 * ctx.sampleRate;
+    var whiteNoiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    var output = whiteNoiseBuffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
     }
+    var whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = whiteNoiseBuffer;
+    whiteNoise.loop = true;
+    whiteNoise.start(0);
     this.noise = whiteNoise;
     return whiteNoise;
   }
@@ -95,7 +97,7 @@ class SoundBox {
     var gainNode = ctx.createGain();
     var filter = ctx.createBiquadFilter();
     filter.type = filterType;
-    filter.frequency.setValueAtTime(freq, ctx.currentTime);
+    filter.frequency.setValueAtTime(Math.min(24000, freq), ctx.currentTime);
     filter.Q.setValueAtTime(q, ctx.currentTime);
     filter.gain.setValueAtTime(gain, ctx.currentTime);
     gainNode.gain.setValueAtTime(0, ctx.currentTime);
