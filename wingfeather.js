@@ -23,31 +23,101 @@ input.onkeypress = function(e) {
   }
 }
 
-var currentRoom = 'home';
-var THINGS = {
-  'self': {
-    'name': 'yourself',
-    'description': 'You are a twelve year old boy.',
-    'contents': [],
-  },
-  'home': {
-    'name': 'Your home.',
-    'description': 'Your home is simple but cozy.',
-    'contents': ['thwap', 'shovel', 'totato'],
-  },
-  'thwap': {
-    'name': 'a thwap',
-    'description': 'This is a vicious thwap.',
-  },
-  'shovel': {
-    'name': 'a shovel',
-    'description': 'This is a shovel. You use it outside to collect hogpig droppings. You have to return it to the Fangs before sundown unless you want to be deported to Dang in the Black Carrige. Fortunately, it is currently noon, there are a few hours left before the sun goes down.',
-  },
-  'totato': {
-    'name': 'a totato',
-    'description': 'This is a totato. It is a sweet, bright red fruit. The thwap looks like it would like it for itself.',
-  },
-};
+class Entity {
+  constructor() {
+    this.called = [];
+    this.name = 'something';
+    this.description = 'It is undescribable.';
+    this.contents = [];
+    this.parent = null;
+  }
+
+  setCalled() {
+    this.called = [];
+    for (var i = 0; i < arguments.length; ++i) {
+      this.called.push(arguments[i]);
+    }
+    return this;
+  }
+
+  setName(name) {
+    this.name = name;
+    return this;
+  }
+
+  setDescription(description) {
+    this.description = description;
+    return this;
+  }
+
+  remove() {
+    if (this.parent != null) {
+      this.parent.contents.splice(this.parent.contents.indexOf(this), 1);
+    }
+    return this;
+  }
+
+  move(destination) {
+    this.remove();
+    destination.contents.push(this);
+    this.parent = destination;
+    return this;
+  }
+
+  contains(o) {
+    return this.contents.indexOf(o) >= 0;
+  }
+
+  isCalled(name) {
+    return this.called.indexOf(name) >= 0;
+  }
+
+  find(name) {
+    if (this.isCalled(name)) {
+      return this;
+    }
+    for (var i = 0; i < this.contents.length; ++i) {
+      var o = this.contents[i].find(name);
+      if (o !== null) {
+        return o;
+      }
+    }
+    return null;
+  }
+}
+
+// Your home.
+var home = new Entity()
+  .setName('home')
+  .setCalled('home', 'room')
+  .setDescription('Your home is simple but cozy.');
+new Entity()
+  .setName('a thwap')
+  .setCalled('thwap', 'creature')
+  .setDescription('This is a vicious thwap.')
+  .move(home);
+new Entity()
+  .setName('a shovel')
+  .setCalled('shovel')
+  .setDescription('This is a shovel. You use it outside to collect hogpig droppings. ' +
+                  'You have to return it to the Fangs before sundown unless you want ' +
+                  'to be deported to Dang in the Black Carrige. ' +
+                  'Fortunately, it is currently noon, ' +
+                  'there are a few hours left before the sun goes down.')
+  .move(home);
+new Entity()
+  .setName('a totato')
+  .setCalled('totato')
+  .setDescription('This is a totato. It is a sweet, bright red fruit. ' +
+                  'The thwap looks like it would like it for itself.')
+  .move(home);
+
+// The player.
+var player = new Entity()
+  .setName('yourself')
+  .setCalled('yourself', 'me', 'body', 'self')
+  .setDescription('You are a twelve year old boy.')
+  .move(home);
 
 const STOP_WORDS = [
   'to',
@@ -96,64 +166,87 @@ function say(s) {
   out(s + '\n');
 }
 
-function Find(thing) {
-  var room = THINGS[currentRoom];
-  for (var i = 0; i < room.contents.length; ++i) {
-    var item = THINGS[room.contents[i]];
-    if (thing == item) {
-      return thing;
+function List(title, o) {
+  if (o.contents.length == 0) {
+    return;
+  }
+  say('\n' + title);
+  for (var i = 0; i < o.contents.length; ++i) {
+    var item = o.contents[i];
+    if (item === player) {
+      continue;
     }
-  } 
-  for (var i = 0; i < room.contents.length; ++i) {
-    var item = THINGS[room.contents[i]];
-    if (item.name.indexOf(thing) >= 0) {
-      return room.contents[i];
-    }
-  } 
-  for (var i = 0; i < room.contents.length; ++i) {
-    var item = THINGS[room.contents[i]];
-    if (item.description.indexOf(thing) >= 0) {
-      return room.contents[i];
-    }
-  } 
+    say('  ' + item.name);
+  }
 }
 
 function Look(noun) {
-  var room = THINGS[currentRoom];
   if (noun === undefined) {
+    var room = player.parent;
     say(room.description);
     if (room.contents.length) {
-      say('\nYou see:');
-      for (var i = 0; i < room.contents.length; ++i) {
-        var item = THINGS[room.contents[i]];
-        say('  ' + item.name);
-      }
+      List('You see:', room);
     }
   } else {
-    var target = Find(noun);
+    var target = player.parent.find(noun);
     if (target) {
-      say(THINGS[target].description);
+      say(target.description);
     } else {
-      say("I don't see a(n) \"" + noun + "\" here.");
+      say("I don't see that here.");
     }
+    if (target === player) {
+      Inventory();
+    }
+  }
+}
+
+function Inventory() {
+  if (player.contents.length == 0) {
+    say('You have nothing.');
+  } else {
+    List('You have:', player);
   }
 }
 
 function Get(noun) {
-  var target = Find(noun);
+  var target = player.parent.find(noun);
   if (target) {
-    say(THINGS[target].description);
+    if (target === player) {
+      say("You can't pick yourself up.");
+    } else if (player.contains(target)) {
+      say('You already have that.');
+    } else {
+      target.move(player);
+      say('Taken.');
+    }
   } else {
-    say("From where? I don't see a(n) \"" + noun + "\" here.");
+    say("From where? I don't see that here.");
+  }
+}
+
+function Drop(noun) {
+  var target = player.parent.find(noun);
+  if (target) {
+    if (player.contains(target)) {
+      target.move(player.parent);
+      say('Dropped.');
+    } else {
+      say("You don't have that.");
+    }
+  } else {
+    say("You don't have that, and it isn't around here either.");
   }
 }
 
 function Do(verb, noun, target) {
-  var room = THINGS[currentRoom];
   if (verb == 'look') {
     Look(noun);
   } else if (verb == 'get') {
     Get(noun);
+  } else if (verb == 'drop') {
+    Drop(noun);
+  } else if (verb == 'inventory') {
+    Inventory();
   } else {
     say('Huh?');
   }  
