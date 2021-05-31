@@ -38,12 +38,12 @@ function nvtranslate() {
   ctx.translate(0, -100);
 }
 
-function rotate60() {
-  ctx.rotate(Math.PI / 3);
-}
-
 function rotate90() {
   ctx.rotate(Math.PI / 2);
+}
+
+function rotate120() {
+  ctx.rotate(Math.PI * 2 / 3);
 }
 
 function rotate180() {
@@ -73,6 +73,7 @@ function vglide() {
 }
 
 var PATTERNS = {
+  'regular_drawing': [],
   'frieze_p1': [[20, htranslate], [20, nhtranslate]],
   'frieze_p11g': [[20, htranslate], [20, nhtranslate], [2, hglide]],
   'frieze_p1m1': [[20, htranslate], [20, nhtranslate], [2, vreflect]],
@@ -80,6 +81,16 @@ var PATTERNS = {
   'frieze_p2mg': [[20, htranslate], [20, nhtranslate], [2, vreflect], [2, hglide], [2, rotate180]],
   'frieze_p11m': [[20, htranslate], [20, nhtranslate], [2, hreflect]],
   'frieze_p2mm': [[20, htranslate], [20, nhtranslate], [2, hreflect], [2, vreflect], [2, rotate180]],
+  'wallpaper_p1': [[20, htranslate], [20, vtranslate]],
+  'wallpaper_p2': [[20, htranslate], [20, vtranslate], [2, rotate180]],
+  'wallpaper_p3': [[20, htranslate], [20, vtranslate], [3, rotate120]],
+  'wallpaper_p4': [[20, htranslate], [20, vtranslate], [4, rotate90]],
+  'wallpaper_pm': [[20, htranslate], [20, vtranslate], [2, vreflect]],
+  'wallpaper_pmm': [[20, htranslate], [20, vtranslate], [2, hreflect], [2, vreflect], [2, rotate180]],
+  'wallpaper_pmg': [[20, htranslate], [20, vtranslate], [2, rotate180], [2, vreflect], [2, hglide]],
+  'wallpaper_pg': [[20, htranslate], [20, vtranslate], [2, hglide]],
+  'wallpaper_cm': [[20, htranslate], [20, vtranslate], [2, hreflect], [2, hglide]],
+  'wallpaper_pgg': [[20, htranslate], [20, vtranslate], [2, rotate180], [2, hglide], [2, vglide]],
 };
 
 function Resize() {
