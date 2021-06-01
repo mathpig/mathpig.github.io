@@ -6,6 +6,8 @@ var ctx = screen.getContext('2d');
 var color = '#fff';
 var drawing = false;
 var lastx, lasty;
+var lines = [];
+var outline = true;
 
 function ColorButton(e) {
   color = e.target.style.backgroundColor;
@@ -21,6 +23,16 @@ document.getElementById('cyan').onclick = ColorButton;
 document.getElementById('blue').onclick = ColorButton;
 document.getElementById('purple').onclick = ColorButton;
 document.getElementById('brown').onclick = ColorButton;
+
+document.getElementById('clear').onclick = function() {
+  lines = [];
+  Resize();
+};
+
+document.getElementById('outline').onclick = function(e) {
+  outline = e.target.checked;
+  Resize();
+};
 
 function htranslate(n) {
   ctx.translate(200 * n, 0);
@@ -117,25 +129,80 @@ function vglide(n) {
   }
 }
 
+function grid200x200() {
+  Line(0, 0, 200, 0, '#ccc');
+  Line(200, 0, 200, 200, '#ccc');
+  Line(0, 200, 200, 200, '#ccc');
+  Line(0, 200, 0, 0, '#ccc');
+}
+
+function grid100x200() {
+  Line(0, 0, 100, 0, '#ccc');
+  Line(100, 0, 100, 200, '#ccc');
+  Line(0, 200, 100, 200, '#ccc');
+  Line(0, 200, 0, 0, '#ccc');
+}
+
+function grid50x200() {
+  Line(0, 0, 50, 0, '#ccc');
+  Line(50, 0, 50, 200, '#ccc');
+  Line(0, 200, 50, 200, '#ccc');
+  Line(0, 200, 0, 0, '#ccc');
+}
+
+function grid200x100() {
+  Line(0, 0, 200, 0, '#ccc');
+  Line(200, 0, 200, 100, '#ccc');
+  Line(0, 100, 200, 100, '#ccc');
+  Line(0, 100, 0, 0, '#ccc');
+}
+
+function grid100x100() {
+  Line(0, 0, 200, 0, '#ccc');
+  Line(100, 0, 100, 100, '#ccc');
+  Line(0, 100, 100, 100, '#ccc');
+  Line(0, 100, 0, 0, '#ccc');
+}
+
+function grid100() {
+  Line(0, 0, 0, 1000, '#ccc');
+  Line(100, 0, 100, 1000, '#ccc');
+}
+
+function grid200() {
+  Line(0, 0, 0, 1000, '#ccc');
+  Line(200, 0, 200, 1000, '#ccc');
+}
+
+function gridHex() {
+  Line(0, 0, 200, 0, '#ccc');
+  Line(100, 100 * Math.sqrt(3), 0, 0, '#ccc');
+  Line(100, 100 * Math.sqrt(3), 300, 100 * Math.sqrt(3), '#ccc');
+  Line(200, 0, 300, 100 * Math.sqrt(3), '#ccc');
+}
+
+function gridNone() {
+}
+
 var PATTERNS = {
-  'regular_drawing': [],
-  'frieze_p1': [[20, htranslate]],
-  'frieze_p11g': [[20, htranslate], [2, hglide]],
-  'frieze_p1m1': [[20, htranslate], [2, vreflect]],
-  'frieze_p2': [[20, htranslate], [2, rotate180]],
-  'frieze_p2mg': [[20, htranslate], [2, vreflect], [2, hglide], [2, rotate180]],
-  'frieze_p11m': [[20, htranslate], [2, hreflect]],
-  'frieze_p2mm': [[20, htranslate], [2, hreflect], [2, vreflect], [2, rotate180]],
-  'wallpaper_p1': [[20, htranslate], [20, vtranslate]],
-  'wallpaper_p2': [[2, rotate180], [20, htranslate], [20, vtranslate]],
-  'wallpaper_p3': [[20, htranslateBig], [20, vtranslateBig], [3, rotate120], [3, rotate120a], [3, rotate120b]],
-  'wallpaper_p4': [[20, htranslate], [20, vtranslate], [4, rotate90]],
-  'wallpaper_pm': [[20, htranslate], [20, vtranslate], [2, vreflect]],
-  'wallpaper_pmm': [[20, htranslate], [20, vtranslate], [2, hreflect], [2, vreflect], [2, rotate180]],
-  'wallpaper_pmg': [[20, htranslate], [20, vtranslate], [2, hglide], [2, vreflect]],
-  'wallpaper_pg': [[20, htranslate], [20, vtranslate], [2, hglide]],
-  'wallpaper_cm': [[20, htranslate], [20, vtranslate], [2, hreflect], [2, hglide2]],
-  'wallpaper_pgg': [[20, htranslate], [20, vtranslate], [2, rotate180], [2, rotate180offset], [2, hglide2]],
+  'regular_drawing': {grid: gridNone, group: []},
+  'frieze_p1': {grid: grid200, group: [[20, htranslate]]},
+  'frieze_p11g': {grid: grid200x200, group: [[20, htranslate], [2, hglide]]},
+  'frieze_p1m1': {grid: grid100, group: [[20, htranslate], [2, vreflect]]},
+  'frieze_p2': {grid: grid200x200, group: [[20, htranslate], [2, rotate180]]},
+  'frieze_p2mg': {grid: grid50x200, group: [[20, htranslate], [2, vreflect], [2, hglide], [2, rotate180]]},
+  'frieze_p11m': {grid: grid200x200, group: [[20, htranslate], [2, hreflect]]},
+  'frieze_p2mm': {grid: grid100x200, group: [[20, htranslate], [2, hreflect], [2, vreflect], [2, rotate180]]},
+  'wallpaper_p1': {grid: grid200x200, group: [[20, htranslate], [20, vtranslate]]},
+  'wallpaper_p2': {grid: grid100x200, group: [[2, rotate180], [20, htranslate], [20, vtranslate]]},
+  'wallpaper_p3': {grid: gridHex, group: [[6, htranslateBig], [6, vtranslateBig], [3, rotate120], [3, rotate120a], [3, rotate120b]]},
+  'wallpaper_p4': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [4, rotate90]]},
+  'wallpaper_pm': {grid: grid100x200, group: [[20, htranslate], [20, vtranslate], [2, vreflect]]},
+  'wallpaper_pmm': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [2, hreflect], [2, vreflect], [2, rotate180]]},
+  'wallpaper_pmg': {grid: grid50x200, group: [[20, htranslate], [20, vtranslate], [2, hglide], [2, vreflect]]},
+  'wallpaper_pg': {grid: grid100x200, group: [[20, htranslate], [20, vtranslate], [2, hglide]]},
+  'wallpaper_cm': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [2, hreflect], [2, hglide2]]},
+  'wallpaper_pgg': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [2, rotate180], [2, rotate180offset], [2, hglide2]]},
 };
 
 function Resize() {
@@ -144,11 +211,13 @@ function Resize() {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, screen.width, screen.height);
 
-/*
-  Line(0, 0, 200, 0);
-  Line(200, 0, 100, 100 * Math.sqrt(3));
-  Line(100, 100 * Math.sqrt(3), 0, 0);
-*/
+  for (var i = 0; i < lines.length; ++i) {
+    Line(lines[i][0], lines[i][1], lines[i][2], lines[i][3], color);
+  }
+
+  if (outline) {
+    PATTERNS[pattern.value].grid();
+  }
 }
 
 window.onresize = Resize;
@@ -164,8 +233,8 @@ screen.onmouseup = function(e) {
   drawing = false;
 };
 
-function Line(x1, y1, x2, y2) {
-  var group = PATTERNS[pattern.value];
+function Line(x1, y1, x2, y2, color) {
+  var group = PATTERNS[pattern.value].group;
   var state = [];
   for (var i = 0; i < group.length; ++i) {
     state.push(0);
@@ -204,7 +273,8 @@ pattern.onchange = Resize;
 
 screen.onmousemove = function(e) {
   if (drawing) {
-    Line(lastx, lasty, e.offsetX, e.offsetY);
+    lines.push([lastx, lasty, e.offsetX, e.offsetY, color]);
+    Line(lastx, lasty, e.offsetX, e.offsetY, color);
   }
   lastx = e.offsetX;
   lasty = e.offsetY;

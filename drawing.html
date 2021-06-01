@@ -9,6 +9,7 @@ body {
 </style>
 </head>
 <body>
+<div>
 <select name="pattern" id="pattern">
   <option value="regular_drawing">Regular drawing</option>
   <option value="frieze_p1">Frieze - p1</option>
@@ -40,5 +41,8 @@ body {
 <button id="blue" style="color: white; background-color: blue">Blue</button>
 <button id="purple" style="color: white; background-color: purple">Purple</button>
 <button id="brown" style="color: white; background-color: brown">Brown</button>
+<button id="clear">Clear</button>
+<span>Outline <input type="checkbox" id="outline" checked></span>
+</div>
 <canvas id="screen" class="screen"></canvas>
 <script src="drawing.js"></script>
