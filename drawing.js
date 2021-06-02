@@ -8,6 +8,7 @@ var drawing = false;
 var lastx, lasty;
 var lines = [];
 var outline = true;
+var SCALE = 150;
 
 function ColorButton(e) {
   color = e.target.style.backgroundColor;
@@ -35,37 +36,37 @@ document.getElementById('outline').onclick = function(e) {
 };
 
 function htranslate(n) {
-  ctx.translate(200 * n, 0);
+  ctx.translate(SCALE * n, 0);
 }
 
 function htranslate2(n) {
-  ctx.translate(400 * n, 0);
+  ctx.translate(2 * SCALE * n, 0);
 }
 
 function htranslate4(n) {
-  ctx.translate(800 * n, 0);
+  ctx.translate(4 * SCALE * n, 0);
 }
 
 function htranslateBig(n) {
-  ctx.translate(600 * n, 0);
+  ctx.translate(3 * SCALE * n, 0);
 }
 
 function vtranslate(n) {
-  ctx.translate(0, 200 * n);
+  ctx.translate(0, SCALE * n);
 }
 
 function vtranslate2(n) {
-  ctx.translate(0, 400 * n);
+  ctx.translate(0, 2 * SCALE * n);
 }
 
 function vtranslateBig(n) {
-  ctx.translate(0, 200 * Math.sqrt(3) * n);
+  ctx.translate(0, SCALE * Math.sqrt(3) * n);
 }
 
 function rotate90(n) {
-  ctx.translate(200, 200);
+  ctx.translate(SCALE, SCALE);
   ctx.rotate(n * Math.PI / 2);
-  ctx.translate(-200, -200);
+  ctx.translate(-SCALE, -SCALE);
 }
 
 function rotate120(n) {
@@ -73,105 +74,95 @@ function rotate120(n) {
 }
 
 function rotate120a(n) {
-  ctx.translate(100, 100 * Math.sqrt(3));
+  ctx.translate(SCALE/2, SCALE/2 * Math.sqrt(3));
   ctx.rotate(n * Math.PI * 2 / 3);
-  ctx.translate(-100, -100 * Math.sqrt(3));
+  ctx.translate(-SCALE/2, -SCALE/2 * Math.sqrt(3));
 }
 
 function rotate120b(n) {
-  ctx.translate(200, 0);
+  ctx.translate(SCALE, 0);
   ctx.rotate(n * Math.PI * 2 / 3);
-  ctx.translate(-200, 0);
+  ctx.translate(-SCALE, 0);
 }
 
 function rotate180(n) {
-  ctx.translate(200, 200);
+  ctx.translate(SCALE, SCALE);
   ctx.rotate(n * Math.PI);
-  ctx.translate(-200, -200);
+  ctx.translate(-SCALE, -SCALE);
 }
 
 function rotate180offset(n) {
-  ctx.translate(100, 100);
+  ctx.translate(2 * SCALE, 2 * SCALE);
   ctx.rotate(n * Math.PI);
-  ctx.translate(-100, -100);
+  ctx.translate(-2 * SCALE, -2 * SCALE);
 }
 
 function vreflect(n) {
   if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(200, 0);
+    ctx.translate(SCALE, 0);
     ctx.scale(-1, 1);
-    ctx.translate(-200, 0);
+    ctx.translate(-SCALE, 0);
   }
 }
 
 function hreflect(n) {
   if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(0, 200);
+    ctx.translate(0, SCALE);
     ctx.scale(1, -1);
-    ctx.translate(0, -200);
+    ctx.translate(0, -SCALE);
   }
 }
 
-function hreflect2(n) {
+function hreflectMid(n) {
   if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(0, 100);
+    ctx.translate(0, SCALE/2);
     ctx.scale(1, -1);
-    ctx.translate(0, -100);
+    ctx.translate(0, -SCALE/2);
   }
+}
+
+function hglideHalf(n) {
+  ctx.translate(SCALE/2 * n, 0);
+  hreflect(n);
+}
+
+function hglide2(n) {
+  ctx.translate(2 * SCALE * n, 0);
+  hreflect(n);
 }
 
 function hglide(n) {
-  if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(100, 0);
-    hreflect(n);
-  }
+  ctx.translate(SCALE * n, 0);
+  hreflect(n);
 }
 
-function hglide2x(n) {
-  if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(400, 0);
-    hreflect(n);
-  }
+function hglideMid2(n) {
+  ctx.translate(2 * SCALE * n, 0);
+  hreflectMid(n);
 }
 
-function hglide22x(n) {
-  if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(400, 0);
-    hreflect2(n);
-  }
+function hglideMid(n) {
+  ctx.translate(SCALE * n, 0);
+  hreflectMid(n);
 }
 
-function hglide2x(n) {
-  if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(200, 0);
-    hreflect2(n);
-  }
+function gridSxS() {
+  Line(0, 0, SCALE, 0, '#ccc');
+  Line(SCALE, 0, SCALE, SCALE, '#ccc');
+  Line(0, SCALE, SCALE, SCALE, '#ccc');
+  Line(0, SCALE, 0, 0, '#ccc');
 }
 
-function vglide(n) {
-  if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(0, 100);
-    vreflect(n);
-  }
-}
-
-function grid200x200() {
-  Line(0, 0, 200, 0, '#ccc');
-  Line(200, 0, 200, 200, '#ccc');
-  Line(0, 200, 200, 200, '#ccc');
-  Line(0, 200, 0, 0, '#ccc');
-}
-
-function grid200() {
+function gridS() {
   Line(0, 0, 0, 1000, '#ccc');
-  Line(200, 0, 200, 1000, '#ccc');
+  Line(SCALE, 0, SCALE, 1000, '#ccc');
 }
 
 function gridHex() {
-  Line(0, 0, 200, 0, '#ccc');
-  Line(100, 100 * Math.sqrt(3), 0, 0, '#ccc');
-  Line(100, 100 * Math.sqrt(3), 300, 100 * Math.sqrt(3), '#ccc');
-  Line(200, 0, 300, 100 * Math.sqrt(3), '#ccc');
+  Line(0, 0, SCALE, 0, '#ccc');
+  Line(SCALE/2, SCALE/2 * Math.sqrt(3), 0, 0, '#ccc');
+  Line(SCALE/2, SCALE/2 * Math.sqrt(3), SCALE*3/2, SCALE/2 * Math.sqrt(3), '#ccc');
+  Line(SCALE, 0, SCALE*3/2, SCALE/2 * Math.sqrt(3), '#ccc');
 }
 
 function gridNone() {
@@ -179,23 +170,23 @@ function gridNone() {
 
 var PATTERNS = {
   'regular_drawing': {grid: gridNone, group: []},
-  'frieze_p1': {grid: grid200, group: [[20, htranslate]]},
-  'frieze_p11g': {grid: grid200x200, group: [[20, htranslate], [2, hglide]]},
-  'frieze_p1m1': {grid: grid200, group: [[10, htranslate2], [2, vreflect]]},
-  'frieze_p2': {grid: grid200x200, group: [[20, htranslate], [2, rotate180]]},
-  'frieze_p2mg': {grid: grid200x200, group: [[10, htranslate2], [2, vreflect], [2, hglide22x], [2, rotate180]]},
-  'frieze_p11m': {grid: grid200x200, group: [[20, htranslate], [2, hreflect]]},
-  'frieze_p2mm': {grid: grid200x200, group: [[10, htranslate2], [2, hreflect], [2, vreflect], [2, rotate180]]},
-  'wallpaper_p1': {grid: grid200x200, group: [[20, htranslate], [20, vtranslate]]},
-  'wallpaper_p2': {grid: grid200x200, group: [[2, rotate180], [10, htranslate2], [20, vtranslate]]},
-  'wallpaper_p3': {grid: gridHex, group: [[6, htranslateBig], [6, vtranslateBig], [3, rotate120], [3, rotate120a], [3, rotate120b]]},
-  'wallpaper_p4': {grid: grid200x200, group: [[10, htranslate2], [20, vtranslate2], [4, rotate90]]},
-  'wallpaper_pm': {grid: grid200x200, group: [[10, htranslate2], [20, vtranslate], [2, vreflect]]},
-  'wallpaper_pmm': {grid: grid200x200, group: [[10, htranslate2], [10, vtranslate2], [2, hreflect], [2, vreflect], [2, rotate180]]},
-  'wallpaper_pmg': {grid: grid200x200, group: [[10, htranslate2], [20, vtranslate], [2, hglide2x], [2, vreflect]]},
-  'wallpaper_pg': {grid: grid200x200, group: [[20, htranslate], [10, vtranslate2], [2, hglide2x]]},
-  'wallpaper_cm': {grid: grid200x200, group: [[10, htranslate2], [10, vtranslate2], [2, hreflect], [2, hglide22x]]},
-  'wallpaper_pgg': {grid: grid200x200, group: [[10, htranslate2], [10, vtranslate2], [2, rotate180], [2, rotate180offset], [2, hglide22x]]},
+  'frieze_p1': {grid: gridS, group: [[20, htranslate]]},
+  'frieze_p11g': {grid: gridSxS, group: [[20, htranslate], [2, hglideHalf]]},
+  'frieze_p1m1': {grid: gridS, group: [[10, htranslate2], [2, vreflect]]},
+  'frieze_p2': {grid: gridSxS, group: [[20, htranslate], [2, rotate180]]},
+  'frieze_p2mg': {grid: gridSxS, group: [[10, htranslate4], [2, vreflect], [2, hglideMid2]]},
+  'frieze_p11m': {grid: gridSxS, group: [[20, htranslate], [2, hreflect]]},
+  'frieze_p2mm': {grid: gridSxS, group: [[10, htranslate2], [2, hreflect], [2, vreflect], [2, rotate180]]},
+  'wallpaper_p1': {grid: gridSxS, group: [[20, htranslate], [20, vtranslate]]},
+  'wallpaper_p2': {grid: gridSxS, group: [[2, rotate180], [10, htranslate2], [20, vtranslate]]},
+  'wallpaper_p3': {grid: gridHex, group: [[10, htranslateBig], [10, vtranslateBig], [3, rotate120], [3, rotate120a], [3, rotate120b]]},
+  'wallpaper_p4': {grid: gridSxS, group: [[10, htranslate2], [20, vtranslate2], [4, rotate90]]},
+  'wallpaper_pm': {grid: gridSxS, group: [[10, htranslate2], [20, vtranslate], [2, vreflect]]},
+  'wallpaper_pmm': {grid: gridSxS, group: [[10, htranslate2], [10, vtranslate2], [2, hreflect], [2, vreflect], [2, rotate180]]},
+  'wallpaper_pmg': {grid: gridSxS, group: [[10, htranslate2], [10, vtranslate2], [2, hglide], [2, vreflect]]},
+  'wallpaper_pg': {grid: gridSxS, group: [[10, htranslate2], [20, vtranslate], [2, hglide]]},
+  'wallpaper_cm': {grid: gridSxS, group: [[10, htranslate2], [10, vtranslate2], [2, hreflect], [2, hglide2], [2, hglideMid]]},
+  'wallpaper_pgg': {grid: gridSxS, group: [[10, htranslate2], [10, vtranslate2], [2, rotate180], [2, rotate180offset], [2, hglideMid]]},
 };
 
 function Resize() {
