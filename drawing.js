@@ -38,12 +38,24 @@ function htranslate(n) {
   ctx.translate(200 * n, 0);
 }
 
-function vtranslate(n) {
-  ctx.translate(0, 200 * n);
+function htranslate2(n) {
+  ctx.translate(400 * n, 0);
+}
+
+function htranslate4(n) {
+  ctx.translate(800 * n, 0);
 }
 
 function htranslateBig(n) {
   ctx.translate(600 * n, 0);
+}
+
+function vtranslate(n) {
+  ctx.translate(0, 200 * n);
+}
+
+function vtranslate2(n) {
+  ctx.translate(0, 400 * n);
 }
 
 function vtranslateBig(n) {
@@ -102,7 +114,7 @@ function hreflect(n) {
 
 function hreflect2(n) {
   if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(0, 200);
+    ctx.translate(0, 100);
     ctx.scale(1, -1);
     ctx.translate(0, -100);
   }
@@ -115,9 +127,23 @@ function hglide(n) {
   }
 }
 
-function hglide2(n) {
+function hglide2x(n) {
   if (n - Math.floor(n / 2) * 2) {
-    ctx.translate(100, 0);
+    ctx.translate(400, 0);
+    hreflect(n);
+  }
+}
+
+function hglide22x(n) {
+  if (n - Math.floor(n / 2) * 2) {
+    ctx.translate(400, 0);
+    hreflect2(n);
+  }
+}
+
+function hglide2x(n) {
+  if (n - Math.floor(n / 2) * 2) {
+    ctx.translate(200, 0);
     hreflect2(n);
   }
 }
@@ -134,39 +160,6 @@ function grid200x200() {
   Line(200, 0, 200, 200, '#ccc');
   Line(0, 200, 200, 200, '#ccc');
   Line(0, 200, 0, 0, '#ccc');
-}
-
-function grid100x200() {
-  Line(0, 0, 100, 0, '#ccc');
-  Line(100, 0, 100, 200, '#ccc');
-  Line(0, 200, 100, 200, '#ccc');
-  Line(0, 200, 0, 0, '#ccc');
-}
-
-function grid50x200() {
-  Line(0, 0, 50, 0, '#ccc');
-  Line(50, 0, 50, 200, '#ccc');
-  Line(0, 200, 50, 200, '#ccc');
-  Line(0, 200, 0, 0, '#ccc');
-}
-
-function grid200x100() {
-  Line(0, 0, 200, 0, '#ccc');
-  Line(200, 0, 200, 100, '#ccc');
-  Line(0, 100, 200, 100, '#ccc');
-  Line(0, 100, 0, 0, '#ccc');
-}
-
-function grid100x100() {
-  Line(0, 0, 200, 0, '#ccc');
-  Line(100, 0, 100, 100, '#ccc');
-  Line(0, 100, 100, 100, '#ccc');
-  Line(0, 100, 0, 0, '#ccc');
-}
-
-function grid100() {
-  Line(0, 0, 0, 1000, '#ccc');
-  Line(100, 0, 100, 1000, '#ccc');
 }
 
 function grid200() {
@@ -188,21 +181,21 @@ var PATTERNS = {
   'regular_drawing': {grid: gridNone, group: []},
   'frieze_p1': {grid: grid200, group: [[20, htranslate]]},
   'frieze_p11g': {grid: grid200x200, group: [[20, htranslate], [2, hglide]]},
-  'frieze_p1m1': {grid: grid100, group: [[20, htranslate], [2, vreflect]]},
+  'frieze_p1m1': {grid: grid200, group: [[10, htranslate2], [2, vreflect]]},
   'frieze_p2': {grid: grid200x200, group: [[20, htranslate], [2, rotate180]]},
-  'frieze_p2mg': {grid: grid50x200, group: [[20, htranslate], [2, vreflect], [2, hglide], [2, rotate180]]},
+  'frieze_p2mg': {grid: grid200x200, group: [[10, htranslate2], [2, vreflect], [2, hglide22x], [2, rotate180]]},
   'frieze_p11m': {grid: grid200x200, group: [[20, htranslate], [2, hreflect]]},
-  'frieze_p2mm': {grid: grid100x200, group: [[20, htranslate], [2, hreflect], [2, vreflect], [2, rotate180]]},
+  'frieze_p2mm': {grid: grid200x200, group: [[10, htranslate2], [2, hreflect], [2, vreflect], [2, rotate180]]},
   'wallpaper_p1': {grid: grid200x200, group: [[20, htranslate], [20, vtranslate]]},
-  'wallpaper_p2': {grid: grid100x200, group: [[2, rotate180], [20, htranslate], [20, vtranslate]]},
+  'wallpaper_p2': {grid: grid200x200, group: [[2, rotate180], [10, htranslate2], [20, vtranslate]]},
   'wallpaper_p3': {grid: gridHex, group: [[6, htranslateBig], [6, vtranslateBig], [3, rotate120], [3, rotate120a], [3, rotate120b]]},
-  'wallpaper_p4': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [4, rotate90]]},
-  'wallpaper_pm': {grid: grid100x200, group: [[20, htranslate], [20, vtranslate], [2, vreflect]]},
-  'wallpaper_pmm': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [2, hreflect], [2, vreflect], [2, rotate180]]},
-  'wallpaper_pmg': {grid: grid50x200, group: [[20, htranslate], [20, vtranslate], [2, hglide], [2, vreflect]]},
-  'wallpaper_pg': {grid: grid100x200, group: [[20, htranslate], [20, vtranslate], [2, hglide]]},
-  'wallpaper_cm': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [2, hreflect], [2, hglide2]]},
-  'wallpaper_pgg': {grid: grid100x100, group: [[20, htranslate], [20, vtranslate], [2, rotate180], [2, rotate180offset], [2, hglide2]]},
+  'wallpaper_p4': {grid: grid200x200, group: [[10, htranslate2], [20, vtranslate2], [4, rotate90]]},
+  'wallpaper_pm': {grid: grid200x200, group: [[10, htranslate2], [20, vtranslate], [2, vreflect]]},
+  'wallpaper_pmm': {grid: grid200x200, group: [[10, htranslate2], [10, vtranslate2], [2, hreflect], [2, vreflect], [2, rotate180]]},
+  'wallpaper_pmg': {grid: grid200x200, group: [[10, htranslate2], [20, vtranslate], [2, hglide2x], [2, vreflect]]},
+  'wallpaper_pg': {grid: grid200x200, group: [[20, htranslate], [10, vtranslate2], [2, hglide2x]]},
+  'wallpaper_cm': {grid: grid200x200, group: [[10, htranslate2], [10, vtranslate2], [2, hreflect], [2, hglide22x]]},
+  'wallpaper_pgg': {grid: grid200x200, group: [[10, htranslate2], [10, vtranslate2], [2, rotate180], [2, rotate180offset], [2, hglide22x]]},
 };
 
 function Resize() {
