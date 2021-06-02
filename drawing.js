@@ -212,7 +212,7 @@ function Resize() {
   ctx.fillRect(0, 0, screen.width, screen.height);
 
   for (var i = 0; i < lines.length; ++i) {
-    Line(lines[i][0], lines[i][1], lines[i][2], lines[i][3], color);
+    Line(lines[i][0], lines[i][1], lines[i][2], lines[i][3], line[i][4]);
   }
 
   if (outline) {
