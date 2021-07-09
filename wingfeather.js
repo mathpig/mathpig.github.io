@@ -6,6 +6,7 @@ var input = document.getElementById('input');
 function Resize() {
   output.style.height = window.innerHeight - input.clientHeight - 6;
 }
+
 window.onresize = Resize;
 Resize();
 input.focus();
@@ -129,47 +130,105 @@ function Map(rows, diagonals) {
 var home = new Entity()
   .setName('home')
   .setCalled('home', 'room')
-  .setDescription('Your home is simple but cozy. There is an exit to the south.');
+  .setDescription('Your home is simple but cozy.');
 new Entity()
   .setName('a thwap')
   .setCalled('thwap', 'creature')
   .setDescription('This is a vicious thwap.')
   .move(home);
+
 new Entity()
   .setName('a totato')
   .setCalled('totato')
   .setDescription('This is a totato. It is a sweet, bright red fruit. ' +
-                  'The thwap looks like it would like it for itself.')
+                  'Thwaps are known to like totatos, ' +
+                  'so you should pick this up if there is a thwap nearby. ')
   .move(home);
-
-var yard = new Entity()
-  .setName('your yard')
-  .setCalled('yard')
-  .setDescription('This is the yard outside your home. The house lies to the north.');
-new Entity()
-  .setName('a shovel')
-  .setCalled('shovel')
-  .setDescription('This is a shovel. You use it outside to collect hogpig droppings. ' +
-                  'You have to return it to the Fangs before sundown unless you want ' +
-                  'to be deported to Dang in the Black Carrige. ' +
-                  'Fortunately, it is currently noon, ' +
-                  'there are a few hours left before the sun goes down.')
-  .move(yard);
 
 var field = new Entity()
   .setName('field')
   .setCalled('field')
-  .setDescription("Your grandfather's totato field.");
+  .setDescription('Your grandfather\'s totato field. ');
 
-var gulley = new Entity()
-  .setName('gulley')
-  .setCalled('gulley')
-  .setDescription('A gulley is near the side of your house.');
+new Entity()
+  .setName('a shovel')
+  .setCalled('shovel')
+  .setDescription('This is a shovel. ' +
+                  'You use it outside to collect hogpig droppings. ' +
+                  'You have to return it to the Fang regiments before sundown, ' +
+                  'unless you want to be deported to Dang in the Black Carrige. ')
+  .move(field);
+
+var trees = new Entity()
+  .setName('trees')
+  .setCalled('trees') 
+  .setDescription('There is a clump of trees growing here. ');
+
+var trees_sea = new Entity()
+  .setName('trees')
+  .setCalled('trees')
+  .setDescription('There is a clump of trees growing here. The Dark Sea is to the east.')
+
+var grass = new Entity()
+  .setName('grass')
+  .setCalled('grass')
+  .setDescription('There is grass growing here. ');
+
+var cliff = new Entity()
+  .setName('cliff')
+  .setCalled('cliff')
+  .setDescription('You are on a cliff sloping towards the east. The Dark Sea of Darkness is in front of you.')
+
+var sea = new Entity()
+  .setName('sea')
+  .setCalled('sea')
+  .setDescription('You fall into the Dark Sea of Darkness and die. ')
+
+var grass_road = new Entity()
+  .setName('grass')
+  .setCalled('grass')
+  .setDescription('There is grass growing here. You are on the Main Road of the Glipwood Township. ')
+
+var river = new Entity()
+  .setName('river')
+  .setCalled('river')
+  .setDescription('You fall into the Mighty River Blapp and die. ')
+
+var road = new Entity()
+  .setName('road')
+  .setCalled('road')
+  .setDescription('You are on the Main Road. ')
+
+var trees_river1 = new Entity()
+  .setName('trees')
+  .setCalled('trees')
+  .setDescription('A clump of trees is growing here. The Mighty River Blapp lies to the north. ')
+
+var trees_river2 = new Entity()
+  .setName('trees')
+  .setCalled('trees')
+  .setDescription('A clump of trees is growing here. The Mighty River Blapp lies to the northwest, and the Dark Sea of Darkness lies to the north. ')
+
+var inn = new Entity()
+  .setName('inn')
+  .setCalled('inn')
+  .setDescription('You are in Glipwood\'s only inn. The inkeeper asks you if you would like to stay in the inn for the night. ')
+
+var books = new Entity()
+  .setName('Books and Crannies')
+  .setCalled('Books and Crannies')
+  .setDescription('You are in Books and Crannies. Oskar R. Reteep is at the front desk. You notice Zouzab Koit standing on top of a shelf. ')
 
 Map(
   [
-    [home,    field,    undefined],
-    [yard,    gulley,   undefined],
+    [undefined, undefined,    undefined,    undefined, undefined, undefined],
+    [undefined, river,        sea,          sea,       sea,       undefined],
+    [undefined, trees_river1, trees_river2, trees_sea, sea,       undefined],
+    [undefined, trees,        home,         cliff,     sea,       undefined],
+    [undefined, field,        grass_road,   trees_sea, sea,       undefined],
+    [undefined, road,         road,         road,      trees,     undefined],
+    [undefined, books,        books,        road,      inn,       undefined],
+    [undefined, undefined,    undefined,    undefined, undefined, undefined],
   ], true
 )
 
