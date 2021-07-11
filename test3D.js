@@ -5,6 +5,15 @@ var texture1 = document.getElementById('texture1');
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
 
+var left = false;
+var right = false;
+var forward = false;
+var backward = false;
+
+var x = 0;
+var y = 0;
+var direction = 0;
+
 const vertexShader = `
   uniform highp mat4 modelview;
   uniform highp mat4 projection;
@@ -39,151 +48,147 @@ const fragmentShader = `
   }
 `;
 
-var alpha = 0;
-var beta = 0;
-var gamma = 0;
-
 function Draw() {
   ctx.clearColor(0.5, 0.5, 0.5, 1);
   ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
   ctx.enable(ctx.DEPTH_TEST);
-  
+
   const data = [
       -1, 0, 1 / 2, 1,                        0.75, 0.75, 0.75, 1,     0, 0, 1,                        0, 0.5,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 1,
       -1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,     0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 0,
-      
+
       -1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,     0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 0,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 1,
       1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,      0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.75, 0,
-      
+
       1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,      0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.75, 0,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 1,
       1, 0, 1 / 2, 1,                         0.75, 0.75, 0.75, 1,     0, 0, 1,                        1, 0.5,
-      
+
       1, 0, 1 / 2, 1,                         0.75, 0.75, 0.75, 1,     0, 0, 1,                        1, 0.5,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 1,
       1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,     0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.75, 1,
-      
-      
+
+
       -1, 0, -1 / 2, 1,                       0.25, 0.25, 0.25, 1,     0, 0, -1,                       1, 0.5,
       -1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,    0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.75, 0,
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.75, 1,
-      
+
       -1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,    0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.75, 0,
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.25, 0,
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.75, 1,
-      
+
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.25, 0,
       1, 0, -1 / 2, 1,                        0.25, 0.25, 0.25, 1,     0, 0, -1,                       0, 0.5,
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.75, 1,
-      
+
       1, 0, -1 / 2, 1,                        0.25, 0.25, 0.25, 1,     0, 0, -1,                       0, 0.5,
       1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,    0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.25, 1,
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   0.25, 0.25, 0.25, 1,     0, 0, -1,                       0.75, 1,
-      
-      
+
+
       -1, 0, 1 / 2, 1,                        1, 0, 0, 1,              1 / 2, Math.sqrt(3) / 2, 0,     1, 0,
       -1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,     1, 0, 0, 1,              1 / 2, Math.sqrt(3) / 2, 0,     0, 0,
       -1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,    1, 0, 0, 1,              1 / 2, Math.sqrt(3) / 2, 0,     0, 1,
-      
+
       -1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,    1, 0, 0, 1,              1 / 2, Math.sqrt(3) / 2, 0,     0, 1,
       -1, 0, -1 / 2, 1,                       1, 0, 0, 1,              1 / 2, Math.sqrt(3) / 2, 0,     1, 1,
       -1, 0, 1 / 2, 1,                        1, 0, 0, 1,              1 / 2, Math.sqrt(3) / 2, 0,     1, 0,
-      
-      
+
+
       -1, 0, 1 / 2, 1,                        1, 0.5, 0, 1,            -1 / 2, Math.sqrt(3) / 2, 0,    0, 0,
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   1, 0.5, 0, 1,            -1 / 2, Math.sqrt(3) / 2, 0,    1, 1,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    1, 0.5, 0, 1,            -1 / 2, Math.sqrt(3) / 2, 0,    1, 0,
-      
+
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   1, 0.5, 0, 1,            -1 / 2, Math.sqrt(3) / 2, 0,    1, 1,
       -1, 0, 1 / 2, 1,                        1, 0.5, 0, 1,            -1 / 2, Math.sqrt(3) / 2, 0,    0, 0,
       -1, 0, -1 / 2, 1,                       1, 0.5, 0, 1,            -1 / 2, Math.sqrt(3) / 2, 0,    0, 1,
-     
-      
+
+
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    1, 1, 0, 1,              0, -1, 0,                       0, 0,
       1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,    1, 1, 0, 1,              0, -1, 0,                       1, 1,
       1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,     1, 1, 0, 1,              0, -1, 0,                       1, 0,
-      
+
       1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,    1, 1, 0, 1,              0, -1, 0,                       1, 1,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    1, 1, 0, 1,              0, -1, 0,                       0, 0,
       -1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,   1, 1, 0, 1,              0, -1, 0,                       0, 1,
-      
-      
+
+
       1, 0, 1 / 2, 1,                         0, 1, 0, 1,              1 / 2, -Math.sqrt(3) / 2, 0,    1, 0,
       1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,     0, 1, 0, 1,              1 / 2, -Math.sqrt(3) / 2, 0,    0, 0,
       1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,    0, 1, 0, 1,              1 / 2, -Math.sqrt(3) / 2, 0,    0, 1,
-      
+
       1 / 2, -Math.sqrt(3) / 2, -1 / 2, 1,    0, 1, 0, 1,              1 / 2, -Math.sqrt(3) / 2, 0,    0, 1,
       1, 0, -1 / 2, 1,                        0, 1, 0, 1,              1 / 2, -Math.sqrt(3) / 2, 0,    1, 1,
       1, 0, 1 / 2, 1,                         0, 1, 0, 1,              1 / 2, -Math.sqrt(3) / 2, 0,    1, 0,
-      
-      
+
+
       1, 0, 1 / 2, 1,                         0, 0, 1, 1,              -1 / 2, -Math.sqrt(3) / 2, 0,   0, 0,
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0, 0, 1, 1,              -1 / 2, -Math.sqrt(3) / 2, 0,   1, 1,
       1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,      0, 0, 1, 1,              -1 / 2, -Math.sqrt(3) / 2, 0,   1, 0,
-      
+
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0, 0, 1, 1,              -1 / 2, -Math.sqrt(3) / 2, 0,   1, 1,
       1, 0, 1 / 2, 1,                         0, 0, 1, 1,              -1 / 2, -Math.sqrt(3) / 2, 0,   0, 0,
       1, 0, -1 / 2, 1,                        0, 0, 1, 1,              -1 / 2, -Math.sqrt(3) / 2, 0,   0, 1,
-      
-      
+
+
       -1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,     0.5, 0, 1, 1,            0, 1, 0,                        1, 0,
       1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,      0.5, 0, 1, 1,            0, 1, 0,                        0, 0,
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0.5, 0, 1, 1,            0, 1, 0,                        0, 1,
-      
+
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0.5, 0, 1, 1,            0, 1, 0,                        0, 1,
       -1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,    0.5, 0, 1, 1,            0, 1, 0,                        1, 1,
       -1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,     0.5, 0, 1, 1,            0, 1, 0,                        1, 0,
 /*      1, 1, 1, 1,      0, 1, 0, 1,     0, 1, 0,
       1, 1, -1, 1,     0, 1, 0, 1,     0, 1, 0,
       -1, 1, 1, 1,     0, 1, 0, 1,     0, 1, 0,
-      
+ 
       -1, 1, -1, 1,    0, 1, 0, 1,     0, 1, 0,
       -1, 1, 1, 1,     0, 1, 0, 1,     0, 1, 0,
       1, 1, -1, 1,     0, 1, 0, 1,     0, 1, 0,
-      
-      
+ 
+ 
       1, -1, 1, 1,     0, 0, 1, 1,     0, -1, 0,
       -1, -1, 1, 1,    0, 0, 1, 1,     0, -1, 0,
       1, -1, -1, 1,    0, 0, 1, 1,     0, -1, 0,
-      
+
       -1, -1, -1, 1,   0, 0, 1, 1,     0, -1, 0,
       1, -1, -1, 1,    0, 0, 1, 1,     0, -1, 0,
       -1, -1, 1, 1,    0, 0, 1, 1,     0, -1, 0,
-      
-      
+ 
+
       1, 1, 1, 1,      1, 0, 0, 1,     1, 0, 0,
       1, -1, 1, 1,     1, 0, 0, 1,     1, 0, 0,
       1, 1, -1, 1,     1, 0, 0, 1,     1, 0, 0,
-      
+ 
       1, -1, -1, 1,    1, 0, 0, 1,     1, 0, 0,
       1, 1, -1, 1,     1, 0, 0, 1,     1, 0, 0,
       1, -1, 1, 1,     1, 0, 0, 1,     1, 0, 0,
-      
-      
+  
+
       -1, 1, 1, 1,     1, 0.5, 0, 1,   -1, 0, 0,
       -1, 1, -1, 1,    1, 0.5, 0, 1,   -1, 0, 0,
       -1, -1, 1, 1,    1, 0.5, 0, 1,   -1, 0, 0,
-      
+
       -1, -1, -1, 1,   1, 0.5, 0, 1,   -1, 0, 0,
       -1, -1, 1, 1,    1, 0.5, 0, 1,   -1, 0, 0,
       -1, 1, -1, 1,    1, 0.5, 0, 1,   -1, 0, 0,
-      
-      
+
+
       -1, -1, 1, 1,    1, 1, 0, 1,     0, 0, 1,
       1, 1, 1, 1,      1, 1, 0, 1,     0, 0, 1,
       -1, 1, 1, 1,     1, 1, 0, 1,     0, 0, 1,
-      
+ 
       1, 1, 1, 1,      1, 1, 0, 1,     0, 0, 1,
       -1, -1, 1, 1,    1, 1, 0, 1,     0, 0, 1,
       1, -1, 1, 1,     1, 1, 0, 1,     0, 0, 1,
-      
-      
+
+
       -1, -1, -1, 1,   1, 1, 1, 1,     0, 0, -1,
       -1, 1, -1, 1,    1, 1, 1, 1,     0, 0, -1,
       1, 1, -1, 1,     1, 1, 1, 1,     0, 0, -1,
-      
+
       1, 1, -1, 1,     1, 1, 1, 1,     0, 0, -1,
       1, -1, -1, 1,    1, 1, 1, 1,     0, 0, -1,
       -1, -1, -1, 1,   1, 1, 1, 1,     0, 0, -1,*/
@@ -193,7 +198,7 @@ function Draw() {
   ctx.bufferData(ctx.ARRAY_BUFFER,
                  new Float32Array(data),
                  ctx.STATIC_DRAW);
-  
+
   var vs = ctx.createShader(ctx.VERTEX_SHADER);
   ctx.shaderSource(vs, vertexShader);
   ctx.compileShader(vs);
@@ -220,12 +225,15 @@ function Draw() {
   ctx.enableVertexAttribArray(tex);
 
   var modelview = ctx.getUniformLocation(program, 'modelview');
-  var mvtrans = Matrix.translate(0, 0, -7.5).multiply(Matrix.rotateZ(gamma)).multiply(Matrix.rotateY(beta)).multiply(Matrix.rotateX(alpha));
+  var mvtrans =
+    Matrix.translate(-x, -y, 0)
+    .multiply(Matrix.translate(0, 0, -40))
+    .multiply(Matrix.rotateX(-45));
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(program, 'projection');
-  var mvtrans = Matrix.perspective(35, 4/3, 0.5, 100);
+  var mvtrans = Matrix.perspective(40, 4/3, 0.5, 100);
   ctx.uniformMatrix4fv(projection, false, mvtrans.array());
-  
+
   var light = ctx.getUniformLocation(program, 'light');
   ctx.uniform3f(light, 0.2, 0.3, 0.7);
 
@@ -241,10 +249,62 @@ function Draw() {
   ctx.generateMipmap(ctx.TEXTURE_2D);
 
   ctx.drawArrays(ctx.TRIANGLES, 0, Math.floor(data.length / 11));
-
-  alpha += 1 / 3;
-  beta += 1 / 2;
-  gamma += 1 / 1;
 }
 
-setInterval(Draw, 20);
+function Tick() {
+/*
+  if (left) {
+    direction -= 1;
+  }
+  if (right) {
+    direction += 1;
+  }
+  if (forward) {
+    y += Math.cos(direction * 180 / Math.PI) * 0.01;
+    x += Math.sin(direction * 180 / Math.PI) * 0.01;
+  }
+  if (backward) {
+    y -= Math.cos(direction * 180 / Math.PI) * 0.01;
+    x -= Math.sin(direction * 180 / Math.PI) * 0.01;
+  }
+*/
+  if (left) {
+    x -= 0.1;
+  }
+  if (right) {
+    x += 0.1;
+  }
+  if (forward) {
+    y += 0.1;
+  }
+  if (backward) {
+    y -= 0.1;
+  }
+  Draw();
+}
+
+setInterval(Tick, 20);
+
+window.onkeydown = function(e) {
+  if (e.code == 'KeyA') {
+    left = true;
+  } else if (e.code == 'KeyD') {
+    right = true;
+  } else if (e.code == 'KeyW') {
+    forward = true;
+  } else if (e.code == 'KeyS') {
+    backward = true;
+  }
+};
+
+window.onkeyup = function(e) {
+  if (e.code == 'KeyA') {
+    left = false;
+  } else if (e.code == 'KeyD') {
+    right = false;
+  } else if (e.code == 'KeyW') {
+    forward = false;
+  } else if (e.code == 'KeyS') {
+    backward = false;
+  }
+};
