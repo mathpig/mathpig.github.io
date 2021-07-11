@@ -5,8 +5,8 @@ var texture1 = document.getElementById('texture1');
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
 
-const SIZE_X = 1000;
-const SIZE_Y = 744;
+const SIZE_X = 200;
+const SIZE_Y = 200;
 const BUFFER_SIZE = 12 * 20 * 3 * SIZE_X * SIZE_Y;
 
 var left = false;
@@ -222,8 +222,8 @@ var program;
   
 function Setup() {
   buffer = new Float32Array(BUFFER_SIZE);
-  for (var i = 0; i < 253; i++) {
-    for (var j = 0; j < 253; j++) {
+  for (var i = 0; i < SIZE_X; i++) {
+    for (var j = 0; j < SIZE_Y; j++) {
       AddPrism(i, j, Math.floor(Math.random() * 2),
                [Math.random(), Math.random(), Math.random()]);
     }
