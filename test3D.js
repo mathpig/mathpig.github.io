@@ -51,7 +51,7 @@ const fragmentShader = `
   }
 `;
 
-function AddPrism(buffer, x, y, z) {
+function AddPrism(buffer, x, y, z, color) {
   const data = [
       -1, 0, 1 / 2, 1,                        0.75, 0.75, 0.75, 1,     0, 0, 1,                        0, 0.5,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 1,
@@ -144,7 +144,10 @@ function AddPrism(buffer, x, y, z) {
     buffer.push(data[i + 0] + x * 1.5);
     buffer.push(data[i + 1] + x * Math.sqrt(3) / 2 + y * Math.sqrt(3));
     buffer.push(data[i + 2] + z);
-    for (var j = 3; j < 13; j++) {
+    buffer.push(color[0]);
+    buffer.push(color[1]);
+    buffer.push(color[2]);
+    for (var j = 6; j < 13; j++) {
       buffer.push(data[i + j]);
     }
   }
@@ -212,7 +215,8 @@ var data = [];
 function Setup() {
   for (var i = 0; i < 10; i++) {
     for (var j = 0; j < 10; j++) {
-      AddPrism(data, i + 1, j + 1, Math.floor(Math.random() * 10) + 1);
+      AddPrism(data, i + 1, j + 1, Math.floor(Math.random() * 10) + 1,
+               [Math.random(), Math.random(), Math.random()]);
     }
   }
 }
