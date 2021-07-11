@@ -9,9 +9,12 @@ var left = false;
 var right = false;
 var forward = false;
 var backward = false;
+var inward = false;
+var outward = false;
 
 var x = 0;
 var y = 0;
+var z = 0;
 var direction = 0;
 
 const vertexShader = `
@@ -29,7 +32,7 @@ const vertexShader = `
   void main() {
     gl_Position = projection * modelview * pos;
     float diffuse = max(0.0, dot(normal, normalize(light)));
-    float ambient = 1.0;
+    float ambient = 0.5;
     float level = diffuse + ambient;
     //vColor = vec4(1.0, 0.5, 0.0, 1.0) * vec4(level, level, level, 1);
     vColor = col * vec4(level, level, level, 1);
@@ -48,11 +51,7 @@ const fragmentShader = `
   }
 `;
 
-function Draw() {
-  ctx.clearColor(0.5, 0.5, 0.5, 1);
-  ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
-  ctx.enable(ctx.DEPTH_TEST);
-
+function AddPrism(buffer, x, y, z) {
   const data = [
       -1, 0, 1 / 2, 1,                        0.75, 0.75, 0.75, 1,     0, 0, 1,                        0, 0.5,
       -1 / 2, -Math.sqrt(3) / 2, 1 / 2, 1,    0.75, 0.75, 0.75, 1,     0, 0, 1,                        0.25, 1,
@@ -140,7 +139,20 @@ function Draw() {
       1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,     0.5, 0, 1, 1,            0, 1, 0,                        0, 1,
       -1 / 2, Math.sqrt(3) / 2, -1 / 2, 1,    0.5, 0, 1, 1,            0, 1, 0,                        1, 1,
       -1 / 2, Math.sqrt(3) / 2, 1 / 2, 1,     0.5, 0, 1, 1,            0, 1, 0,                        1, 0,
-/*      1, 1, 1, 1,      0, 1, 0, 1,     0, 1, 0,
+  ];
+  for (var i = 0; i < data.length; i += 13) {
+    buffer.push(data[i + 0] + x * 1.5);
+    buffer.push(data[i + 1] + x * Math.sqrt(3) / 2 + y * Math.sqrt(3));
+    buffer.push(data[i + 2] + z);
+    for (var j = 3; j < 13; j++) {
+      buffer.push(data[i + j]);
+    }
+  }
+}
+
+function AddCube(buffer, x, y, z) {
+  const data = [
+      1, 1, 1, 1,      0, 1, 0, 1,     0, 1, 0,
       1, 1, -1, 1,     0, 1, 0, 1,     0, 1, 0,
       -1, 1, 1, 1,     0, 1, 0, 1,     0, 1, 0,
  
@@ -191,8 +203,26 @@ function Draw() {
 
       1, 1, -1, 1,     1, 1, 1, 1,     0, 0, -1,
       1, -1, -1, 1,    1, 1, 1, 1,     0, 0, -1,
-      -1, -1, -1, 1,   1, 1, 1, 1,     0, 0, -1,*/
+      -1, -1, -1, 1,   1, 1, 1, 1,     0, 0, -1,
   ];
+}
+  
+var data = [];
+
+function Setup() {
+  for (var i = 0; i < 10; i++) {
+    for (var j = 0; j < 10; j++) {
+      AddPrism(data, i + 1, j + 1, Math.floor(Math.random() * 10) + 1);
+    }
+  }
+}
+Setup();
+
+function Draw() {
+  ctx.clearColor(0.5, 0.5, 0.5, 1);
+  ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
+  ctx.enable(ctx.DEPTH_TEST);
+ 
   var buffer = ctx.createBuffer();
   ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer);
   ctx.bufferData(ctx.ARRAY_BUFFER,
@@ -226,8 +256,8 @@ function Draw() {
 
   var modelview = ctx.getUniformLocation(program, 'modelview');
   var mvtrans =
-    Matrix.translate(-x, -y, 0)
-    .multiply(Matrix.translate(0, 0, -40))
+    Matrix.translate(-x, -y, -z)
+    .multiply(Matrix.translate(0, 0, -20))
     .multiply(Matrix.rotateX(-45));
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(program, 'projection');
@@ -280,6 +310,12 @@ function Tick() {
   if (backward) {
     y -= 0.1;
   }
+  if (inward) {
+    z -= 0.1;
+  }
+  if (outward) {
+    z += 0.1;
+  }
   Draw();
 }
 
@@ -294,6 +330,10 @@ window.onkeydown = function(e) {
     forward = true;
   } else if (e.code == 'KeyS') {
     backward = true;
+  } else if (e.code == 'KeyQ') {
+    inward = true;
+  } else if (e.code == 'KeyE') {
+    outward = true;
   }
 };
 
@@ -306,5 +346,9 @@ window.onkeyup = function(e) {
     forward = false;
   } else if (e.code == 'KeyS') {
     backward = false;
+  } else if (e.code == 'KeyQ') {
+    inward = false;
+  } else if (e.code == 'KeyE') {
+    outward = false;
   }
 };
