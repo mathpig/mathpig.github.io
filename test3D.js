@@ -4,6 +4,7 @@ var texture1 = document.getElementById('texture1');
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
+var seed = Math.floor(Math.random() * 1048576);
 
 const SIZE_X = 256;
 const SIZE_Y = 256;
@@ -224,7 +225,7 @@ function Setup() {
   buffer = new Float32Array(BUFFER_SIZE);
   for (var i = 0; i < SIZE_X; i++) {
     for (var j = 0; j < SIZE_Y; j++) {
-      AddPrism(i, j, Math.floor(ValueNoise(0, 64, i, j, 0) * 10),
+      AddPrism(i, j, Math.floor(ValueNoise(seed, 64, i, j, 0) * 10),
                [Math.random(), Math.random(), Math.random()]);
     }
   }
@@ -267,7 +268,7 @@ function Setup() {
   //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, texture1);
   //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, NoiseTexture(256, 256, 0));
   //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, LodNoiseTexture(256, 256, 0, 8));
-  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, ValueNoiseTexture(256, 256, 0, 64));
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, ValueNoiseTexture(256, 256, seed, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
 }
 
