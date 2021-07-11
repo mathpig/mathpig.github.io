@@ -264,7 +264,10 @@ function Setup() {
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR_MIPMAP_LINEAR);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
-  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, texture1);
+  //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, texture1);
+  //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, NoiseTexture(256, 256, 0));
+  //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, LodNoiseTexture(256, 256, 0, 8));
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, ValueNoiseTexture(256, 256, 0, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
 }
 Setup();
