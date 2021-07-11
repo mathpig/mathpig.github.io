@@ -5,8 +5,8 @@ var texture1 = document.getElementById('texture1');
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
 
-const SIZE_X = 200;
-const SIZE_Y = 200;
+const SIZE_X = 256;
+const SIZE_Y = 256;
 const BUFFER_SIZE = 12 * 20 * 3 * SIZE_X * SIZE_Y;
 
 var left = false;
@@ -224,7 +224,7 @@ function Setup() {
   buffer = new Float32Array(BUFFER_SIZE);
   for (var i = 0; i < SIZE_X; i++) {
     for (var j = 0; j < SIZE_Y; j++) {
-      AddPrism(i, j, Math.floor(Math.random() * 2),
+      AddPrism(i, j, Math.floor(ValueNoise(0, 64, i, j, 0) * 10),
                [Math.random(), Math.random(), Math.random()]);
     }
   }
@@ -270,9 +270,12 @@ function Setup() {
   ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, ValueNoiseTexture(256, 256, 0, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
 }
-Setup();
 
 function Draw() {
+  screen.width = window.innerWidth;
+  screen.height = window.innerHeight;
+  ctx.viewport(0, 0, screen.width, screen.height);
+
   ctx.clearColor(0.5, 0.5, 0.5, 1);
   ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
   ctx.enable(ctx.DEPTH_TEST);
@@ -284,7 +287,7 @@ function Draw() {
     .multiply(Matrix.rotateX(-45));
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(program, 'projection');
-  var mvtrans = Matrix.perspective(40, 4/3, 0.5, 100);
+  var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
   ctx.uniformMatrix4fv(projection, false, mvtrans.array());
 
   var light = ctx.getUniformLocation(program, 'light');
@@ -333,7 +336,12 @@ function Tick() {
   Draw();
 }
 
-setInterval(Tick, 20);
+function Init() {
+  Setup();
+  setInterval(Tick, 20);
+}
+
+window.onload = Init;
 
 window.onkeydown = function(e) {
   if (e.code == 'KeyA') {
