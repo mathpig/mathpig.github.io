@@ -32,7 +32,7 @@ class Chunk {
             this.set(i, j, k, GRASS);
           } else {
             var t = ValueNoise(seed, 64, i, j, k);
-            if (t <= 1 / 3) {
+            if (t <= 0.5) {
               this.set(i, j, k, AIR);
             } else {
               this.set(i, j, k, ROCK);

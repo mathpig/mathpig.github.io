@@ -31,6 +31,10 @@ class Matrix {
     }
     return r;
   }
+
+  static identity() {
+    return new Matrix();
+  }
   
   static translate(x, y, z) {
     var r = new Matrix();

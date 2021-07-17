@@ -96,9 +96,10 @@ function Draw() {
  
   var modelview = ctx.getUniformLocation(program, 'modelview');
   var mvtrans =
-    Matrix.translate(-x, -y, -z)
-    .multiply(Matrix.translate(0, 0, -20))
-    .multiply(Matrix.rotateX(-45));
+    Matrix.identity()
+    .multiply(Matrix.rotateX(-90))
+    .multiply(Matrix.rotateZ(direction))
+    .multiply(Matrix.translate(x, y, z));
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(program, 'projection');
   var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
@@ -115,33 +116,20 @@ function Draw() {
 }
 
 function Tick() {
-/*
   if (left) {
     direction -= 1;
   }
   if (right) {
     direction += 1;
   }
+  var dir = -direction - 90;
   if (forward) {
-    y += Math.cos(direction * 180 / Math.PI) * 0.01;
-    x += Math.sin(direction * 180 / Math.PI) * 0.01;
+    x += Math.cos(dir * Math.PI / 180) * 0.25;
+    y += Math.sin(dir * Math.PI / 180) * 0.25;
   }
   if (backward) {
-    y -= Math.cos(direction * 180 / Math.PI) * 0.01;
-    x -= Math.sin(direction * 180 / Math.PI) * 0.01;
-  }
-*/
-  if (left) {
-    x -= 0.1;
-  }
-  if (right) {
-    x += 0.1;
-  }
-  if (forward) {
-    y += 0.1;
-  }
-  if (backward) {
-    y -= 0.1;
+    x -= Math.cos(dir * Math.PI / 180) * 0.25;
+    y -= Math.sin(dir * Math.PI / 180) * 0.25;
   }
   if (inward) {
     z -= 0.1;
