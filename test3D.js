@@ -1,7 +1,5 @@
 'use strict';
 
-var texture1 = document.getElementById('texture1');
-
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
 var seed = Math.floor(Math.random() * 1048576);
@@ -23,33 +21,48 @@ const vertexShader = `
   uniform highp mat4 projection;
   uniform highp vec3 light;
   attribute vec3 pos;
-  attribute vec4 col;
-  attribute vec3 normal;
+  attribute vec3 col;
+  attribute float face;
   attribute vec2 tex;
 
-  varying highp vec4 vColor;
-  varying highp vec2 texcoord;
-
+  varying highp vec3 vColor;
+  varying highp vec2 texcoord; 
   void main() {
+    vec3 normal;
+    if (face == 0.0) {
+      normal = vec3(0.0, 0.0, 1.0);
+    } else if (face == 1.0) {
+      normal = vec3(0.0, 0.0, -1.0);
+    } else if (face == 2.0) {
+      normal = vec3(0.5, sqrt(3.0) / 2.0, 0.0);
+    } else if (face == 3.0) {
+      normal = vec3(-0.5, sqrt(3.0) / 2.0, 0.0);
+    } else if (face == 4.0) {
+      normal = vec3(0.0, -1.0, 0.0);
+    } else if (face == 5.0) {
+      normal = vec3(0.5, -sqrt(3.0) / 2.0, 0.0);
+    } else if (face == 6.0) {
+      normal = vec3(-0.5, -sqrt(3.0) / 2.0, 0.0);
+    } else {
+      normal = vec3(0.0, 1.0, 0.0);
+    }
+
     gl_Position = projection * modelview * vec4(pos.xyz, 1);
     float diffuse = max(0.0, dot(normal, normalize(light)));
     float ambient = 0.5;
     float level = diffuse + ambient;
-    //vColor = (col * 0.25 + vec4(0.0, 0.5, 0.0, 1.0) * 0.75) * vec4(level, level, level, 1);
-    //vColor = vec4(1.0, 0.5, 0.0, 1.0) * vec4(level, level, level, 1);
-    vColor = col * vec4(level, level, level, 1);
-    //vColor = col;
+    vColor = (col / 255.0) * vec3(level, level, level);
     texcoord = tex;
   }
 `;
 
 const fragmentShader = `
   varying highp vec2 texcoord;
-  varying highp vec4 vColor;
+  varying highp vec3 vColor;
   uniform sampler2D sampler;
 
   void main() {
-    gl_FragColor = vColor * texture2D(sampler, texcoord);
+    gl_FragColor = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
   }
 `;
 
@@ -61,9 +74,11 @@ function Setup() {
   var vs = ctx.createShader(ctx.VERTEX_SHADER);
   ctx.shaderSource(vs, vertexShader);
   ctx.compileShader(vs);
+  console.log(ctx.getShaderInfoLog(vs));
   var fs = ctx.createShader(ctx.FRAGMENT_SHADER);
   ctx.shaderSource(fs, fragmentShader);
   ctx.compileShader(fs);
+  console.log(ctx.getShaderInfoLog(fs));
   program = ctx.createProgram();
   ctx.attachShader(program, vs);
   ctx.attachShader(program, fs);
