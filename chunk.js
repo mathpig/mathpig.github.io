@@ -1,5 +1,7 @@
 'use strict';
 
+const FILL_PERCENTAGE = 2 / 5;
+
 const CHUNK_WIDTH = 16;
 const CHUNK_HEIGHT = 16;
 const CHUNK_DEPTH = 128;
@@ -32,7 +34,7 @@ class Chunk {
             this.set(i, j, k, GRASS);
           } else {
             var t = ValueNoise(seed, 64, i, j, k);
-            if (t <= 0.5) {
+            if (t <= FILL_PERCENTAGE) {
               this.set(i, j, k, AIR);
             } else {
               this.set(i, j, k, ROCK);
