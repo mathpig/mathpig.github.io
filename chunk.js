@@ -23,7 +23,6 @@ class Chunk {
   }
 
   init() {
-    var pos = 0;
     for (var i = 0; i < CHUNK_WIDTH; i++) {
       for (var j = 0; j < CHUNK_HEIGHT; j++) {
         var ground = Math.floor(ValueNoise(seed + 1, 64, i, j, 0) * GROUND_RANGE) + GROUND_BASE;
@@ -40,7 +39,6 @@ class Chunk {
               this.set(i, j, k, ROCK);
             }
           }
-          ++pos;
         }
       }
     }
@@ -52,6 +50,11 @@ class Chunk {
   }
 
   get(i, j, k) {
+    if (i < 0 || i >= CHUNK_WIDTH ||
+        j < 0 || j >= CHUNK_HEIGHT ||
+        k < 0 || k >= CHUNK_DEPTH) {
+      return AIR;
+    }
     var pos = i + j * CHUNK_WIDTH + k * CHUNK_WIDTH * CHUNK_HEIGHT;
     return this.data[pos];
   }

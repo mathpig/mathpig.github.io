@@ -10,7 +10,7 @@ class RenderChunk {
     this.vertex_count = 0;
   }
 
-  static addPrism(buffer, x, y, z, color) {
+  static addPrism(buffer, x, y, z, color, faces) {
     const data = [
         -1, 0, 1 / 2,                       0,    0, 0.5,
         -1 / 2, -Math.sqrt(3) / 2, 1 / 2,   0,    0.25, 1,
@@ -100,6 +100,9 @@ class RenderChunk {
         -1 / 2, Math.sqrt(3) / 2, 1 / 2,    7,   1, 0,
     ];
     for (var i = 0; i < data.length; i += 6) {
+      if (!faces.includes(data[i + 3])) {
+        continue;
+      }
       buffer.push(data[i + 0] + x * 1.5);
       buffer.push(data[i + 1] + x * Math.sqrt(3) / 2 + y * Math.sqrt(3));
       buffer.push(data[i + 2] + z);
@@ -112,19 +115,49 @@ class RenderChunk {
     }
   }
 
+  static openFaces(chunk, i, j, k) {
+    var faces = [];
+    if (chunk.get(i, j, k + 1) == AIR) {
+      faces.push(0);
+    }
+    if (chunk.get(i, j, k - 1) == AIR) {
+      faces.push(1);
+    }
+    if (chunk.get(i - 1, j + 1, k) == AIR) {
+      faces.push(2);
+    }
+    if (chunk.get(i - 1, j, k) == AIR) {
+      faces.push(3);
+    }
+    if (chunk.get(i, j - 1, k) == AIR) {
+      faces.push(4);
+    }
+    if (chunk.get(i + 1, j - 1, k) == AIR) {
+      faces.push(5);
+    }
+    if (chunk.get(i + 1, j, k) == AIR) {
+      faces.push(6);
+    }
+    if (chunk.get(i, j + 1, k) == AIR) {
+      faces.push(7);
+    }
+    return faces;
+  }
+
   update(ctx, chunk, part) {
     var buffer = [];
     for (var i = 0; i < RENDER_CHUNK_WIDTH; i++) {
       for (var j = 0; j < RENDER_CHUNK_HEIGHT; j++) {
         for (var k = 0; k < RENDER_CHUNK_DEPTH; k++) {
-          var z = k + part * RENDER_CHUNK_DEPTH - 80;
-          var t = chunk.get(i, j, k + part * RENDER_CHUNK_DEPTH);
+          var z = k + part * RENDER_CHUNK_DEPTH;
+          var faces = RenderChunk.openFaces(chunk, i, j, z);
+          var t = chunk.get(i, j, z);
           if (t === AIR) {
             continue;
           } else if (t === ROCK) {
-            RenderChunk.addPrism(buffer, i, j, z, [0.3, 0.3, 0.5]);
+            RenderChunk.addPrism(buffer, i, j, z, [0.3, 0.3, 0.5], faces);
           } else if (t === GRASS) {
-            RenderChunk.addPrism(buffer, i, j, z, [0, 0.5, 0]);
+            RenderChunk.addPrism(buffer, i, j, z, [0, 0.5, 0], faces);
           }
         }
       }
