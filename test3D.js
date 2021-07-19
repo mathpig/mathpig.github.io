@@ -20,13 +20,16 @@ const vertexShader = `
   uniform highp mat4 modelview;
   uniform highp mat4 projection;
   uniform highp vec3 light;
+
   attribute vec3 pos;
   attribute vec3 col;
   attribute float face;
   attribute vec2 tex;
 
   varying highp vec3 vColor;
-  varying highp vec2 texcoord; 
+  varying highp vec2 texcoord;
+  varying highp float fog;
+
   void main() {
     vec3 normal;
     if (face == 0.0) {
@@ -53,16 +56,20 @@ const vertexShader = `
     float level = diffuse + ambient;
     vColor = (col / 255.0) * vec3(level, level, level);
     texcoord = tex;
+    fog = smoothstep(50.0, 100.0, gl_Position.w);
   }
 `;
 
 const fragmentShader = `
   varying highp vec2 texcoord;
   varying highp vec3 vColor;
+  varying highp float fog;
+
   uniform sampler2D sampler;
 
   void main() {
-    gl_FragColor = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
+    lowp vec4 col = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
+    gl_FragColor = mix(col, vec4(0.5, 0.5, 0.5, 1.0), fog);
   }
 `;
 
