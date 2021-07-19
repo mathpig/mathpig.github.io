@@ -56,7 +56,7 @@ const vertexShader = `
     float level = diffuse + ambient;
     vColor = (col / 255.0) * vec3(level, level, level);
     texcoord = tex;
-    fog = smoothstep(50.0, 100.0, gl_Position.w);
+    fog = smoothstep(64.0, 100.0, gl_Position.w);
   }
 `;
 
