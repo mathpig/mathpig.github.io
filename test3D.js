@@ -13,7 +13,7 @@ var outward = false;
 
 var x = 0;
 var y = 0;
-var z = -85;
+var z = -108;
 var direction = 0;
 
 const vertexShader = `
