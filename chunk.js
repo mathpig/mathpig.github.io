@@ -6,7 +6,7 @@ const CHUNK_WIDTH = 16;
 const CHUNK_HEIGHT = 16;
 const CHUNK_DEPTH = 128;
 const GROUND_BASE = 64;
-const GROUND_RANGE = 32;
+const GROUND_RANGE = 64;
 const RENDER_CHUNKS_PER_CHUNK = 8;
 
 const AIR = 0;
