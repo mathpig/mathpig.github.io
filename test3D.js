@@ -67,8 +67,7 @@ const fragmentShader = `
 `;
 
 var program;
-var chunk = new Chunk(seed, 0, 0);
-var render_chunks = [];
+var chunk_set = new ChunkSet(seed);
 
 function Setup() {
   var vs = ctx.createShader(ctx.VERTEX_SHADER);
@@ -96,8 +95,6 @@ function Setup() {
   //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, LodNoiseTexture(256, 256, 0, 8));
   ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 128, 128, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, ValueNoiseTexture(128, 128, seed, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
-
-  render_chunks = chunk.updateAll(ctx);
 }
 
 function Draw() {
@@ -125,9 +122,8 @@ function Draw() {
 
   ctx.enable(ctx.CULL_FACE);
 
-  for (var i = 0; i < render_chunks.length; ++i) {
-    render_chunks[i].render(ctx);
-  }
+  chunk_set.update(ctx, x, y, z);
+  chunk_set.render(ctx);
 }
 
 function Tick() {

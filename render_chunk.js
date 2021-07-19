@@ -147,7 +147,9 @@ class RenderChunk {
   update(ctx, chunk, part) {
     var buffer = [];
     for (var i = 0; i < RENDER_CHUNK_WIDTH; i++) {
+      var x = i + chunk.x;
       for (var j = 0; j < RENDER_CHUNK_HEIGHT; j++) {
+        var y = j + chunk.y;
         for (var k = 0; k < RENDER_CHUNK_DEPTH; k++) {
           var z = k + part * RENDER_CHUNK_DEPTH;
           var faces = RenderChunk.openFaces(chunk, i, j, z);
@@ -155,9 +157,9 @@ class RenderChunk {
           if (t === AIR) {
             continue;
           } else if (t === ROCK) {
-            RenderChunk.addPrism(buffer, i, j, z, [0.3, 0.3, 0.5], faces);
+            RenderChunk.addPrism(buffer, x, y, z, [0.3, 0.3, 0.5], faces);
           } else if (t === GRASS) {
-            RenderChunk.addPrism(buffer, i, j, z, [0, 0.5, 0], faces);
+            RenderChunk.addPrism(buffer, x, y, z, [0, 0.5, 0], faces);
           }
         }
       }
