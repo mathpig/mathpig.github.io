@@ -112,6 +112,9 @@ class RenderChunk {
       buffer.push(color[1] * 255);
       buffer.push(color[2] * 255);
       buffer.push(data[i + 3]);
+      buffer.push(x);
+      buffer.push(y);
+      buffer.push(z);
     }
   }
 
@@ -185,8 +188,11 @@ class RenderChunk {
       u8[(pos + 5) * 4 + 1] = buffer[inpos + 6];
       u8[(pos + 5) * 4 + 2] = buffer[inpos + 7];
       u8[(pos + 5) * 4 + 3] = buffer[inpos + 8];
-      pos += 6;
-      inpos += 9;
+      u8[(pos + 6) * 4 + 0] = buffer[inpos + 9];
+      u8[(pos + 6) * 4 + 1] = buffer[inpos + 10];
+      u8[(pos + 6) * 4 + 2] = buffer[inpos + 11];
+      pos += 7;
+      inpos += 12;
     }
     this.glbuffer = ctx.createBuffer();
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
@@ -198,7 +204,7 @@ class RenderChunk {
       return;
     }
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
-    SetupFormat(program);
+    SetupFormat(program, false);
     ctx.drawArrays(ctx.TRIANGLES, 0, this.vertex_count);
   }
 }

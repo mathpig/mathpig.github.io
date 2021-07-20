@@ -20,17 +20,24 @@ function UseProgram(program) {
   ctx.useProgram(program);
 }
 
-function SetupFormat(program) {
+function SetupFormat(program, picking) {
   var pos = ctx.getAttribLocation(program, 'pos');
-  ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 24, 0);
+  ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 28, 0);
   ctx.enableVertexAttribArray(pos);
-  var tex = ctx.getAttribLocation(program, 'tex');
-  ctx.vertexAttribPointer(tex, 2, ctx.FLOAT, false, 24, 12);
-  ctx.enableVertexAttribArray(tex);
-  var col = ctx.getAttribLocation(program, 'col');
-  ctx.vertexAttribPointer(col, 3, ctx.UNSIGNED_BYTE, false, 24, 20);
-  ctx.enableVertexAttribArray(col);
+  if (!picking) {
+    var tex = ctx.getAttribLocation(program, 'tex');
+    ctx.vertexAttribPointer(tex, 2, ctx.FLOAT, false, 28, 12);
+    ctx.enableVertexAttribArray(tex);
+    var col = ctx.getAttribLocation(program, 'col');
+    ctx.vertexAttribPointer(col, 3, ctx.UNSIGNED_BYTE, false, 28, 20);
+    ctx.enableVertexAttribArray(col);
+  }
   var face = ctx.getAttribLocation(program, 'face');
-  ctx.vertexAttribPointer(face, 1, ctx.UNSIGNED_BYTE, false, 24, 23);
+  ctx.vertexAttribPointer(face, 1, ctx.UNSIGNED_BYTE, false, 28, 23);
   ctx.enableVertexAttribArray(face);
+  if (picking) {
+    var grid = ctx.getAttribLocation(program, 'grid');
+    ctx.vertexAttribPointer(grid, 3, ctx.UNSIGNED_BYTE, false, 28, 24);
+    ctx.enableVertexAttribArray(grid);
+  }
 }

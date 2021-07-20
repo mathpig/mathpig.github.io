@@ -11,9 +11,9 @@ function BlockShader(ctx) {
   attribute float face;
   attribute vec2 tex;
 
-  varying highp vec3 vColor;
+  varying lowp vec3 vColor;
   varying highp vec2 texcoord;
-  varying highp float fog;
+  varying lowp float fog;
 
   void main() {
     vec3 normal;
@@ -45,14 +45,43 @@ function BlockShader(ctx) {
   }
   `, `
   varying highp vec2 texcoord;
-  varying highp vec3 vColor;
-  varying highp float fog;
+  varying lowp vec3 vColor;
+  varying lowp float fog;
 
   uniform sampler2D sampler;
 
   void main() {
     lowp vec4 col = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
     gl_FragColor = mix(col, vec4(0.5, 0.5, 0.5, 1.0), fog);
+  }
+  `);
+}
+
+function PickingShader(ctx) {
+  return CompileShaders(ctx, `
+  uniform highp mat4 modelview;
+  uniform highp mat4 projection;
+  uniform highp vec2 viewer;
+
+  attribute vec3 pos;
+  attribute float face;
+  attribute vec3 grid;
+
+  varying lowp vec4 vColor;
+
+  void main() {
+    gl_Position = projection * modelview * vec4(pos.xyz, 1);
+    if (distance(pos.xy, viewer) > 32.0) {
+      vColor = vec4(255.0, 255.0, 255.0, 255.0);
+    } else {
+      vColor = vec4(grid.xyz, 255.0) / 255.0;
+    }
+  }
+  `, `
+  varying lowp vec4 vColor;
+
+  void main() {
+    gl_FragColor = vColor;
   }
   `);
 }

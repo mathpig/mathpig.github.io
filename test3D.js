@@ -59,6 +59,9 @@ function Draw() {
   var light = ctx.getUniformLocation(block_program, 'light');
   ctx.uniform3f(light, 0.2, 0.3, 0.7);
 
+  //var viewer = ctx.getUniformLocation(block_program, 'viewer');
+  //ctx.uniform2f(viewer, -x, -y);
+
   ctx.enable(ctx.CULL_FACE);
 
   chunk_set.update(ctx, x, y, z);
