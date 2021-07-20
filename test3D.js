@@ -16,80 +16,11 @@ var y = 0;
 var z = -108;
 var direction = 0;
 
-const vertexShader = `
-  uniform highp mat4 modelview;
-  uniform highp mat4 projection;
-  uniform highp vec3 light;
-
-  attribute vec3 pos;
-  attribute vec3 col;
-  attribute float face;
-  attribute vec2 tex;
-
-  varying highp vec3 vColor;
-  varying highp vec2 texcoord;
-  varying highp float fog;
-
-  void main() {
-    vec3 normal;
-    if (face == 0.0) {
-      normal = vec3(0.0, 0.0, 1.0);
-    } else if (face == 1.0) {
-      normal = vec3(0.0, 0.0, -1.0);
-    } else if (face == 2.0) {
-      normal = vec3(0.5, sqrt(3.0) / 2.0, 0.0);
-    } else if (face == 3.0) {
-      normal = vec3(-0.5, sqrt(3.0) / 2.0, 0.0);
-    } else if (face == 4.0) {
-      normal = vec3(0.0, -1.0, 0.0);
-    } else if (face == 5.0) {
-      normal = vec3(0.5, -sqrt(3.0) / 2.0, 0.0);
-    } else if (face == 6.0) {
-      normal = vec3(-0.5, -sqrt(3.0) / 2.0, 0.0);
-    } else {
-      normal = vec3(0.0, 1.0, 0.0);
-    }
-
-    gl_Position = projection * modelview * vec4(pos.xyz, 1);
-    float diffuse = max(0.0, dot(normal, normalize(light)));
-    float ambient = 0.5;
-    float level = diffuse + ambient;
-    vColor = (col / 255.0) * vec3(level, level, level);
-    texcoord = tex;
-    fog = smoothstep(64.0, 100.0, gl_Position.w);
-  }
-`;
-
-const fragmentShader = `
-  varying highp vec2 texcoord;
-  varying highp vec3 vColor;
-  varying highp float fog;
-
-  uniform sampler2D sampler;
-
-  void main() {
-    lowp vec4 col = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
-    gl_FragColor = mix(col, vec4(0.5, 0.5, 0.5, 1.0), fog);
-  }
-`;
-
-var program;
+var block_program;
 var chunk_set = new ChunkSet(seed);
 
 function Setup() {
-  var vs = ctx.createShader(ctx.VERTEX_SHADER);
-  ctx.shaderSource(vs, vertexShader);
-  ctx.compileShader(vs);
-  console.log(ctx.getShaderInfoLog(vs));
-  var fs = ctx.createShader(ctx.FRAGMENT_SHADER);
-  ctx.shaderSource(fs, fragmentShader);
-  ctx.compileShader(fs);
-  console.log(ctx.getShaderInfoLog(fs));
-  program = ctx.createProgram();
-  ctx.attachShader(program, vs);
-  ctx.attachShader(program, fs);
-  ctx.linkProgram(program);
-  ctx.useProgram(program);
+  block_program = BlockShader(ctx);
 
   var texture = ctx.createTexture();
   ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -98,9 +29,8 @@ function Setup() {
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR_MIPMAP_LINEAR);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
   //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, texture1);
-  //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, NoiseTexture(256, 256, 0));
-  //ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 256, 256, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, LodNoiseTexture(256, 256, 0, 8));
-  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 128, 128, 0, ctx.LUMINANCE, ctx.UNSIGNED_BYTE, ValueNoiseTexture(128, 128, seed, 64));
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 128, 128, 0, ctx.LUMINANCE,
+                 ctx.UNSIGNED_BYTE, ValueNoiseTexture(128, 128, seed, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
 }
 
@@ -112,25 +42,27 @@ function Draw() {
   ctx.clearColor(0.5, 0.5, 0.5, 1);
   ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
   ctx.enable(ctx.DEPTH_TEST);
+
+  UseProgram(block_program);
  
-  var modelview = ctx.getUniformLocation(program, 'modelview');
+  var modelview = ctx.getUniformLocation(block_program, 'modelview');
   var mvtrans =
     Matrix.identity()
     .multiply(Matrix.rotateX(-90))
     .multiply(Matrix.rotateZ(direction))
     .multiply(Matrix.translate(x, y, z));
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
-  var projection = ctx.getUniformLocation(program, 'projection');
+  var projection = ctx.getUniformLocation(block_program, 'projection');
   var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
   ctx.uniformMatrix4fv(projection, false, mvtrans.array());
 
-  var light = ctx.getUniformLocation(program, 'light');
+  var light = ctx.getUniformLocation(block_program, 'light');
   ctx.uniform3f(light, 0.2, 0.3, 0.7);
 
   ctx.enable(ctx.CULL_FACE);
 
   chunk_set.update(ctx, x, y, z);
-  chunk_set.render(ctx);
+  chunk_set.render(ctx, block_program);
 }
 
 function Tick() {

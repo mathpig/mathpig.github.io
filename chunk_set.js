@@ -9,11 +9,11 @@ class ChunkSet {
     this.render_chunks = {};
   }
 
-  render(ctx) {
+  render(ctx, program) {
     for (var id in this.render_chunks) {
       var rchunks = this.render_chunks[id];
       for (var i = 0; i < rchunks.length; ++i) {
-        rchunks[i].render(ctx);
+        rchunks[i].render(ctx, program);
       }
     }
   }

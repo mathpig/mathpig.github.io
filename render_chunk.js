@@ -193,25 +193,12 @@ class RenderChunk {
     ctx.bufferData(ctx.ARRAY_BUFFER, vertex_data, ctx.STATIC_DRAW);
   }
 
-  render(ctx) {
+  render(ctx, program) {
     if (this.vertex_count === 0) {
       return;
     }
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
-
-    var pos = ctx.getAttribLocation(program, 'pos');
-    ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 24, 0);
-    ctx.enableVertexAttribArray(pos);
-    var tex = ctx.getAttribLocation(program, 'tex');
-    ctx.vertexAttribPointer(tex, 2, ctx.FLOAT, false, 24, 12);
-    ctx.enableVertexAttribArray(tex);
-    var col = ctx.getAttribLocation(program, 'col');
-    ctx.vertexAttribPointer(col, 3, ctx.UNSIGNED_BYTE, false, 24, 20);
-    ctx.enableVertexAttribArray(col);
-    var face = ctx.getAttribLocation(program, 'face');
-    ctx.vertexAttribPointer(face, 1, ctx.UNSIGNED_BYTE, false, 24, 23);
-    ctx.enableVertexAttribArray(face);
-
+    SetupFormat(program);
     ctx.drawArrays(ctx.TRIANGLES, 0, this.vertex_count);
   }
 }

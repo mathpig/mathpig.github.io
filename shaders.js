@@ -1,0 +1,93 @@
+'use strict';
+
+function CompileShaders(ctx, vertex_source, fragment_source) {
+  var vs = ctx.createShader(ctx.VERTEX_SHADER);
+  ctx.shaderSource(vs, vertex_source);
+  ctx.compileShader(vs);
+  console.log(ctx.getShaderInfoLog(vs));
+  var fs = ctx.createShader(ctx.FRAGMENT_SHADER);
+  ctx.shaderSource(fs, fragment_source);
+  ctx.compileShader(fs);
+  console.log(ctx.getShaderInfoLog(fs));
+  var program = ctx.createProgram();
+  ctx.attachShader(program, vs);
+  ctx.attachShader(program, fs);
+  ctx.linkProgram(program);
+  return program;
+}
+
+function BlockShader(ctx) {
+  return CompileShaders(ctx, `
+  uniform highp mat4 modelview;
+  uniform highp mat4 projection;
+  uniform highp vec3 light;
+
+  attribute vec3 pos;
+  attribute vec3 col;
+  attribute float face;
+  attribute vec2 tex;
+
+  varying highp vec3 vColor;
+  varying highp vec2 texcoord;
+  varying highp float fog;
+
+  void main() {
+    vec3 normal;
+    if (face == 0.0) {
+      normal = vec3(0.0, 0.0, 1.0);
+    } else if (face == 1.0) {
+      normal = vec3(0.0, 0.0, -1.0);
+    } else if (face == 2.0) {
+      normal = vec3(0.5, sqrt(3.0) / 2.0, 0.0);
+    } else if (face == 3.0) {
+      normal = vec3(-0.5, sqrt(3.0) / 2.0, 0.0);
+    } else if (face == 4.0) {
+      normal = vec3(0.0, -1.0, 0.0);
+    } else if (face == 5.0) {
+      normal = vec3(0.5, -sqrt(3.0) / 2.0, 0.0);
+    } else if (face == 6.0) {
+      normal = vec3(-0.5, -sqrt(3.0) / 2.0, 0.0);
+    } else {
+      normal = vec3(0.0, 1.0, 0.0);
+    }
+
+    gl_Position = projection * modelview * vec4(pos.xyz, 1);
+    float diffuse = max(0.0, dot(normal, normalize(light)));
+    float ambient = 0.5;
+    float level = diffuse + ambient;
+    vColor = (col / 255.0) * vec3(level, level, level);
+    texcoord = tex;
+    fog = smoothstep(64.0, 100.0, gl_Position.w);
+  }
+  `, `
+  varying highp vec2 texcoord;
+  varying highp vec3 vColor;
+  varying highp float fog;
+
+  uniform sampler2D sampler;
+
+  void main() {
+    lowp vec4 col = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
+    gl_FragColor = mix(col, vec4(0.5, 0.5, 0.5, 1.0), fog);
+  }
+  `);
+}
+
+function UseProgram(program) {
+  ctx.useProgram(program);
+}
+
+function SetupFormat(program) {
+  var pos = ctx.getAttribLocation(program, 'pos');
+  ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 24, 0);
+  ctx.enableVertexAttribArray(pos);
+  var tex = ctx.getAttribLocation(program, 'tex');
+  ctx.vertexAttribPointer(tex, 2, ctx.FLOAT, false, 24, 12);
+  ctx.enableVertexAttribArray(tex);
+  var col = ctx.getAttribLocation(program, 'col');
+  ctx.vertexAttribPointer(col, 3, ctx.UNSIGNED_BYTE, false, 24, 20);
+  ctx.enableVertexAttribArray(col);
+  var face = ctx.getAttribLocation(program, 'face');
+  ctx.vertexAttribPointer(face, 1, ctx.UNSIGNED_BYTE, false, 24, 23);
+  ctx.enableVertexAttribArray(face);
+}
