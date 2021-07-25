@@ -17,7 +17,8 @@ class Chunk {
   constructor(seed, x, y) {
     this.seed = seed;
     this.x = x;
-    this.y = y; 
+    this.y = y;
+    this.render_chunks = [];
     this.data = new Uint8Array(CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_DEPTH);
     this.init();
   }
@@ -59,13 +60,27 @@ class Chunk {
     return this.data[pos];
   }
 
-  updateAll(ctx) {
-    var render_chunks = [];
+  countDirty() {
+    var count = 0;
     for (var i = 0; i < RENDER_CHUNKS_PER_CHUNK; ++i) {
-      var render_chunk = new RenderChunk();
-      render_chunk.update(ctx, this, i);
-      render_chunks.push(render_chunk);
+      if (this.render_chunks[i] === undefined ||
+          this.render_chunks[i].isDirty()) {
+        count++;
+      }
     }
-    return render_chunks;
+    return count;
+  }
+
+  update(ctx, workload) {
+    for (var i = 0; i < RENDER_CHUNKS_PER_CHUNK; ++i) {
+      if (this.render_chunks[i] === undefined) {
+        this.render_chunks[i] = new RenderChunk();
+      }
+      if (workload > 0 && this.render_chunks[i].isDirty()) {
+        this.render_chunks[i].update(ctx, this, i);
+        workload--;
+      }
+    }
+    return this.render_chunks;
   }
 }

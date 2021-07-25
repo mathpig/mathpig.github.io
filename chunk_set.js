@@ -51,14 +51,9 @@ class ChunkSet {
     var new_render_chunks = {};
     for (var id in this.chunks) {
       var chunk = this.chunks[id];
-      if (this.render_chunks[id]) {
-        new_render_chunks[id] = this.render_chunks[id];
-      } else {
-        if (workleft > 0) {
-          new_render_chunks[id] = chunk.updateAll(ctx);
-          workleft--;
-        }
-      }
+      var num_dirty = chunk.countDirty();
+      new_render_chunks[id] = chunk.update(ctx, workleft);
+      workleft -= num_dirty;
     }
     this.render_chunks = new_render_chunks;
   }

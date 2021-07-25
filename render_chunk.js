@@ -6,8 +6,17 @@ const RENDER_CHUNK_DEPTH = 16;
 
 class RenderChunk {
   constructor() {
+    this.dirty = true;
     this.glbuffer = null;
     this.vertex_count = 0;
+  }
+
+  isDirty() {
+    return this.dirty;
+  }
+
+  setDirty() {
+    this.dirty = true;
   }
 
   static addPrism(buffer, x, y, z, color, faces) {
@@ -170,6 +179,7 @@ class RenderChunk {
     if (buffer.length === 0) {
       this.glbuffer = null;
       this.vertex_count = 0;
+      this.dirty = false;
       return;
     }
     this.vertex_count = Math.floor(buffer.length / 9);
@@ -197,6 +207,8 @@ class RenderChunk {
     this.glbuffer = ctx.createBuffer();
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
     ctx.bufferData(ctx.ARRAY_BUFFER, vertex_data, ctx.STATIC_DRAW);
+
+    this.dirty = false;
   }
 
   render(ctx, program, picking) {
