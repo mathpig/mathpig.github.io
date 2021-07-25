@@ -19,6 +19,8 @@ var y = 0;
 var z = -108;
 var direction = 0;
 
+var picked = [0, 0, 0, 0];
+
 var chunk_set = new ChunkSet(seed);
 
 var block_program;
@@ -104,6 +106,9 @@ function Draw() {
   var light = ctx.getUniformLocation(block_program, 'light');
   ctx.uniform3f(light, 0.2, 0.3, 0.7);
 
+  var light = ctx.getUniformLocation(block_program, 'pick');
+  ctx.uniform4f(light, picked[0], picked[1], picked[2], picked[3]);
+
   ctx.enable(ctx.CULL_FACE);
 
   chunk_set.update(ctx, x, y, z);
@@ -115,7 +120,7 @@ function Pick() {
 
   ctx.viewport(0, 0, 1, 1);
 
-  ctx.clearColor(0, 0, 0, 0);
+  ctx.clearColor(1, 1, 1, 1);
   ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
   ctx.enable(ctx.DEPTH_TEST);
 
@@ -168,10 +173,7 @@ function Tick() {
     z += 0.1;
   }
   Draw();
-  var picked = Pick();
-  if (picked[0] != 0) {
-    console.log(picked);
-  }
+  picked = Pick();
 }
 
 function Init() {

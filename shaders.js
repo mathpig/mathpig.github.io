@@ -5,10 +5,12 @@ function BlockShader(ctx) {
   uniform highp mat4 modelview;
   uniform highp mat4 projection;
   uniform highp vec3 light;
+  uniform lowp vec4 pick;
 
   attribute vec3 pos;
   attribute vec3 col;
   attribute float face;
+  attribute vec3 grid;
   attribute vec2 tex;
 
   varying lowp vec3 vColor;
@@ -39,7 +41,11 @@ function BlockShader(ctx) {
     float diffuse = max(0.0, dot(normal, normalize(light)));
     float ambient = 0.5;
     float level = diffuse + ambient;
-    vColor = (col / 255.0) * vec3(level, level, level);
+    if (pick == vec4(grid.xyz, face)) {
+      vColor = vec3(1.0, 1.0, 0.0);
+    } else {
+      vColor = (col / 255.0) * vec3(level, level, level);
+    }
     texcoord = tex;
     fog = smoothstep(64.0, 100.0, gl_Position.w);
   }
@@ -71,7 +77,7 @@ function PickShader(ctx) {
 
   void main() {
     gl_Position = projection * modelview * vec4(pos.xyz, 1);
-    if (distance(pos.xy, viewer) > 3200.0) {
+    if (distance(pos.xy, viewer) > 32.0) {
       vColor = vec4(255.0, 255.0, 255.0, 255.0);
     } else {
       vColor = vec4(grid.xyz, face) / 255.0;

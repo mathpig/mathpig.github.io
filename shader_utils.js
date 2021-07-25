@@ -35,9 +35,7 @@ function SetupFormat(program, picking) {
   var face = ctx.getAttribLocation(program, 'face');
   ctx.vertexAttribPointer(face, 1, ctx.UNSIGNED_BYTE, false, 28, 23);
   ctx.enableVertexAttribArray(face);
-  if (picking) {
-    var grid = ctx.getAttribLocation(program, 'grid');
-    ctx.vertexAttribPointer(grid, 3, ctx.UNSIGNED_BYTE, false, 28, 24);
-    ctx.enableVertexAttribArray(grid);
-  }
+  var grid = ctx.getAttribLocation(program, 'grid');
+  ctx.vertexAttribPointer(grid, 3, ctx.UNSIGNED_BYTE, false, 28, 24);
+  ctx.enableVertexAttribArray(grid);
 }
