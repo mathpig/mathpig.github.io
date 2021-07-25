@@ -60,6 +60,24 @@ class Chunk {
     return this.data[pos];
   }
 
+  change(i, j, k, value) {
+    if (i < 0 || i >= CHUNK_WIDTH ||
+        j < 0 || j >= CHUNK_HEIGHT ||
+        k < 0 || k >= CHUNK_DEPTH) {
+      return;
+    }
+    this.set(i, j, k, value);
+    var p = Math.floor(k / RENDER_CHUNK_DEPTH);
+    this.render_chunks[p].setDirty();
+    var q = k % RENDER_CHUNK_DEPTH;
+    if (q == 0 && p > 0) {
+      this.render_chunks[p - 1].setDirty();
+    }
+    if (q == RENDER_CHUNK_DEPTH - 1 && p < RENDER_CHUNKS_PER_CHUNK) {
+      this.render_chunks[p + 1].setDirty();
+    }
+  }
+
   countDirty() {
     var count = 0;
     for (var i = 0; i < RENDER_CHUNKS_PER_CHUNK; ++i) {

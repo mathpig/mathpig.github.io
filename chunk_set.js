@@ -18,11 +18,20 @@ class ChunkSet {
     }
   }
 
-  update(ctx, x, y, z) {
-    x = -x;
-    y = -y;
-    x /= 1.5;
-    y = (y - x * Math.sqrt(3) / 2) / Math.sqrt(3);
+  change(i, j, k, value) {
+    var cx = Math.floor(i / CHUNK_WIDTH);
+    var cy = Math.floor(j / CHUNK_HEIGHT);
+    var id = cx + ':' + cy;
+    var chunk = this.chunks[id];
+    if (chunk === undefined) {
+      return;
+    }
+    chunk.change(i - cx * CHUNK_WIDTH, j - cy * CHUNK_HEIGHT, k, value);
+  }
+
+  update(ctx, player) {
+    var [x, y, z] = player.hexGrid();
+
     var xx = Math.floor(x / CHUNK_WIDTH);
     var yy = Math.floor(y / CHUNK_HEIGHT);
 

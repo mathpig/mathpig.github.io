@@ -7,17 +7,7 @@ var seed = Math.floor(Math.random() * 1048576);
 var mouse_x = 0;
 var mouse_y = 0;
 
-var left = false;
-var right = false;
-var forward = false;
-var backward = false;
-var inward = false;
-var outward = false;
-
-var x = 0;
-var y = 0;
-var z = -108;
-var direction = 0;
+var player = new Player();
 
 var picked = [0, 0, 0, 0];
 
@@ -93,11 +83,7 @@ function Draw() {
   UseProgram(block_program);
  
   var modelview = ctx.getUniformLocation(block_program, 'modelview');
-  var mvtrans =
-    Matrix.identity()
-    .multiply(Matrix.rotateX(-90))
-    .multiply(Matrix.rotateZ(direction))
-    .multiply(Matrix.translate(x, y, z));
+  var mvtrans = player.cameraTransform();
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(block_program, 'projection');
   var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
@@ -111,7 +97,7 @@ function Draw() {
 
   ctx.enable(ctx.CULL_FACE);
 
-  chunk_set.update(ctx, x, y, z);
+  chunk_set.update(ctx, player);
   chunk_set.render(ctx, block_program, false);
 }
 
@@ -127,22 +113,17 @@ function Pick() {
   UseProgram(pick_program);
  
   var modelview = ctx.getUniformLocation(pick_program, 'modelview');
-  var mvtrans =
-    Matrix.identity()
-    .multiply(Matrix.rotateX(-90))
-    .multiply(Matrix.rotateZ(direction))
-    .multiply(Matrix.translate(x, y, z));
+  var mvtrans = player.cameraTransform();
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(pick_program, 'projection');
   var mvtrans = Matrix.pixelPerspective(40, 0.5, 100, mouse_x, mouse_y, screen.width, screen.height);
   ctx.uniformMatrix4fv(projection, false, mvtrans.array());
 
   var viewer = ctx.getUniformLocation(pick_program, 'viewer');
-  ctx.uniform2f(viewer, -x, -y);
+  ctx.uniform2fv(viewer, player.getUniformXY());
 
   ctx.enable(ctx.CULL_FACE);
 
-  chunk_set.update(ctx, x, y, z);
   chunk_set.render(ctx, pick_program, true);
 
   var data = new Uint8Array(4);
@@ -151,27 +132,7 @@ function Pick() {
 }
 
 function Tick() {
-  if (left) {
-    direction -= 1;
-  }
-  if (right) {
-    direction += 1;
-  }
-  var dir = -direction - 90;
-  if (forward) {
-    x += Math.cos(dir * Math.PI / 180) * 0.25;
-    y += Math.sin(dir * Math.PI / 180) * 0.25;
-  }
-  if (backward) {
-    x -= Math.cos(dir * Math.PI / 180) * 0.25;
-    y -= Math.sin(dir * Math.PI / 180) * 0.25;
-  }
-  if (inward) {
-    z -= 0.1;
-  }
-  if (outward) {
-    z += 0.1;
-  }
+  player.tick();
   Draw();
   picked = Pick();
 }
@@ -185,38 +146,19 @@ function Init() {
 window.onload = Init;
 
 window.onkeydown = function(e) {
-  if (e.code == 'KeyA') {
-    left = true;
-  } else if (e.code == 'KeyD') {
-    right = true;
-  } else if (e.code == 'KeyW') {
-    forward = true;
-  } else if (e.code == 'KeyS') {
-    backward = true;
-  } else if (e.code == 'KeyQ') {
-    inward = true;
-  } else if (e.code == 'KeyE') {
-    outward = true;
-  }
+  player.keyDown(e);
 };
 
 window.onkeyup = function(e) {
-  if (e.code == 'KeyA') {
-    left = false;
-  } else if (e.code == 'KeyD') {
-    right = false;
-  } else if (e.code == 'KeyW') {
-    forward = false;
-  } else if (e.code == 'KeyS') {
-    backward = false;
-  } else if (e.code == 'KeyQ') {
-    inward = false;
-  } else if (e.code == 'KeyE') {
-    outward = false;
-  }
+  player.keyUp(e);
 };
 
 window.onmousemove = function(e) {
   mouse_x = e.clientX;
   mouse_y = e.clientY;
+};
+
+window.onmousedown = function(e) {
+  var [tx, ty, tz] = player.findClick(picked);
+  chunk_set.change(tx, ty, tz, AIR);
 };
