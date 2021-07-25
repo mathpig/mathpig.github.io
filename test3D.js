@@ -147,6 +147,13 @@ window.onload = Init;
 
 window.onkeydown = function(e) {
   player.keyDown(e);
+  if (e.code == 'KeyG') {
+    var [tx, ty, tz] = player.findClick(picked, true);
+    chunk_set.change(tx, ty, tz, GRASS);
+  } else if (e.code == 'KeyR') {
+    var [tx, ty, tz] = player.findClick(picked, true);
+    chunk_set.change(tx, ty, tz, ROCK);
+  }
 };
 
 window.onkeyup = function(e) {
@@ -159,6 +166,6 @@ window.onmousemove = function(e) {
 };
 
 window.onmousedown = function(e) {
-  var [tx, ty, tz] = player.findClick(picked);
+  var [tx, ty, tz] = player.findClick(picked, false);
   chunk_set.change(tx, ty, tz, AIR);
 };

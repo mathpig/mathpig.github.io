@@ -107,7 +107,30 @@ class Player {
     return [-this.x, -this.y];
   }
 
-  findClick(picked) {
+  static faceOffset(cx, cy, cz, face) {
+    if (face == 0) {
+      cz++;
+    } else if (face == 1) {
+      cz--;
+    } else if (face == 2) {
+      cx--;
+      cy++;
+    } else if (face == 3) {
+      cx--;
+    } else if (face == 4) {
+      cy--;
+    } else if (face == 5) {
+      cx++;
+      cy--;
+    } else if (face == 6) {
+      cx++;
+    } else if (face == 7) {
+      cy++;
+    }
+    return [cx, cy, cz];
+  }
+
+  findClick(picked, placing) {
     var [x, y, z] = this.hexGrid();
     var px = picked[0];
     var py = picked[1];
@@ -131,6 +154,11 @@ class Player {
     }
     var cx = dx + x;
     var cy = dy + y;
-    return [cx, cy, picked[2]];
+    var cz = picked[2];
+    if (placing) {
+      var face = picked[3];
+      [cx, cy, cz] = Player.faceOffset(cx, cy, cz, face);
+    }
+    return [cx, cy, cz];
   }
 }
