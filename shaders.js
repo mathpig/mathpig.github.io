@@ -57,7 +57,7 @@ function BlockShader(ctx) {
   `);
 }
 
-function PickingShader(ctx) {
+function PickShader(ctx) {
   return CompileShaders(ctx, `
   uniform highp mat4 modelview;
   uniform highp mat4 projection;
@@ -74,7 +74,7 @@ function PickingShader(ctx) {
     if (distance(pos.xy, viewer) > 32.0) {
       vColor = vec4(255.0, 255.0, 255.0, 255.0);
     } else {
-      vColor = vec4(grid.xyz, 255.0) / 255.0;
+      vColor = vec4(grid.xyz, face) / 255.0;
     }
   }
   `, `

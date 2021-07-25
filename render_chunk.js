@@ -199,12 +199,12 @@ class RenderChunk {
     ctx.bufferData(ctx.ARRAY_BUFFER, vertex_data, ctx.STATIC_DRAW);
   }
 
-  render(ctx, program) {
+  render(ctx, program, picking) {
     if (this.vertex_count === 0) {
       return;
     }
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
-    SetupFormat(program, false);
+    SetupFormat(program, picking);
     ctx.drawArrays(ctx.TRIANGLES, 0, this.vertex_count);
   }
 }
