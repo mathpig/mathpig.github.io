@@ -71,7 +71,7 @@ function PickShader(ctx) {
 
   void main() {
     gl_Position = projection * modelview * vec4(pos.xyz, 1);
-    if (distance(pos.xy, viewer) > 32.0) {
+    if (distance(pos.xy, viewer) > 3200.0) {
       vColor = vec4(255.0, 255.0, 255.0, 255.0);
     } else {
       vColor = vec4(grid.xyz, face) / 255.0;

@@ -19,15 +19,20 @@ var y = 0;
 var z = -108;
 var direction = 0;
 
-var block_program;
-var pick_program;
 var chunk_set = new ChunkSet(seed);
 
-function Setup() {
-  block_program = BlockShader(ctx);
-  pick_program = PickShader(ctx);
+var block_program;
+var texture;
 
-  var texture = ctx.createTexture();
+var pick_program;
+var pick_texture;
+var pick_buffer;
+var pick_depth_buffer;
+
+function SetupDisplay() {
+  block_program = BlockShader(ctx);
+
+  texture = ctx.createTexture();
   ctx.bindTexture(ctx.TEXTURE_2D, texture);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
@@ -39,9 +44,44 @@ function Setup() {
   ctx.generateMipmap(ctx.TEXTURE_2D);
 }
 
+function SetupPicking() {
+  pick_program = PickShader(ctx);
+
+  pick_texture = ctx.createTexture();
+  ctx.bindTexture(ctx.TEXTURE_2D, pick_texture);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.NEAREST);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.NEAREST);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, 1, 1, 0, ctx.RGBA, ctx.UNSIGNED_BYTE, null);
+  pick_depth_buffer = ctx.createRenderbuffer();
+  ctx.bindRenderbuffer(ctx.RENDERBUFFER, pick_depth_buffer);
+  ctx.renderbufferStorage(ctx.RENDERBUFFER, ctx.DEPTH_COMPONENT16, 1, 1);
+  pick_buffer = ctx.createFramebuffer();
+  ctx.bindFramebuffer(ctx.FRAMEBUFFER, pick_buffer);
+  ctx.framebufferTexture2D(ctx.FRAMEBUFFER, ctx.COLOR_ATTACHMENT0, ctx.TEXTURE_2D, pick_texture, 0);
+  ctx.framebufferRenderbuffer(ctx.FRAMEBUFFER, ctx.DEPTH_ATTACHMENT, ctx.RENDERBUFFER, pick_depth_buffer);
+}
+
+function BindPickingBuffers() {
+  ctx.bindTexture(ctx.TEXTURE_2D, pick_texture);
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, 1, 1, 0, ctx.RGBA, ctx.UNSIGNED_BYTE, null);
+  ctx.bindRenderbuffer(ctx.RENDERBUFFER, pick_depth_buffer);
+  ctx.renderbufferStorage(ctx.RENDERBUFFER, ctx.DEPTH_COMPONENT16, 1, 1);
+  ctx.bindFramebuffer(ctx.FRAMEBUFFER, pick_buffer);
+}
+
+function BindDisplayBuffers() {
+  ctx.bindFramebuffer(ctx.FRAMEBUFFER, null);
+  ctx.bindTexture(ctx.TEXTURE_2D, texture);
+}
+
 function Draw() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
+
+  BindDisplayBuffers();
+
   ctx.viewport(0, 0, screen.width, screen.height);
 
   ctx.clearColor(0.5, 0.5, 0.5, 1);
@@ -71,6 +111,8 @@ function Draw() {
 }
 
 function Pick() {
+  BindPickingBuffers();
+
   ctx.viewport(0, 0, 1, 1);
 
   ctx.clearColor(0, 0, 0, 0);
@@ -87,7 +129,7 @@ function Pick() {
     .multiply(Matrix.translate(x, y, z));
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(pick_program, 'projection');
-  var mvtrans = Matrix.perspective(40, 0.5, 100, mouse_x, mouse_y, screen.width, screen.height);
+  var mvtrans = Matrix.pixelPerspective(40, 0.5, 100, mouse_x, mouse_y, screen.width, screen.height);
   ctx.uniformMatrix4fv(projection, false, mvtrans.array());
 
   var viewer = ctx.getUniformLocation(pick_program, 'viewer');
@@ -97,6 +139,10 @@ function Pick() {
 
   chunk_set.update(ctx, x, y, z);
   chunk_set.render(ctx, pick_program, true);
+
+  var data = new Uint8Array(4);
+  ctx.readPixels(0.5, 0.5, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, data);
+  return [data[0], data[1], data[2], data[3]];
 }
 
 function Tick() {
@@ -121,12 +167,16 @@ function Tick() {
   if (outward) {
     z += 0.1;
   }
-  //Pick();
   Draw();
+  var picked = Pick();
+  if (picked[0] != 0) {
+    console.log(picked);
+  }
 }
 
 function Init() {
-  Setup();
+  SetupDisplay();
+  SetupPicking();
   setInterval(Tick, 20);
 }
 

@@ -113,11 +113,11 @@ class Matrix {
     var vb = -near * t;
     var vt = near * t;
     var chunk_width = (vr - vl) / w;
-    var chunk_height = (vt - vb) / h;
+    var chunk_height = (vb - vt) / h;
     var left = vl + x * chunk_width;
     var right = left + chunk_width;
-    var bottom = vb + y * chunk_height;
-    var top = bottom + chunk_height;
+    var top = vt + y * chunk_height;
+    var bottom = top + chunk_height;
     return Matrix.frustrum(left, right, bottom, top, near, far);
   }
 }
