@@ -182,7 +182,7 @@ class RenderChunk {
       this.dirty = false;
       return;
     }
-    this.vertex_count = Math.floor(buffer.length / 9);
+    this.vertex_count = Math.floor(buffer.length / 12);
     var vertex_data = new ArrayBuffer(this.vertex_count * 24);
     var f32 = new Float32Array(vertex_data);
     var u8 = new Uint8Array(vertex_data);
