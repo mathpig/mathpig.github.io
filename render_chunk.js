@@ -182,8 +182,10 @@ class RenderChunk {
       this.dirty = false;
       return;
     }
-    this.vertex_count = Math.floor(buffer.length / 12);
-    var vertex_data = new ArrayBuffer(this.vertex_count * 24);
+    const OUT_VERTEX_SIZE = 7;
+    const IN_VERTEX_SIZE = 12;
+    this.vertex_count = Math.floor(buffer.length / IN_VERTEX_SIZE);
+    var vertex_data = new ArrayBuffer(this.vertex_count * OUT_VERTEX_SIZE * 4);
     var f32 = new Float32Array(vertex_data);
     var u8 = new Uint8Array(vertex_data);
     var pos = 0;
@@ -201,8 +203,8 @@ class RenderChunk {
       u8[(pos + 6) * 4 + 0] = buffer[inpos + 9];
       u8[(pos + 6) * 4 + 1] = buffer[inpos + 10];
       u8[(pos + 6) * 4 + 2] = buffer[inpos + 11];
-      pos += 7;
-      inpos += 12;
+      pos += OUT_VERTEX_SIZE;
+      inpos += IN_VERTEX_SIZE;
     }
     this.glbuffer = ctx.createBuffer();
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
