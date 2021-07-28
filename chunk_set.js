@@ -6,7 +6,20 @@ class ChunkSet {
   constructor(seed) {
     this.seed = seed;
     this.chunks = {};
+    this.active_chunks = {};
     this.render_chunks = {};
+    this.pending_chunks = {};
+    this.chunk_loader = new Worker('chunk_loader.js');
+    var self = this;
+    this.chunk_loader.onmessage = function(e) {
+      var chunk = new Chunk();
+      chunk.unpack(e.data);
+      var cx = Math.floor(chunk.x / CHUNK_WIDTH);
+      var cy = Math.floor(chunk.y / CHUNK_HEIGHT);
+      var id = cx + ':' + cy;
+      self.chunks[id] = chunk;
+      delete self.pending_chunks[id];
+    };
   }
 
   render(ctx, program, picking) {
@@ -37,7 +50,7 @@ class ChunkSet {
 
     var workleft = 1;
 
-    // Update Chunks
+    // Update Active Chunks
     var new_chunks = {};
     for (var i = -CHUNK_AREA; i < CHUNK_AREA; ++i) {
       for (var j = -CHUNK_AREA; j < CHUNK_AREA; ++j) {
@@ -46,20 +59,19 @@ class ChunkSet {
         var id = cx + ':' + cy;
         if (this.chunks[id]) {
           new_chunks[id] = this.chunks[id];
-        } else {
-          if (workleft > 0) {
-            new_chunks[id] = new Chunk(seed, cx * CHUNK_WIDTH, cy * CHUNK_HEIGHT);
-            workleft--;
-          }
+        } else if (!this.pending_chunks[id]) {
+          var chunk = new Chunk(seed, cx * CHUNK_WIDTH, cy * CHUNK_HEIGHT);
+          this.chunk_loader.postMessage(chunk.pack());
+          this.pending_chunks[id] = true;
         }
       }
     }
-    this.chunks = new_chunks;
+    this.active_chunks = new_chunks;
 
     // Update RenderChunks
     var new_render_chunks = {};
-    for (var id in this.chunks) {
-      var chunk = this.chunks[id];
+    for (var id in this.active_chunks) {
+      var chunk = this.active_chunks[id];
       var num_dirty = chunk.countDirty();
       new_render_chunks[id] = chunk.update(ctx, workleft);
       workleft -= num_dirty;

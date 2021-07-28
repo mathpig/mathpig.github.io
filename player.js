@@ -1,5 +1,9 @@
 'use strict';
 
+const TURN_SPEED = 2;
+const WALK_SPEED = 0.25;
+const FLY_SPEED = 0.25;
+
 class Player {
   constructor() {
     this.x = 0;
@@ -33,25 +37,25 @@ class Player {
 
   tick() {
     if (this.left) {
-      this.direction -= 1;
+      this.direction -= TURN_SPEED;
     }
     if (this.right) {
-      this.direction += 1;
+      this.direction += TURN_SPEED;
     }
     var dir = -this.direction - 90;
     if (this.forward) {
-      this.x += Math.cos(dir * Math.PI / 180) * 0.25;
-      this.y += Math.sin(dir * Math.PI / 180) * 0.25;
+      this.x += Math.cos(dir * Math.PI / 180) * WALK_SPEED;
+      this.y += Math.sin(dir * Math.PI / 180) * WALK_SPEED;
     }
     if (this.backward) {
-      this.x -= Math.cos(dir * Math.PI / 180) * 0.25;
-      this.y -= Math.sin(dir * Math.PI / 180) * 0.25;
+      this.x -= Math.cos(dir * Math.PI / 180) * WALK_SPEED;
+      this.y -= Math.sin(dir * Math.PI / 180) * WALK_SPEED;
     }
     if (this.inward) {
-      this.z -= 0.1;
+      this.z -= FLY_SPEED;
     }
     if (this.outward) {
-      this.z += 0.1;
+      this.z += FLY_SPEED;
     }
   }
 

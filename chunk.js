@@ -1,6 +1,6 @@
 'use strict';
 
-const HOLE_PERCENTAGE = 0.25;
+const HOLE_PERCENTAGE = 1 / 3;
 
 const CHUNK_WIDTH = 16;
 const CHUNK_HEIGHT = 16;
@@ -19,11 +19,28 @@ class Chunk {
     this.x = x;
     this.y = y;
     this.render_chunks = [];
-    this.data = new Uint8Array(CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_DEPTH);
-    this.init();
+    this.data = null;
+  }
+
+  pack() {
+    return {
+      seed: this.seed,
+      x: this.x,
+      y: this.y,
+      data: this.data,
+    }
+  }
+
+  unpack(message) {
+    this.seed = message.seed;
+    this.x = message.x;
+    this.y = message.y;
+    this.data = message.data;
   }
 
   init() {
+    var seed = this.seed;
+    this.data = new Uint8Array(CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_DEPTH);
     for (var i = 0; i < CHUNK_WIDTH; i++) {
       for (var j = 0; j < CHUNK_HEIGHT; j++) {
         var ground = Math.floor(ValueNoise(seed + 1, 64, i + this.x, j + this.y, 0) * GROUND_RANGE) + GROUND_BASE;
@@ -33,7 +50,7 @@ class Chunk {
           } else if (k === ground) {
             this.set(i, j, k, GRASS);
           } else {
-            var t = 1; //ValueNoise(seed, 64, i + this.x, j + this.y, k);
+            var t = ValueNoise(seed, 64, i + this.x, j + this.y, k);
             if (t <= HOLE_PERCENTAGE) {
               this.set(i, j, k, AIR);
             } else {
