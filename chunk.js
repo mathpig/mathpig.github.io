@@ -40,34 +40,6 @@ class Chunk {
     this.data = message.data;
   }
 
-  init() {
-    var seed = this.seed;
-    this.data = new Uint8Array(CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_DEPTH);
-    for (var i = 0; i < CHUNK_WIDTH; i++) {
-      for (var j = 0; j < CHUNK_HEIGHT; j++) {
-        var ground = Math.floor(ValueNoise(seed + 1, 64, i + this.x, j + this.y, 0) * GROUND_RANGE) + GROUND_BASE;
-        var hit_ground = false;
-        for (var k = CHUNK_DEPTH - 1; k >= 0; k--) {
-          if (k == 0) {
-            this.set(i, j, k, BEDROCK);
-          } else if (k > ground) {
-            this.set(i, j, k, AIR);
-          } else {
-            var t = ValueNoise(seed, 64, i + this.x, j + this.y, k);
-            if (t <= HOLE_PERCENTAGE) {
-              this.set(i, j, k, AIR);
-            } else if (hit_ground) {
-              this.set(i, j, k, ROCK);
-            } else {
-              this.set(i, j, k, GRASS);
-              hit_ground = true;
-            }
-          }
-        }
-      }
-    }
-  }
-
   set(i, j, k, value) {
     var pos = i + j * CHUNK_WIDTH + k * CHUNK_WIDTH * CHUNK_HEIGHT;
     this.data[pos] = value;
@@ -99,6 +71,76 @@ class Chunk {
     if (q == RENDER_CHUNK_DEPTH - 1 && p < RENDER_CHUNKS_PER_CHUNK) {
       this.render_chunks[p + 1].setDirty();
     }
+  }
+
+  init() {
+    var seed = this.seed;
+    this.data = new Uint8Array(CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_DEPTH);
+    for (var i = 0; i < CHUNK_WIDTH; i++) {
+      for (var j = 0; j < CHUNK_HEIGHT; j++) {
+        var ground = Math.floor(ValueNoise(seed + 1, 64, i + this.x, j + this.y, 0) * GROUND_RANGE) + GROUND_BASE;
+        var hit_ground = false;
+        for (var k = CHUNK_DEPTH - 1; k >= 0; k--) {
+          if (k == 0) {
+            this.set(i, j, k, BEDROCK);
+          } else if (k > ground) {
+            this.set(i, j, k, AIR);
+          } else {
+            var t = ValueNoise(seed, 64, i + this.x, j + this.y, k);
+            if (t <= HOLE_PERCENTAGE) {
+              this.set(i, j, k, AIR);
+            } else if (hit_ground) {
+              this.set(i, j, k, ROCK);
+            } else {
+              this.set(i, j, k, GRASS);
+              hit_ground = true;
+            }
+          }
+        }
+      }
+    }
+    this.cleanupFlecks();
+  }
+
+  cleanupFlecks() {
+    for (var i = 0; i < CHUNK_WIDTH; i++) {
+      for (var j = 0; j < CHUNK_HEIGHT; j++) {
+        for (var k = 0; k < CHUNK_DEPTH; k++) {
+          if (this.countNeighbours(i, j, k) === 0) {
+            this.set(i, j, k, AIR);
+          }
+        }
+      }
+    }
+  }
+
+  countNeighbours(i, j, k) {
+    var counter = 0;
+    if (this.get(i, j, k + 1) !== AIR) {
+      counter++;
+    }
+    if (this.get(i, j, k - 1) !== AIR) {
+      counter++;
+    }
+    if (this.get(i + 1, j, k) !== AIR) {
+      counter++;
+    }
+    if (this.get(i - 1, j, k) !== AIR) {
+      counter++;
+    }
+    if (this.get(i, j + 1, k) !== AIR) {
+      counter++;
+    }
+    if (this.get(i, j - 1, k) !== AIR) {
+      counter++;
+    }
+    if (this.get(i + 1, j - 1, k) !== AIR) {
+      counter++;
+    }
+    if (this.get(i - 1, j + 1, k) !== AIR) {
+      counter++;
+    }
+    return counter;
   }
 
   countDirty() {
