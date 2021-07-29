@@ -168,10 +168,14 @@ class RenderChunk {
           var t = chunk.get(i, j, z);
           if (t === AIR) {
             continue;
-          } else if (t === ROCK) {
-            RenderChunk.addPrism(buffer, x, y, z, [0.3, 0.3, 0.5], faces);
           } else if (t === GRASS) {
             RenderChunk.addPrism(buffer, x, y, z, [0, 0.5, 0], faces);
+          } else if (t === ROCK) {
+            RenderChunk.addPrism(buffer, x, y, z, [0.3, 0.3, 0.5], faces);
+          } else if (t === LAVA) {
+            RenderChunk.addPrism(buffer, x, y, z, [1.0, 0.3, 0.0], faces);
+          } else if (t === BEDROCK) {
+            RenderChunk.addPrism(buffer, x, y, z, [0.2, 0.2, 0.2], faces);
           }
         }
       }

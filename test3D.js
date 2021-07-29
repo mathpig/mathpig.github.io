@@ -153,6 +153,12 @@ window.onkeydown = function(e) {
   } else if (e.code == 'KeyR') {
     var [tx, ty, tz] = player.findClick(picked, true);
     chunk_set.change(tx, ty, tz, ROCK);
+  } else if (e.code == 'KeyL') {
+    var [tx, ty, tz] = player.findClick(picked, true);
+    chunk_set.change(tx, ty, tz, LAVA);
+  } else if (e.code == 'KeyB') {
+    var [tx, ty, tz] = player.findClick(picked, true);
+    chunk_set.change(tx, ty, tz, BEDROCK);
   }
 };
 

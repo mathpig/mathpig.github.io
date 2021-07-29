@@ -12,6 +12,8 @@ const RENDER_CHUNKS_PER_CHUNK = 8;
 const AIR = 0;
 const ROCK = 1;
 const GRASS = 2;
+const LAVA = 3;
+const BEDROCK = 4;
 
 class Chunk {
   constructor(seed, x, y) {
@@ -44,17 +46,21 @@ class Chunk {
     for (var i = 0; i < CHUNK_WIDTH; i++) {
       for (var j = 0; j < CHUNK_HEIGHT; j++) {
         var ground = Math.floor(ValueNoise(seed + 1, 64, i + this.x, j + this.y, 0) * GROUND_RANGE) + GROUND_BASE;
-        for (var k = 0; k < CHUNK_DEPTH; k++) {
-          if (k > ground) {
+        var hit_ground = false;
+        for (var k = CHUNK_DEPTH - 1; k >= 0; k--) {
+          if (k == 0) {
+            this.set(i, j, k, BEDROCK);
+          } else if (k > ground) {
             this.set(i, j, k, AIR);
-          } else if (k === ground) {
-            this.set(i, j, k, GRASS);
           } else {
             var t = ValueNoise(seed, 64, i + this.x, j + this.y, k);
             if (t <= HOLE_PERCENTAGE) {
               this.set(i, j, k, AIR);
-            } else {
+            } else if (hit_ground) {
               this.set(i, j, k, ROCK);
+            } else {
+              this.set(i, j, k, GRASS);
+              hit_ground = true;
             }
           }
         }
