@@ -1,5 +1,6 @@
 'use strict';
 
+const STRENGTH = 5;
 //const NUM_BLOCKS = 5;
 //const BLOCKS = [AIR, GRASS, ROCK, LAVA, BEDROCK];
 //const REGULARNESS = 10;
@@ -12,8 +13,8 @@ function Distance(x1, y1, z1, x2, y2, z2) {
 }
 
 function Explode(chunk_set, tx, ty, tz) {
-  var blast_radius = Math.floor(Math.random() * 26) +
-                     Math.floor(Math.random() * 26);
+  var blast_radius = Math.floor(Math.random() * (STRENGTH + 1)) +
+                     Math.floor(Math.random() * (STRENGTH + 1));
   for (var x = tx - blast_radius; x <= tx + blast_radius; ++x) {    
     for (var y = ty - blast_radius; y <= ty + blast_radius; ++y) {
       for (var z = tz - blast_radius; z <= tz + blast_radius; ++z) {
