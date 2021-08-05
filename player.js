@@ -1,8 +1,8 @@
 'use strict';
 
 const TURN_SPEED = 2;
-const WALK_SPEED = 0.25;
-const FLY_SPEED = 0.25;
+const WALK_SPEED = 0.5;
+const FLY_SPEED = 1;
 
 class Player {
   constructor() {

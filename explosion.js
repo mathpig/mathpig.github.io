@@ -1,6 +1,7 @@
 'use strict';
 
-const BLAST_RADIUS = 5;
+//const NUM_BLOCKS = 5;
+//const BLOCKS = [AIR, GRASS, ROCK, LAVA, BEDROCK];
 
 function Distance(x1, y1, z1, x2, y2, z2) {
   var dx = x1 - x2;
@@ -10,11 +11,16 @@ function Distance(x1, y1, z1, x2, y2, z2) {
 }
 
 function Explode(chunk_set, tx, ty, tz) {
-  for (var x = tx - BLAST_RADIUS; x <= tx + BLAST_RADIUS; ++x) {    
-    for (var y = ty - BLAST_RADIUS; y <= ty + BLAST_RADIUS; ++y) {
-      for (var z = tz - BLAST_RADIUS; z <= tz + BLAST_RADIUS; ++z) {
-        if (Distance(x, y, z, tx, ty, tz) <= BLAST_RADIUS) {
+  var blast_radius = Math.floor(Math.random() * 6) +
+                     Math.floor(Math.random() * 6);
+  for (var x = tx - blast_radius; x <= tx + blast_radius; ++x) {    
+    for (var y = ty - blast_radius; y <= ty + blast_radius; ++y) {
+      for (var z = tz - blast_radius; z <= tz + blast_radius; ++z) {
+        if (Distance(x, y, z, tx, ty, tz) <= blast_radius &&
+            Math.random() * 3 <= 2 ||
+            Distance(x, y, z, tx, ty, tz) <= Math.floor(blast_radius / 2)) {
           chunk_set.change(x, y, z, AIR);
+//          chunk_set.change(x, y, z, BLOCKS[Math.floor(Math.random() * NUM_BLOCKS)]);
         }
       }
     }
