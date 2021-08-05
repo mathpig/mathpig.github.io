@@ -159,6 +159,9 @@ window.onkeydown = function(e) {
   } else if (e.code == 'KeyB') {
     var [tx, ty, tz] = player.findClick(picked, true);
     chunk_set.change(tx, ty, tz, BEDROCK);
+  } else if (e.code == 'KeyT') {
+    var [tx, ty, tz] = player.findClick(picked, true);
+    Explode(chunk_set, tx, ty, tz);
   }
 };
 
