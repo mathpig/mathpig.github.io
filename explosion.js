@@ -16,6 +16,9 @@ function Explode(chunk_set, tx, ty, tz) {
   for (var x = tx - blast_radius; x <= tx + blast_radius; ++x) {    
     for (var y = ty - blast_radius; y <= ty + blast_radius; ++y) {
       for (var z = tz - blast_radius; z <= tz + blast_radius; ++z) {
+/*        if (chunk.get(x, y, z) == BEDROCK) {
+          continue;
+        }*/
         if (Distance(x, y, z, tx, ty, tz) <= blast_radius &&
             Math.random() * 3 <= 2 ||
             Distance(x, y, z, tx, ty, tz) <= Math.floor(blast_radius / 2)) {

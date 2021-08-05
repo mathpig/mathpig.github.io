@@ -2,7 +2,7 @@
 
 const TURN_SPEED = 2;
 const WALK_SPEED = 0.5;
-const FLY_SPEED = 1;
+const FLY_SPEED = 0.25;
 
 class Player {
   constructor() {
