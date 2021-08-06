@@ -42,6 +42,17 @@ class ChunkSet {
     chunk.change(i - cx * CHUNK_WIDTH, j - cy * CHUNK_HEIGHT, k, value);
   }
 
+  get(i, j, k) {
+    var cx = Math.floor(i / CHUNK_WIDTH);
+    var cy = Math.floor(j / CHUNK_HEIGHT);
+    var id = cx + ':' + cy;
+    var chunk = this.chunks[id];
+    if (chunk === undefined) {
+      return AIR;
+    }
+    return chunk.get(i - cx * CHUNK_WIDTH, j - cy * CHUNK_HEIGHT, k);
+  }
+
   update(ctx, player) {
     var [x, y, z] = player.hexGrid();
 

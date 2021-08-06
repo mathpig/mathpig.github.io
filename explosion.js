@@ -18,13 +18,13 @@ function Explode(chunk_set, tx, ty, tz) {
   for (var x = tx - blast_radius; x <= tx + blast_radius; ++x) {    
     for (var y = ty - blast_radius; y <= ty + blast_radius; ++y) {
       for (var z = tz - blast_radius; z <= tz + blast_radius; ++z) {
-/*        if (chunk.get(x, y, z) == BEDROCK) {
+        if (chunk_set.get(x, y, z) == BEDROCK) {
           continue;
-        }*/
+        }
         if (Distance(x, y, z, tx, ty, tz) <= blast_radius &&
-            Math.random() * 3 <= 2 ||
+            Math.random() * 2 <= 1 ||
             Distance(x, y, z, tx, ty, tz) <= Math.floor(blast_radius / 2)) {
-          chunk_set.change(x, y, z, ROCK);
+          chunk_set.change(x, y, z, AIR);
 //          chunk_set.change(x, y, z, BLOCKS[Math.floor(Math.pow(Math.random(), REGULARNESS) * NUM_BLOCKS)]);
         }
       }
