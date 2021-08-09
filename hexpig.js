@@ -76,7 +76,13 @@ function Draw() {
 
   ctx.viewport(0, 0, screen.width, screen.height);
 
-  ctx.clearColor(0.5, 0.5, 0.5, 1);
+  var aboveground = 0.0;
+  if (player.z < -GROUND_RANGE) {
+    aboveground = 1.0;
+  }
+  var fog_color = [0.2 * aboveground, 0.3 * aboveground, 0.7 * aboveground];
+
+  ctx.clearColor(fog_color[0], fog_color[1], fog_color[2], 1);
   ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
   ctx.enable(ctx.DEPTH_TEST);
 
@@ -92,8 +98,11 @@ function Draw() {
   var light = ctx.getUniformLocation(block_program, 'light');
   ctx.uniform3f(light, 0.2, 0.3, 0.7);
 
-  var light = ctx.getUniformLocation(block_program, 'pick');
-  ctx.uniform4f(light, picked[0], picked[1], picked[2], picked[3]);
+  var pick = ctx.getUniformLocation(block_program, 'pick');
+  ctx.uniform4f(pick, picked[0], picked[1], picked[2], picked[3]);
+
+  var fogColor = ctx.getUniformLocation(block_program, 'fogColor');
+  ctx.uniform3f(fogColor, fog_color[0], fog_color[1], fog_color[2]);
 
   ctx.enable(ctx.CULL_FACE);
 
@@ -177,4 +186,7 @@ window.onmousemove = function(e) {
 window.onmousedown = function(e) {
   var [tx, ty, tz] = player.findClick(picked, false);
   chunk_set.change(tx, ty, tz, AIR);
+  if (!document.fullScreenElement) {
+    screen.requestFullscreen({navigationUI: 'hide'});
+  }
 };

@@ -54,11 +54,12 @@ function BlockShader(ctx) {
   varying lowp vec3 vColor;
   varying lowp float fog;
 
+  uniform highp vec3 fogColor;
   uniform sampler2D sampler;
 
   void main() {
     lowp vec4 col = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
-    gl_FragColor = mix(col, vec4(0.5, 0.5, 0.5, 1.0), fog);
+    gl_FragColor = mix(col, vec4(fogColor.xyz, 1.0), fog);
   }
   `);
 }
