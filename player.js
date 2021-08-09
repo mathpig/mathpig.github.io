@@ -3,6 +3,7 @@
 const TURN_SPEED = 2;
 const WALK_SPEED = 0.5;
 const FLY_SPEED = 0.25;
+const MOUSE_TURN_SPEED = 0.05;
 
 class Player {
   constructor() {
@@ -10,6 +11,7 @@ class Player {
     this.y = 0;
     this.z = -108;
     this.direction = 0;
+    this.tilt = 0;
 
     this.left = false;
     this.right = false;
@@ -29,7 +31,7 @@ class Player {
   cameraTransform() {
     var mvtrans =
       Matrix.identity()
-      .multiply(Matrix.rotateX(-90))
+      .multiply(Matrix.rotateX(-90 + this.tilt))
       .multiply(Matrix.rotateZ(this.direction))
       .multiply(Matrix.translate(this.x, this.y, this.z));
     return mvtrans;
@@ -88,6 +90,17 @@ class Player {
       this.inward = false;
     } else if (e.code == 'KeyE') {
       this.outward = false;
+    }
+  }
+
+  movement(x, y) {
+    this.direction += x * MOUSE_TURN_SPEED;
+    this.tilt += y * MOUSE_TURN_SPEED;
+    if (this.tilt >= 90) {
+      this.tilt = 90;
+    }
+    if (this.tilt <= -90) {
+      this.tilt = -90;
     }
   }
 

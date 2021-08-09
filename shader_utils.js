@@ -39,3 +39,12 @@ function SetupFormat(program, picking) {
   ctx.vertexAttribPointer(grid, 3, ctx.UNSIGNED_BYTE, false, 28, 24);
   ctx.enableVertexAttribArray(grid);
 }
+
+function SetupOverlayFormat(program) {
+  var pos = ctx.getAttribLocation(program, 'pos');
+  ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 12, 0);
+  ctx.enableVertexAttribArray(pos);
+  var col = ctx.getAttribLocation(program, 'col');
+  ctx.vertexAttribPointer(col, 4, ctx.UNSIGNED_BYTE, false, 12, 8);
+  ctx.enableVertexAttribArray(col);
+}

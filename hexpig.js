@@ -4,9 +4,6 @@ var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
 var seed = Math.floor(Math.random() * 1048576);
 
-var mouse_x = 0;
-var mouse_y = 0;
-
 var player = new Player();
 
 var picked = [0, 0, 0, 0];
@@ -15,6 +12,7 @@ var chunk_set = new ChunkSet(seed);
 
 var block_program;
 var texture;
+var overlay_program;
 
 var pick_program;
 var pick_texture;
@@ -34,6 +32,10 @@ function SetupDisplay() {
   ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 128, 128, 0, ctx.LUMINANCE,
                  ctx.UNSIGNED_BYTE, ValueNoiseTexture(128, 128, seed, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
+}
+
+function SetupOverlay() {
+  overlay_program = OverlayShader(ctx);
 }
 
 function SetupPicking() {
@@ -108,6 +110,51 @@ function Draw() {
 
   chunk_set.update(ctx, player);
   chunk_set.render(ctx, block_program, false);
+
+  DrawOverlay();
+}
+
+function DrawOverlay() {
+  var buffer = new ArrayBuffer(12 * 12);
+  var u8 = new Uint8Array(buffer);
+  var f32 = new Float32Array(buffer);
+  var a = 0.002;
+  var b = 0.02;
+  var parts = [
+    -b, -a,
+    b, -a,
+    -b, a,
+    -b, a,
+    b, -a,
+    b, a,
+
+    -a, -b,
+    a, -b,
+    -a, b,
+    -a, b,
+    a, -b,
+    a, b,
+  ];
+  var aspect = screen.width / screen.height;
+  var pos = 0;
+  for (var i = 0; i < parts.length; i += 2) {
+    f32[pos++] = parts[i + 0];
+    f32[pos++] = parts[i + 1] * aspect;
+    u8[pos * 4 + 0] = 255; 
+    u8[pos * 4 + 1] = 255;
+    u8[pos * 4 + 2] = 255;
+    u8[pos * 4 + 3] = 100;
+    pos++;
+  }
+  UseProgram(overlay_program);
+  var crosshair = ctx.createBuffer();
+  ctx.bindBuffer(ctx.ARRAY_BUFFER, crosshair);
+  ctx.bufferData(ctx.ARRAY_BUFFER, buffer, ctx.STATIC_DRAW);
+  SetupOverlayFormat(overlay_program);
+  ctx.enable(ctx.BLEND);
+  ctx.blendFunc(ctx.SRC_ALPHA, ctx.ONE_MINUS_SRC_ALPHA);
+  ctx.drawArrays(ctx.TRIANGLES, 0, 12);
+  ctx.disable(ctx.BLEND);
 }
 
 function Pick() {
@@ -125,7 +172,9 @@ function Pick() {
   var mvtrans = player.cameraTransform();
   ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
   var projection = ctx.getUniformLocation(pick_program, 'projection');
-  var mvtrans = Matrix.pixelPerspective(40, 0.5, 100, mouse_x, mouse_y, screen.width, screen.height);
+  var mvtrans = Matrix.pixelPerspective(
+      40, 0.5, 100, screen.width * 0.5, screen.height * 0.5,
+      screen.width, screen.height);
   ctx.uniformMatrix4fv(projection, false, mvtrans.array());
 
   var viewer = ctx.getUniformLocation(pick_program, 'viewer');
@@ -149,6 +198,7 @@ function Tick() {
 function Init() {
   SetupDisplay();
   SetupPicking();
+  SetupOverlay();
   setInterval(Tick, 20);
 }
 
@@ -179,8 +229,7 @@ window.onkeyup = function(e) {
 };
 
 window.onmousemove = function(e) {
-  mouse_x = e.clientX;
-  mouse_y = e.clientY;
+  player.movement(e.movementX, e.movementY);
 };
 
 window.onmousedown = function(e) {
@@ -188,5 +237,8 @@ window.onmousedown = function(e) {
   chunk_set.change(tx, ty, tz, AIR);
   if (!document.fullScreenElement) {
     screen.requestFullscreen({navigationUI: 'hide'});
+  }
+  if (!document.pointerLockElement) {
+    screen.requestPointerLock();
   }
 };

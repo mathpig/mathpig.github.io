@@ -64,6 +64,25 @@ function BlockShader(ctx) {
   `);
 }
 
+function OverlayShader(ctx) {
+  return CompileShaders(ctx, `
+  attribute vec2 pos;
+  attribute vec4 col;
+  varying lowp vec4 vColor;
+
+  void main() {
+    gl_Position = vec4(pos.xy, 0.0, 1.0);
+    vColor = col;
+  }
+  `, `
+  varying lowp vec4 vColor;
+
+  void main() {
+    gl_FragColor = vColor / 255.0;
+  }
+  `);
+}
+
 function PickShader(ctx) {
   return CompileShaders(ctx, `
   uniform highp mat4 modelview;
