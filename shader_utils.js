@@ -40,6 +40,20 @@ function SetupFormat(program, picking) {
   ctx.enableVertexAttribArray(grid);
 }
 
+function SetupModelFormat(program, picking) {
+  var pos = ctx.getAttribLocation(program, 'pos');
+  ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 32, 0);
+  ctx.enableVertexAttribArray(pos);
+  if (!picking) {
+    var tex = ctx.getAttribLocation(program, 'tex');
+    ctx.vertexAttribPointer(tex, 2, ctx.FLOAT, false, 32, 12);
+    ctx.enableVertexAttribArray(tex);
+    var normal = ctx.getAttribLocation(program, 'normal');
+    ctx.vertexAttribPointer(normal, 3, ctx.FLOAT, false, 32, 20);
+    ctx.enableVertexAttribArray(normal);
+  }
+}
+
 function SetupOverlayFormat(program) {
   var pos = ctx.getAttribLocation(program, 'pos');
   ctx.vertexAttribPointer(pos, 3, ctx.FLOAT, false, 12, 0);

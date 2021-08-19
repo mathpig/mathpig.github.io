@@ -111,3 +111,43 @@ function PickShader(ctx) {
   }
   `);
 }
+
+function ModelShader(ctx) {
+  return CompileShaders(ctx, `
+  uniform highp mat4 modelview;
+  uniform highp mat4 projection;
+  uniform highp vec3 light;
+  uniform highp vec3 ambient_color;
+  uniform highp vec3 diffuse_color;
+
+  attribute vec3 pos;
+  attribute vec2 tex;
+  attribute vec3 normal;
+
+  varying lowp vec3 vColor;
+  varying highp vec2 texcoord;
+  varying lowp float fog;
+
+  void main() {
+    gl_Position = projection * modelview * vec4(pos.xyz, 1);
+    float diffuse = max(0.0, dot(normal, normalize(light)));
+    vColor = ambient_color + diffuse * diffuse_color;
+    texcoord = tex;
+    fog = smoothstep(64.0, 100.0, gl_Position.w);
+  }
+  `, `
+  varying highp vec2 texcoord;
+  varying lowp vec3 vColor;
+  varying lowp float fog;
+
+  uniform highp vec3 fogColor;
+  uniform sampler2D sampler;
+
+  void main() {
+    lowp vec4 col = vec4(vColor.xyz, 1.0) * texture2D(sampler, texcoord);
+    gl_FragColor = mix(col, vec4(fogColor.xyz, 1.0), fog);
+    //gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    //gl_FragColor = mix(vec4(vColor.xyz, 1.0), vec4(fogColor.xyz, 1.0), fog);
+  }
+  `);
+}

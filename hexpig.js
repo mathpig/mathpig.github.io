@@ -19,6 +19,11 @@ var pick_texture;
 var pick_buffer;
 var pick_depth_buffer;
 
+var model_program;
+var model_texture;
+
+var model = new Model().loadUrl(ctx, 'models/testpig.obj');
+
 function SetupDisplay() {
   block_program = BlockShader(ctx);
 
@@ -32,6 +37,19 @@ function SetupDisplay() {
   ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 128, 128, 0, ctx.LUMINANCE,
                  ctx.UNSIGNED_BYTE, ValueNoiseTexture(128, 128, seed, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
+}
+
+function SetupModel() {
+  model_program = ModelShader(ctx);
+
+  model_texture = ctx.createTexture();
+  ctx.bindTexture(ctx.TEXTURE_2D, model_texture);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR_MIPMAP_LINEAR);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
+  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, pig_texture);
+  ctx.generateMipmap(ctx.TEXTURE_2D); 
 }
 
 function SetupOverlay() {
@@ -68,6 +86,51 @@ function BindPickingBuffers() {
 function BindDisplayBuffers() {
   ctx.bindFramebuffer(ctx.FRAMEBUFFER, null);
   ctx.bindTexture(ctx.TEXTURE_2D, texture);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
+}
+
+function BindModelBuffers() {
+  ctx.bindFramebuffer(ctx.FRAMEBUFFER, null);
+  ctx.bindTexture(ctx.TEXTURE_2D, model_texture);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
+  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
+}
+
+function DrawModels() {
+  BindModelBuffers();
+
+  var aboveground = 0.0;
+  if (player.z < -GROUND_RANGE) {
+    aboveground = 1.0;
+  }
+  var fog_color = [0.2 * aboveground, 0.3 * aboveground, 0.7 * aboveground];
+
+  ctx.enable(ctx.DEPTH_TEST);
+
+  UseProgram(model_program);
+ 
+  var modelview = ctx.getUniformLocation(model_program, 'modelview');
+  var mvtrans = player.cameraTransform();
+  ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
+  var projection = ctx.getUniformLocation(model_program, 'projection');
+  var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
+  ctx.uniformMatrix4fv(projection, false, mvtrans.array());
+
+  var light = ctx.getUniformLocation(model_program, 'light');
+  ctx.uniform3f(light, 0.2, 0.3, 0.7);
+
+  var ambient_color = ctx.getUniformLocation(model_program, 'ambient_color');
+  ctx.uniform3f(ambient_color, 0.3, 0.3, 0.3);
+  var diffuse_color = ctx.getUniformLocation(model_program, 'diffuse_color');
+  ctx.uniform3f(diffuse_color, 0.8, 0.8, 0.8);
+
+  var fogColor = ctx.getUniformLocation(model_program, 'fogColor');
+  ctx.uniform3f(fogColor, fog_color[0], fog_color[1], fog_color[2]);
+
+  ctx.enable(ctx.CULL_FACE);
+
+  model.render(ctx, model_program, false);
 }
 
 function Draw() {
@@ -110,6 +173,8 @@ function Draw() {
 
   chunk_set.update(ctx, player);
   chunk_set.render(ctx, block_program, false);
+
+  DrawModels();
 
   DrawOverlay();
 }
@@ -197,6 +262,7 @@ function Tick() {
 
 function Init() {
   SetupDisplay();
+  SetupModel();
   SetupPicking();
   SetupOverlay();
   setInterval(Tick, 20);
