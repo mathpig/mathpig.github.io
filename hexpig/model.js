@@ -4,6 +4,7 @@ class Model {
   constructor() {
     this.glbuffer = null;
     this.vertex_count = 0;
+    this.texture = null;
   }
 
   loadUrl(ctx, url) {
@@ -71,6 +72,23 @@ class Model {
     this.glbuffer = ctx.createBuffer();
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
     ctx.bufferData(ctx.ARRAY_BUFFER, vertex_data, ctx.STATIC_DRAW);
+  }
+
+  setup(ctx) {
+    this.texture = ctx.createTexture();
+    ctx.bindTexture(ctx.TEXTURE_2D, this.texture);
+    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
+    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
+    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR_MIPMAP_LINEAR);
+    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
+    ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, pig_texture);
+    ctx.generateMipmap(ctx.TEXTURE_2D); 
+  }
+
+  bind(ctx) {
+    ctx.bindTexture(ctx.TEXTURE_2D, model_texture);
+    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
+    ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
   }
 
   render(ctx, program, picking) {

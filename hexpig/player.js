@@ -178,4 +178,13 @@ class Player {
     }
     return [cx, cy, cz];
   }
+
+  getFogColor() {
+    var aboveground = 0.0;
+    if (player.z < -GROUND_RANGE) {
+      aboveground = 1.0;
+    }
+    var fog_color = [0.2 * aboveground, 0.3 * aboveground, 0.7 * aboveground];
+    return fog_color;
+  }
 }

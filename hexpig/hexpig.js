@@ -2,9 +2,11 @@
 
 var screen = document.getElementById('screen');
 var ctx = screen.getContext('webgl');
-var seed = Math.floor(Math.random() * 1048576);
+var seed = Math.floor(Math.random() * 1000000);
 
 var player = new Player();
+var model_set = new ModelSet();
+var entity_set = new EntitySet();
 
 var picked = [0, 0, 0, 0];
 
@@ -19,11 +21,6 @@ var pick_texture;
 var pick_buffer;
 var pick_depth_buffer;
 
-var model_program;
-var model_texture;
-
-var model = new Model().loadUrl(ctx, 'models/testpig.obj');
-
 function SetupDisplay() {
   block_program = BlockShader(ctx);
 
@@ -37,19 +34,6 @@ function SetupDisplay() {
   ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.LUMINANCE, 128, 128, 0, ctx.LUMINANCE,
                  ctx.UNSIGNED_BYTE, ValueNoiseTexture(128, 128, seed, 64));
   ctx.generateMipmap(ctx.TEXTURE_2D);
-}
-
-function SetupModel() {
-  model_program = ModelShader(ctx);
-
-  model_texture = ctx.createTexture();
-  ctx.bindTexture(ctx.TEXTURE_2D, model_texture);
-  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
-  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
-  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.LINEAR_MIPMAP_LINEAR);
-  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
-  ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, pig_texture);
-  ctx.generateMipmap(ctx.TEXTURE_2D); 
 }
 
 function SetupOverlay() {
@@ -90,21 +74,8 @@ function BindDisplayBuffers() {
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
 }
 
-function BindModelBuffers() {
-  ctx.bindFramebuffer(ctx.FRAMEBUFFER, null);
-  ctx.bindTexture(ctx.TEXTURE_2D, model_texture);
-  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
-  ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
-}
-
 function DrawModels() {
   BindModelBuffers();
-
-  var aboveground = 0.0;
-  if (player.z < -GROUND_RANGE) {
-    aboveground = 1.0;
-  }
-  var fog_color = [0.2 * aboveground, 0.3 * aboveground, 0.7 * aboveground];
 
   ctx.enable(ctx.DEPTH_TEST);
 
@@ -126,7 +97,7 @@ function DrawModels() {
   ctx.uniform3f(diffuse_color, 0.8, 0.8, 0.8);
 
   var fogColor = ctx.getUniformLocation(model_program, 'fogColor');
-  ctx.uniform3f(fogColor, fog_color[0], fog_color[1], fog_color[2]);
+  ctx.uniform3fv(fogColor, player.getFogColor());
 
   ctx.enable(ctx.CULL_FACE);
 
@@ -141,12 +112,7 @@ function Draw() {
 
   ctx.viewport(0, 0, screen.width, screen.height);
 
-  var aboveground = 0.0;
-  if (player.z < -GROUND_RANGE) {
-    aboveground = 1.0;
-  }
-  var fog_color = [0.2 * aboveground, 0.3 * aboveground, 0.7 * aboveground];
-
+  var fog_color = player.getFogColor();
   ctx.clearColor(fog_color[0], fog_color[1], fog_color[2], 1);
   ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
   ctx.enable(ctx.DEPTH_TEST);
@@ -167,14 +133,14 @@ function Draw() {
   ctx.uniform4f(pick, picked[0], picked[1], picked[2], picked[3]);
 
   var fogColor = ctx.getUniformLocation(block_program, 'fogColor');
-  ctx.uniform3f(fogColor, fog_color[0], fog_color[1], fog_color[2]);
+  ctx.uniform3fv(fogColor, fog_color);
 
   ctx.enable(ctx.CULL_FACE);
 
   chunk_set.update(ctx, player);
   chunk_set.render(ctx, block_program, false);
 
-  DrawModels();
+  entity_set.draw(ctx, model_set);
 
   DrawOverlay();
 }
@@ -256,6 +222,7 @@ function Pick() {
 
 function Tick() {
   player.tick();
+  entity_set.tick();
   Draw();
   picked = Pick();
 }
