@@ -31,7 +31,7 @@ class Model {
       var line = data[i];
       var m = line.match(/v ([0-9.-]+) ([0-9.-]+) ([0-9.-]+)/);
       if (m) {
-        vertices.push([parseFloat(m[1]) * 10, -parseFloat(m[3]) * 10, parseFloat(m[2]) * 10 + 132]);
+        vertices.push([parseFloat(m[1]), -parseFloat(m[3]), parseFloat(m[2])]);
       }
       var m = line.match(/vt ([0-9.-]+) ([0-9.-]+)/);
       if (m) {
@@ -75,6 +75,9 @@ class Model {
   }
 
   setup(ctx) {
+    if (this.texture) {
+      return;
+    }
     this.texture = ctx.createTexture();
     ctx.bindTexture(ctx.TEXTURE_2D, this.texture);
     ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
@@ -86,15 +89,40 @@ class Model {
   }
 
   bind(ctx) {
-    ctx.bindTexture(ctx.TEXTURE_2D, model_texture);
+    this.setup(ctx);
+    ctx.bindTexture(ctx.TEXTURE_2D, this.texture);
     ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.REPEAT);
     ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.REPEAT);
   }
 
-  render(ctx, program, picking) {
+  render(ctx, program, picking, transform) {
     if (this.vertex_count === 0) {
       return;
     }
+
+    ctx.enable(ctx.DEPTH_TEST);
+
+    var modelview = ctx.getUniformLocation(program, 'modelview');
+    var mvtrans = player.cameraTransform().multiply(transform);
+    ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
+    var projection = ctx.getUniformLocation(program, 'projection');
+    var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
+    ctx.uniformMatrix4fv(projection, false, mvtrans.array());
+
+    var light = ctx.getUniformLocation(program, 'light');
+    ctx.uniform3f(light, 0.2, 0.3, 0.7);
+
+    var ambient_color = ctx.getUniformLocation(program, 'ambient_color');
+    ctx.uniform3f(ambient_color, 0.3, 0.3, 0.3);
+    var diffuse_color = ctx.getUniformLocation(program, 'diffuse_color');
+    ctx.uniform3f(diffuse_color, 0.8, 0.8, 0.8);
+
+    var fogColor = ctx.getUniformLocation(program, 'fogColor');
+    ctx.uniform3fv(fogColor, player.getFogColor());
+
+    ctx.enable(ctx.CULL_FACE);
+
+    this.bind(ctx);
     ctx.bindBuffer(ctx.ARRAY_BUFFER, this.glbuffer);
     SetupModelFormat(program, picking);
     ctx.drawArrays(ctx.TRIANGLES, 0, this.vertex_count);

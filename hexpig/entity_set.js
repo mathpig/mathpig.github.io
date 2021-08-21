@@ -5,21 +5,21 @@ class EntitySet {
     this.entities = [];
   }
 
-  addEntity(entity) {
+  add(entity) {
     this.entities.push(entity);
     return this;
   }
 
   tick() {
-    for (var i = 0; i < entities.length; ++i) {
-      entities[i].tick();
+    for (var i = 0; i < this.entities.length; ++i) {
+      this.entities[i].tick();
     }
   }
 
   draw(ctx, model_set) {
     model_set.bind(ctx);
-    for (var i = 0; i < entities.length; ++i) {
-      entities[i].draw(ctx, model_set);
+    for (var i = 0; i < this.entities.length; ++i) {
+      this.entities[i].draw(ctx, model_set);
     }
   }
 }

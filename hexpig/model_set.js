@@ -6,13 +6,13 @@ class ModelSet {
     this.models = {};
   }
 
-  get(name) {
+  get(ctx, name) {
     if (this.models[name]) {
       return this.models[name];
     }
     var model = new Model();
     this.models[name] = model;
-    model.loadUrl('models/' + name + '.obj');
+    model.loadUrl(ctx, 'models/' + name + '.obj');
     return model;
   }
 
@@ -22,5 +22,6 @@ class ModelSet {
 
   bind(ctx) {
     ctx.bindFramebuffer(ctx.FRAMEBUFFER, null);
+    UseProgram(this.model_program);
   }
 }

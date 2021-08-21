@@ -21,7 +21,11 @@ class Entity {
   }
 
   draw(ctx, model_set) {
-    var model = model_set.get(this.shape);
-    model.render(ctx);
+    var model = model_set.get(ctx, this.shape);
+    var transform = Matrix.translate(this.x, this.y, this.z);
+    model.render(ctx, model_set.model_program, false, transform);
+  }
+
+  tick() {
   }
 }

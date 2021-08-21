@@ -7,6 +7,13 @@ var seed = Math.floor(Math.random() * 1000000);
 var player = new Player();
 var model_set = new ModelSet();
 var entity_set = new EntitySet();
+for (var i = -5; i < 5; i++) {
+  for (var j = -5; j < 5; j++) {
+    entity_set.add(new Pig().setPosition(i * 32 + Math.random() * 32 - 16,
+                                         j * 32 + Math.random() * 32 - 16,
+                                         Math.random() * 16 + 112));
+  }
+}
 
 var picked = [0, 0, 0, 0];
 
@@ -72,36 +79,6 @@ function BindDisplayBuffers() {
   ctx.bindTexture(ctx.TEXTURE_2D, texture);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
   ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
-}
-
-function DrawModels() {
-  BindModelBuffers();
-
-  ctx.enable(ctx.DEPTH_TEST);
-
-  UseProgram(model_program);
- 
-  var modelview = ctx.getUniformLocation(model_program, 'modelview');
-  var mvtrans = player.cameraTransform();
-  ctx.uniformMatrix4fv(modelview, false, mvtrans.array());
-  var projection = ctx.getUniformLocation(model_program, 'projection');
-  var mvtrans = Matrix.perspective(40, screen.width / screen.height, 0.5, 100);
-  ctx.uniformMatrix4fv(projection, false, mvtrans.array());
-
-  var light = ctx.getUniformLocation(model_program, 'light');
-  ctx.uniform3f(light, 0.2, 0.3, 0.7);
-
-  var ambient_color = ctx.getUniformLocation(model_program, 'ambient_color');
-  ctx.uniform3f(ambient_color, 0.3, 0.3, 0.3);
-  var diffuse_color = ctx.getUniformLocation(model_program, 'diffuse_color');
-  ctx.uniform3f(diffuse_color, 0.8, 0.8, 0.8);
-
-  var fogColor = ctx.getUniformLocation(model_program, 'fogColor');
-  ctx.uniform3fv(fogColor, player.getFogColor());
-
-  ctx.enable(ctx.CULL_FACE);
-
-  model.render(ctx, model_program, false);
 }
 
 function Draw() {
@@ -229,7 +206,7 @@ function Tick() {
 
 function Init() {
   SetupDisplay();
-  SetupModel();
+  model_set.setup(ctx);
   SetupPicking();
   SetupOverlay();
   setInterval(Tick, 20);
