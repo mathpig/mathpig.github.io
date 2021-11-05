@@ -18,39 +18,28 @@ function Terminate() {
   agressive.onclick = null;
 }
 
-function TestForShortMediumAndLongTermOffences(short_term_choices, short_term_unacceptable_aggressive_val, medium_term_choices, medium_term_unacceptable_aggressive_val, long_term_choices, long_term_unacceptable_aggressive_val) {
+function TestForOffences(choices, unacceptable_aggressive_val) {
   var aggressive_count = 0;
-  for (var i = 0; i < short_term_choices.length; ++i) {
-    if (short_term_choices[i] == 'A') {
+  for (var i = 0; i < choices.length; ++i) {
+    if (choices[i] == 'A') {
       aggressive_count++;
     }
   }
-  if (aggressive_count >= short_term_unacceptable_aggressive_val) {
+  if (aggressive_count >= unacceptable_aggressive_val) {
     tit_for_tat_on_temporarily = true;
     tit_for_tat_on_count = 20;
   }
+}
 
-  var aggressive_count = 0;
-  for (var i = 0; i < medium_term_choices.length; ++i) {
-    if (medium_term_choices[i] == 'A') {
-      aggressive_count++;
-    }
-  }
-  if (aggressive_count >= medium_term_unacceptable_aggressive_val) {
-    tit_for_tat_on_temporarily = true;
-    tit_for_tat_on_count = 20;
-  }
-
-  var aggressive_count = 0;
-  for (var i = 0; i < long_term_choices.length; ++i) {
-    if (long_term_choices[i] == 'A') {
-      aggressive_count++;
-    }
-  }
-  if (aggressive_count >= long_term_unacceptable_aggressive_val) {
-    tit_for_tat_on_temporarily = true;
-    tit_for_tat_on_count = 20;
-  }
+function TestForShortMediumAndLongTermOffences(short_term_choices,
+                                               short_term_unacceptable_aggressive_val,
+                                               medium_term_choices,
+                                               medium_term_unacceptable_aggressive_val,
+                                               long_term_choices,
+                                               long_term_unacceptable_aggressive_val) {
+  TestForOffences(short_term_choices, short_term_unacceptable_aggressive_val);
+  TestForOffences(medium_term_choices, medium_term_unacceptable_aggressive_val);
+  TestForOffences(long_term_choices, long_term_unacceptable_aggressive_val);
 }
 
 function DollOutMoney(your_choice, computers_choice) {
@@ -92,15 +81,15 @@ function DoRound(your_choice, computers_choice) {
     }
   }
 
-  var short_term_choices = recent_choices.slice(Math.max(recent_choices.length - 4, 0), recent_choices.length);
-  var medium_term_choices = recent_choices.slice(Math.max(recent_choices.length - 21, 0), recent_choices.length);
+  var short_term_choices = recent_choices.slice(Math.max(recent_choices.length - 3, 0), recent_choices.length);
+  var medium_term_choices = recent_choices.slice(Math.max(recent_choices.length - 20, 0), recent_choices.length);
   var long_term_choices = recent_choices;
 
-  if (on_probation == false && tit_for_tat_on_temporarily == false && tit_for_tat_on_permanently == false) {
+  if (!on_probation && !tit_for_tat_on_temporarily && !tit_for_tat_on_permanently) {
     TestForShortMediumAndLongTermOffences(short_term_choices, 2, medium_term_choices, 3, long_term_choices, 5);
   }
 
-  if (on_probation == false && tit_for_tat_on_temporarily && tit_for_tat_on_permanently == false && tit_for_tat_on_count > 0) {
+  if (!on_probation && tit_for_tat_on_temporarily && !tit_for_tat_on_permanently && tit_for_tat_on_count > 0) {
     computers_choice = recent_choices[recent_choices.length - 1];
     tit_for_tat_on_count--;
   }
@@ -110,7 +99,7 @@ function DoRound(your_choice, computers_choice) {
     on_probation_count = 50;
     tit_for_tat_on_temporarily = false;
   }
-  if (tit_for_tat_on_permanently == false && on_probation && on_probation_count > 0) {
+  if (!tit_for_tat_on_permanently && on_probation && on_probation_count > 0) {
     TestForShortMediumAndLongTermOffences(short_term_choices, 2, medium_term_choices, 2, long_term_choices, 4);
     if (tit_for_tat_on_temporarily) {
       tit_for_tat_on_permanently = true;
