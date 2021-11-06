@@ -4,6 +4,9 @@ var your_money = 0;
 var computers_money = 0;
 var turns_left = 1000;
 var turns_locked = false;
+var percentage_chance_of_incorrect_parsing_on_both_sides = 5;
+var percentage_chance_of_incorrect_parsing_on_both_sides_locked = false;
+var terminate_after_round = false;
 
 var recent_choices = [];
 var tit_for_tat_on_permanently = false;
@@ -13,9 +16,11 @@ var on_probation = false;
 var on_probation_count = 0;
 var computers_choice = 'P';
 
+var computers_choices = [];
+
 function Terminate() {
   passive.onclick = null;
-  agressive.onclick = null;
+  aggressive.onclick = null;
 }
 
 function TestForOffences(choices, unacceptable_aggressive_val) {
@@ -67,9 +72,20 @@ function DoRound(your_choice, computers_choice) {
     turns_left = parseInt(turns.value);
     turns.disabled = true;
   }
+
+  if (!percentage_chance_of_incorrect_parsing_on_both_sides_locked) {
+    percentage_chance_of_incorrect_parsing_on_both_sides_locked = true;
+    percentage_chance_of_incorrect_parsing_on_both_sides = parseInt(percentage.value);
+    percentage.disabled = true;
+  }
+
   if (turns_left <= 0) {
     Terminate();
+    results.style.display = "";
     return;
+  }
+  else if (turns_left == 1) {
+    terminate_after_round = true;
   }
 
   computers_choice = 'P';
@@ -122,7 +138,45 @@ function DoRound(your_choice, computers_choice) {
     recent_choices.shift();
   }
 
-  recent_choices.push(your_choice);
+  if (terminate_after_round) {
+    computers_choice = 'A';
+  }
+
+  if (your_choice == 'P') {
+    if (Math.random() > percentage.value / 100) {
+      recent_choices.push('P');
+    }
+    else {
+      recent_choices.push('A');
+    }
+  }
+  else if (your_choice == 'A') {
+    if (Math.random() > percentage.value / 100) {
+      recent_choices.push('A');
+    }
+    else {
+      recent_choices.push('P');
+    }
+  }
+
+  if (computers_choice == 'P') {
+    if (Math.random() > percentage.value / 100) {
+      computers_choices.push('P');
+    }
+    else {
+      computers_choices.push('A');
+    }
+  }
+  else if (computers_choice == 'A') {
+    if (Math.random() > percentage.value / 100) {
+      computers_choices.push('A');
+    }
+    else {
+      computers_choices.push('P');
+    }
+  }
+
+  computerschoices.innerText = computers_choices.join(', ');
 
   DollOutMoney(your_choice, computers_choice);
 
@@ -130,6 +184,12 @@ function DoRound(your_choice, computers_choice) {
   turns.value = turns_left;
   yourmoney.innerText = your_money;
   computersmoney.innerText = computers_money;
+
+  if (terminate_after_round) {
+    Terminate();
+    results.style.display = "";
+    return;
+  }
 }
 
 passive.onclick = function() {
