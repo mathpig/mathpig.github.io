@@ -4,7 +4,7 @@ var your_money = 0;
 var computers_money = 0;
 var turns_left = 1000;
 var turns_locked = false;
-var percentage_chance_of_incorrect_parsing_on_both_sides = 5;
+var percentage_chance_of_incorrect_parsing_on_both_sides = 2.5;
 var percentage_chance_of_incorrect_parsing_on_both_sides_locked = false;
 var terminate_after_round = false;
 
