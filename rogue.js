@@ -614,4 +614,3 @@ window.onkeyup = function(e) {
     allPlayers[i].onkeyup(e);
   }
 };
-
