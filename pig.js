@@ -117,6 +117,28 @@ const LEVELS = [
     'R RR  R  R R R R  R       R  R R   R   R    ',
     'R  R RRR R  RR RRRR       RRRR  RRR    R   E',
   ],
+  [
+    ' RRRRRRRRRR   RRRRRRRRRR',
+    'RR        RRdRR        RR',
+    'R           S           R',
+    'R           t           R',
+    'R          tut          R',
+    'R   h     tuuut     h   R',
+    'R  RRR   tuuuuut   RRR  R',
+    'RhRR RR tuuuuuuut RR RRhR',
+    'ERRR   RRRRRRRRRRR   RRRE',
+    'RR                     RR',
+  ],
+  [
+    ' E',
+    'RRR',
+    'RSR',
+    'RRR',
+  ],
+  [
+    'S',
+    'L',
+  ]
 ];
 
 var canvas = document.getElementById('screen');
