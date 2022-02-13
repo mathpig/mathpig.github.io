@@ -126,7 +126,7 @@ const LEVELS = [
     ' R   h     tuuut     h   R',
     ' R  RRR   tuuuuut   RRR  R',
     ' RhRR RR tuuuuuuut RR RRhR',
-    'ERRRR   RRRRRRRRRRR   RRRRE',
+    'ERRR   RRRRRRRRRRRRR   RRRE',
     'RRR                     RRR',
   ],
   [
