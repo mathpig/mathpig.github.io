@@ -1,78 +1,211 @@
 <!DOCTYPE html>
 
 <style>
-   pre {
-      font-weight: normal;
-   }
+pre {
+  font-weight: normal;
+}
 </style>
 
-<h1>My Games</h1>
+<h1>My Games and Resources</h1>
 
 <hr/>
 
 <p>
   <a href="pig.html">Pig Game</a>
 </p>
+<p>
+  A platformer in which you try to reach the carrot to beat each level. Dodge lava and wolves. Can play single-player or multiplayer.
+</p>
+
+<p>
+  Controls:
+</p>
+<ul>
+  <li>Arrow keys to move.</li>
+  <li>S to create a text version of the current level.</li>
+  <li>P to hide/show pallette for placing blocks.</li>
+</ul>
 
 <p>
   <a href="pong.html">Pig-pong game</a>
 </p>
+<p>
+  A simple ping-pong game.
+</p>
+
+<p>
+  Controls:
+</p>
+<ul>
+  <li>Up and down arrow keys to move the paddle.</li>
+</ul>
 
 <p>
   <a href="rogue.html">Pig-rogue game</a>
+</p>
+<p>
+  A dungeon game similar to Gauntlet. Shoot fireballs at wolves and graves, which spawn wolves. Use potions to destroy nearby enemies. Carrots give keys to unlock doors. Cheese heals health points.
+</p>
+
+<p>
+  Controls:
+</p>
+<p>
+  Player 1:
+  <ul>
+    <li>Left shift to spawn pig or fire bullets.</li>
+    <li>WASD to move.</li>
+    <li>Q to use a potion.</li>
+  </ul>
+</p>
+<p>
+  Player 2:
+  <ul>
+    <li>Right shift to spawn pig or fire bullets.</li>
+    <li>Arrow keys to move.</li>
+    <li>P to use a potion.</li>
+  </ul>
+</p>
+<p>
+  Player 3:
+  <ul>
+    <li>N to spawn pig or fire bullets.</li>
+    <li>J, L, I, and K to move left, right, up, and down respectively.</li>
+    <li>M to use a potion.</li>
+  </ul>
+</p>
+<p>
+  Player 4:
+  <ul>
+    <li>C to spawn pig or fire bullets.</li>
+    <li>F, H, T, and G to move left, right, up, and down respectively.</li>
+    <li>V to use a potion.</li>
+  </ul>
 </p>
 
 <p>
   <a href="snake.html">Snout-Snake game</a>
 </p>
+<p>
+  A snake game. Try to collect as many eggs as you can without touching yourself or the edge of the screen.
+</p>
+
+<p>
+  Controls:
+</p>
+<ul>
+  <li>TODO (the game needs some fixing first)</li>
+</ul>
 
 <p>
   <a href="tanks.html">Pig-Tanks game</a>
+</p>
+<p>
+  A wild two-player tank game in which each player tries to spray each other with either regular bullets or special super bombs.
+</p>
+
+<p>
+  Controls:
+</p>
+<p>
+  Player 1:
+  <ul>
+    <li>A and D to move left and right.</li>
+    <li>C to fire regular bullets.</li>
+    <li>1 to fire a super bomb.</li>
+  </ul>
+</p>
+<p>
+  Player 2:
+  <ul>
+    <li>Left and right arrow keys to move left and right.</li>
+    <li>Forward slash to fire regular bullets.</li>
+    <li>0 to fire a super bomb.</li>
+  </ul>
 </p>
 
 <p>
   <a href="piglantis.html">Piglantis game</a>
 </p>
+<p>
+  A game similar to Atlantis in which you control three pig towers that shoot at the enemy pig ships.
+</p>
+
+<p>
+  Controls:
+</p>
+<ul>
+  <li>Tower 1 shoot: Left arrow key.</li>
+  <li>Tower 2 shoot: Up arrow key.</li>
+  <li>Tower 3 shoot: Right arrow key.</li>
+</ul>
 
 <p>
   <a href="drawing.html">Drawing program to create your own friezes and wallpapers</a>
+</p>
+<img src="images/tiling_example.png" width=750>
+<p>
+  The title says it all. Seven built-in freizes and ten built-in wallpapers included, as well as a regular drawing pad.
+  Click on a color to choose it and drag the cursor to draw in that color.
+  Shown above is an example wallpaper that can be made with this program.
 </p>
 
 <p>
   <a href="hexpig/">Hexpig game</a>
 </p>
+<p>
+  A three-dimensional game similar to Minecraft, but with hexagonal tiles. Uses 2D and 3D Perlin noise to make the block textures and the world layout.
+</p>
+
+<p>
+  Controls:
+</p>
+<ul>
+  <li>Click on the screen to go fullscreen.</li>
+  <li>W, S, A, D, Q, and E to move forwards, backwards, turn left, turn right, move up, and move down respectively.</li>
+  <li>Click to mine a highlited block.</li>
+  <li>G, R, L, and B to place grass, rock, lava, and bedrock respecitvely.</li>
+  <li>T to trigger a TNT explosion centered at the focused block. Bedrock is indestructible.</li>
+</ul>
 
 <p>
   <a href="tit-for-tat_special.html">Special tit-for-tat algorithm to play against</a>
 </p>
+<p>
+  Once again, the title says it all. Customize the percentage of a misperception and the number of turns, and then click passive or agressive for each turn.
+</p>
 
 <p>
   <a href="quiz.html">Quizzing program for memorization</a>
+</p>
+<p>
+  Enter the text you want to memorize and the percent chance that a word will be blanked out. Fill out the form to check how well you memorized the text.
+  Click the "Submit" button to submit. Correct answers will be highlited in green, while incorrect ones will be highlited in red.
 </p>
 
 <hr/>
 
 <h2> Base Multiplication Table (Bases 2-36):<h2>
 <select id="base" onchange="BaseMultiplicationTable()">
-  <option value="2">2 (Binary)</option>
-  <option value="3">3 (Trinary)</option>
-  <option value="4">4 (Quaternary)</option>
-  <option value="5">5 (Quinary)</option>
-  <option value="6">6 (Senary)</option>
-  <option value="7">7 (Septenary)</option>
-  <option value="8">8 (Octal)</option>
-  <option value="9">9 (Nonary)</option>
-  <option value="10">10 (Decimal)</option>
-  <option value="11">11 (Undenary)</option>
-  <option value="12">12 (Duodecimal)</option>
-  <option value="13">13 (Tridecimal)</option>
-  <option value="14">14 (Quattuordecimal)</option>
-  <option value="15">15 (Quindecimal)</option>
-  <option value="16">16 (Hexadecimal)</option>
-  <option value="17">17 (Septendecimal)</option>
-  <option value="18">18 (Octodecimal)</option>
-  <option value="19">19 (Nonadecimal)</option>
-  <option value="20">20 (Vigesimal)</option>
+  <option value="2">2 (Binary) </option>
+  <option value="3">3 (Trinary) </option>
+  <option value="4">4 (Quaternary) </option>
+  <option value="5">5 (Quinary) </option>
+  <option value="6">6 (Senary) </option>
+  <option value="7">7 (Septenary) </option>
+  <option value="8">8 (Octal) </option>
+  <option value="9">9 (Nonary) </option>
+  <option value="10">10 (Decimal) </option>
+  <option value="11">11 (Undenary) </option>
+  <option value="12">12 (Duodecimal) </option>
+  <option value="13">13 (Tridecimal) </option>
+  <option value="14">14 (Quattuordecimal) </option>
+  <option value="15">15 (Quindecimal) </option>
+  <option value="16">16 (Hexadecimal) </option>
+  <option value="17">17 (Septendecimal) </option>
+  <option value="18">18 (Octodecimal) </option>
+  <option value="19">19 (Nonadecimal) </option>
+  <option value="20">20 (Vigesimal) </option>
   <option value="21">21 </option>
   <option value="22">22 </option>
   <option value="23">23 </option>
@@ -105,9 +238,9 @@
    target="_blank">Cookie Clicker</a>
 <p>
 You play cookie clicker by buying upgrade and buildings.
-The goal is to make infinite cookies. At the start, you should click
-the big cookie to make 1 cookie at a time. Each upgrade or building
-adds on to your cookies per second which is written as Cps. I use to have 15 sextillion cookies (15*10^21), but I spent a bunch.
+The goal is to make infinite cookies. At the start, you should click the big cookie to make 1 cookie at a time.
+Each upgrade or building adds on to your cookies per second, which is written as Cps. I use to have 15 sextillion cookies (15*10^21), but I spent a bunch.
+</p>
 
 <hr/>
 
@@ -117,7 +250,7 @@ adds on to your cookies per second which is written as Cps. I use to have 15 sex
 <p>
 Burning Cargo teaches you touch typing while having fun.
 The touch typing gets tougher as you go, and I finsished the game!
-You deliver orders to make money, to buy new planes and there is a little story along the way.
+You deliver orders to make money and buy new planes, and there is a story you discover along the way.
 </p>
 
 <hr/>
