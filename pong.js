@@ -5,10 +5,13 @@ var ctx = screen.getContext('2d');
 var pings = 0;
 var x = window.innerWidth / 2;
 var y = window.innerHeight / 2;
-var z = window.innerHeight / 2;
 var a = window.innerHeight / 2;
-var vx = Math.random() * 20 - 10;
-var vy = Math.random() * 20 - 10;
+var z = window.innerHeight / 2;
+var score1 = 0;
+var score2 = 0;
+var speed = 10;
+var vx = -Math.random() * speed;
+var vy = Math.random() * speed * 2 - speed;
 var score1 = 0;
 var score2 = 0;
 var soundbox = new SoundBox();
@@ -21,9 +24,9 @@ function Resize() {
 function Reset() {
   x = screen.width / 2;
   y = screen.height / 2;
-  vx = Math.random() * 20 - 10;
-  vy = Math.random() * 20 - 10;
-  if (vx < 5 && vx > -5 || vy < 3 && vy > -3) {
+  vx = -Math.random() * speed;
+  vy = Math.random() * speed * 2 - speed;
+  if (vx > -speed / 2 || (vy < speed * 3 / 10 && vy > -speed * 3 / 10)) {
     Reset();
   }
   pings = 0;
@@ -44,13 +47,14 @@ function Draw() {
 }
 
 function Tick() {
+  speed = Math.max(score1 + 10, 20);
   x += vx;
   y += vy;
   if (a + 100 < y + 25) {
-    a += 4;
+    a += speed * 2 / 5;
   }
   if (a > y) {
-    a -= 4;
+    a -= speed * 2 / 5;
   }
   if (z < 0) {
     z = 0;
@@ -58,13 +62,13 @@ function Tick() {
   if (z > screen.height - 100) {
     z = screen.height - 100;
   }
-  if (x >= 0 && x < 25 && z <= y && z + 100 + 25 >= y) {
+  if (x >= 0 && x < 25 && (y + 25) >= z && y <= (z + 100)) {
     vx = -vx;
     x = 25;
     soundbox.jump();
     pings++;
   }
-  if (x <= screen.width && x > screen.width - 25 - 25 && a <= y && a + 100 + 25 >= y) {
+  if (x <= screen.width && x > screen.width - 25 - 25 && (y + 25) >= a && y <= (a + 100)) {
     vx = -vx;
     x = screen.width - 25 - 25;
     soundbox.jump();
