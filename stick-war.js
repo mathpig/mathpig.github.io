@@ -103,7 +103,7 @@ class Rock extends Entity {
   constructor() {
     super();
     this.strikes = 0;
-    this.strikeLimit = 25;
+    this.strikeLimit = 250;
     this.setFrames([rock1]);
     this.setSize(75, 75);
   }
