@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+<title>Stick War</title>
+<style>
+body {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+</style>
+</head>
+<body>
+  <div id="panel">
+    <button id="miner">Spawn miner</button>
+    <button id="archidon">Spawn archidon</button>
+    <button id="swordwrath">Spawn swordwrath</button>
+    <button id="spearton">Spawn spearton</button>
+    <button id="magikill">Spawn magikill</button>
+    <button id="giant">Spawn giant</button>
+    <button id="shelter">Take shelter</button>
+    <button id="defend">Defend against the enemy's attack</button>
+    <button id="attack">Attack the enemy's statue</button>
+    <span id="gold">Gold: 0</span>
+  </div>
+  <canvas id="playfield"></canvas>
+  <img id="miner1" src="images/miner1.png" style="display: none">
+  <img id="miner2" src="images/miner2.png" style="display: none">
+  <img id="rock1" src="images/rock1.png" style="display: none">
+  <img id="spikes" src="images/spikes.png" style="display: none">
+  <script src="stick-war.js"></script>
+</body>
