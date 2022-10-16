@@ -7,6 +7,9 @@ var entities = [];
 var terrain1 = [];
 var terrain2 = [];
 var gold = 0;
+var mouseX, mouseY;
+var scroll = 0;
+var toDelete = [];
 
 class Entity {
   constructor() {
@@ -79,7 +82,11 @@ class Entity {
   draw() {
     ctx.save();
     ctx.filter = this.filter;
-    ctx.drawImage(this.frames[Math.floor(this.frame)], this.x - this.width / 2, this.y - this.height, this.width, this.height);
+    ctx.translate(this.x, this.y);
+    if (this.vx < 0) {
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(this.frames[Math.floor(this.frame)], -this.width / 2, -this.height, this.width, this.height);
     ctx.restore();
   }
 
@@ -96,14 +103,19 @@ class Rock extends Entity {
   constructor() {
     super();
     this.strikes = 0;
-    this.strikeLimit = 250;
+    this.strikeLimit = 25;
     this.setFrames([rock1]);
     this.setSize(75, 75);
   }
 
   mine() {
     this.strikes++;
-    this.setSize(this.width - 1, this.height - 1);
+    var initialSize = 75;
+    var sz = 1.0 - (this.strikes / (this.strikeLimit - 1));
+    this.setSize(initialSize * sz, initialSize * sz);
+    if (this.strikes >= this.strikeLimit) {
+      toDelete.push(this);
+    }
   }
 
   isRock() {
@@ -159,23 +171,27 @@ class Miner extends Entity {
 
   tick() {
     super.tick();
+    this.vx = 0;
+    this.vy = 0;
     if (this.isFull()) {
       if (this.nearFort()) {
         gold += this.gold;
         this.gold = 0;
       }
       else {
-        this.vx = -1;
+        this.vx = -2;
       }
     }
     else {
       var rock = findLeftmostRock();
       if (this.near(rock)) {
-        this.mine(rock);
+        if (this.frame < 0.025) {
+          this.mine(rock);
+        }
       }
       else {
-        this.vx = Math.sign(rock.x - this.x);
-        this.vy = Math.sign(rock.y - this.y);
+        this.vx = 2 * Math.sign(rock.x - this.x);
+        this.vy = Math.sign(rock.y - this.y) / 2;
       }
     }
   }
@@ -196,7 +212,7 @@ function Init() {
     terrain2.push(randint(375, 475));
   }
   entities = [];
-  for (var i = 0; i < randint(8, 12); ++i) {
+  for (var i = 0; i < randint(12, 18); ++i) {
     entities.push(new Rock().setPosition(randint(500, 9500), randint(575, 625)));
   }
   miner = new Miner().setPosition(400, 600);
@@ -205,6 +221,24 @@ function Init() {
   entities.push(new Fort().setPosition(225, 600));
   entities.push(new Fort().setPosition(215, 650));
   entities.push(new Fort().setPosition(235, 700));
+}
+
+function Tick() {
+  if (mouseX < 100) {
+    scroll -= 10;
+  }
+  if (mouseX > playfield.width - 100) {
+    scroll += 10;
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].tick();
+  }
+  while (toDelete.length > 0) {
+    var index = entities.indexOf(toDelete.pop());
+    if (index >= 0) {
+      entities.splice(index, 1);
+    }
+  }
 }
 
 function Draw() {
@@ -218,6 +252,11 @@ function Draw() {
   ctx.fillStyle = '#abf';
   ctx.fillRect(0, 0, playfield.width, playfield.height);
 
+  ctx.save();
+  ctx.translate(-scroll, 0);
+
+  ctx.save();
+  ctx.translate(scroll / 2, 0);
   ctx.fillStyle = '#700';
   ctx.beginPath();
   ctx.moveTo(0, playfield.height);
@@ -226,6 +265,7 @@ function Draw() {
   }
   ctx.lineTo(terrain1.length * 100, playfield.height);
   ctx.fill();
+  ctx.restore();
 
   ctx.fillStyle = '#751';
   ctx.beginPath();
@@ -236,14 +276,27 @@ function Draw() {
   ctx.lineTo(terrain2.length * 100, playfield.height);
   ctx.fill();
 
-  for (var i = 0; i < entities.length; ++i) {
-    entities[i].tick();
-  }
+  Tick();
+
   entities.sort(function(a, b) { return a.y - b.y; });
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
+
+  ctx.restore();
 }
 
 Init();
 setInterval(Draw, 30);
+
+window.onmousemove = function(e) {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+};
+
+spawn_miner.onclick = function() {
+  if (gold >= 250) {
+    gold -= 250;
+    entities.push(new Miner().setPosition(400, 600));
+  }
+};
