@@ -284,7 +284,7 @@ function Init() {
 }
 
 function Tick() {
-  if (enemyGold >= 250 && randint(1, 2500) == 1) {
+  if (enemyGold >= 250 && randint(1, 500) == 1) {
     enemyGold -= 250;
     entities.push(new EnemyMiner().setPosition(9600, 600));
   }
