@@ -275,7 +275,7 @@ function Init() {
   entities.push(new Fort().setPosition(215, 650));
   entities.push(new Fort().setPosition(235, 700));
 
-  entities.push(new EnemyMiner().setPosition(9700, 600));
+  entities.push(new EnemyMiner().setPosition(9600, 600));
 
   entities.push(new Fort().setPosition(9700, 550));
   entities.push(new Fort().setPosition(9675, 600));
@@ -286,7 +286,7 @@ function Init() {
 function Tick() {
   if (enemyGold >= 250 && randint(1, 1000) == 1) {
     enemyGold -= 250;
-    entities.push(new EnemyMiner().setPosition(9700, 600));
+    entities.push(new EnemyMiner().setPosition(9600, 600));
   }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
     scroll -= 25;
