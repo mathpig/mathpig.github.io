@@ -7,6 +7,7 @@ var entities = [];
 var terrain1 = [];
 var terrain2 = [];
 var gold = 0;
+var enemyGold = 0;
 var mouseX, mouseY;
 var scroll = 0;
 var toDelete = [];
@@ -19,6 +20,7 @@ class Entity {
     this.height = 0;
     this.vx = 0;
     this.vy = 0;
+    this.direction = 0;
     this.speedX = 1;
     this.speedY = 1;
     this.health = 0;
@@ -83,7 +85,7 @@ class Entity {
     ctx.save();
     ctx.filter = this.filter;
     ctx.translate(this.x, this.y);
-    if (this.vx < 0) {
+    if (this.direction < 0) {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(this.frames[Math.floor(this.frame)], -this.width / 2, -this.height, this.width, this.height);
@@ -136,6 +138,19 @@ function findLeftmostRock() {
   return rock;
 }
 
+function findRightmostRock() {
+  var rock = null;
+  for (var i = 0; i < entities.length; ++i) {
+    if(!entities[i].isRock()) {
+      continue;
+    }
+    if (rock === null || entities[i].x > rock.x) {
+      rock = entities[i];
+    }
+  }
+  return rock;
+}
+
 class Fort extends Entity {
   constructor() {
     super();
@@ -169,31 +184,69 @@ class Miner extends Entity {
     return this.x <= 300;
   }
 
+  findMyRock() {
+    return findLeftmostRock();
+  }
+
+  fortDirection() {
+    return -1;
+  }
+
+  drainGold() {
+    gold += this.gold;
+    this.gold = 0;
+  }
+
   tick() {
     super.tick();
     this.vx = 0;
     this.vy = 0;
     if (this.isFull()) {
       if (this.nearFort()) {
-        gold += this.gold;
-        this.gold = 0;
+        this.drainGold();
       }
       else {
-        this.vx = -2;
+        this.vx = this.fortDirection() * 2;
+        this.direction = this.fortDirection();
       }
     }
     else {
-      var rock = findLeftmostRock();
+      var rock = this.findMyRock();
       if (this.near(rock)) {
-        if (this.frame < 0.025) {
+        if (this.frame < 0.001) {
           this.mine(rock);
         }
       }
       else {
         this.vx = 2 * Math.sign(rock.x - this.x);
         this.vy = Math.sign(rock.y - this.y) / 2;
+        this.direction = this.vx;
       }
     }
+  }
+};
+
+class EnemyMiner extends Miner {
+  constructor() {
+    super();
+    this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
+  }
+
+  nearFort() {
+    return this.x >= 9700;
+  }
+
+  findMyRock() {
+    return findRightmostRock();
+  }
+
+  fortDirection() {
+    return 1;
+  }
+
+  drainGold() {
+    enemyGold += this.gold;
+    this.gold = 0;
   }
 };
 
@@ -201,10 +254,9 @@ function randint(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-var miner = null;
-
 function Init() {
-  gold = randint(400, 600);
+  gold = 500;
+  enemyGold = 500;
   terrain1 = [];
   terrain2 = [];
   for (var i = 0; i < 100; ++i) {
@@ -213,22 +265,40 @@ function Init() {
   }
   entities = [];
   for (var i = 0; i < randint(12, 18); ++i) {
-    entities.push(new Rock().setPosition(randint(500, 9500), randint(575, 625)));
+     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
   }
-  miner = new Miner().setPosition(400, 600);
-  entities.push(miner);
+
+  entities.push(new Miner().setPosition(300, 600));
+
   entities.push(new Fort().setPosition(200, 550));
   entities.push(new Fort().setPosition(225, 600));
   entities.push(new Fort().setPosition(215, 650));
   entities.push(new Fort().setPosition(235, 700));
+
+  entities.push(new EnemyMiner().setPosition(9700, 600));
+
+  entities.push(new Fort().setPosition(9700, 550));
+  entities.push(new Fort().setPosition(9675, 600));
+  entities.push(new Fort().setPosition(9685, 650));
+  entities.push(new Fort().setPosition(9665, 700));
 }
 
 function Tick() {
-  if (mouseX < 100) {
-    scroll -= 10;
+  if (enemyGold >= 250 && randint(1, 1000) == 1) {
+    enemyGold -= 250;
+    entities.push(new EnemyMiner().setPosition(9700, 600));
   }
-  if (mouseX > playfield.width - 100) {
-    scroll += 10;
+  if (mouseX < 100 && mouseY > panel.clientHeight) {
+    scroll -= 25;
+  }
+  if (mouseX > playfield.width - 100 && mouseY > panel.clientHeight) {
+    scroll += 25;
+  }
+  if (scroll < 0) {
+    scroll = 0;
+  }
+  if (scroll > 9900 - playfield.width) {
+    scroll = 9900 - playfield.width;
   }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
@@ -246,6 +316,7 @@ function Draw() {
   playfield.height = window.innerHeight - panel.clientHeight - 5;
 
   document.getElementById('gold').innerText = 'Gold: ' + gold;
+  document.getElementById('enemyGold').innerText = 'Enemy\'s Gold: ' + enemyGold;
 
   ctx.filter = '';
 
@@ -297,6 +368,6 @@ window.onmousemove = function(e) {
 spawn_miner.onclick = function() {
   if (gold >= 250) {
     gold -= 250;
-    entities.push(new Miner().setPosition(400, 600));
+    entities.push(new Miner().setPosition(300, 600));
   }
 };
