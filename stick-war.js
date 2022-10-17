@@ -233,7 +233,7 @@ class EnemyMiner extends Miner {
   }
 
   nearFort() {
-    return this.x >= 9700;
+    return this.x >= 9600;
   }
 
   findMyRock() {
@@ -284,7 +284,7 @@ function Init() {
 }
 
 function Tick() {
-  if (enemyGold >= 250 && randint(1, 1000) == 1) {
+  if (enemyGold >= 250 && randint(1, 2500) == 1) {
     enemyGold -= 250;
     entities.push(new EnemyMiner().setPosition(9600, 600));
   }
