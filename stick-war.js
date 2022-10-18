@@ -99,6 +99,14 @@ class Entity {
   isRock() {
     return false;
   }
+
+  isEnemy() {
+    return false;
+  }
+
+  isAlly() {
+    return false;
+  }
 }
 
 class Rock extends Entity {
@@ -212,6 +220,9 @@ class Miner extends Entity {
     }
     else {
       var rock = this.findMyRock();
+      if (rock === null) {
+        return;
+      }
       if (this.near(rock)) {
         if (this.frame < 0.001) {
           this.mine(rock);
@@ -223,6 +234,10 @@ class Miner extends Entity {
         this.direction = this.vx;
       }
     }
+  }
+
+  isAlly() {
+    return true;
   }
 };
 
@@ -248,7 +263,104 @@ class EnemyMiner extends Miner {
     enemyGold += this.gold;
     this.gold = 0;
   }
+
+  isEnemy() {
+    return true;
+  }
+
+  isAlly() {
+    return false;
+  }
 };
+
+function findLeftmostTarget() {
+  var target = null;
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i].isEnemy()) {
+      if (target === null || entities[i].x < target.x) {
+        target = entities[i];
+      }
+    }
+  }
+  return target;
+}
+
+function findRightmostTarget() {
+  var target = null;
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i].isAlly()) {
+      if (target === null || entities[i].x > target.x) {
+        target = entities[i];
+      }
+    }
+  }
+  return target;
+}
+
+class Swordwrath extends Entity {
+  constructor() {
+   super();
+   this.setFrames([sword1, sword2]);
+   this.setSize(100, 100);
+   this.setHealth(100);
+   this.setAttackStrength(50);
+   this.setFilter('brightness(5%)');
+  }
+
+  findTarget() {
+    return findLeftmostTarget();
+  }
+
+  attack(target) {
+    target.health -= this.attackStrength;
+    if (target.health === 0) {
+      toDelete.push(target);
+    }
+  }
+
+  tick() {
+    super.tick();
+    this.vx = 0;
+    this.vy = 0;
+    var target = this.findTarget();
+    if (target === null) {
+      return;
+    }
+    if (this.near(target)) {
+      if (this.frame < 0.001) {
+        this.attack(target);
+      }
+    }
+    else {
+      this.vx = 4 * Math.sign(target.x - this.x);
+      this.vy = Math.sign(target.y - this.y) / 2;
+      this.direction = this.vx;
+    }
+  }
+
+  isAlly() {
+    return true;
+  }
+}
+
+class EnemySwordwrath extends Swordwrath {
+  constructor() {
+    super();
+    this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
+  }
+
+  findTarget() {
+    return findRightmostTarget();
+  }
+
+  isEnemy() {
+    return true;
+  }
+
+  isAlly() {
+    return false;
+  }
+}
 
 function randint(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -269,6 +381,7 @@ function Init() {
   }
 
   entities.push(new Miner().setPosition(300, 600));
+  entities.push(new Miner().setPosition(400, 600));
 
   entities.push(new Fort().setPosition(200, 550));
   entities.push(new Fort().setPosition(225, 600));
@@ -276,6 +389,7 @@ function Init() {
   entities.push(new Fort().setPosition(235, 700));
 
   entities.push(new EnemyMiner().setPosition(9600, 600));
+  entities.push(new EnemyMiner().setPosition(9700, 600));
 
   entities.push(new Fort().setPosition(9700, 550));
   entities.push(new Fort().setPosition(9675, 600));
@@ -284,9 +398,13 @@ function Init() {
 }
 
 function Tick() {
-  if (enemyGold >= 250 && randint(1, 500) == 1) {
+  if (enemyGold >= 250 && randint(1, 1000) == 1) {
     enemyGold -= 250;
     entities.push(new EnemyMiner().setPosition(9600, 600));
+  }
+  if (enemyGold >= 150 && randint(1, 1000) == 1) {
+    enemyGold -= 150;
+    entities.push(new EnemySwordwrath().setPosition(9600, 600));
   }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
     scroll -= 25;
@@ -299,6 +417,13 @@ function Tick() {
   }
   if (scroll > 9900 - playfield.width) {
     scroll = 9900 - playfield.width;
+  }
+  if (randint(1, 50) == 1) {
+    gold += 2;
+    enemyGold += 2;
+  }
+  if (randint(1, 10000) == 1) {
+    entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
   }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
@@ -369,5 +494,12 @@ spawn_miner.onclick = function() {
   if (gold >= 250) {
     gold -= 250;
     entities.push(new Miner().setPosition(300, 600));
+  }
+};
+
+spawn_swordwrath.onclick = function() {
+  if (gold >= 150) {
+    gold -= 150;
+    entities.push(new Swordwrath().setPosition(300, 600));
   }
 };
