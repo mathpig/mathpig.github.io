@@ -454,7 +454,7 @@ function Tick() {
     gold += 2;
   }
   if (randint(1, 50) == 1) {
-    enemyGold += 3;
+    enemyGold += 5;
   }
   if (randint(1, 10000) == 1) {
     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
