@@ -322,12 +322,12 @@ function findRightmostTarget() {
 
 class Swordwrath extends Entity {
   constructor() {
-   super();
-   this.setFrames([sword1, sword2]);
-   this.setSize(100, 100);
-   this.setHealth(100);
-   this.setAttackStrength(50);
-   this.setFilter('brightness(5%)');
+    super();
+    this.setFrames([sword1, sword2]);
+    this.setSize(100, 100);
+    this.setHealth(100);
+    this.setAttackStrength(50);
+    this.setFilter('brightness(5%)');
   }
 
   findTarget() {
@@ -341,12 +341,17 @@ class Swordwrath extends Entity {
     }
   }
 
+  winner() {
+    return "You win!";
+  }
+
   tick() {
     super.tick();
     this.vx = 0;
     this.vy = 0;
     var target = this.findTarget();
     if (target === null) {
+      document.getElementById('winner').innerText = this.winner();
       return;
     }
     if (this.near(target)) {
@@ -374,6 +379,10 @@ class EnemySwordwrath extends Swordwrath {
 
   findTarget() {
     return findRightmostTarget();
+  }
+
+  winner() {
+    return "You lose!";
   }
 
   isEnemy() {
@@ -443,7 +452,9 @@ function Tick() {
   }
   if (randint(1, 50) == 1) {
     gold += 2;
-    enemyGold += 2;
+  }
+  if (randint(1, 50) == 1) {
+    enemyGold += 3;
   }
   if (randint(1, 10000) == 1) {
     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
