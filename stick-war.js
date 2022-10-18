@@ -198,7 +198,7 @@ class Miner extends Entity {
     this.goldCapacity = 100;
     this.setFrames([miner1, miner2]);
     this.setSize(100, 100);
-    this.setHealth(100);
+    this.setHealth(60);
     this.setFilter('brightness(5%)');
   }
 
@@ -326,7 +326,7 @@ class Swordwrath extends Entity {
     this.setFrames([sword1, sword2]);
     this.setSize(100, 100);
     this.setHealth(100);
-    this.setAttackStrength(50);
+    this.setAttackStrength(20);
     this.setFilter('brightness(5%)');
   }
 
