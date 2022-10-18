@@ -176,12 +176,9 @@ class Fort extends Entity {
   }
 }
 
-class EnemyFort extends Entity {
+class EnemyFort extends Fort {
   constructor() {
     super();
-    this.setHealth(2500);
-    this.setFrames([spikes]);
-    this.setSize(150, 150);
   }
 
   isEnemy() {
