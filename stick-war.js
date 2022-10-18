@@ -162,8 +162,34 @@ function findRightmostRock() {
 class Fort extends Entity {
   constructor() {
     super();
+    this.setHealth(2500);
     this.setFrames([spikes]);
     this.setSize(150, 150);
+  }
+
+  isEnemy() {
+    return false;
+  }
+
+  isAlly() {
+    return true;
+  }
+}
+
+class EnemyFort extends Entity {
+  constructor() {
+    super();
+    this.setHealth(2500);
+    this.setFrames([spikes]);
+    this.setSize(150, 150);
+  }
+
+  isEnemy() {
+    return true;
+  }
+
+  isAlly() {
+    return false;
   }
 }
 
@@ -391,10 +417,10 @@ function Init() {
   entities.push(new EnemyMiner().setPosition(9600, 600));
   entities.push(new EnemyMiner().setPosition(9700, 600));
 
-  entities.push(new Fort().setPosition(9700, 550));
-  entities.push(new Fort().setPosition(9675, 600));
-  entities.push(new Fort().setPosition(9685, 650));
-  entities.push(new Fort().setPosition(9665, 700));
+  entities.push(new EnemyFort().setPosition(9700, 550));
+  entities.push(new EnemyFort().setPosition(9675, 600));
+  entities.push(new EnemyFort().setPosition(9685, 650));
+  entities.push(new EnemyFort().setPosition(9665, 700));
 }
 
 function Tick() {
