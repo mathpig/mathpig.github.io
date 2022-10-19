@@ -92,8 +92,15 @@ class Entity {
     ctx.restore();
   }
 
-  near(other) {
-    return Math.abs(this.x - other.x) < 50 && Math.abs(this.y - other.y) < 25;
+  near(other, threshold) {
+    return Math.abs(this.x - other.x) < threshold && Math.abs(this.y - other.y) < 25;
+  }
+
+  attack(other) {
+    other.health -= this.attackStrength;
+    if (other.health == 0) {
+      toDelete.push(other);
+    }
   }
 
   isRock() {
@@ -246,7 +253,7 @@ class Miner extends Entity {
       if (rock === null) {
         return;
       }
-      if (this.near(rock)) {
+      if (this.near(rock, 50)) {
         if (this.frame < 0.001) {
           this.mine(rock);
         }
@@ -334,13 +341,6 @@ class Swordwrath extends Entity {
     return findLeftmostTarget();
   }
 
-  attack(target) {
-    target.health -= this.attackStrength;
-    if (target.health === 0) {
-      toDelete.push(target);
-    }
-  }
-
   winner() {
     return "You win!";
   }
@@ -354,7 +354,7 @@ class Swordwrath extends Entity {
       document.getElementById('winner').innerText = this.winner();
       return;
     }
-    if (this.near(target)) {
+    if (this.near(target, 50)) {
       if (this.frame < 0.001) {
         this.attack(target);
       }
