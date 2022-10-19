@@ -205,7 +205,7 @@ class Miner extends Entity {
     this.goldCapacity = 100;
     this.setFrames([miner1, miner2]);
     this.setSize(100, 100);
-    this.setHealth(60);
+    this.setHealth(80);
     this.setFilter('brightness(5%)');
   }
 
