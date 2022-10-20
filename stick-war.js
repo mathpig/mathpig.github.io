@@ -399,8 +399,8 @@ function randint(min, max) {
 }
 
 function Init() {
-  gold = 200;
-  enemyGold = 500;
+  gold = 500;
+  enemyGold = 1000;
   terrain1 = [];
   terrain2 = [];
   for (var i = 0; i < 100; ++i) {
