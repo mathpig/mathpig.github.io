@@ -544,7 +544,7 @@ spawn_magikill.onclick = function() {
     gold /= 2;
     for (var i = 0; i < entities.length; ++i) {
       if (!entities[i].isRock()) {
-        entities[i].health -= 100;
+        entities[i].health -= randint(200, 300);
         if (entities[i].health <= 0) {
           toDelete.push(entities[i]);
         }
