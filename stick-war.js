@@ -537,3 +537,16 @@ spawn_swordwrath.onclick = function() {
     entities.push(new Swordwrath().setPosition(300, 600));
   }
 };
+
+spawn_magikill.onclick = function() {
+  if (gold >= 500) {
+    gold -= 500;
+    gold /= 2;
+    for (var i = 0; i < entities.length; ++i) {
+      entities[i].health -= 100;
+      if (entities[i].health <= 0) {
+        toDelete.push(entities[i]);
+      }
+    }
+  }
+};
