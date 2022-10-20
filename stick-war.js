@@ -539,15 +539,12 @@ spawn_swordwrath.onclick = function() {
 };
 
 earthquake.onclick = function() {
-  if (gold >= 500) {
-    gold -= 500;
-    gold /= 2;
-    for (var i = 0; i < entities.length; ++i) {
-      if (!entities[i].isRock()) {
-        entities[i].health -= randint(200, 300);
-        if (entities[i].health <= 0) {
-          toDelete.push(entities[i]);
-        }
+  gold = Math.floor(gold / 2);
+  for (var i = 0; i < entities.length; ++i) {
+    if (!entities[i].isRock()) {
+      entities[i].health -= randint(200, 300);
+      if (entities[i].health <= 0) {
+        toDelete.push(entities[i]);
       }
     }
   }
