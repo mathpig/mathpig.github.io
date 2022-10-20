@@ -399,7 +399,7 @@ function randint(min, max) {
 }
 
 function Init() {
-  gold = 500;
+  gold = 200;
   enemyGold = 500;
   terrain1 = [];
   terrain2 = [];
