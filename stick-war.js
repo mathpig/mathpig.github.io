@@ -98,7 +98,7 @@ class Entity {
 
   attack(other) {
     other.health -= this.attackStrength;
-    if (other.health == 0) {
+    if (other.health <= 0) {
       toDelete.push(other);
     }
   }
