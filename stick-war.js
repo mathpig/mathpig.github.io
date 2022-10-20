@@ -538,7 +538,7 @@ spawn_swordwrath.onclick = function() {
   }
 };
 
-spawn_magikill.onclick = function() {
+earthquake.onclick = function() {
   if (gold >= 500) {
     gold -= 500;
     gold /= 2;
