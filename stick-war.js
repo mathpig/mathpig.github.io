@@ -442,11 +442,11 @@ function summonEnemyAnts() {
 }
 
 function Tick() {
-  if (enemyGold >= 250 && randint(1, 500) == 1) {
+  if (enemyGold >= 250 && randint(1, 1000) == 1) {
     enemyGold -= 250;
     entities.push(new EnemyMiner().setPosition(9600, 600));
   }
-  if (enemyGold >= 150 && randint(1, 500) == 1) {
+  if (enemyGold >= 150 && randint(1, 1000) == 1) {
     enemyGold -= 150;
     entities.push(new EnemySwordwrath().setPosition(9600, 600));
   }
