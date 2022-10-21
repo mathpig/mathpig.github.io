@@ -206,6 +206,7 @@ class Miner extends Entity {
     this.setFrames([miner1, miner2]);
     this.setSize(100);
     this.setHealth(80);
+    this.setSpeed(2);
     this.setFilter('brightness(5%)');
   }
 
@@ -259,7 +260,7 @@ class Miner extends Entity {
         }
       }
       else {
-        this.vx = 2 * Math.sign(rock.x - this.x);
+        this.vx = this.speed * Math.sign(rock.x - this.x);
         this.vy = Math.sign(rock.y - this.y) / 2;
         this.direction = this.vx;
       }
@@ -334,6 +335,7 @@ class Swordwrath extends Entity {
     this.setSize(100);
     this.setHealth(120);
     this.setAttackStrength(20);
+    this.setSpeed(4);
     this.setFilter('brightness(5%)');
   }
 
@@ -360,7 +362,7 @@ class Swordwrath extends Entity {
       }
     }
     else {
-      this.vx = 4 * Math.sign(target.x - this.x);
+      this.vx = this.speed * Math.sign(target.x - this.x);
       this.vy = Math.sign(target.y - this.y) / 2;
       this.direction = this.vx;
     }
@@ -431,13 +433,13 @@ function Init() {
 
 function summonAnts() {
   for (var i = 0; i < 10; ++i) {
-    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)));
+    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
   }
 }
 
 function summonEnemyAnts() {
   for (var i = 0; i < 10; ++i) {
-    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)));
+    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
   }
 }
 
