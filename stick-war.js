@@ -431,13 +431,13 @@ function Init() {
 
 function summonAnts() {
   for (var i = 0; i < 10; ++i) {
-    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
+    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
   }
 }
 
 function summonEnemyAnts() {
   for (var i = 0; i < 10; ++i) {
-    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
+    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
   }
 }
 
@@ -450,8 +450,8 @@ function Tick() {
     enemyGold -= 150;
     entities.push(new EnemySwordwrath().setPosition(9600, 600));
   }
-  if (enemyGold >= 400 && randint(1, 1000) == 1) {
-    enemyGold -= 400;
+  if (enemyGold >= 600 && randint(1, 500) == 1) {
+    enemyGold -= 600;
     summonEnemyAnts();
   }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
@@ -470,7 +470,7 @@ function Tick() {
     gold += 3;
   }
   if (randint(1, 50) == 1) {
-    enemyGold += 3;
+    enemyGold += 5;
   }
   if (randint(1, 10000) == 1) {
     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
@@ -567,8 +567,8 @@ earthquake.onclick = function() {
 };
 
 ants.onclick = function() {
-  if (gold >= 400) {
-    gold -= 400;
+  if (gold >= 600) {
+    gold -= 600;
     summonAnts();
   }
 };
