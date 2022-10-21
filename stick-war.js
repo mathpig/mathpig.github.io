@@ -169,7 +169,7 @@ function findRightmostRock() {
 class Fort extends Entity {
   constructor() {
     super();
-    this.setHealth(1000);
+    this.setHealth(600);
     this.setFrames([spikes]);
     this.setSize(150, 150);
   }
