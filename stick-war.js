@@ -430,13 +430,13 @@ function Init() {
 }
 
 function summonAnts() {
-  for (var i = 0; i < 10; ++i) {
+  for (var i = 0; i < randint(8, 12); ++i) {
     entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
   }
 }
 
 function summonEnemyAnts() {
-  for (var i = 0; i < 10; ++i) {
+  for (var i = 0; i < randint(8, 12); ++i) {
     entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
   }
 }
