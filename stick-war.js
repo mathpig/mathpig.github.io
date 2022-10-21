@@ -36,9 +36,9 @@ class Entity {
     return this;
   }
 
-  setSize(width, height) {
-    this.width = width;
-    this.height = height;
+  setSize(n) {
+    this.width = n;
+    this.height = n;
     return this;
   }
 
@@ -122,14 +122,14 @@ class Rock extends Entity {
     this.strikes = 0;
     this.strikeLimit = 250;
     this.setFrames([rock1]);
-    this.setSize(75, 75);
+    this.setSize(75);
   }
 
   mine() {
     this.strikes++;
     var initialSize = 75;
     var sz = 1.0 - (this.strikes / (this.strikeLimit - 1));
-    this.setSize(initialSize * sz, initialSize * sz);
+    this.setSize(initialSize * sz);
     if (this.strikes >= this.strikeLimit) {
       toDelete.push(this);
     }
@@ -204,7 +204,7 @@ class Miner extends Entity {
     this.goldIncrease = 10;
     this.goldCapacity = 100;
     this.setFrames([miner1, miner2]);
-    this.setSize(100, 100);
+    this.setSize(100);
     this.setHealth(80);
     this.setFilter('brightness(5%)');
   }
@@ -331,8 +331,8 @@ class Swordwrath extends Entity {
   constructor() {
     super();
     this.setFrames([sword1, sword2]);
-    this.setSize(100, 100);
-    this.setHealth(100);
+    this.setSize(100);
+    this.setHealth(120);
     this.setAttackStrength(20);
     this.setFilter('brightness(5%)');
   }
@@ -409,7 +409,7 @@ function Init() {
   }
   entities = [];
   for (var i = 0; i < randint(12, 18); ++i) {
-     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
+     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)));
   }
 
   entities.push(new Miner().setPosition(300, 600));
@@ -429,6 +429,18 @@ function Init() {
   entities.push(new EnemyFort().setPosition(9665, 700));
 }
 
+function summonAnts() {
+  for (var i = 0; i < 10; ++i) {
+    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)));
+  }
+}
+
+function summonEnemyAnts() {
+  for (var i = 0; i < 10; ++i) {
+    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(1).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)));
+  }
+}
+
 function Tick() {
   if (enemyGold >= 250 && randint(1, 500) == 1) {
     enemyGold -= 250;
@@ -437,6 +449,10 @@ function Tick() {
   if (enemyGold >= 150 && randint(1, 500) == 1) {
     enemyGold -= 150;
     entities.push(new EnemySwordwrath().setPosition(9600, 600));
+  }
+  if (enemyGold >= 600 && randint(1, 1000) == 1) {
+    enemyGold -= 600;
+    summonEnemyAnts();
   }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
     scroll -= 25;
@@ -547,5 +563,12 @@ earthquake.onclick = function() {
         toDelete.push(entities[i]);
       }
     }
+  }
+};
+
+ants.onclick = function() {
+  if (gold >= 600) {
+    gold -= 600;
+    summonAnts();
   }
 };
