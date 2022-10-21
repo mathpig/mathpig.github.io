@@ -452,8 +452,8 @@ function Tick() {
     enemyGold -= 150;
     entities.push(new EnemySwordwrath().setPosition(9600, 600));
   }
-  if (enemyGold >= 600 && randint(1, 1000) == 1) {
-    enemyGold -= 600;
+  if (enemyGold >= 400 && randint(1, 1000) == 1) {
+    enemyGold -= 400;
     summonEnemyAnts();
   }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
@@ -569,8 +569,8 @@ earthquake.onclick = function() {
 };
 
 ants.onclick = function() {
-  if (gold >= 600) {
-    gold -= 600;
+  if (gold >= 400) {
+    gold -= 400;
     summonAnts();
   }
 };
