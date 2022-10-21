@@ -467,10 +467,10 @@ function Tick() {
     scroll = 9900 - playfield.width;
   }
   if (randint(1, 50) == 1) {
-    gold += 3;
+    gold += 4;
   }
   if (randint(1, 50) == 1) {
-    enemyGold += 5;
+    enemyGold += 4;
   }
   if (randint(1, 10000) == 1) {
     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
