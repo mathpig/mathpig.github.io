@@ -21,8 +21,7 @@ class Entity {
     this.vx = 0;
     this.vy = 0;
     this.direction = 0;
-    this.speedX = 1;
-    this.speedY = 1;
+    this.speed = 0;
     this.health = 0;
     this.attackStrength = 0;
     this.frame = 0;
@@ -48,9 +47,8 @@ class Entity {
     return this;
   }
 
-  setSpeed(x, y) {
-    this.speedX = x;
-    this.speedY = y;
+  setSpeed(n) {
+    this.speed = n;
     return this;
   }
 
