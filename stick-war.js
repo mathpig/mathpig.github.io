@@ -253,7 +253,7 @@ class Miner extends Entity {
         return;
       }
       if (this.near(rock, 50)) {
-        if (this.frame < 0.001) {
+        if (round(this.frame * 100) == 50) {
           this.mine(rock);
         }
       }
@@ -355,7 +355,7 @@ class Swordwrath extends Entity {
       return;
     }
     if (this.near(target, 50)) {
-      if (this.frame < 0.001) {
+      if (round(this.frame * 100) == 50) {
         this.attack(target);
       }
     }
@@ -491,7 +491,6 @@ function Draw() {
   playfield.height = window.innerHeight - panel.clientHeight - 5;
 
   document.getElementById('gold').innerText = 'Gold: ' + gold;
-  document.getElementById('enemyGold').innerText = 'Enemy\'s Gold: ' + enemyGold;
 
   ctx.filter = '';
 
