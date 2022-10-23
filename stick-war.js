@@ -258,7 +258,9 @@ class Miner extends Entity {
         }
       }
       else {
-        this.vx = this.speed * Math.sign(rock.x - this.x);
+        if (Math.abs(rock.x - this.x) > 50) {
+          this.vx = this.speed * Math.sign(rock.x - this.x);
+        }
         this.vy = Math.sign(rock.y - this.y) / 2;
         this.direction = this.vx;
       }
@@ -333,7 +335,7 @@ class Swordwrath extends Entity {
     this.setSize(100);
     this.setHealth(120);
     this.setAttackStrength(20);
-    this.setSpeed(4);
+    this.setSpeed(6);
     this.setFilter('brightness(5%)');
   }
 
@@ -360,7 +362,9 @@ class Swordwrath extends Entity {
       }
     }
     else {
-      this.vx = this.speed * Math.sign(target.x - this.x);
+      if (Math.abs(target.x - this.x) > 50) {
+        this.vx = this.speed * Math.sign(target.x - this.x);
+      }
       this.vy = Math.sign(target.y - this.y) / 2;
       this.direction = this.vx;
     }
@@ -374,7 +378,6 @@ class Swordwrath extends Entity {
 class EnemySwordwrath extends Swordwrath {
   constructor() {
     super();
-    this.setHealth(Infinity);
     this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
   }
 
@@ -398,7 +401,7 @@ class EnemySwordwrath extends Swordwrath {
 class Archidon extends Entity {
   constructor() {
     super();
-    this.setFrames([archer1a, archer1b]);
+    this.setFrames([archer1c, archer1b]);
     this.setSize(100);
     this.setHealth(70);
     this.setAttackStrength(30);
@@ -429,7 +432,9 @@ class Archidon extends Entity {
       }
     }
     else {
-      this.vx = this.speed * Math.sign(target.x - this.x);
+      if (Math.abs(target.x - this.x) > 1000) {
+        this.vx = this.speed * Math.sign(target.x - this.x);
+      }
       this.vy = Math.sign(target.y - this.y) / 2;
       this.direction = this.vx;
     }
@@ -440,7 +445,7 @@ class Archidon extends Entity {
   }
 }
 
-class EnemyArcidon extends Archidon {
+class EnemyArchidon extends Archidon {
   constructor() {
     super();
     this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
@@ -500,13 +505,13 @@ function Init() {
 
 function summonAnts() {
   for (var i = 0; i < randint(8, 12); ++i) {
-    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
+    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(8));
   }
 }
 
 function summonEnemyAnts() {
   for (var i = 0; i < randint(8, 12); ++i) {
-    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(6));
+    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(8));
   }
 }
 
