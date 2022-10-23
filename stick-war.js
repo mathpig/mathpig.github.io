@@ -253,7 +253,7 @@ class Miner extends Entity {
         return;
       }
       if (this.near(rock, 50)) {
-        if (round(this.frame * 100) == 75) {
+        if (Math.round(this.frame * 100) == 75) {
           this.mine(rock);
         }
       }
@@ -355,7 +355,7 @@ class Swordwrath extends Entity {
       return;
     }
     if (this.near(target, 50)) {
-      if (round(this.frame * 100) == 75) {
+      if (Math.round(this.frame * 100) == 75) {
         this.attack(target);
       }
     }
@@ -372,6 +372,74 @@ class Swordwrath extends Entity {
 }
 
 class EnemySwordwrath extends Swordwrath {
+  constructor() {
+    super();
+    this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
+  }
+
+  findTarget() {
+    return findRightmostTarget();
+  }
+
+  winner() {
+    return "You lose!";
+  }
+
+  isEnemy() {
+    return true;
+  }
+
+  isAlly() {
+    return false;
+  }
+}
+
+class Archidon extends Entity {
+  constructor() {
+    super();
+    this.setFrames([archer1a, archer1b]);
+    this.setSize(100);
+    this.setHealth(70);
+    this.setAttackStrength(30);
+    this.setSpeed(4);
+    this.setFilter('brightness(5%)');
+  }
+
+  findTarget() {
+    return findLeftmostTarget();
+  }
+
+  winner() {
+    return "You win!";
+  }
+
+  tick() {
+    super.tick();
+    this.vx = 0;
+    this.vy = 0;
+    var target = this.findTarget();
+    if (target === null) {
+      document.getElementById('winner').innerText = this.winner();
+      return;
+    }
+    if (this.near(target, 1000)) {
+      if (Math.round(this.frame * 100) == 75) {
+        this.attack(target);
+      }
+    }
+    else {
+      this.vx = this.speed * Math.sign(target.x - this.x);
+      this.vy = Math.sign(target.y - this.y) / 2;
+      this.direction = this.vx;
+    }
+  }
+
+  isAlly() {
+    return true;
+  }
+}
+
+class EnemyArcidon extends Archidon {
   constructor() {
     super();
     this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
@@ -442,11 +510,15 @@ function summonEnemyAnts() {
 }
 
 function Tick() {
-  if (enemyGold >= 250 && randint(1, 1000) == 1) {
+  if (enemyGold >= 250 && randint(1, 1500) == 1) {
     enemyGold -= 250;
     entities.push(new EnemyMiner().setPosition(9600, 600));
   }
-  if (enemyGold >= 150 && randint(1, 750) == 1) {
+  if (enemyGold >= 400 && randint(1, 750) == 1) {
+    enemyGold -= 400;
+    entities.push(new EnemyArchidon().setPosition(9600, 600));
+  }
+  if (enemyGold >= 150 && randint(1, 1000) == 1) {
     enemyGold -= 150;
     entities.push(new EnemySwordwrath().setPosition(9600, 600));
   }
@@ -550,6 +622,13 @@ spawn_swordwrath.onclick = function() {
   if (gold >= 150) {
     gold -= 150;
     entities.push(new Swordwrath().setPosition(300, 600));
+  }
+};
+
+spawn_archidon.onclick = function() {
+  if (gold >= 400) {
+    gold -= 400;
+    entities.push(new Archidon().setPosition(300, 600));
   }
 };
 
