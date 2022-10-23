@@ -253,7 +253,7 @@ class Miner extends Entity {
         return;
       }
       if (this.near(rock, 50)) {
-        if (round(this.frame * 100) == 50) {
+        if (round(this.frame * 100) == 75) {
           this.mine(rock);
         }
       }
@@ -355,7 +355,7 @@ class Swordwrath extends Entity {
       return;
     }
     if (this.near(target, 50)) {
-      if (round(this.frame * 100) == 50) {
+      if (round(this.frame * 100) == 75) {
         this.attack(target);
       }
     }
