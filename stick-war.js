@@ -374,6 +374,7 @@ class Swordwrath extends Entity {
 class EnemySwordwrath extends Swordwrath {
   constructor() {
     super();
+    this.setHealth(Infinity);
     this.setFilter('brightness(50%) sepia(100) saturate(100) hue-rotate(25deg) brightness(50%)');
   }
 
