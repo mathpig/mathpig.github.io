@@ -1,7 +1,7 @@
 'use strict';
 
-const RATE = 2.5;
-const FINGERS = 6;
+var RATE = 2.5;
+const FINGERS = 32;
 
 const PITCHS = {
   'c=': -9,
@@ -100,11 +100,16 @@ function Song(startTime, score) {
     var code2 = score.substr(i, 2);
     var code3 = score.substr(i, 3);
     var code4 = score.substr(i, 4);
+    var code5 = score.substr(i, 5);
     if (PITCHS[code2] !== undefined) {
       keys.push(octave * 12 + PITCHS[code2]);
       ++i;
     } else if (PITCHS[code1 + signature[code1]] !== undefined) {
       keys.push(octave * 12 + PITCHS[code1 + signature[code1]]);
+    } else if (DURATIONS[code5] !== undefined) {
+      chord(keys, DURATIONS[code5]);
+      keys = [];
+      i += 4;
     } else if (DURATIONS[code4] !== undefined) {
       chord(keys, DURATIONS[code4]);
       keys = [];
@@ -139,6 +144,7 @@ function Song(startTime, score) {
 }
 
 document.getElementById('play_mozart').onclick = function() {
+  RATE = 2;
   var now = new AudioContext().currentTime;
   var right = Song(now, `
   c24 e24 g24 ^c2 vg2
@@ -181,6 +187,7 @@ document.getElementById('play_mozart').onclick = function() {
 };
 
 document.getElementById('play_bach_invention_1').onclick = function() {
+  RATE = 2.5;
   var now = new AudioContext().currentTime;
   var voice_bottom = Song(now, `
   r2 r16 vc16 d16 e16 f16 d16 e16 c16
@@ -211,22 +218,22 @@ document.getElementById('play_bach_invention_1').onclick = function() {
   d16 vg16 a16 b16 ^c16 va16 b16 g16 ^d8 g8 g64 f64 g64 f64 g64 f3.64 g8
   e16 a16 g16 f16 e16 g16 f16 a16 g16 f16 e16 d16 c16 e16 d16 f16
   e16 d16 c16 vb16 a16 ^c16 vb16 ^d16 c16 vb16 a16 g16 f#16 a16 g16 b16
-  a8 d8 ^c3.64 vb3.64 ^c9.16 d16 vb16 a16 g16 f#16 e16 g16 f#16 a16
-  g16 b16 a16 ^c16 vb16 ^d16 c16 e16 d16 vb32 ^c32 d16 g16 vb8 a16 g16
+  a8 d8 ^c3.128 vb3.128 ^c9.64 d16 vb16 a16 g16 f#16 e16 g16 f#16 a16
+  g16 b16 a16 ^c16 vb16 ^d16 c16 e16 d16 vb32 ^c32 d16 g16 c64 vb64 ^c64 vb64 ^c64 vb3.64 a16 g16
   g8 r8 r4 r16 g16 a16 b16 ^c16 va16 b16 g16
-  f#8 r8 r4 r16 a16 b16 ^c16 d16 vb16 ^c16 va16
+  g64 f#64 g64 f#64 g64 f#3.64 r8 r4 r16 a16 b16 ^c16 d16 vb16 ^c16 va16
   b8 r8 r4 r16 ^d16 c16 vb16 a16 ^c16 vb16 ^d16
   c8 r8 r4 r16 e16 d16 c16 vb16 ^d16 c#16 e16
   d8 c#8 d8 e8 f8 va8 b8 ^c#8
   d8 vf#8 g#8 a8 b8 ^c8 d5.16
   ve16 f#16 g#16 a16 f#16 g#16 e16 ^e16 d16 c16 e16 d16 c16 vb16 ^d16
-  c16 a16 g#16 b16 a16 e16 f16 d16 vg#16 ^f16 e16 d16 c8 vb16 a16
+  c16 a16 g#16 b16 a16 e16 f16 d16 vg#16 ^f16 e16 d16 d64 c64 d64 c64 d64 c3.64 vb16 a16
   a16 ^a16 g16 f16 e16 g16 f16 a16 g9.16
   e16 f16 g16 a16 f16 g16 e16 f9.16
   g16 f16 e16 d16 f16 e16 g16 f9.16
   d16 e16 f16 g16 e16 f16 d16 e9.16
   c16 d16 e16 f16 d16 e16 c16 d16 e16 f16 g16 a16 f16 g16 e16
-  f16 g16 a16 b16 ^c16 va16 b16 g16 ^c8 vg8 e8 d16 c16
+  f16 g16 a16 b16 ^c16 va16 b16 g16 ^c8 vg8 f64 e64 f64 e64 f64 e3.64 d16 c16
   c16 vb-16 a16 g16 f16 a16 g16 b16 a16 b16 ^c16 ve16 d16 ^c16 vf16 b16
   eg^c1
   `);
