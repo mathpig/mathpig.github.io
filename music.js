@@ -211,7 +211,7 @@ document.getElementById('play_bach_invention_1').onclick = function() {
   d16 vg16 a16 b16 ^c16 va16 b16 g16 ^d8 g8 g64 f64 g64 f64 g64 f3.64 g8
   e16 a16 g16 f16 e16 g16 f16 a16 g16 f16 e16 d16 c16 e16 d16 f16
   e16 d16 c16 vb16 a16 ^c16 vb16 ^d16 c16 vb16 a16 g16 f#16 a16 g16 b16
-  a8 d8 ^c3.128 vb3.128 ^c9.64 d16 vb16 a16 g16 f#16 e16 g16 f#16 a16
+  a8 d8 ^c3.64 vb3.64 ^c9.16 d16 vb16 a16 g16 f#16 e16 g16 f#16 a16
   g16 b16 a16 ^c16 vb16 ^d16 c16 e16 d16 vb32 ^c32 d16 g16 vb8 a16 g16
   g8 r8 r4 r16 g16 a16 b16 ^c16 va16 b16 g16
   f#8 r8 r4 r16 a16 b16 ^c16 d16 vb16 ^c16 va16
