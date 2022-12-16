@@ -31,11 +31,15 @@ const DURATIONS = {
   '3': 1/3,
   '5.16': 5/16,
   '4': 1/4,
+  '15.64': 15/64,
   '7.32': 7/32,
   '3.16': 3/16,
+  '11.64': 11/64,
   '6': 1/6,
   '9.64': 9/64,
+  '7.64': 7/64,
   '3.32': 3/32,
+  '5.64': 5/64,
   '8': 1/8,
   '12': 1/12,
   '16': 1/16,
@@ -210,7 +214,7 @@ document.getElementById('play_bach_invention_1').onclick = function() {
   c9.16 vg16 a16 b-16 ^c16 va16 b-16 g16
   a8 b-8 a8 g8 f8 ^d8 c8 vb-8
   a8 ^f8 e8 d8 e16 vd16 e16 f16 g16 e16 f16 d16
-  e8 c8 d8 e8 f16 d16 e16 f16 g8 vg8
+  e8 c8 d8 e8 f16 d16 e16 f16 g11.64 vg15.64
   c1
   `);
   var voice_top = Song(now, `
@@ -234,7 +238,7 @@ document.getElementById('play_bach_invention_1').onclick = function() {
   d16 e16 f16 g16 e16 f16 d16 e9.16
   c16 d16 e16 f16 d16 e16 c16 d16 e16 f16 g16 a16 f16 g16 e16
   f16 g16 a16 b16 ^c16 va16 b16 g16 ^c8 vg8 f64 e64 f64 e64 f64 e3.64 d16 c16
-  c16 vb-16 a16 g16 f16 a16 g16 b16 a16 b16 ^c16 ve16 d16 ^c16 vf16 b16
+  c16 vb-16 a16 g16 f16 a16 g16 b16 a16 b16 ^c16 ve16 d5.64 ^c3.32 vf7.64 b8
   eg^c1
   `);
   voice_bottom();
