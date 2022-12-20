@@ -9,6 +9,7 @@ async function main() {
   print("r to reload.");
   print("f to fire.");
   print("g to launch a grenade.");
+  print("q to prematurely quit the game.")
   print("");
   print("Key:");
   print("");
@@ -143,6 +144,10 @@ async function main() {
         }
       }
     }
+    else if (command == "q") {
+      print("Game terminated.")
+      print("")
+      await exit();
     else {
       print("Invalid command.");
     }
@@ -193,6 +198,7 @@ async function main() {
     print("\"Master (this rank also requires a certain amount of luck)\"");
   }
   print("");
+  await exit();
 }
 
 main();
