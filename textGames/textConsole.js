@@ -66,6 +66,9 @@ function get_string(message) {
 async function get_int(message) {
   while (true) {
     var n = await get_string(message);
+    if (!n.match(/^[-]?[0-9]+$/)) {
+      continue;
+    }
     try {
       var v = parseInt(n);
       if (!isNaN(v)) {
