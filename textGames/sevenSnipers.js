@@ -148,6 +148,7 @@ async function main() {
       print("Game terminated.")
       print("")
       await exit();
+    }
     else {
       print("Invalid command.");
     }
