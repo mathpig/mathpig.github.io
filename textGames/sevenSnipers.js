@@ -38,7 +38,7 @@ async function main() {
 
   function healthAmmoMapAim() {
     print("");
-    print("Your health: " + Math.max(0, health) / 100);
+    print("Your health: " + Math.max(0, health) + "/100");
     print("Ammo: " + ammo / 6);
     print("Grenades: " + grenades);
     print("");
