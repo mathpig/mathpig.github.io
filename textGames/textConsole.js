@@ -77,7 +77,22 @@ async function get_int(message) {
   }
 }
 
+async function get_float(message) {
+  while (true) {
+    var n = await get_string(message);
+    try {
+      var v = parseFloat(n);
+      if (!isNaN(v)) {
+        return v;
+      }
+    }
+    catch (e) {
+    }
+  }
+}
+
 function sleep(s) {
+  flush();
   return new Promise(function(resolve, reject) {
     setTimeout(function() {
       resolve();
