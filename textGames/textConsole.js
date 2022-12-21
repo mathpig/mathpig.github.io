@@ -107,6 +107,10 @@ function randint(x, y) {
   return x + Math.floor(Math.random() * (y - x + 1));
 }
 
+function shuffle(arr) {
+  arr.sort((a, b) => randint(-1, 1));
+}
+
 function exit() {
   flush();
   return new Promise(function(resolve, reject) {});
