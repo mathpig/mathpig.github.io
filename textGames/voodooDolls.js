@@ -96,9 +96,9 @@ async function main() {
         }
       }
       print("Winning player numbers: ", "");
-      for (var i = 0; i < len(winnerIndices); ++i) {
+      for (var i = 0; i < winnerIndices.length; ++i) {
         print(winnerIndices[i] + 1, "");
-        if (i < len(winnerIndices) - 1) {
+        if (i < winnerIndices.length - 1) {
           print(", ", "");
         }
       }
