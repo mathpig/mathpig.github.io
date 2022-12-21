@@ -120,6 +120,10 @@ async function main() {
           world[y][x][1] = randint(5, 25);
         }
       }
+    }
+    else if (command == "r") {
+      print("You reload.");
+      ammo = 6;
     } 
     else if (command == "g") {
       if (grenades === 0) {
