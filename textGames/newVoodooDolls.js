@@ -1,109 +1,134 @@
-from cs50 import get_int, get_string
-from random import randint
-from math import sqrt, ceil
+var coordinates = [];
+var points = [];
+var turn = 0;
+var typeTurns = ["roll", "card", "pin"];
+var indexTurn = 0;
+var chatRecord = [];
+var usedCards = [];
+var stats = [];
+var cursedPlayers = [];
+var afflictedPlayers = [];
+var voicelessPlayers = [];
+var blessedPlayers = [];
+var restricted = true;
 
-coordinates = []
-points = []
-turn = 0
-typeTurns = ["roll", "card", "pin"]
-indexTurn = 0
-chatRecord = []
-usedCards = []
-stats = []
-cursedPlayers = []
-afflictedPlayers = []
-voicelessPlayers = []
-blessedPlayers = []
-restricted = True
+var teams = {};
 
-teams = {}
+print("");
+var playerCount = get_int("How many players are there? ");
+if (playerCount == -1) {
+    restricted = false;
+    print("Restriction removed.");
+    print("");
+    playerCount = get_int("How many players are there? ");
+}
+while (playerCount < 1 || (playerCount > 9 && restricted)) {
+    playerCount = get_int("How many players are there? (this is a 1-9 player game) ");
+}
+if (playerCount == 1) {
+    print("Note: 1 player only is possible, but is not recommended, and will be very dull because you will only have yourself to stick pins into. Proceed with caution.");
+}
+var boardStyle = Math.ceil(Math.sqrt(playerCount));
 
-print("")
-playerCount = get_int("How many players are there? ")
-if playerCount == -1:
-    restricted = False
-    print("Restriction removed.")
-    print("")
-    playerCount = get_int("How many players are there? ")
-while (playerCount < 1 or playerCount > 9) and restricted:
-    playerCount = get_int("How many players are there? (this is a 1-9 player game) ")
-if playerCount == 1:
-    print("Note: 1 player only is possible, but is not recommended, and will be very dull because you will only have yourself to stick pins into. Proceed with caution.")
-boardStyle = ceil(sqrt(playerCount))
+print("");
 
-print("")
+for (var i = 0; i < playerCount; ++i) {
+    coordinates.push(0);
+    points.push(0);
+    stats.push([False, False, False, False]);
+    teams[i] = get_int("Which team is player " + (i + 1) + " part of? ")
+    while (teams[i] < 1 || teams[i] > playerCount) {
+        teams[i] = get_int("Please enter a team number between 1 and " + playerCount + ", inclusive. ");
+    }
+    print("");
+}
 
-for i in range(playerCount):
-    coordinates.append(0);
-    points.append(0);
-    stats.append([False, False, False, False])
-    teams[i] = get_int(f"Which team is player {i + 1} part of? ")
-    while teams[i] < 1 or teams[i] > playerCount:
-        teams[i] = get_int(f"Please enter a team number between 1 and {playerCount}, inclusive. ")
-    print("")
+while (true) {
+    print("Points:");
+    for (var i = 0; i < playerCount; ++i) {
+        print("Player " + (i + 1) + " has " + points[i] + " points.");
+    }
+    print("");
+    if (cursedPlayers.length > 0) {
+        print("Cursed players: ", "");
+        for (var i = 0; i < cursedPlayers.length; ++i) {
+            print(cursedPlayers[i], "");
+            if (i < cursedPlayers.length - 1) {
+                print(", ", "");
+            }
+        }
+        print("");
+    }
+    if (afflictedPlayers.length > 0) {
+        print("Afflicted players: ", "");
+        for (var i = 0; i < afflictedPlayers.length; ++i) {
+            print(afflictedPlayers[i], "");
+            if (i < afflictedPlayers.length - 1) {
+                print(", ", "");
+            }
+        }
+        print("");
+    }
+    if (voicelessPlayers.length > 0) {
+        print("Voiceless players: ", "");
+        for (var i = 0; i < voicelessPlayers.length; ++i) {
+            print(voicelessPlayers[i], "");
+            if (i < voicelessPlayers.length - 1) {
+                print(", ", "");
+            }
+        }
+        print("");
+    }
+    if (blessedPlayers.length > 0) {
+        print("Blessed players: ", "");
+        for (var i = 0; i < blessedPlayers.length; ++i) {
+            print(blessedPlayers[i], "");
+            if (i < blessedPlayers.length - 1) {
+                print(", ", "");
+            }
+        }
+        print("");
+    }
+    if (cursedPlayers.length !== 0 || afflictedPlayers.length !== 0 || voicelessPlayers.length !== 0 || blessedPlayers.length !== 0) {
+        print("");
+    }
+    print("Board:");
+    print("");
+    for (var i = 0; i < Math.ceil(playerCount / boardStyle); ++i) {
+        for (var j = 0; j < 29; ++j) {
+            print("|", "");
+            for (var k = 0; k < boardStyle; ++k) {
+                if (boardStyle * i + k < playerCount && coordinates[boardStyle * i + k] == j) {
+                    print(boardStyle * i + k + 1, "");
+                }
+                else if (j == 9 || j == 19) {
+                    print("T", "");
+                }
+                else {
+                    var val = randint(0, 1);
+                    if (val === 0) {
+                        print(".", "");
+                    }
+                    else {
+                        print(",", "");
+                    }
+                }
+            }
+        }
+        print("|", "");
+        for (var i = 0; i < boardStyle; ++i) {
+            print("C", "");
+        print("|");
+    }
+    if (chatRecord.length > 0) {
+        print("");
+    }
+    for (var i = 0; i < chatRecord.length; ++i) {
+        print("Player " + chatRecord[i][0] + " said \"" + chatRecord[i][1] + "\".");
+    }
 
-while True:
-    print("Points:")
-    for i in range(playerCount):
-        print(f"Player {i + 1} has {points[i]} points.")
-    print("")
-    if len(cursedPlayers) > 0:
-        print("Cursed players: ", end="")
-        for i in range(len(cursedPlayers)):
-            print(cursedPlayers[i], end="")
-            if i < len(cursedPlayers) - 1:
-                print(", ", end="")
-        print("")
-    if len(afflictedPlayers) > 0:
-        print("Afflicted players: ", end="")
-        for i in range(len(afflictedPlayers)):
-            print(afflictedPlayers[i], end="")
-            if i < len(afflictedPlayers) - 1:
-                print(", ", end="")
-        print("")
-    if len(voicelessPlayers) > 0:
-        print("Voiceless players: ", end="")
-        for i in range(len(voicelessPlayers)):
-            print(voicelessPlayers[i], end="")
-            if i < len(voicelessPlayers) - 1:
-                print(", ", end="")
-        print("")
-    if len(blessedPlayers) > 0:
-        print("Blessed players: ", end="")
-        for i in range(len(blessedPlayers)):
-            print(blessedPlayers[i], end="")
-            if i < len(blessedPlayers) - 1:
-                print(", ", end="")
-        print("")
-    if len(cursedPlayers) != 0 or len(afflictedPlayers) != 0 or len(voicelessPlayers) != 0 or len(blessedPlayers) != 0:
-        print("")
-    print("Board:")
-    print("")
-    for i in range(ceil(playerCount / boardStyle)):
-        for j in range(29):
-            print("|", end="")
-            for k in range(boardStyle):
-                if boardStyle * i + k < playerCount and coordinates[boardStyle * i + k] == j:
-                    print(str(boardStyle * i + k + 1), end="")
-                elif j == 9 or j == 19:
-                    print("T", end="")
-                else:
-                    val = randint(0, 1)
-                    if val == 0:
-                        print(".", end="")
-                    else:
-                        print(",", end="")
-        print("|", end="")
-        for i in range(boardStyle):
-            print("C", end="")
-        print("|")
-    if len(chatRecord) > 0:
-        print("")
-    for i in range(len(chatRecord)):
-        print(f"Player {chatRecord[i][0]} said \"{chatRecord[i][1]}\".")
-
-    print("")
-    action = get_string(f"Enter your command, player {turn + 1} (\"talk\" or \"{typeTurns[indexTurn]}\"): ")
+    print("");
+    action = get_string("Enter your command, player " + (turn + 1) + "(\"talk\" or \"" + typeTurns[indexTurn] + "\"): ");
     while action != typeTurns[indexTurn] and action != "talk":
         action = get_string(f"Enter your command (\"talk\" or \"{typeTurns[indexTurn]}\"): ")
     if action == typeTurns[indexTurn]:
@@ -261,3 +286,4 @@ while True:
         else:
             indexTurn += 1
     print("")
+}

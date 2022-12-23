@@ -181,6 +181,7 @@ async function main() {
     await Print("");
     await Print("Four players take turns moving and performing actions with the goal of reaching the castle in the center of the board.");
     await Print("Reaching the castle grants the player who reaches it 100 points and ends the game.");
+    await Print("The different players' points are compared to decide who the winner(s) is/are.")
     await Print("");
     await Print("On each turn, a pair of dice are rolled to decide how many steps you may move on that turn.");
     await Print("This will be decided automatically, and you must move exactly your allotted step count value.");
