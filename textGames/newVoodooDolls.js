@@ -128,7 +128,7 @@ while (true) {
     }
 
     print("");
-    action = get_string("Enter your command, player " + (turn + 1) + "(\"talk\" or \"" + typeTurns[indexTurn] + "\"): ");
+    var action = get_string("Enter your command, player " + (turn + 1) + "(\"talk\" or \"" + typeTurns[indexTurn] + "\"): ");
     while action != typeTurns[indexTurn] and action != "talk":
         action = get_string(f"Enter your command (\"talk\" or \"{typeTurns[indexTurn]}\"): ")
     if action == typeTurns[indexTurn]:
