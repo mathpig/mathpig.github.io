@@ -92,7 +92,7 @@ async function main() {
           winnerIndices = [i];
         }
         else if (points[i] == maxPoints) {
-          winnerIndices.append(i)
+          winnerIndices.push(i);
         }
       }
       print("Winning player numbers: ", "");
