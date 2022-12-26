@@ -15,15 +15,15 @@ var restricted = true;
 var teams = {};
 
 print("");
-var playerCount = get_int("How many players are there? ");
+var playerCount = await get_int("How many players are there? ");
 if (playerCount == -1) {
     restricted = false;
     print("Restriction removed.");
     print("");
-    playerCount = get_int("How many players are there? ");
+    playerCount = await get_int("How many players are there? ");
 }
 while (playerCount < 1 || (playerCount > 9 && restricted)) {
-    playerCount = get_int("How many players are there? (this is a 1-9 player game) ");
+    playerCount = await get_int("How many players are there? (this is a 1-9 player game) ");
 }
 if (playerCount == 1) {
     print("Note: 1 player only is possible, but is not recommended, and will be very dull because you will only have yourself to stick pins into. Proceed with caution.");
@@ -36,9 +36,9 @@ for (var i = 0; i < playerCount; ++i) {
     coordinates.push(0);
     points.push(0);
     stats.push([False, False, False, False]);
-    teams[i] = get_int("Which team is player " + (i + 1) + " part of? ")
+    teams[i] = await get_int("Which team is player " + (i + 1) + " part of? ")
     while (teams[i] < 1 || teams[i] > playerCount) {
-        teams[i] = get_int("Please enter a team number between 1 and " + playerCount + ", inclusive. ");
+        teams[i] = await get_int("Please enter a team number between 1 and " + playerCount + ", inclusive. ");
     }
     print("");
 }
@@ -128,104 +128,134 @@ while (true) {
     }
 
     print("");
-    var action = get_string("Enter your command, player " + (turn + 1) + "(\"talk\" or \"" + typeTurns[indexTurn] + "\"): ");
-    while action != typeTurns[indexTurn] and action != "talk":
-        action = get_string(f"Enter your command (\"talk\" or \"{typeTurns[indexTurn]}\"): ")
-    if action == typeTurns[indexTurn]:
-        if indexTurn == 0:
-            rollVal = randint(1, 6) + randint(1, 6)
-            coordinates[turn] += rollVal
-            if rollVal == 11:
-                print(f"Player {turn + 1} rolled an 11.")
-            else:
-                print(f"Player {turn + 1} rolled a {rollVal}.")
-            if coordinates[turn] >= 29:
-                points[turn] += 100
-                print("")
-                print(f"Player {turn + 1} reaches the castle and gains 100 points! Final scoreboard:")
-                for i in range(playerCount):
-                    print(f"Player {i + 1}: {points[i]} points")
-                print("")
-                maxPoints = points[0]
-                winnerIndices = [0]
-                for i in range(1, playerCount):
-                    if points[i] > maxPoints:
-                        maxPoints = points[i]
-                        winnerIndices = [i]
-                    elif points[i] == maxPoints:
-                        winnerIndices.append(i)
-                d = {}
-                print(f"Winning player numbers: ", end="")
-                for i in range(len(winnerIndices)):
-                    print(winnerIndices[i] + 1, end="")
-                    if i < len(winnerIndices) - 1:
-                        print(", ", end="")
-                    d[teams[winnerIndices[i]]] = True
-                print("")
-                print("")
-                print("Winning teams: ", end="")
-                winners = []
-                for i in d:
-                    winners.append(i)
-                for i in range(len(winners)):
-                    print(winners[i], end="")
-                    if i < len(winners) - 1:
-                        print(", ", end="")
-                print("")
-                print("")
-                exit()
-        elif indexTurn == 1:
-            card = randint(0, 7)
-            print("The card reads, ", end="")
-            if card == 0:
-                print("\"You and your kin are cursed for nine generations.\" Oh my, intones Mr. Slavan.")
-                print("The instructions declare that your hand will be forced to stab pins into your own player every turn rather than your true target.")
-                print("You will, however, only lose 5 points from doing so rather than the customary 25.")
-                for i in range(playerCount):
-                    if not stats[i][0] and teams[i] == teams[turn]:
-                        cursedPlayers.append(i + 1)
-                        stats[i][0] = True
-            elif card == 1:
-                print("\"You may cast another player into eternal affliction.\"")
-                print("The instructions declare that your enemy shall lose 10 points per turn as a result of their eternal pain.")
-                print("")
-                player = get_int("Enter the player you would like to cast into eternal affliction: ")
-                while player < 1 or player > playerCount:
-                    player = get_int("Please enter a valid player. Try again. ")
-                if teams[player - 1] == teams[turn]:
-                    print("You idiot! It could have been anybody else! Why, why!!!")
-                if not stats[player - 1][1]:
-                    afflictedPlayers.append(player)
-                    stats[player - 1][1] = True
-            elif card == 2:
-                print("\"You may suck the voice of another player out of their soul.\"")
-                print("The instructions declare that your enemy shall no longer be able to talk.")
-                print("")
-                player = get_int("Enter the player you would like to take the voice of: ")
-                while player < 1 or player > playerCount:
-                    player = get_int("Please enter a valid player. Try again. ")
-                if teams[player - 1] == teams[turn]:
-                    print("You idiot! It could have been anybody else! Why, why!!!")
-                if not stats[player - 1][2]:
-                    voicelessPlayers.append(player)
-                    stats[player - 1][2] = True
-            elif card == 3:
-                print("\"You and your kin are blessed for nine generations.\" Oh dear, intones Mr. Slavan.")
-                print("The instructions declare that you may stick a pin into any player on your turn, whether they are nearby or not.")
-                for i in range(playerCount):
-                    if not stats[i][3] and teams[i] == teams[turn]:
-                        blessedPlayers.append(i + 1)
-                        stats[i][3] = True
-            else:
-                val = randint(0, 1)
-                value = randint(1, 6) * randint(1, 6)
-                if val == 0:
-                    print(f"\"You gain {value} points.\"")
-                    points[turn] += value
-                else:
-                    print(f"\"You lose {value} points.\"")
-                    points[turn] -= value
-                print("These instructions seem rather self-explanatory.")
+    var action = await get_string("Enter your command, player " + (turn + 1) + "(\"talk\" or \"" + typeTurns[indexTurn] + "\"): ");
+    while (action != typeTurns[indexTurn] && action != "talk") {
+        action = await get_string("Enter your command (\"talk\" or \"" + typeTurns[indexTurn] + "\"): ");
+    }
+    if (action == typeTurns[indexTurn]) {
+        if (indexTurn == 0) {
+            var rollVal = randint(1, 6) + randint(1, 6);
+            coordinates[turn] += rollVal;
+            if (rollVal == 11) {
+                print("Player " + (turn + 1) + " rolled an 11.");
+            else {
+                print("Player " + (turn + 1) + " rolled a " + rollVal + ".");
+            }
+            if (coordinates[turn] >= 29) {
+                points[turn] += 100;
+                print("");
+                print("Player " + (turn + 1) + " reaches the castle and gains 100 points! Final scoreboard:");
+                for (var i = 0; i < playerCount; ++i) {
+                    print("Player " + (i + 1) + ": " + points[i] + " points");
+                }
+                print("");
+                var maxPoints = points[0];
+                var winnerIndices = [0];
+                for (var i = 1; i < playerCount; ++i) {
+                    if (points[i] > maxPoints) {
+                        maxPoints = points[i];
+                        winnerIndices = [i];
+                    }
+                    else if (points[i] == maxPoints) {
+                        winnerIndices.push(i);
+                    }
+                }
+                var d = {};
+                print("Winning player numbers: ", "");
+                for (var i = 0; i < winnerIndices.length; ++i) {
+                    print(winnerIndices[i] + 1, "");
+                    if (i < winnerIndices.length - 1) {
+                        print(", ", "");
+                    }
+                    d[teams[winnerIndices[i]]] = true;
+                }
+                print("");
+                print("");
+                print("Winning teams: ", "");
+                var winners = [];
+                for (i in d) {
+                    winners.push(i);
+                }
+                for (var i = 0; i < winners.length; ++i) {
+                    print(winners[i], "");
+                    if (i < winners.length - 1) {
+                        print(", ", "");
+                    }
+                }
+                print("");
+                print("");
+                await exit();
+            }
+        }
+        else if (indexTurn == 1) {
+            var card = randint(0, 7);
+            print("The card reads, ", "");
+            if (card === 0) {
+                print("\"You and your kin are cursed for nine generations.\" Oh my, intones Mr. Slavan.");
+                print("The instructions declare that your hand will be forced to stab pins into your own player every turn rather than your true target.");
+                print("You will, however, only lose 5 points from doing so rather than the customary 25.");
+                for (var i = 0; i < playerCount; ++i) {
+                    if (!stats[i][0] && teams[i] == teams[turn]) {
+                        cursedPlayers.push(i + 1);
+                        stats[i][0] = true;
+                    }
+                }
+            }
+            else if (card == 1) {
+                print("\"You may cast another player into eternal affliction.\"");
+                print("The instructions declare that your enemy shall lose 10 points per turn as a result of their eternal pain.");
+                print("");
+                var player = await get_int("Enter the player you would like to cast into eternal affliction: ");
+                while (player < 1 || player > playerCount) {
+                    player = await get_int("Please enter a valid player. Try again. ");
+                }
+                if (teams[player - 1] == teams[turn]) {
+                    print("You idiot! It could have been anybody else! Why, why!!!");
+                }
+                if (!stats[player - 1][1]) {
+                    afflictedPlayers.push(player);
+                    stats[player - 1][1] = true;
+                }
+            }
+            else if (card == 2) {
+                print("\"You may suck the voice of another player out of their soul.\"");
+                print("The instructions declare that your enemy shall no longer be able to talk.");
+                print("");
+                var player = await get_int("Enter the player you would like to take the voice of: ");
+                while (player < 1 || player > playerCount) {
+                    player = await get_int("Please enter a valid player. Try again. ");
+                if (teams[player - 1] == teams[turn]) {
+                    print("You idiot! It could have been anybody else! Why, why!!!");
+                }
+                if (!stats[player - 1][2]) {
+                    voicelessPlayers.push(player);
+                    stats[player - 1][2] = true;
+                }
+            }
+            else if (card == 3) {
+                print("\"You and your kin are blessed for nine generations.\" Oh dear, intones Mr. Slavan.");
+                print("The instructions declare that you may stick a pin into any player on your turn, whether they are nearby or not.");
+                for (var i = 0; i < playerCount; ++i) {
+                    if (!stats[i][3] && teams[i] == teams[turn]) {
+                        blessedPlayers.push(i + 1);
+                        stats[i][3] = true;
+                    }
+                }
+            }
+            else {
+                var val = randint(0, 1)
+                var value = randint(1, 6) * randint(1, 6);
+                if (val === 0) {
+                    print("\"You gain " + value + " points.\"");
+                    points[turn] += value;
+                }
+                else {
+                    print("\"You lose " + value + " points.\"");
+                    points[turn] -= value;
+                }
+                print("These instructions seem rather self-explanatory.");
+            }
+        }
         else:
             if stats[turn][0]:
                 points[turn] -= 5
@@ -264,6 +294,7 @@ while (true) {
                         else:
                             points[turn] += 50
                             points[player - 1] -= 25
+    }
     else:
         player = get_int("Which player is talking: ")
         while player < 1 or player > playerCount:
