@@ -10,6 +10,7 @@ var right = 0;
 var up = 0;
 var down = 0;
 var lastKey = 0;
+var health = 50;
 
 function Draw() {
   screen.width = window.innerWidth;
@@ -18,9 +19,25 @@ function Draw() {
   x += left + right;
   y += up + down;
 
+  if (Math.random() < 0.2) {
+    if (Math.random() < 0.5) {
+      health++;
+    }
+    else {
+      health--;
+    }
+  }
+
   ctx.fillStyle = 'blue';
   ctx.fillRect(0, 0, screen.width, screen.height);
-  
+
+  ctx.fillStyle = 'red';
+  ctx.fillRect(window.innerWidth / 4, window.innerHeight / 10,
+               health * window.innerWidth / 200, window.innerHeight / 20);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(health * window.innerWidth / 200 + window.innerWidth / 4, window.innerHeight / 10,
+               window.innerWidth / 2 - health * window.innerWidth / 200, window.innerHeight / 20);
+
   ctx.save();
   ctx.translate(x, y);
   if (left) {
