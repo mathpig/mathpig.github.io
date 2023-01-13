@@ -176,7 +176,7 @@ const LEVELS = [
       '      ydH',
       '    yzI IzH',
       'm  yI d d IH  m',
-      'IIIIW ISIW IIII',
+      'IIII WISIW IIII',
       '   IBIIdIIBI',
       '      R R',
       '      R R',
