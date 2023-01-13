@@ -171,7 +171,18 @@ const LEVELS = [
   [
     'S',
     'L',
-  ]
+  ],
+  [
+      '      ydH',
+      '    yzI IzH',
+      'm  yI d d IH  m',
+      'IIIIW ISIW IIII',
+      '   IBIIdIIBI',
+      '      R R',
+      '      R R',
+      '      RBR',
+      '      RRR',
+  ],
 ];
 
 var canvas = document.getElementById('screen');
