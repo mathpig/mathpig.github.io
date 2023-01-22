@@ -117,7 +117,7 @@ async function main() {
         }
       }
       print("|", "");
-      for (var i = 0; i < boardStyle; ++i) {
+      for (var j = 0; j < boardStyle; ++j) {
         print("C", "");
       }
       print("|");
