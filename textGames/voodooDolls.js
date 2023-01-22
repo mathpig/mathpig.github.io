@@ -40,7 +40,7 @@ async function main() {
     print("");
   }
 
-  var coordinates = [[14, 14], [29, 0], [29, 29], [0, 29]];
+  var coordinates = [[0, 0], [29, 0], [29, 29], [0, 29]];
   var points = [0, 0, 0, 0];
 
   async function move(player, direction) {
