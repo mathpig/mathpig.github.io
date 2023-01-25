@@ -238,7 +238,7 @@ async function main() {
           }
         }
         else if (card == 3) {
-          print("\"You and your kin are blessed for nine generations.\" Oh dear, intones Mr. Slavan.");
+          print("\"You and your kin are blessed for five generations.\" Oh dear, intones Mr. Slavan.");
           print("The instructions declare that you may stick a pin into any player on your turn, whether they are nearby or not.");
           for (var i = 0; i < playerCount; ++i) {
             if (!stats[i][3] && teams[i] == teams[turn]) {
