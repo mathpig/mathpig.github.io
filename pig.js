@@ -154,23 +154,22 @@ const LEVELS = [
     '     DDDDDD            DDDDDDD                           '
   ],
   [
-    '                     ',
-    'yzzzEEzzzH           ',
-    'IIIIIIIIIIn          ',
-    'I         n          ',
-    'I         n          ',
-    'IMMMMMMnMMM          ',
-    'IIIIIIInIII          ',
-    'I      niiI          ',
-    'I      njjI          ',
-    'I      nllI          ',
-    'I      n  dS         ',
+    'yzzzEEzzzH',
+    'IIIIIIIIIIn',
+    'I         n',
+    'I         n',
+    'IMMMMMMnMMM',
+    'IIIIIIInIII',
+    'I      niiI',
+    'I      njjI',
+    'I      nllI',
+    'I      n  dS',
     'IIIIIIIIIIIDNOOOOOPDI',
     '          IDDNOOOPDDI',
     '          IDDDDDDDDDI',
   ],
   [
-    '     S     ',
+    '     S',
     'I I InI I I',
     'IIIIInIIIII',
     'I    n    I',
@@ -464,13 +463,14 @@ class CannonballEntity extends GravityEntity {
   constructor(x, y, w, h, shape) {
     super(x, y, w, h, shape);
     this.timer = 0;
+    this.limit = 1 + Math.floor(Math.random() * 60);
     this.setSize(64, 64);
   }
 
   tick() {
     super.tick();
     this.timer++;
-    if (this.timer > 50 * 30) {
+    if (this.timer > 50 * this.limit) {
       var index = entities.indexOf(this);
       if (index >= 0) {
         entities.splice(index, 1);
@@ -503,7 +503,7 @@ class PigEntity extends GravityEntity {
     this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
-    this.cannonballs = 20 + Math.floor(Math.random() * 11);
+    this.cannonballs = (1 + Math.floor(Math.random() * 2)) * (20 + Math.floor(Math.random() * 11));
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
