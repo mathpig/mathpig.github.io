@@ -92,7 +92,7 @@ const LEVELS = [
     'DddddddddddddddddddddddddddD',
     'DddddddddddddddddddddddddddD',
     'DSddddddddddddddddddddddddED',
-    'D#d#ddB#dd#ddd#dd#dd#Bdd#d#D',
+    'D#d#dd##dd#ddd#dd#dd##dd#d#D',
     'DddddddddddddddddddddddddddD',
     'DddddddddddddddddddddddddddD',
     'DddddddddddddddddddddddddddD',
