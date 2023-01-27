@@ -44,7 +44,7 @@ const LEVELS = [
     'L                 L',
     'L                 L',
     'LS               EL',
-    'L#d##d#dd#dd#d##d#L',
+    'L#dB#d#dd#dd#d#Bd#L',
     'L                 L',
     'L                 L',
     'L                 L',
