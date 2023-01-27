@@ -40,11 +40,13 @@ pre {
   Instructions:
 </p>
 <p>
-  This is a turn-based game. Each player's turn consists of three actions: moving, drawing a card, and sticking a pin in a nearby player.
+  This is a turn-based game. To start, one enters the number of players and the team each player is a part of. If the players are all competing against each other, they should all have different team numbers.
+  Each player's turn consists of three actions: moving, drawing a card, and sticking a pin in a nearby player.
   Players may optionally talk throughout the game, unless certain cards are in effect.
   The goal is to reach a castle at tile 30, granting the player who reaches it 100 points and ending the game.
   Each player rolls a pair of dice to decide how many squares they move.
   They then draw a card and must follow the instructions exactly.
+  If a player draws the blessing or curse card, the blessing/curse is applied to their whole team.
   If a player draws the blessing card when they are cursed or the curse when they are blessed, the curse will outweigh the blessing and they will still be unable to stick pins into other players, although they will still be listed as "blessed" as well as "cursed."
   Then they may stick a pin in a nearby player, nearby meaning within three tiles, inclusive.
   If no player is nearby, they must stick a pin into their own player, making them lose 25 points.
@@ -102,5 +104,5 @@ pre {
 <hr/>
 
 <p>
-  Voodoo Dolls 1D: Enter -1 as the player count to remove the 9 player count limit. This will cause poor board graphics, although the game will remain playable.
+  Voodoo Dolls 1D: Enter -1 as the player count to remove the 9 player count limit. This will cause poor board graphics, although the game will remain playable. <font color="red">[NOTE: THIS EASTER EGG HAS BEEN REMOVED]</font>
 </p>

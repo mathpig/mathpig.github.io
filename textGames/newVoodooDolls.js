@@ -11,23 +11,19 @@ async function main() {
   var afflictedPlayers = [];
   var voicelessPlayers = [];
   var blessedPlayers = [];
-  var restricted = true;
 
   var teams = {};
 
   print("");
   var playerCount = await get_int("How many players are there? ");
-  if (playerCount == -1) {
-    restricted = false;
-    print("Restriction removed.");
-    print("");
-    playerCount = await get_int("How many players are there? ");
-  }
-  while (playerCount < 1 || (playerCount > 9 && restricted)) {
-    playerCount = await get_int("How many players are there? (this is a 1-9 player game) ");
+  while (playerCount < 1 || playerCount > 36) {
+    playerCount = await get_int("How many players are there? (this is a 1-36 player game) ");
   }
   if (playerCount == 1) {
     print("Note: 1 player only is possible, but is not recommended, and will be very dull because you will only have yourself to stick pins into. Proceed with caution.");
+  }
+  if (playerCount > 9) {
+    print("Note: More than 9 players is possible, but the game will take a long time and the map will display players with numbers greater than 9 as letters instead.")
   }
   var boardStyle = Math.ceil(Math.sqrt(playerCount));
 
@@ -46,8 +42,11 @@ async function main() {
 
   while (true) {
     print("Points:");
-    for (var i = 0; i < playerCount; ++i) {
+    for (var i = 0; i < playerCount; i += 2) {
       print("Player " + (i + 1) + " has " + points[i] + " points.");
+      if (i + 1 < playerCount) {
+        print("Player " + (i + 2) + " has " + points[i + 1] + " points.");
+      }
     }
     print("");
     if (cursedPlayers.length > 0) {
@@ -100,7 +99,16 @@ async function main() {
         print("|", "");
         for (var k = 0; k < boardStyle; ++k) {
           if (boardStyle * i + k < playerCount && coordinates[boardStyle * i + k] == j) {
-            print(boardStyle * i + k + 1, "");
+            var val = boardStyle * i + k + 1;
+            if (val == 36) {
+              print(" ", "");
+            }
+            else if (val > 9) {
+              print(String.fromCharCode(val + 55), "");
+            }
+            else {
+              print(val, "");
+            }
           }
           else if (j == 9 || j == 19) {
             print("T", "");
