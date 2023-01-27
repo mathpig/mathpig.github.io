@@ -36,7 +36,7 @@ const LEVELS = [
     'D                 D',
     'D                 D',
     'D W  W WW WW W  W D',
-    'DB#BB#B##B##B#BB#BD',
+    'D#################D',
   ],
   [
     'LLLLLLLLLLLLLLLLL',
@@ -470,7 +470,7 @@ class CannonballEntity extends GravityEntity {
   tick() {
     super.tick();
     this.timer++;
-    if (this.timer > 50 * 5) {
+    if (this.timer > 50 * 30) {
       var index = entities.indexOf(this);
       if (index >= 0) {
         entities.splice(index, 1);
@@ -503,7 +503,7 @@ class PigEntity extends GravityEntity {
     this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
-    this.cannonballs = 5;
+    this.cannonballs = 20 + Math.floor(Math.random() * 11);
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
