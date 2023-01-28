@@ -7,7 +7,7 @@ const FRICTION = 0.95;
 const DAMPING = 0.4;
 const DELTA = 0.1;
 const LEVELS = [];
-/* const LEVELS = [
+const LEVELS = [
   [
     'LLLLLLLLLLLLLLLLLLLL',
     'L                  L',
@@ -239,7 +239,7 @@ const LEVELS = [];
       '      RRR',
   ],
 ];
-*/
+
 var canvas = document.getElementById('screen');
 var ctx = canvas.getContext('2d');
 var entities = [];
@@ -1159,7 +1159,7 @@ function Draw() {
     ctx.restore();
   }
 }
-/*
+
 window.onkeydown = function(e) {
   if (!online.playing()) {
     return;
@@ -1229,8 +1229,3 @@ window.onresize = Resize;
 Resize();
 LoadPalette();
 LoadLevel(0);
-*/
-
-window.setInterval(Tick, 20);
-window.onresize = Resize;
-Resize();
