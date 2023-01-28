@@ -172,7 +172,7 @@ const LEVELS = [
     '       S                 E',
     'I I I InI I I I   I I I InI I I I',
     'IIIIIIInIIIIIII   IIIIIIInIIIIIII',
-    '  I    n    IsssssssI    n    I',
+    '  I    n    IWIsssIWI    n    I',
     '  I    n    IIIIIIIII    n    I',
     '  k    n    d       d    n    k',
     '  IH   n   yIIIIdIIIIH   n   yI',
