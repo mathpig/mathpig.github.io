@@ -141,17 +141,17 @@ const LEVELS = [
     'DDDDDDDDDDDDDDDDDDDDD',
   ],
   [
-    '                 JC                                 vx   ',
-    '                JKKC               yH              vwwx  ',
-    '               JKKKKC             yzzH            vwwwwx ',
+    '                 JC                                 vx',
+    '                JKKC               yH              vwwx',
+    '               JKKKKC             yzzH            vwwwwx',
     '              JKKKKKKC           yzzzzH          vwwwwwwx',
     '             JKKKKKKKKC          I    I          R      R',
     '             M        M          I    I   4      R      R',
     '             M        M          I    I  eGg     R      R',
     'DWDS         d        d       12 d    d  GGG  3  d     ER',
     'DDDGGNOOOOPGGMMMMMMMMMMGNOOOPGGGGIIIIIIGGGGGGGGGGRRRRRRRR',
-    '     DNOOPD            DDNOPDD                           ',
-    '     DDDDDD            DDDDDDD                           '
+    '     DNOOPD            DDNOPDD',
+    '     DDDDDD            DDDDDDD',
   ],
   [
     'yzzzEEzzzH',
@@ -164,9 +164,9 @@ const LEVELS = [
     'I      njjI',
     'I      nllI',
     'I      n  dS',
-    'IIIIIIIIIIIDNOOOOOPDI',
-    '          IDDNOOOPDDI',
-    '          IDDDDDDDDDI',
+    'IIIIIIIIIIIDNOOOOOPD',
+    '           DDNOOOPDD',
+    '           DDDDDDDDD',
   ],
   [
     '     S',
@@ -188,7 +188,7 @@ const LEVELS = [
     'R  R RRR R   R RRRR       RRRR R   R R   R R',
     'R RR  R  RR  R R          R    R   R RR RR R',
     'RRR   R  R R R R RR R R R R RR R   R  RRR  R',
-    'R RR  R  R R R R  R       R  R R   R   R    ',
+    'R RR  R  R R R R  R       R  R R   R   R',
     'R  R RRR R  RR RRRR       RRRR  RRR    R   E',
   ],
   [
@@ -446,6 +446,7 @@ class GravityEntity extends Entity {
     super.tick();
     this.vy += 0.2;
   }
+
   bouncable() {
     return true;
   }
@@ -503,7 +504,7 @@ class PigEntity extends GravityEntity {
     this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
-    this.cannonballs = (1 + Math.floor(Math.random() * 2)) * (20 + Math.floor(Math.random() * 11));
+    this.cannonballs = (1 + Math.floor(Math.random() * 3)) * (20 + Math.floor(Math.random() * 11));
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
