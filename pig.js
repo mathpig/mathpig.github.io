@@ -1159,7 +1159,7 @@ function Draw() {
     ctx.restore();
   }
 }
-
+/*
 window.onkeydown = function(e) {
   if (!online.playing()) {
     return;
@@ -1227,5 +1227,6 @@ window.onmousedown = function(e) {
 window.setInterval(Tick, 20);
 window.onresize = Resize;
 Resize();
+*/
 LoadPalette();
 LoadLevel(0);
