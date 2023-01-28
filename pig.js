@@ -1227,6 +1227,10 @@ window.onmousedown = function(e) {
 window.setInterval(Tick, 20);
 window.onresize = Resize;
 Resize();
-*/
 LoadPalette();
 LoadLevel(0);
+*/
+
+window.setInterval(Tick, 20);
+window.onresize = Resize;
+Resize();
