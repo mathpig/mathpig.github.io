@@ -518,7 +518,8 @@ class PigEntity extends GravityEntity {
     this.frameNum = 0;
     this.direction = 1;
     this.jump_limit = 0;
-    this.cannonballs = (1 + Math.floor(Math.random() * 3)) * (20 + Math.floor(Math.random() * 11));
+    this.cannonballs = 0;
+    //this.cannonballs = (1 + Math.floor(Math.random() * 3)) * (20 + Math.floor(Math.random() * 11));
     this.setSize(507 * 0.4, 256 * 0.4);
     this.playerNumber = 0;
     this.joystick = [0, 0, 0, 0];
