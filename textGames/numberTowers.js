@@ -162,7 +162,7 @@ async function main() {
               print("");
             }
         }
-        if (Math.random() < (2 * yourPower) / (3 * towers[tower][floor][i])) {
+        if (yourPower > towers[tower][floor][i]) {
           yourPower += towers[tower][floor][i];
           print("");
           print("You win this battle and gain " + towers[tower][floor][i] + " power! You now have " + yourPower + " power!");
@@ -202,7 +202,8 @@ async function main() {
 
   print("");
   print("");
-  print("You win! Swords and sandals wand passward hint: <= \"frawd\" =>");
+print("You win!");
+//print("Swords and sandals wand passward hint: <= \"frawd\" =>");
   print("Thank you for playing! :)");
   print("");
   await exit();
