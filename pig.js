@@ -8,6 +8,26 @@ const DAMPING = 0.4;
 const DELTA = 0.1;
 const LEVELS = [
   [
+    'RRRRRRRRRRRRRRRRRRRRR',
+    'R                   R',
+    'R         S         R',
+    'R R   R  RRR  R   R R',
+    'R RR RR R   R R   R R',
+    'R  RRR  R E R R   R R',
+    'R   R   R   R R   R R',
+    'R   R    RRR   BBB  R',
+    'R                   R',
+    'R  R R R RRR R   R  R',
+    'R  R R R  R  RR  R  R',
+    'R  R R R  R  R R R  R',
+    'R   B B   R  R R R  R',
+    'R   R R  RRR R  RR  R',
+    'R                   R',
+    'RBBBBBBBBBBBBBBBBBBBR',
+  ],
+];
+/*const LEVELS = [
+  [
     'LLLLLLLLLLLLLLLLLLLL',
     'L                  L',
     'L                  L',
@@ -259,7 +279,7 @@ const LEVELS = [
     'RBBBBBBBBBBBBBBBBBBBR',
   ],
 ];
-
+*/
 var canvas = document.getElementById('screen');
 var ctx = canvas.getContext('2d');
 var entities = [];
