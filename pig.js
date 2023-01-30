@@ -418,7 +418,8 @@ class Entity {
         e.vx = e.vx * FRICTION;
         e.vy = -e.vy * DAMPING;
       }
-    } else {
+    }
+    else {
       if (dx) {
         var t = e.vx;
         e.vx = this.vx;
