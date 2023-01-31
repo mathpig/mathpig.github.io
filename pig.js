@@ -271,7 +271,7 @@ const LEVELS = [
     'RRRRx       u       vRRRR',
     '    Rx   vwxuvwx   vR',
     '     R t   RRR   t R',
-    '       uR R R R Ru',
+    '       u  R R R  u',
     '       uRRRRRRRRRu',
     '       u         u',
     '     m u RRdddRR u m',
