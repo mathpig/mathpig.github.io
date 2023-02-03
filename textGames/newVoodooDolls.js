@@ -16,14 +16,11 @@ async function main() {
 
   print("");
   var playerCount = await get_int("How many players are there? ");
-  while (playerCount < 1 || playerCount > 36) {
-    playerCount = await get_int("How many players are there? (this is a 1-36 player game) ");
-  }
-  if (playerCount == 1) {
-    print("Note: 1 player only is possible, but is not recommended, and will be very dull because you will only have yourself to stick pins into. Proceed with caution.");
+  while (playerCount < 2 || playerCount > 36) {
+    playerCount = await get_int("How many players are there? (this is a 2-36 player game) ");
   }
   if (playerCount > 9) {
-    print("Note: More than 9 players is possible, but the game will take a long time and the map will display players with numbers greater than 9 as letters instead.")
+    print("Note: More than 9 players is possible, but the game will take a long time and the map will display players with numbers greater than 9 as letters or other non-digit characters instead.")
   }
   var boardStyle = Math.ceil(Math.sqrt(playerCount));
 
@@ -236,13 +233,13 @@ async function main() {
           var player = await get_int("Enter the player you would like to take the voice of: ");
           while (player < 1 || player > playerCount) {
             player = await get_int("Please enter a valid player. Try again. ");
-            if (teams[player - 1] == teams[turn]) {
-              print("You idiot! It could have been anybody else! Why, why!!!");
-            }
-            if (!stats[player - 1][2]) {
-              voicelessPlayers.push(player);
-              stats[player - 1][2] = true;
-            }
+          }
+          if (teams[player - 1] == teams[turn]) {
+            print("You idiot! It could have been anybody else! Why, why!!!");
+          }
+          if (!stats[player - 1][2]) {
+            voicelessPlayers.push(player);
+            stats[player - 1][2] = true;
           }
         }
         else if (card == 3) {
