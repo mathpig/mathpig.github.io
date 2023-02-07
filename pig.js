@@ -26,11 +26,11 @@ const LEVELS = [
   ],
   [
     ' S',
-    'RRR  RRR  RR  RR  RR  RRR',
-    'REER R  R R  R   R    R  R',
-    'RRR  RRR  RR  RR  RR  RRR',
-    'R    R R  R     R   R R',
-    'R    R  R RR  RR  RR  R',
+    'RRR  RRR  RR  RR  RR   RRR',
+    'REER R  R R  R   R     R  R',
+    'RRR  RRR  RR  RR  RR   RRR',
+    'R    R R  R     R   R  R',
+    'R    R  R RR  RR  RR   R',
   ],
   [
     '#LLLLLLLLLLLLLLLLL#',
