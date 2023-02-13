@@ -1,10 +1,13 @@
 'use strict';
 
 async function main() {
+  var playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
+  while (playerCount < 2 || playerCount > 9) {
+    playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
+  }
   var skipping = {};
-  var controlled = [false, false, false, false, false, false, false, false, false];
   var length = 0;
-  var speed = 1;
+  var speed = 1.5;
 
   async function typeSlow(message) {
     for (var i = 0; i < message.length; ++i) {
@@ -18,18 +21,21 @@ async function main() {
   function generateSenate() {
     var seats = [];
     for (var i = 0; i < randint(35, 50); ++i) {
-      seats.push(randint(1, 9));
+      seats.push(randint(1, playerCount));
     }
     return seats;
   }
 
   function checkPlayers(seats) {
-    var seen = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var seen = [];
+    for (var i = 0; i < playerCount; ++i) {
+      seen.push(0);
+    }
     for (var i = 0; i < seats.length; ++i) {
       seen[seats[i] - 1]++;
     }
-    for (var i = 0; i < 9; ++i) {
-      if (seen[i] < Math.floor(seats.length / 9) || seen[i] > Math.ceil(seats.length / 9)) {
+    for (var i = 0; i < playerCount; ++i) {
+      if (seen[i] < Math.floor(seats.length / playerCount) || seen[i] > Math.ceil(seats.length / playerCount)) {
         return false;
       }
     }
@@ -37,6 +43,7 @@ async function main() {
   }
 
   function generateGoodSenate() {
+    console.log(checkPlayers([1, 1, 1, 2, 2, 2]));
     var seats = generateSenate();
     while (!checkPlayers(seats)) {
       seats = generateSenate();
@@ -53,10 +60,11 @@ async function main() {
     return (s == "y" || s == "yes");
   }
 
-  for (var i = 1; i < 10; ++i) {
+  var controlled = [];
+  for (var i = 1; i < (playerCount + 1); ++i) {
     print("");
     var response = await get_string("Would you like player " + i + " to be automated? ");
-    controlled[i - 1] = checkTruth(response);
+    controlled.push(checkTruth(response));
   }
 
   function checkVictory(turn) {
