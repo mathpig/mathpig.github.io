@@ -13,7 +13,11 @@ const COLORS = [
   'blue',
   'purple',
   'cyan',
-  'white'
+  'white',
+  'pink',
+  'brown',
+  'orange',
+  'gray'
 ];
 
 var fg_color, bg_color;
