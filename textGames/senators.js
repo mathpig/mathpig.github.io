@@ -223,7 +223,7 @@ async function main() {
         if (seats[convert(i + 1)] != seats[i] && seats[convert(i + 1)] != 0) {
           commands.push("knife right");
         }
-        if (countPlayers(seats[i]) >= 3 && (aliveCount() * 2) >= seats.length) {
+        if (countPlayers(seats[i]) >= 3 && (aliveCount() * 2) >= seats.length && (countPlayers(seats[i]) * 2) <= aliveCount()) {
           commands.push("grenade");
         }
         if (command == "skip" || randint(0, 1) == 0) {
