@@ -2,7 +2,7 @@
 
 async function main() {
   var playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
-  while (playerCount < 1 || playerCount > 9) {
+  while (playerCount < 2 || playerCount > 9) {
     playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
   }
   var skipping = {};
