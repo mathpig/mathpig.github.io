@@ -2,7 +2,7 @@
 
 async function main() {
   var playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
-  while (playerCount < 2 || playerCount > 9) {
+  while (playerCount < 1 || playerCount > 9) {
     playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
   }
   var skipping = {};
@@ -234,6 +234,9 @@ async function main() {
         if (countPlayers(seats[i]) >= 3 && (aliveCount() * 2) >= seats.length && (countPlayers(seats[i]) * 2) <= aliveCount()) {
           commands.push("grenade");
         }
+        if (countPlayers(seats[i]) >= 5) {
+          commands.push("sacrifice");
+        }
         if (command == "skip" || randint(0, 1) == 0) {
           command = commands[randint(0, (commands.length - 1))];
         }
@@ -245,7 +248,7 @@ async function main() {
       }
       else {
         var command = await get_string("Enter your command: ");
-        while (command != "victory" && command != "knife left" && command != "knife right" && command != "skip" && command != "bomb left" && command != "bomb center" && command != "bomb right" && command != "raise" && command != "pistol" && command != "grenade") {
+        while (command != "victory" && command != "knife left" && command != "knife right" && command != "skip" && command != "bomb left" && command != "bomb center" && command != "bomb right" && command != "raise" && command != "pistol" && command != "grenade" && command != "sacrifice") {
           command = await get_string("Enter your command (\"victory\", \"knife left\", \"knife right\", \"bomb left\", \"bomb center\", \"bomb right\", \"raise\", \"pistol\", \"grenade\", or \"skip\"): ");
         }
       }
@@ -357,6 +360,21 @@ async function main() {
           length++;
         }
         await sleep(speed);
+      }
+      else {
+        for (var j = 0; j < 50000; ++j) {
+          var val = randint(0, seats.length - 1);
+          if (seats[val] > 0 && seats[val] != seats[i]) {
+            break;
+          }
+        }
+        if (seats[val] > 0 && seats[val] != seats[i]) {
+          kill(i);
+          kill(val);
+          printSenate(val);
+          await sleep(speed);
+        }
+        kill(i);
       }
     }
   }
