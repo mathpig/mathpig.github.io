@@ -5,15 +5,15 @@ async function main() {
     var health = [];
 
     print("");
-    var rows = await get_int("How many lanes? ");
+    var rows = await get_int(" How many lanes? ");
     while (rows < 1 || rows > 9) {
-        rows = await get_int("How many rows (1-9)? ");
+        rows = await get_int(" How many rows (1-9)? ");
     }
 
     print("");
-    var boardSize = await get_int("How large a board? ");
-    while (boardSize < 3 || boardSize > 25) {
-        boardSize = await get_int("How large a board (3-25)? ");
+    var boardSize = await get_int(" How large a board? ");
+    while (boardSize < 3 || boardSize > 30) {
+        boardSize = await get_int(" How large a board (3-30)? ");
     }
 
     for (var i = 0; i < rows; ++i) {
@@ -322,6 +322,8 @@ async function main() {
                 mana -= 2;
                 castleHealth += Math.round(2680 * Math.pow(0.7, uses))
                 uses++;
+                printCastle();
+                await sleep(0.5);
             }
         }
 
@@ -343,7 +345,7 @@ async function main() {
         }
         else if (enemyMana >= 2 && randint(0, 11) == 0) {
             print("");
-            print(" The enemy fortified!");
+            print(" The enemy fortifies!");
             enemyMana -= 2;
             enemyHealth += Math.round(2680 * Math.pow(0.7, enemyUses));
             enemyUses++;
