@@ -25,10 +25,10 @@ async function main() {
         }
     }
 
-    var troopName = {"DWF": "dwarf", "WAR": "warrior", "GLM": "golem", "DRY": "dryad", "HLW": "hollow knight", "ORC": "orc warrior", "BLC": "black knight"};
-    var troopMana = {"DWF": 2, "WAR": 3, "GLM": 4, "DRY": 4, "HLW": 4, "ORC": 5, "BLC": 10};
-    var troopHealth = {"DWF": 818, "WAR": 515, "GLM": 1718, "DRY": 536, "HLW": 1823, "ORC": 1394, "BLC": 1823};
-    var troopAttack = {"DWF": 54, "WAR": 129, "GLM": 70, "DRY": 151, "HLW": 193, "ORC": 151, "BLC": 526};
+    var troopName = {"DWF": "dwarf", "WAR": "warrior", "UNC": "unchained demon", "GLM": "golem", "DRY": "dryad", "HLW": "hollow knight", "ORC": "orc warrior", "BLC": "black knight"};
+    var troopMana = {"DWF": 2, "WAR": 3, "UNC": 3, "GLM": 4, "DRY": 4, "HLW": 4, "ORC": 5, "BLC": 10};
+    var troopHealth = {"DWF": 818, "WAR": 515, "UNC": 1180, "GLM": 1718, "DRY": 536, "HLW": 1823, "ORC": 1394, "BLC": 1823};
+    var troopAttack = {"DWF": 54, "WAR": 129, "UNC": 279, "GLM": 70, "DRY": 151, "HLW": 193, "ORC": 151, "BLC": 526};
 
     var internals = [];
     for (var i = 0; i < rows; ++i) {
@@ -41,7 +41,9 @@ async function main() {
     var mana = 0;
     var maxMana = 1;
     var manaCounter = 0;
+    var manaPunishment = 0;
     var enemyMana = 0;
+    var enemyManaPunishment = 0;
     var castleHealth = 8869;
     var enemyHealth = 8869;
     var uses = 0;
@@ -119,7 +121,7 @@ async function main() {
     print("");
 
     while (true) {
-        if (mana < 2) {
+        if (mana < (2 + manaPunishment)) {
             await sleep(1);
         }
 
@@ -175,6 +177,9 @@ async function main() {
                     health[i][j + 1] -= troopAttack[castle[i][j][1] + castle[i][j][2] + castle[i][j][3]];
                     if (health[i][j + 1] <= 0) {
                         health[i][j + 1] = 0;
+                        if (castle[i][j + 1] == "-UNC ") {
+                            enemyManaPunishment -= 3;
+                        }
                         if (castle[i][j + 1] == "-HLW ") {
                             castle[i][j + 1] = " HLW+";
                             health[i][j + 1] = 1823;
@@ -191,6 +196,9 @@ async function main() {
                 health[i][0] -= randint(2, 3) * troopAttack[internals[i][0][1] + internals[i][0][2] + internals[i][0][3]];
                 if (health[i][0] <= 0) {
                     health[i][0] = 0;
+                    if (castle[i][0] == "-UNC "){
+                        enemyManaPunishment -= 3;
+                    }
                     if (castle[i][0] == "-HLW ") {
                         castle[i][0] = " HLW+";
                         health[i][0] = 1823;
@@ -207,6 +215,9 @@ async function main() {
                     health[i][j - 1] -= troopAttack[castle[i][j][1] + castle[i][j][2] + castle[i][j][3]];
                     if (health[i][j - 1] <= 0) {
                         health[i][j - 1] = 0;
+                        if (castle[i][j - 1] == " UNC+") {
+                            manaPunishment -= 3;
+                        }
                         if (castle[i][j - 1] == " HLW+") {
                             castle[i][j - 1] = "-HLW ";
                             health[i][j - 1] = 1823;
@@ -223,6 +234,9 @@ async function main() {
                 health[i][boardSize - 1] -= randint(2, 3) * troopAttack[internals[i][1][1] + internals[i][1][2] + internals[i][1][3]];
                 if (health[i][boardSize - 1] <= 0) {
                     health[i][boardSize - 1] = 0;
+                    if (castle[i][boardSize - 1] == " UNC+") {
+                        manaPunishment -= 3;
+                    }
                     if (castle[i][boardSize - 1] == " HLW+") {
                         castle[i][boardSize - 1] = "-HLW ";
                         health[i][boardSize - 1] = 1823;
@@ -285,8 +299,11 @@ async function main() {
         }
 
         var ans = "";
-        if (mana >= 2) {
+        if (mana >= (2 + manaPunishment)) {
             ans = await get_string(" Spawn troop? ");
+        }
+        else if (mana >= 2) {
+            print("You cannot do anything with this amount of mana due to the mana penalty incurred by your living unchained demon(s).")
         }
         if (ans == "y" || ans == "yes") {
             var lane = await get_int(" Which lane? ");
@@ -299,11 +316,14 @@ async function main() {
             else {
                 var displayMessage = true;
                 for (i in troopName) {
-                    if (mana >= troopMana[i] && (i != "DRY" || randint(0, 1) == 0) && (i != "HLW" || randint(0, 7) == 0)) {
+                    if (mana >= (troopMana[i] + manaPunishment) && (i != "DRY" || randint(0, 1) == 0) && (i != "HLW" || randint(0, 7) == 0)) {
                         var spawn = await get_string(" Spawn " + troopName[i] + "? ");
                         if (spawn == "y" || spawn == "yes") {
                             internals[lane - 1][0] = " " + i + "+";
-                            mana -= troopMana[i];
+                            mana -= (troopMana[i] + manaPunishment);
+                            if (i == "UNC") {
+                                manaPunishment += 3;
+                            }
                             printCastle();
                             await sleep(0.5);
                             displayMessage = false;
@@ -316,10 +336,10 @@ async function main() {
                 }
             }
         }
-        else if (mana >= 2 && randint(0, 1) == 0) {
+        else if (mana >= (2 + manaPunishment) && randint(0, 1) == 0) {
             var fortify = await get_string(" Fortify? ")
             if (fortify == "y" || fortify == "yes") {
-                mana -= 2;
+                mana -= (2 + manaPunishment);
                 castleHealth += Math.round(2680 * Math.pow(0.7, uses))
                 uses++;
                 printCastle();
@@ -329,24 +349,30 @@ async function main() {
 
         var possibilities = [];
         for (i in troopName) {
-            if (troopMana[i] <= enemyMana) {
+            if ((troopMana[i] + enemyManaPunishment) <= enemyMana) {
                 possibilities.push(i);
+                if (i != "UNC") {
+                    possibilities.push(i);
+                }
             }
         }
         var lane = randint(0, rows - 1);
         if (internals[lane][1] == " --- " && possibilities.length > 0 && randint(0, 3) == 0) {
             var val = possibilities[randint(0, possibilities.length - 1)];
             internals[lane][1] = "-" + val + " ";
-            enemyMana -= troopMana[val];
+            enemyMana -= (troopMana[val] + enemyManaPunishment);
+            if (val == "UNC") {
+                enemyManaPunishment += 3;
+            }
             print("");
             print(" The enemy spawns a(n) " + troopName[val] + "!");
             printCastle();
             await sleep(0.5);
         }
-        else if (enemyMana >= 2 && randint(0, 11) == 0) {
+        else if (enemyMana >= (2 + enemyManaPunishment) && randint(0, 11) == 0) {
             print("");
             print(" The enemy fortifies!");
-            enemyMana -= 2;
+            enemyMana -= (2 + enemyManaPunishment);
             enemyHealth += Math.round(2680 * Math.pow(0.7, enemyUses));
             enemyUses++;
             printCastle();
