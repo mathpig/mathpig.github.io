@@ -316,7 +316,7 @@ async function main() {
             else {
                 var displayMessage = true;
                 for (i in troopName) {
-                    if (mana >= (troopMana[i] + manaPunishment) && (i != "DRY" || randint(0, 1) == 0) && (i != "HLW" || randint(0, 7) == 0)) {
+                    if (mana >= (troopMana[i] + manaPunishment) && (i != "UNC" || randint(0, 3) == 0) && (i != "DRY" || randint(0, 1) == 0) && (i != "HLW" || randint(0, 7) == 0) && (i != "BLC" || randint(0, 3) == 0)) {
                         var spawn = await get_string(" Spawn " + troopName[i] + "? ");
                         if (spawn == "y" || spawn == "yes") {
                             internals[lane - 1][0] = " " + i + "+";
