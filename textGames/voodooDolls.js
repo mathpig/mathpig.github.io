@@ -170,7 +170,7 @@ async function main() {
   var turn = 0;
 
   print("")
-  await Print("Would you like an introduction to the game to become aquainted with the rules? ", "");
+  print("Would you like an introduction to the game to become aquainted with the rules? ", "");
   var introduction = await get_string("");
   if (introduction == "y" || introduction == "yes") {
     await Print("");
