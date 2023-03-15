@@ -7,7 +7,7 @@ async function main() {
     print("");
     var rows = await get_int(" How many lanes? ");
     while (rows < 1 || rows > 9) {
-        rows = await get_int(" How many rows (1-9)? ");
+        rows = await get_int(" How many lanes (1-9)? ");
     }
 
     print("");

@@ -361,7 +361,7 @@ async function main() {
         }
         await sleep(speed);
       }
-      else {
+      else if (command == "sacrifice") {
         for (var j = 0; j < 50000; ++j) {
           var val = randint(0, seats.length - 1);
           if (seats[val] > 0 && seats[val] != seats[i]) {
