@@ -43,7 +43,6 @@ async function main() {
   }
 
   function generateGoodSenate() {
-    console.log(checkPlayers([1, 1, 1, 2, 2, 2]));
     var seats = generateSenate();
     while (!checkPlayers(seats)) {
       seats = generateSenate();
