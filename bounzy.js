@@ -1,5 +1,3 @@
-// Tis' a marvel, to have persevered so! Here is the final clue: "The treasure lies within the velocity of thy ships' second ironweight. Follow it from the wizards' hold to victory, with the ancient rules of the voodoo dolls inlaid."
-
 'use strict';
 
 var screen = document.getElementById('screen');

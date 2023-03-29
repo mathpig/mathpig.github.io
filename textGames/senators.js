@@ -5,9 +5,13 @@ async function main() {
   while (playerCount < 2 || playerCount > 9) {
     playerCount = await get_int("How many players (2-9, 9 recommended, just make some of the players npcs)? ");
   }
+  var speed = 1.5;
+  var instantGame = await get_string("Would you like everything to happen instantaneously? ");
+  if (instantGame == "y" || instantGame == "yes") {
+    speed = 0;
+  }
   var skipping = {};
   var length = 0;
-  var speed = 1.5;
 
   async function typeSlow(message) {
     for (var i = 0; i < message.length; ++i) {
