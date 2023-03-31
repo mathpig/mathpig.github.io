@@ -25,6 +25,8 @@ async function main() {
   var boardStyle = Math.ceil(Math.sqrt(playerCount));
 
   print("");
+  print("Warning: Blessings and curses spread across all players on a team, so placing too many players on a single team will make the game extremely chaotic and imbalanced.");
+  print("");
 
   for (var i = 0; i < playerCount; ++i) {
     coordinates.push(0);
