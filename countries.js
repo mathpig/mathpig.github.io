@@ -64,7 +64,7 @@ for (var i = 0; i < countries; ++i) {
     names.push("The Republic of " + val);
   }
   else if (num == 4) {
-    names.push("The Sultnate of " + val);
+    names.push("The Sultanate of " + val);
   }
   else if (num == 5) {
     names.push("The Realm of " + val);
