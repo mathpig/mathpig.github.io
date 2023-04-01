@@ -14,8 +14,8 @@ var image = ctx2.createImageData(width, height);
 
 var pixelSize = 1;
 
-var countries = 7;
-var leaderboardSize = 20;
+var countries = 360000;
+var leaderboardSize = 25;
 
 var count = 0;
 
@@ -30,16 +30,11 @@ function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
 
-const COLORS = [
-  [0, 0, 0],
-  [255, 0, 0],
-  [0, 255, 0],
-  [255, 255, 0],
-  [0, 0, 255],
-  [255, 0, 255],
-  [0, 255, 255],
-  [255, 255, 255],
-];
+const COLORS = [[0, 0, 0]];
+
+for (var i = 0; i < countries; ++i) {
+  COLORS.push([randint(0, 255), randint(0, 255), randint(0, 255)]);
+}
 
 const WORDS = ["Guy", "Slavan", "Scuttles", "Regindol", "Mosquito", "Sylvia", "Hades", "Hoppers",
                "Rubs", "Salmon", "Tobacco", "Iesus", "Funshin", "Gunshin", "Gin", "Mocha",
@@ -148,7 +143,7 @@ clearScreen();
 function Tick() {
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      copyMap[i][j] = selectColor(gameMap, height, width, i, j, randint(1, 2));
+      copyMap[i][j] = selectColor(gameMap, height, width, i, j, 1);
     }
   }
   for (var i = 0; i < height; ++i) {
@@ -160,7 +155,7 @@ function Tick() {
   printMap(gameMap, height, width);
   printScores(gameMap, height, width, count, countries, names, leaderboardSize);
   if (!hasWon(gameMap, height, width)) {
-    setTimeout(Tick, 30);
+    setTimeout(Tick, 1);
   }
 }
 
@@ -175,10 +170,13 @@ function reformat(num, characters) {
 }
 
 function printScores(m, height, width, count, countries, names, leaderboardSize) {
-  scoreboard.innerHTML = ("<br/>Days past: " + count + " (about " + Math.floor(count / 365.25) + " year(s))<br/>Countries left: " + countries + "<br/><br/>");
   var score = scores(m, height, width);
+  scoreboard.innerHTML = ("<br/>Days past: " + count + " (about " + Math.floor(count / 365.25) + " year(s))<br/>Countries left: " + score.length + "<br/><br/>");
   for (var i = 0; i < score.slice(0, leaderboardSize).length; ++i) {
     scoreboard.innerHTML += ((i + 1) + ": ")
+    if (i < 9) {
+      scoreboard.innerHTML += "&nbsp;";
+    }
     var val = score[i][1];
     scoreboard.innerHTML += '<span style="background-color: rgb(' + COLORS[val].join(',') + ')">&nbsp;&nbsp;</span> ';
     var n = Math.round(score[i][0] * 100000 / height / width);
