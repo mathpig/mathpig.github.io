@@ -214,6 +214,17 @@ function hasWon(m, height, width) {
   return true;
 }
 
+function deleteCountry(m, height, width, country) {
+  for (var i = 0; i < height; ++i) {
+    for (var j = 0; j < width; ++j) {
+      if (m[i][j] == country) {
+        m[i][j] = 0;
+      }
+    }
+  }
+  return m;
+}
+
 function Tick() {
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
@@ -224,6 +235,9 @@ function Tick() {
     for (var j = 0; j < width; ++j) {
       gameMap[i][j] = copyMap[i][j];
     }
+  }
+  if (randint(0, 99) == 0) {
+    gameMap = deleteCountry(gameMap, height, width, randint(0, countries - 1));
   }
   count++;
   printMap(gameMap, height, width);
