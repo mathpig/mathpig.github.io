@@ -109,7 +109,7 @@ for (var i = 0; i < countries; ++i) {
   gameMap[x][y] = (i + 1);
 }
 
-function printMap(m, height, width, count, countries, names, leaderboardSize) {
+function printMap(m, height, width, countries, names, leaderboardSize) {
   if (mouseX >= 0) {
     selection = m[mouseY][mouseX];
     scoreSelection = 0;
@@ -152,7 +152,12 @@ function printMap(m, height, width, count, countries, names, leaderboardSize) {
                 pixelSize, pixelSize, width * pixelSize, height * pixelSize);
 }
 
-function selectColor(m, height, width, i, j, minSize, maxSize, goAgain = true) {
+function selectColor(m, height, width, i, j) {
+  var minSize = 1;
+  var maxSize = 2;
+  if (count < 240) {
+    maxSize = 50 - Math.floor(count / 5);
+  }
   if (m[i][j] == -1) {
     return -1;
   }
@@ -162,14 +167,7 @@ function selectColor(m, height, width, i, j, minSize, maxSize, goAgain = true) {
   do {
     var y = randint(j - randint(minSize, maxSize), j + randint(minSize, maxSize));
   } while (y < 0 || y >= width);
-  if (m[x][y] == 0) {
-    return m[i][j];
-  }
-  if (m[x][y] == -1 && goAgain) {
-    var val = Math.round(Math.sqrt(randint(1, 2500)));
-    return selectColor(m, height, width, i, j, 1, val, false);
-  }
-  if (m[x][y] == -1) {
+  if (m[x][y] <= 0) {
     return m[i][j];
   }
   return m[x][y];
@@ -191,7 +189,7 @@ clearScreen();
 function Tick() {
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      copyMap[i][j] = selectColor(gameMap, height, width, i, j, 1, 1);
+      copyMap[i][j] = selectColor(gameMap, height, width, i, j);
     }
   }
   for (var i = 0; i < height; ++i) {
