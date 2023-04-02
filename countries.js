@@ -178,8 +178,8 @@ function selectColor(m, height, width, i, j) {
   }
   while (y < 0 || y >= width);
   if (m[x][y] == -1 && randint(0, 100) == 0) {
-    var x = randint(i - 50, i + 50);
-    var y = randint(j - 50, j + 50);
+    var x = randint(i - 100, i + 100);
+    var y = randint(j - 100, j + 100);
     if (x < 0 || x >= height || y < 0 || y >= width || m[x][y] <= 0) {
       return m[i][j];
     }
