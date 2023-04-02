@@ -14,8 +14,8 @@ var image = ctx2.createImageData(width, height);
 
 var pixelSize = 1;
 
-var countries = 360000;
-var leaderboardSize = 100;
+var countries = 100;
+var leaderboardSize = 25;
 
 var count = 0;
 
@@ -229,8 +229,9 @@ function scores(m, height, width) {
 }
 
 map.onmousemove = function(e) {
-  mouseX = Math.max(0, Math.min(width - 1, Math.floor(e.clientX / pixelSize) - 1));
-  mouseY = Math.max(0, Math.min(height - 1, Math.floor(e.clientY / pixelSize) - 1));
+  var rect = e.target.getBoundingClientRect();
+  mouseX = Math.max(0, Math.min(width - 1, Math.floor((e.clientX - rect.left) / pixelSize) - 1));
+  mouseY = Math.max(0, Math.min(height - 1, Math.floor((e.clientY - rect.top) / pixelSize) - 1));
 };
 
 map.onmouseleave = function(e) {
