@@ -15,9 +15,14 @@ var image = ctx2.createImageData(width, height);
 var pixelSize = 1;
 
 var countries = 360000;
-var leaderboardSize = 25;
+var leaderboardSize = 100;
 
 var count = 0;
+
+var selection = 0;
+
+var mouseX = -1;
+var mouseY = 0;
 
 function clearScreen() {
   map.width = pixelSize * (width + 2);
@@ -95,6 +100,16 @@ for (var i = 0; i < countries; ++i) {
 }
 
 function printMap(m, height, width, count, countries, names, leaderboardSize) {
+  if (mouseX >= 0) {
+    selection = m[mouseY][mouseX];
+  }
+  else {
+    selection = 0;
+  }
+  if (selection) {
+    var old = COLORS[selection];
+    COLORS[selection] = [255, 255, 255];
+  }
   var pos = 0;
   var data = image.data;
   for (var i = 0; i < height; ++i) {
@@ -105,6 +120,9 @@ function printMap(m, height, width, count, countries, names, leaderboardSize) {
       data[pos++] = col[2];
       data[pos++] = 255;
     }
+  }
+  if (selection) {
+    COLORS[selection] = old;
   }
   ctx2.putImageData(image, 0, 0);
   ctx.imageSmoothingEnabled = false;
@@ -178,7 +196,8 @@ function printScores(m, height, width, count, countries, names, leaderboardSize)
       scoreboard.innerHTML += "&nbsp;";
     }
     var val = score[i][1];
-    scoreboard.innerHTML += '<span style="background-color: rgb(' + COLORS[val].join(',') + ')">&nbsp;&nbsp;</span> ';
+    var col = val == selection ? [255, 255, 255] : COLORS[val];
+    scoreboard.innerHTML += '<span style="background-color: rgb(' + col + ')">&nbsp;&nbsp;</span> ';
     var n = Math.round(score[i][0] * 100000 / height / width);
     scoreboard.innerHTML += (" [" + reformat(Math.floor(n / 1000), 2) + "." + reformat(n % 1000, 3) + "%. This country is also known as " + names[val] + ".]<br/>");
   }
@@ -205,3 +224,12 @@ function scores(m, height, width) {
   result.reverse();
   return result;
 }
+
+map.onmousemove = function(e) {
+  mouseX = Math.max(0, Math.min(width - 1, Math.floor(e.clientX / pixelSize) - 1));
+  mouseY = Math.max(0, Math.min(height - 1, Math.floor(e.clientY / pixelSize) - 1));
+};
+
+map.onmouseleave = function(e) {
+  mouseX = -1;
+};
