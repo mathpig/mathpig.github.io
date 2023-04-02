@@ -2,8 +2,8 @@
 
 var ctx = map.getContext('2d');
 
-var height = 450;
-var width = 800;
+var height = 225;
+var width = 400;
 
 var canvas = document.createElement('canvas');
 canvas.display = 'none';
@@ -12,13 +12,14 @@ canvas.height = height;
 var ctx2 = canvas.getContext('2d');
 var image = ctx2.createImageData(width, height);
 
-var pixelSize = 1;
+var pixelSize = 2;
 
 var countries = 100;
 var leaderboardSize = 25;
 
 var count = 0;
 
+var scoreSelection = 0;
 var selection = 0;
 
 var mouseX = -1;
@@ -102,9 +103,14 @@ for (var i = 0; i < countries; ++i) {
 function printMap(m, height, width, count, countries, names, leaderboardSize) {
   if (mouseX >= 0) {
     selection = m[mouseY][mouseX];
+    scoreSelection = 0;
+  }
+  else if (scoreSelection >= 0) {
+    selection = scoreSelection;
   }
   else {
     selection = 0;
+    scoreSelection = 0;
   }
   if (selection) {
     var old = COLORS[selection];
@@ -200,10 +206,19 @@ function printScores(m, height, width, count, countries, names, leaderboardSize)
     }
     var val = score[i][1];
     var col = val == selection ? [255, 255, 255] : COLORS[val];
-    scoreboard.innerHTML += '<span style="background-color: rgb(' + col + ')">&nbsp;&nbsp;</span> ';
+    scoreboard.innerHTML += '<span onmouseenter="PlayerEnter(event)" onmousemove="PlayerMove(event)"' +
+                            'data-player="' + val + '" style="cursor: pointer; background-color: rgb(' + col + ')">&nbsp;&nbsp;</span> ';
     var n = Math.round(score[i][0] * 100000 / height / width);
     scoreboard.innerHTML += (" [" + reformat(Math.floor(n / 1000), 2) + "." + reformat(n % 1000, 3) + "%. This country is also known as " + names[val] + ".]<br/>");
   }
+}
+
+function PlayerEnter(e) {
+  scoreSelection = e.target.dataset.player;
+}
+
+function PlayerMove(e) {
+  e.stopPropagation();
 }
 
 function scores(m, height, width) {
@@ -236,4 +251,8 @@ map.onmousemove = function(e) {
 
 map.onmouseleave = function(e) {
   mouseX = -1;
+};
+
+document.onmousemove = function(e) {
+  scoreSelection = 0;
 };
