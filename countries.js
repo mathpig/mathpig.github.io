@@ -14,7 +14,7 @@ var image = ctx2.createImageData(width, height);
 
 var pixelSize = 1;
 
-var countries = 100;
+var countries = 193;
 var leaderboardSize = 25;
 
 var count = 0;
