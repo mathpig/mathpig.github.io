@@ -121,7 +121,8 @@ function Init() {
 
 if (earth.complete) {
   Init();
-} else {
+}
+else {
   earth.onload = Init;
 }
 
@@ -189,8 +190,8 @@ function selectColor(m, height, width, i, j) {
   }
   while (y < 0 || y >= width);
   if (m[x][y] == -1 && randint(0, 100) == 0) {
-    var x = randint(i - 100, i + 100);
-    var y = randint(j - 100, j + 100);
+    var x = randint(i - 150, i + 150);
+    var y = randint(j - 150, j + 150);
     if (x < 0 || x >= height || y < 0 || y >= width || m[x][y] <= 0) {
       return m[i][j];
     }
