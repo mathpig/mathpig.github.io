@@ -25,6 +25,10 @@ var selection = 0;
 var mouseX = -1;
 var mouseY = 0;
 
+var gameMap = [];
+var copyMap = [];
+var land = 0;
+
 function clearScreen() {
   map.width = pixelSize * (width + 2);
   map.height = pixelSize * (height + 2);
@@ -78,40 +82,47 @@ for (var i = 0; i < countries; ++i) {
   }
 }
 
-var worldMapCanvas = document.createElement("canvas");
-var worldMapContext = worldMapCanvas.getContext("2d");
-worldMapCanvas.width = earth.width;
-worldMapCanvas.height = earth.height;
-worldMapContext.drawImage(earth, 0, 0);
-var worldData = worldMapContext.getImageData(0, 0, earth.width, earth.height).data;
+function Init() {
+  var worldMapCanvas = document.createElement("canvas");
+  var worldMapContext = worldMapCanvas.getContext("2d");
+  worldMapCanvas.width = earth.width;
+  worldMapCanvas.height = earth.height;
+  worldMapContext.drawImage(earth, 0, 0);
+  var worldData = worldMapContext.getImageData(0, 0, earth.width, earth.height).data;
 
-var gameMap = [];
-var copyMap = [];
-var land = 0;
-
-for (var i = 0; i < height; ++i) {
-  var ii = Math.floor(i * (worldMapCanvas.height - 1) / (height - 1));
-  gameMap.push([]);
-  copyMap.push([]);
-  for (var j = 0; j < width; ++j) {
-    var jj = Math.floor(j * (worldMapCanvas.width - 1) / (width - 1));
-    var on = worldData[4 * (ii * worldMapCanvas.width + jj)] ? 0 : -1;
-    if (!on) {
-      land++;
+  for (var i = 0; i < height; ++i) {
+    var ii = Math.floor(i * (worldMapCanvas.height - 1) / (height - 1));
+    gameMap.push([]);
+    copyMap.push([]);
+    for (var j = 0; j < width; ++j) {
+      var jj = Math.floor(j * (worldMapCanvas.width - 1) / (width - 1));
+      var on = worldData[4 * (ii * worldMapCanvas.width + jj)] ? 0 : -1;
+      if (!on) {
+        land++;
+      }
+      gameMap[i].push(on);
+      copyMap[i].push(0);
     }
-    gameMap[i].push(on);
-    copyMap[i].push(0);
   }
+
+  for (var i = 0; i < countries; ++i) {
+    var x = randint(0, height - 1);
+    var y = randint(0, width - 1);
+    while (gameMap[x][y] != 0) {
+      x = randint(0, height - 1);
+      y = randint(0, width - 1);
+    }
+    gameMap[x][y] = (i + 1);
+  }
+
+  clearScreen();
+  setTimeout(Tick, 30);
 }
 
-for (var i = 0; i < countries; ++i) {
-  var x = randint(0, height - 1);
-  var y = randint(0, width - 1);
-  while (gameMap[x][y] != 0) {
-    x = randint(0, height - 1);
-    y = randint(0, width - 1);
-  }
-  gameMap[x][y] = (i + 1);
+if (earth.complete) {
+  Init();
+} else {
+  earth.onload = Init;
 }
 
 function printMap(m, height, width, countries, names, leaderboardSize) {
@@ -201,8 +212,6 @@ function hasWon(m, height, width) {
   return true;
 }
 
-clearScreen();
-
 function Tick() {
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
@@ -221,8 +230,6 @@ function Tick() {
     setTimeout(Tick, 1);
   }
 }
-
-setTimeout(Tick, 30);
 
 function reformat(num, characters) {
   num = num.toString();
