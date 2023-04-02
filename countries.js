@@ -87,6 +87,7 @@ var worldData = worldMapContext.getImageData(0, 0, earth.width, earth.height).da
 
 var gameMap = [];
 var copyMap = [];
+var land = 0;
 
 for (var i = 0; i < height; ++i) {
   var ii = Math.floor(i * (worldMapCanvas.height - 1) / (height - 1));
@@ -94,7 +95,11 @@ for (var i = 0; i < height; ++i) {
   copyMap.push([]);
   for (var j = 0; j < width; ++j) {
     var jj = Math.floor(j * (worldMapCanvas.width - 1) / (width - 1));
-    gameMap[i].push(worldData[4 * (ii * worldMapCanvas.width + jj)] ? 0 : -1);
+    var on = worldData[4 * (ii * worldMapCanvas.width + jj)] ? 0 : -1;
+    if (!on) {
+      land++;
+    }
+    gameMap[i].push(on);
     copyMap[i].push(0);
   }
 }
@@ -153,21 +158,33 @@ function printMap(m, height, width, countries, names, leaderboardSize) {
 }
 
 function selectColor(m, height, width, i, j) {
-  var minSize = 1;
-  var maxSize = 2;
-  if (count < 240) {
-    maxSize = 50 - Math.floor(count / 5);
-  }
   if (m[i][j] == -1) {
     return -1;
   }
+  if (i > 0 && i < (height - 1) &&
+      j > 0 && j < (width - 1) &&
+      m[i][j] == m[i - 1][j] &&
+      m[i][j] == m[i + 1][j] &&
+      m[i][j] == m[i][j - 1] &&
+      m[i][j] == m[i][j + 1]) {
+    return m[i][j];
+  }
   do {
-    var x = randint(i - randint(minSize, maxSize), i + randint(minSize, maxSize));
-  } while (x < 0 || x >= height);
+    var x = randint(i - 1, i + 1);
+  }
+  while (x < 0 || x >= height);
   do {
-    var y = randint(j - randint(minSize, maxSize), j + randint(minSize, maxSize));
-  } while (y < 0 || y >= width);
-  if (m[x][y] <= 0) {
+    var y = randint(j - 1, j + 1);
+  }
+  while (y < 0 || y >= width);
+  if (m[x][y] == -1 && randint(0, 100) == 0) {
+    var x = randint(i - 50, i + 50);
+    var y = randint(j - 50, j + 50);
+    if (x < 0 || x >= height || y < 0 || y >= width || m[x][y] <= 0) {
+      return m[i][j];
+    }
+  }
+  else if (m[x][y] <= 0) {
     return m[i][j];
   }
   return m[x][y];
@@ -227,7 +244,7 @@ function printScores(m, height, width, count, countries, names, leaderboardSize)
     var col = val == selection ? [255, 255, 255] : COLORS[val];
     scoreboard.innerHTML += '<span onmouseenter="PlayerEnter(event)" onmousemove="PlayerMove(event)"' +
                             'data-player="' + val + '" style="cursor: pointer; background-color: rgb(' + col + ')">&nbsp;&nbsp;</span> ';
-    var n = Math.round(score[i][0] * 100000 / height / width);
+    var n = Math.round(score[i][0] * 100000 / land);
     scoreboard.innerHTML += (" [" + reformat(Math.floor(n / 1000), 2) + "." + reformat(n % 1000, 3) + "%. This country is also known as " + names[val] + ".]<br/>");
   }
 }
