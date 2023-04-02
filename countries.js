@@ -192,6 +192,9 @@ function printScores(m, height, width, count, countries, names, leaderboardSize)
   scoreboard.innerHTML = ("<br/>Days past: " + count + " (about " + Math.floor(count / 365.25) + " year(s))<br/>Countries left: " + score.length + "<br/><br/>");
   for (var i = 0; i < score.slice(0, leaderboardSize).length; ++i) {
     scoreboard.innerHTML += ((i + 1) + ": ")
+    if (i < 99) {
+      scoreboard.innerHTML += "&nbsp;";
+    }
     if (i < 9) {
       scoreboard.innerHTML += "&nbsp;";
     }
