@@ -2,8 +2,8 @@
 
 var ctx = map.getContext('2d');
 
-var height = 225;
-var width = 400;
+var height = 450;
+var width = 800;
 
 var canvas = document.createElement('canvas');
 canvas.display = 'none';
@@ -12,7 +12,7 @@ canvas.height = height;
 var ctx2 = canvas.getContext('2d');
 var image = ctx2.createImageData(width, height);
 
-var pixelSize = 2;
+var pixelSize = 1;
 
 var countries = 100;
 var leaderboardSize = 25;
@@ -78,14 +78,23 @@ for (var i = 0; i < countries; ++i) {
   }
 }
 
+var worldMapCanvas = document.createElement("canvas");
+var worldMapContext = worldMapCanvas.getContext("2d");
+worldMapCanvas.width = earth.width;
+worldMapCanvas.height = earth.height;
+worldMapContext.drawImage(earth, 0, 0);
+var worldData = worldMapContext.getImageData(0, 0, earth.width, earth.height).data;
+
 var gameMap = [];
 var copyMap = [];
 
 for (var i = 0; i < height; ++i) {
+  var ii = Math.floor(i * (worldMapCanvas.height - 1) / (height - 1));
   gameMap.push([]);
   copyMap.push([]);
   for (var j = 0; j < width; ++j) {
-    gameMap[i].push(0);
+    var jj = Math.floor(j * (worldMapCanvas.width - 1) / (width - 1));
+    gameMap[i].push(worldData[4 * (ii * worldMapCanvas.width + jj)] ? 0 : -1);
     copyMap[i].push(0);
   }
 }
@@ -120,7 +129,12 @@ function printMap(m, height, width, count, countries, names, leaderboardSize) {
   var data = image.data;
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      var col = COLORS[m[i][j]];
+      if (m[i][j] == -1) {
+        var col = [0, 0, 255];
+      }
+      else {
+        var col = COLORS[m[i][j]];
+      }
       data[pos++] = col[0];
       data[pos++] = col[1];
       data[pos++] = col[2];
@@ -138,14 +152,24 @@ function printMap(m, height, width, count, countries, names, leaderboardSize) {
                 pixelSize, pixelSize, width * pixelSize, height * pixelSize);
 }
 
-function selectColor(m, height, width, i, j, size) {
+function selectColor(m, height, width, i, j, minSize, maxSize, goAgain = true) {
+  if (m[i][j] == -1) {
+    return -1;
+  }
   do {
-    var x = randint(i - size, i + size);
+    var x = randint(i - randint(minSize, maxSize), i + randint(minSize, maxSize));
   } while (x < 0 || x >= height);
   do {
-    var y = randint(j - size, j + size);
+    var y = randint(j - randint(minSize, maxSize), j + randint(minSize, maxSize));
   } while (y < 0 || y >= width);
   if (m[x][y] == 0) {
+    return m[i][j];
+  }
+  if (m[x][y] == -1 && goAgain) {
+    var val = Math.round(Math.sqrt(randint(1, 2500)));
+    return selectColor(m, height, width, i, j, 1, val, false);
+  }
+  if (m[x][y] == -1) {
     return m[i][j];
   }
   return m[x][y];
@@ -167,7 +191,7 @@ clearScreen();
 function Tick() {
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      copyMap[i][j] = selectColor(gameMap, height, width, i, j, 1);
+      copyMap[i][j] = selectColor(gameMap, height, width, i, j, 1, 1);
     }
   }
   for (var i = 0; i < height; ++i) {
@@ -231,7 +255,7 @@ function scores(m, height, width) {
   }
   var result = [];
   for (var s in scores) {
-    if (s != 0) {
+    if (s > 0) {
       result.push([scores[s], s]);
     }
   }
