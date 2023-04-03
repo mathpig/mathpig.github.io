@@ -15,6 +15,7 @@ var image = ctx2.createImageData(width, height);
 var pixelSize = 1;
 
 var countries = 193;
+// var countries = 193;
 var leaderboardSize = 25;
 
 var count = 0;
@@ -189,7 +190,7 @@ function selectColor(m, height, width, i, j) {
     var y = randint(j - 1, j + 1);
   }
   while (y < 0 || y >= width);
-  if (m[x][y] == -1 && randint(0, 100) == 0) {
+  if (m[x][y] == -1 && randint(0, 99) == 0) {
     var spread = Math.min(150, Math.floor(count / 6) + 1)
     var x = randint(i - spread, i + spread);
     var y = randint(j - spread, j + spread);
@@ -219,10 +220,10 @@ function hasWon(m, height, width) {
   return true;
 }
 
-function deleteCountry(m, height, width, country) {
+function deleteCountry(m, height, width, country, probability) {
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      if (m[i][j] == country) {
+      if (m[i][j] == country && randint(0, 999) < probability) {
         m[i][j] = 0;
       }
     }
@@ -242,7 +243,7 @@ function Tick() {
     }
   }
   if (randint(0, 99) == 0) {
-    gameMap = deleteCountry(gameMap, height, width, randint(0, countries - 1));
+    gameMap = deleteCountry(gameMap, height, width, randint(1, countries), 999);
   }
   count++;
   printMap(gameMap, height, width);
@@ -289,7 +290,7 @@ function PlayerMove(e) {
 
 function PlayerDown(e) {
   if (selection > 0) {
-    deleteCountry(gameMap, height, width, selection);
+    deleteCountry(gameMap, height, width, selection, 1000);
   }
 }
 
