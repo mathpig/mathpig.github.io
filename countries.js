@@ -2,8 +2,8 @@
 
 var ctx = map.getContext('2d');
 
-var height = 450;
-var width = 800;
+var height = 675;
+var width = 1200;
 
 var canvas = document.createElement('canvas');
 canvas.display = 'none';
@@ -15,7 +15,6 @@ var image = ctx2.createImageData(width, height);
 var pixelSize = 1;
 
 var countries = 193;
-// var countries = 193;
 var leaderboardSize = 25;
 
 var count = 0;
@@ -183,17 +182,16 @@ function selectColor(m, height, width, i, j) {
     return m[i][j];
   }
   do {
-    var x = randint(i - 1, i + 1);
+    var x = randint(i - 5, i + 5);
   }
   while (x < 0 || x >= height);
   do {
-    var y = randint(j - 1, j + 1);
+    var y = randint(j - 5, j + 5);
   }
   while (y < 0 || y >= width);
-  if (m[x][y] == -1 && randint(0, 99) == 0) {
-    var spread = Math.min(150, Math.floor(count / 6) + 1)
-    var x = randint(i - spread, i + spread);
-    var y = randint(j - spread, j + spread);
+  if (m[x][y] == -1 && randint(0, 4) == 0) {
+    var x = randint(i - 150, i + 150);
+    var y = randint(j - 150, j + 150);
     if (x < 0 || x >= height || y < 0 || y >= width || m[x][y] <= 0) {
       return m[i][j];
     }
@@ -242,8 +240,8 @@ function Tick() {
       gameMap[i][j] = copyMap[i][j];
     }
   }
-  if (randint(0, 99) == 0) {
-    gameMap = deleteCountry(gameMap, height, width, randint(1, countries), 999);
+  if (randint(0, 49) == 0) {
+    gameMap = deleteCountry(gameMap, height, width, randint(1, countries), 995);
   }
   count++;
   printMap(gameMap, height, width);
@@ -290,7 +288,7 @@ function PlayerMove(e) {
 
 function PlayerDown(e) {
   if (selection > 0) {
-    deleteCountry(gameMap, height, width, selection, 1000);
+    deleteCountry(gameMap, height, width, selection, 990);
   }
 }
 
