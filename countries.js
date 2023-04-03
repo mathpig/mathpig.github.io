@@ -204,11 +204,16 @@ function selectColor(m, height, width, i, j) {
 }
 
 function hasWon(m, height, width) {
+  var firstPixel = -1;
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      if (m[i][j] != m[0][0]) {
+      if (m[i][j] == -1) {
+        continue;
+      }
+      if (firstPixel != -1 && firstPixel != m[i][j]) {
         return false;
       }
+      firstPixel = m[i][j];
     }
   }
   return true;
@@ -265,7 +270,9 @@ function printScores(m, height, width, count, countries, names, leaderboardSize)
     }
     var val = score[i][1];
     var col = val == selection ? [255, 255, 255] : COLORS[val];
-    scoreboard.innerHTML += '<span onmouseenter="PlayerEnter(event)" onmousemove="PlayerMove(event)"' +
+    scoreboard.innerHTML += '<span onmouseenter="PlayerEnter(event)" ' +
+                            'onmousemove="PlayerMove(event)" ' +
+                            'onmousedown="PlayerDown(event)" ' +
                             'data-player="' + val + '" style="cursor: pointer; background-color: rgb(' + col + ')">&nbsp;&nbsp;</span> ';
     var n = Math.round(score[i][0] * 100000 / land);
     scoreboard.innerHTML += (" [" + reformat(Math.floor(n / 1000), 2) + "." + reformat(n % 1000, 3) + "%. This country is also known as " + names[val] + ".]<br/>");
@@ -278,6 +285,12 @@ function PlayerEnter(e) {
 
 function PlayerMove(e) {
   e.stopPropagation();
+}
+
+function PlayerDown(e) {
+  if (selection > 0) {
+    deleteCountry(gameMap, height, width, selection);
+  }
 }
 
 function scores(m, height, width) {
@@ -310,6 +323,10 @@ map.onmousemove = function(e) {
 
 map.onmouseleave = function(e) {
   mouseX = -1;
+};
+
+map.onmousedown = function(e) {
+  PlayerDown();
 };
 
 document.onmousemove = function(e) {
