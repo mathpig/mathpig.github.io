@@ -14,7 +14,7 @@ var image = ctx2.createImageData(width, height);
 
 var pixelSize = 1;
 
-var countries = 256;
+var countries = 512;
 var leaderboardSize = 25;
 
 var count = 0;
@@ -55,7 +55,7 @@ var names = [""];
 
 for (var i = 0; i < countries; ++i) {
   var val = WORDS[randint(0, WORDS.length - 1)];
-  var num = randint(0, 7);
+  var num = randint(0, 15);
   if (num == 0) {
     names.push(val);
   }
@@ -77,8 +77,32 @@ for (var i = 0; i < countries; ++i) {
   else if (num == 6) {
     names.push("The Glory of " + val);
   }
-  else {
+  else if (num == 7) {
     names.push("Great " + val);
+  }
+  else if (num == 8) {
+    names.push("The Empire of " + val);
+  }
+  else if (num == 9) {
+    names.push("The Exarchate of " + val);
+  }
+  else if (num == 10) {
+    names.push("The Mastery of " + val);
+  }
+  else if (num == 11) {
+    names.push("The Land of " + val);
+  }
+  else if (num == 12) {
+    names.push("The Supremity of " + val);
+  }
+  else if (num == 13) {
+    names.push(val + " Empire");
+  }
+  else if (num == 14) {
+    names.push("The Dukedom of " + val);
+  }
+  else {
+    names.push("The Sorcery of " + val);
   }
 }
 
