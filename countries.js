@@ -14,7 +14,7 @@ var image = ctx2.createImageData(width, height);
 
 var pixelSize = 1;
 
-var countries = 193;
+var countries = 256;
 var leaderboardSize = 25;
 
 var count = 0;
@@ -190,8 +190,9 @@ function selectColor(m, height, width, i, j) {
   }
   while (y < 0 || y >= width);
   if (m[x][y] == -1 && randint(0, 4) == 0) {
-    var x = randint(i - 150, i + 150);
-    var y = randint(j - 150, j + 150);
+    var size = Math.min(150, Math.floor(count / 6) + 5);
+    var x = randint(i - size, i + size);
+    var y = randint(j - size, j + size);
     if (x < 0 || x >= height || y < 0 || y >= width || m[x][y] <= 0) {
       return m[i][j];
     }
