@@ -265,7 +265,7 @@ function Tick() {
       gameMap[i][j] = copyMap[i][j];
     }
   }
-  if (randint(0, 49) == 0) {
+  if (randint(0, 9) == 0) {
     gameMap = deleteCountry(gameMap, height, width, randint(1, countries), 995);
   }
   count++;
