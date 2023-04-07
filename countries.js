@@ -243,13 +243,13 @@ function hasWon(m, height, width) {
   return true;
 }
 
-function deleteCountry(m, height, width, country, probability) {
+function deleteCountry(m, height, width, country) {
   if (country <= 0) {
     return m;
   }
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
-      if (m[i][j] == country && randint(0, 999) < probability) {
+      if (m[i][j] == country && randint(0, 999) != 0) {
         m[i][j] = 0;
       }
     }
@@ -269,7 +269,7 @@ function Tick() {
     }
   }
   if (randint(0, 19) == 0) {
-    gameMap = deleteCountry(gameMap, height, width, gameMap[randint(0, height - 1)][randint(0, width - 1)], 995);
+    gameMap = deleteCountry(gameMap, height, width, gameMap[randint(0, height - 1)][randint(0, width - 1)]);
   }
   count++;
   printMap(gameMap, height, width);
@@ -316,7 +316,7 @@ function PlayerMove(e) {
 
 function PlayerDown(e) {
   if (selection > 0) {
-    deleteCountry(gameMap, height, width, selection, 990);
+    deleteCountry(gameMap, height, width, selection);
   }
 }
 
