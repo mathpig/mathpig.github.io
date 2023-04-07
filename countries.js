@@ -244,6 +244,9 @@ function hasWon(m, height, width) {
 }
 
 function deleteCountry(m, height, width, country, probability) {
+  if (country <= 0) {
+    return m;
+  }
   for (var i = 0; i < height; ++i) {
     for (var j = 0; j < width; ++j) {
       if (m[i][j] == country && randint(0, 999) < probability) {
@@ -265,8 +268,8 @@ function Tick() {
       gameMap[i][j] = copyMap[i][j];
     }
   }
-  if (randint(0, 9) == 0) {
-    gameMap = deleteCountry(gameMap, height, width, randint(1, countries), 995);
+  if (randint(0, 19) == 0) {
+    gameMap = deleteCountry(gameMap, height, width, gameMap[randint(0, height - 1)][randint(0, width - 1)], 995);
   }
   count++;
   printMap(gameMap, height, width);
