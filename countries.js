@@ -87,7 +87,7 @@ for (var i = 0; i < countries; ++i) {
     names.push("The Exarchate of " + val);
   }
   else if (num == 10) {
-    names.push("The Mastery of " + val);
+    names.push("The Dictatorship of " + val);
   }
   else if (num == 11) {
     names.push("The Land of " + val);
