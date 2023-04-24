@@ -147,9 +147,27 @@ function Song(startTime, score) {
   }
 }
 
-document.getElementById('play_mozart').onclick = function() {
+document.getElementById('play_mozart_sonata_7').onclick = function() {
   RATE = 2;
   var now = new AudioContext().currentTime;
+  var left = Song(now, `
+  r8 vvc^c2 vg2
+  ^e3.8 f16 d16 c4 r4
+  e8 g8 e8 g8 c#8 g8 c#8 g8
+  d8 g8 d8 g8 vb8 ^g8 vb8 ^g8
+  c8 g8 c8 g8 e8 g8 e8 g8
+  fa1
+  r4 fa^d4 vg^ce4 vgb^d4
+  r8 vcvc2 g2
+  ^e3.8 f16 d16 c4 r4
+  e8 g8 e8 g8 c#8 g8 c#8 g8
+  d8 g8 d8 g8 vb8 ^g8 vb8 ^g8
+  c8 g8 c8 g8 e8 g8 e8 g8
+  gb-2 fa4 r4
+  gb-2 a^c4 r4
+  a8 ^c8 va8 ^c8 vf8 ^c8 vf8 ^c8
+  ve8 ^c8 ve8 ^c8 vc8 ^c8 vc8 ^c8
+  `);
   var right = Song(now, `
   c24 e24 g24 ^c2 vg2
   ^e3.8 f16 d16 c4 r4
@@ -168,24 +186,6 @@ document.getElementById('play_mozart').onclick = function() {
   c^c8 vc^c8 vc^c2 vb8 a8
   cg8 cg8 cg2 f8 e8
   `);
-  var left = Song(now, `
-  r8 vvc^c2 vg2
-  ^e3.8 f16 d16 c4 r4
-  e8 g8 e8 g8 c#8 g8 c#8 g8
-  d8 g8 d8 g8 vb8 ^g8 vb8 ^g8
-  c8 g8 c8 g8 e8 g8 e8 g8
-  fa1
-  r4 fa^d4 vg^ce4 vgb^d4
-  r8 vcvc2 g2
-  ^e3.8 f16 d16 c4 r4
-  e8 g8 e8 g8 c#8 g8 c#8 g8
-  d8 g8 d8 g8 vb8 ^g8 vb8 ^g8
-  c8 g8 c8 g8 e8 g8 e8 g8
-  gb-2 fa4 r4
-  gb-2 a^c4 r4
-  a8 ^c8 va8 ^c8 vf8 ^c8 vf8 ^c8
-  ve8 ^c8 ve8 ^c8 vc8 ^c8 vc8 ^c8
-  `); 
   left();
   right();
 };
@@ -243,4 +243,31 @@ document.getElementById('play_bach_invention_1').onclick = function() {
   `);
   voice_bottom();
   voice_top();
+}
+
+document.getElementById('play_liszt_hungarian_rhapsody_2').onclick = function() {
+  RATE = 2.5;
+  var now = new AudioContext().currentTime;
+  var left = Song(now, `
+  r8 vc#8 b8 ^f8
+  r8 f8 vb8 c#8
+  r8 c#8 a8 ^f#8
+  r8 f#8 va8 c#8
+  r8 c#8 b8 ^f8
+  r8 f8 vb8 c#8
+  r8 c#8 a8 ^f#8
+  r8 f#8 va8 c#8
+  `);
+  var right = Song(now, `
+  g#16 ^c#16 c#16 c#16 c#16 c#16 c#16 c#16
+  va16 ^c#16 c#16 c#16 vg#16 ^c#16 c#16 c#16
+  vf#16 ^c#16 c#16 c#16 c#16 c#16 c#16 vg#16
+  a16 ^c#16 c#16 c#16 vf#16 ^c#16 c#16 c#16
+  vg#16 ^c#16 c#16 c#16 c#16 c#16 vb16 ^c#16
+  va16 ^c#16 c#16 c#16 vg#16 ^c#16 c#16 c#16
+  vf#16 ^c#16 c#16 c#16 c#16 c#16 c#16 vg#16
+  a16 ^c#16 c#16 c#16 vf#16 ^c#16 c#16 c#16
+  `);
+  left();
+  right();
 }
