@@ -362,7 +362,7 @@ class Swordwrath extends Entity {
       }
     }
     else {
-      if (Math.abs(target.x - this.x) > 50) {
+      if (Math.abs(target.x - this.x) > 49) {
         this.vx = this.speed * Math.sign(target.x - this.x);
       }
       this.vy = Math.sign(target.y - this.y) / 2;
