@@ -209,7 +209,7 @@ class Miner extends Entity {
   }
 
   isFull() {
-    return this.gold == this.goldCapacity;
+    return this.gold >= this.goldCapacity;
   }
 
   mine(rock) {
@@ -432,7 +432,7 @@ class Archidon extends Entity {
       }
     }
     else {
-      if (Math.abs(target.x - this.x) > 1000) {
+      if (Math.abs(target.x - this.x) > 999) {
         this.vx = this.speed * Math.sign(target.x - this.x);
       }
       this.vy = Math.sign(target.y - this.y) / 2;
