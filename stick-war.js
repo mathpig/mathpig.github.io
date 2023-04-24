@@ -258,7 +258,7 @@ class Miner extends Entity {
         }
       }
       else {
-        if (Math.abs(rock.x - this.x) > 50) {
+        if (Math.abs(rock.x - this.x) > 49) {
           this.vx = this.speed * Math.sign(rock.x - this.x);
         }
         this.vy = Math.sign(rock.y - this.y) / 2;
