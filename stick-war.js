@@ -120,14 +120,15 @@ class Rock extends Entity {
     this.strikes = 0;
     this.strikeLimit = 250;
     this.setFrames([rock1]);
-    this.setSize(75);
+    var val = randint(50, 100);
+    this.setSize(val);
+    this.initialSize = val;
   }
 
   mine() {
     this.strikes++;
-    var initialSize = 75;
     var sz = 1.0 - (this.strikes / (this.strikeLimit - 1));
-    this.setSize(initialSize * sz);
+    this.setSize(this.initialSize * sz);
     if (this.strikes >= this.strikeLimit) {
       toDelete.push(this);
     }
@@ -169,7 +170,8 @@ class Fort extends Entity {
     super();
     this.setHealth(600);
     this.setFrames([spikes]);
-    this.setSize(150, 150);
+    var val = randint(125, 175);
+    this.setSize(val, val);
   }
 
   isEnemy() {
@@ -202,7 +204,7 @@ class Miner extends Entity {
     this.goldIncrease = 10;
     this.goldCapacity = 100;
     this.setFrames([miner1, miner2]);
-    this.setSize(100);
+    this.setSize(randint(90, 110));
     this.setHealth(80);
     this.setSpeed(2);
     this.setFilter('brightness(5%)');
@@ -332,7 +334,7 @@ class Swordwrath extends Entity {
   constructor() {
     super();
     this.setFrames([sword1, sword2]);
-    this.setSize(100);
+    this.setSize(randint(90, 110));
     this.setHealth(120);
     this.setAttackStrength(20);
     this.setSpeed(6);
@@ -402,7 +404,7 @@ class Archidon extends Entity {
   constructor() {
     super();
     this.setFrames([archer1c, archer1b]);
-    this.setSize(100);
+    this.setSize(randint(90, 110));
     this.setHealth(70);
     this.setAttackStrength(30);
     this.setSpeed(4);
@@ -505,13 +507,13 @@ function Init() {
 
 function summonAnts() {
   for (var i = 0; i < randint(8, 12); ++i) {
-    entities.push(new Swordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(8));
+    entities.push(new Swordwrath().setSize(randint(45, 55)).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(8));
   }
 }
 
 function summonEnemyAnts() {
   for (var i = 0; i < randint(8, 12); ++i) {
-    entities.push(new EnemySwordwrath().setSize(50).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(8));
+    entities.push(new EnemySwordwrath().setSize(randint(45, 55)).setHealth(10).setAttackStrength(5).setPosition(randint(500, 9400 - playfield.width / 2), randint(550, 650)).setSpeed(8));
   }
 }
 
