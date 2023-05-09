@@ -476,7 +476,7 @@ function randint(min, max) {
 
 function Init() {
   gold = 500;
-  enemyGold = 500;
+  enemyGold = 750;
   terrain1 = [];
   terrain2 = [];
   for (var i = 0; i < 100; ++i) {
@@ -554,7 +554,7 @@ function Tick() {
     gold += 5;
   }
   if (randint(1, 50) == 1) {
-    enemyGold += 5;
+    enemyGold += randint(7, 8);
   }
   if (randint(1, 10000) == 1) {
     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
