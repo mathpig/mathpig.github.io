@@ -471,7 +471,7 @@ class EnemyArchidon extends Archidon {
 }
 
 function randint(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function Init() {
@@ -534,9 +534,9 @@ function Tick() {
     enemyGold -= 600;
     summonEnemyAnts();
   }
-  if (enemyGold >= 1500 && randint(1, 100) == 1) {
+  if (enemyGold >= 1500 && randint(1, 250) == 1) {
     enemyGold -= 1500;
-    entities.push(new EnemySwordwrath().setPosition(300, 600).setSize(randint(180, 220)).setHealth(3000).setAttackStrength(10));
+    entities.push(new EnemySwordwrath().setPosition(9600, 600).setSize(randint(180, 220)).setHealth(3000).setAttackStrength(10).setSpeed(1));
   }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
     scroll -= 25;
@@ -551,10 +551,10 @@ function Tick() {
     scroll = 9900 - playfield.width;
   }
   if (randint(1, 50) == 1) {
-    gold += 4;
+    gold += 5;
   }
   if (randint(1, 50) == 1) {
-    enemyGold += 4;
+    enemyGold += 5;
   }
   if (randint(1, 10000) == 1) {
     entities.push(new Rock().setPosition(randint(500, 9400 - playfield.width / 2), randint(575, 625)));
@@ -647,7 +647,7 @@ spawn_archidon.onclick = function() {
 spawn_giant.onclick = function() {
   if (gold >= 1500) {
     gold -= 1500;
-    entities.push(new Swordwrath().setPosition(300, 600).setSize(randint(180, 220)).setHealth(3000).setAttackStrength(10));
+    entities.push(new Swordwrath().setPosition(300, 600).setSize(randint(180, 220)).setHealth(3000).setAttackStrength(10).setSpeed(1));
   }
 };
 
