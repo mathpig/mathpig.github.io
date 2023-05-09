@@ -534,6 +534,10 @@ function Tick() {
     enemyGold -= 600;
     summonEnemyAnts();
   }
+  if (enemyGold >= 1500 && randint(1, 100) == 1) {
+    enemyGold -= 1500;
+    entities.push(new EnemySwordwrath().setPosition(300, 600).setSize(randint(180, 220)).setHealth(3000).setAttackStrength(10));
+  }
   if (mouseX < 100 && mouseY > panel.clientHeight) {
     scroll -= 25;
   }
@@ -637,6 +641,13 @@ spawn_archidon.onclick = function() {
   if (gold >= 400) {
     gold -= 400;
     entities.push(new Archidon().setPosition(300, 600));
+  }
+};
+
+spawn_giant.onclick = function() {
+  if (gold >= 1500) {
+    gold -= 1500;
+    entities.push(new Swordwrath().setPosition(300, 600).setSize(randint(180, 220)).setHealth(3000).setAttackStrength(10));
   }
 };
 
