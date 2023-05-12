@@ -259,14 +259,14 @@ document.getElementById('play_liszt_hungarian_rhapsody_2').onclick = function() 
   r8 f#8 va8 c#8
   `);
   var right = Song(now, `
-  g#16 ^c#16 c#16 c#16 c#16 c#16 c#16 c#16
-  va16 ^c#16 c#16 c#16 vg#16 ^c#16 c#16 c#16
-  vf#16 ^c#16 c#16 c#16 c#16 c#16 c#16 vg#16
-  a16 ^c#16 c#16 c#16 vf#16 ^c#16 c#16 c#16
-  vg#16 ^c#16 c#16 c#16 c#16 c#16 vb16 ^c#16
-  va16 ^c#16 c#16 c#16 vg#16 ^c#16 c#16 c#16
-  vf#16 ^c#16 c#16 c#16 c#16 c#16 c#16 vg#16
-  a16 ^c#16 c#16 c#16 vf#16 ^c#16 c#16 c#16
+  g#^g#16 c#16 c#16 c#16 c#16 c#16 c#16 c#16
+  va16^a16 c#16 c#16 c#16 vg#^g#16 c#16 c#16 c#16
+  vf#^f#16 c#16 c#16 c#16 c#16 c#16 c#16 vg#^g#16
+  va^a16 c#16 c#16 c#16 vf#^f#16 c#16 c#16 c#16
+  vg#^g#16 c#16 c#16 c#16 c#16 c#16 vb^b16 c#16
+  va^a16 c#16 c#16 c#16 vg#^g#16 c#16 c#16 c#16
+  vf#^f#16 c#16 c#16 c#16 c#16 c#16 c#16 vg#^g#16
+  va^a16 c#16 c#16 c#16 vf#^f#16 c#16 c#16 c#16
   `);
   left();
   right();
