@@ -337,7 +337,7 @@ async function main() {
             }
         }
         else if (mana >= (2 + manaPunishment) && randint(0, 1) == 0) {
-            var fortify = await get_string(" Fortify? ")
+            var fortify = await get_string(" Fortify for 2 mana? ")
             if (fortify == "y" || fortify == "yes") {
                 mana -= (2 + manaPunishment);
                 castleHealth += Math.round(2680 * Math.pow(0.7, uses))
