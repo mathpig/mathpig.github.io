@@ -5,10 +5,34 @@ var ctx = screen.getContext("2d");
 
 var image = ctx.createImageData(screen.width, screen.height);
 
-var x = screen.width / 2 - 20;
-var vx = 0;
+var m = ["                ",
+         "     ##         ",
+         "    #      #    ",
+         "              ##",
+         "          ##    ",
+         " ## #        #  ",
+         "        #    ## ",
+         "     #          ",
+         "S       #  #    "];
 
-var y = screen.height - 40;
+var playerSize = 20;
+
+var found = false;
+for (var i = 0; i < m.length; ++i) {
+  for (var j = 0; j < m[0].length; ++j) {
+    if (m[i][j] == "S") {
+      var x = (j + 0.5) * m[0].length / screen.width - playerSize / 2;
+      var y = (i + 1) * m.length / screen.heigth - playerSize;
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    break;
+  }
+}
+
+var vx = 0;
 var vy = 0;
 
 var keySet = {};
@@ -18,9 +42,17 @@ function Draw() {
   var pos = 0;
   for (var i = 0; i < screen.width; ++i) {
     for (var j = 0; j < screen.height; ++j) {
-      var r = 255;
-      var g = 0;
-      var b = 0;
+      console.log(Math.floor(i * m[0].length / screen.width), Math.floor(j * m.length / screen.height));
+      if (m[Math.floor(i * m[0].length / screen.width)][Math.floor(j * m.length / screen.height)] == " ") {
+        var r = 255;
+        var g = 0;
+        var b = 0;
+      }
+      else {
+        var r = 0;
+        var g = 255;
+        var b = 0;
+      }
       data[pos++] = r;
       data[pos++] = g;
       data[pos++] = b;
@@ -28,8 +60,8 @@ function Draw() {
     }
   }
   ctx.putImageData(image, 0, 0);
-  ctx.fillStyle = 'black';
-  ctx.fillRect(x, y, 40, 40);
+  ctx.fillStyle = "blue";
+  ctx.fillRect(x, y, playerSize, playerSize);
 }
 
 function Tick() {
@@ -50,7 +82,7 @@ function Tick() {
     vx -= 0.25;
   }
 
-  if (keySet["ArrowUp"] && y == (screen.height - 40)) {
+  if (keySet["ArrowUp"] && y == (screen.height - playerSize)) {
     vy -= 5;
   }
 
@@ -62,8 +94,8 @@ function Tick() {
     x = 0;
     vx = -vx / 2;
   }
-  else if (x > (screen.width - 40)) {
-    x = (screen.width - 40);
+  else if (x > (screen.width - playerSize)) {
+    x = (screen.width - playerSize);
     vx = -vx / 2;
   }
 
@@ -72,8 +104,8 @@ function Tick() {
     y = 0;
     vy = -vy / 2;
   }
-  else if (y > (screen.height - 40)) {
-    y = (screen.height - 40);
+  else if (y > (screen.height - playerSize)) {
+    y = (screen.height - playerSize);
     vy = -vy / 2;
   }
 
