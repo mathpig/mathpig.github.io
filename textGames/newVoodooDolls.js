@@ -41,6 +41,7 @@ async function main() {
 
   while (true) {
     print("Points:");
+    print("");
     for (var i = 0; i < playerCount; i += 2) {
       print("Player " + (i + 1) + " has " + points[i] + " points.");
       if (i + 1 < playerCount) {
