@@ -200,7 +200,7 @@ async function main() {
         }
       }
       else if (indexTurn == 1) {
-        var card = randint(0, 7);
+        var card = randint(0, 11);
         print("The card reads, ", "");
         if (card === 0) {
           print("\"You and your kin are cursed for nine generations.\" \"Oh my,\" intones Mr. Slavan.");
