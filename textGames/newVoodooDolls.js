@@ -279,7 +279,7 @@ async function main() {
           while (originalPlayer < 1 || originalPlayer > playerCount || (Math.abs(coordinates[turn] - coordinates[originalPlayer - 1]) > 3 && !stats[turn][3])) {
             originalPlayer = await get_int("Either the selected player is too far away to stick a pin into or simply does not exist. Please retry. ");
           }
-          if (originalPlayer - 1 == turn) {
+          if ((originalPlayer - 1) == turn) {
             points[turn] -= 25;
             if (stats[turn][3]) {
               print("You idiot! It could have been anybody else! Why, why!!!");
@@ -307,7 +307,7 @@ async function main() {
                 print("Either the selected player is too far away to stick a pin into, simply does not exist, or has already been attacked.");
                 player = get_int("Please retry. ");
               }
-              if (player - 1 == turn) {
+              if ((player - 1) == turn) {
                 points[turn] -= 25;
                 if (stats[turn][3]) {
                   print("You idiot! It could have been anybody else! This is what you do with your tower priviledge?! Why, why!!!");
