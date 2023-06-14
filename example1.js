@@ -118,10 +118,10 @@ function Tick() {
   }
 
   if (keySet["ArrowUp"] && canJump) {
-    vy -= pixelSize / 5;
+    vy -= pixelSize / 9;
   }
 
-  vx = Math.min(Math.max(vx, -pixelSize / 5), pixelSize / 5);
+  vx = Math.min(Math.max(vx, -pixelSize / 9), pixelSize / 9);
 
   var oldX = x;
   var oldY = y;
