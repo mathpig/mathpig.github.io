@@ -3,32 +3,30 @@
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-var image = ctx.createImageData(screen.width, screen.height);
+var m = ["                                ",
+         "     ##              ###    #   ",
+         "    #      #     #         #    ",
+         "              ##         #      ",
+         "          ##                    ",
+         " ## #        #         #       #",
+         "        #    ##    ###          ",
+         "     #            #          ## ",
+         "S       #  #         #    #     "];
 
-var m = ["                ",
-         "     ##         ",
-         "    #      #    ",
-         "              ##",
-         "          ##    ",
-         " ## #        #  ",
-         "        #    ## ",
-         "     #          ",
-         "S       #  #    "];
+var pixelSize = Math.floor(Math.min(window.innerWidth / m[0].length, window.innerHeight / m.length) * 9 / 10);
 
-var playerSize = 20;
+screen.width = pixelSize * m[0].length;
+screen.height = pixelSize * m.length;
 
-var found = false;
-for (var i = 0; i < m.length; ++i) {
+var playerSize = pixelSize / 2;
+
+outer: for (var i = 0; i < m.length; ++i) {
   for (var j = 0; j < m[0].length; ++j) {
     if (m[i][j] == "S") {
-      var x = (j + 0.5) * m[0].length / screen.width - playerSize / 2;
-      var y = (i + 1) * m.length / screen.heigth - playerSize;
-      found = true;
-      break;
+      var x = (j + 0.5) * screen.width / m[0].length - playerSize / 2;
+      var y = (i + 1) * screen.height / m.length - playerSize;
+      break outer;
     }
-  }
-  if (found) {
-    break;
   }
 }
 
@@ -37,35 +35,72 @@ var vy = 0;
 
 var keySet = {};
 
+var canJump = false;
+
 function Draw() {
-  var data = image.data;
-  var pos = 0;
-  for (var i = 0; i < screen.width; ++i) {
-    for (var j = 0; j < screen.height; ++j) {
-      console.log(Math.floor(i * m[0].length / screen.width), Math.floor(j * m.length / screen.height));
-      if (m[Math.floor(i * m[0].length / screen.width)][Math.floor(j * m.length / screen.height)] == " ") {
-        var r = 255;
-        var g = 0;
-        var b = 0;
+  for (var i = 0; i < m.length; ++i) {
+    for (var j = 0; j < m[0].length; ++j) {
+      if (m[i][j] == " " || m[i][j] == "S") {
+        ctx.fillStyle = "red";
       }
       else {
-        var r = 0;
-        var g = 255;
-        var b = 0;
+        ctx.fillStyle = "green";
       }
-      data[pos++] = r;
-      data[pos++] = g;
-      data[pos++] = b;
-      data[pos++] = 255;
+      ctx.fillRect(pixelSize * j, pixelSize * i, pixelSize, pixelSize);
     }
   }
-  ctx.putImageData(image, 0, 0);
   ctx.fillStyle = "blue";
   ctx.fillRect(x, y, playerSize, playerSize);
 }
 
+function findCoords(x, y) {
+  return [Math.floor(x / pixelSize), Math.floor(y / pixelSize)];
+}
+
+function deflect(oldX, oldY) {
+  var arr = [];
+  var [xx, yy] = findCoords(x, y);
+  arr.push(m[yy][xx] == "#");
+  [xx, yy] = findCoords(x + playerSize, y);
+  arr.push(m[yy][xx] == "#");
+  [xx, yy] = findCoords(x + playerSize, y + playerSize);
+  arr.push(m[yy][xx] == "#");
+  [xx, yy] = findCoords(x, y + playerSize);
+  arr.push(m[yy][xx] == "#");
+  if (!arr[0] && !arr[1] && !arr[2] && !arr[3]) {
+    return [false, false];
+  }
+  if ((arr[0] && arr[1]) || (arr[2] && arr[3])) {
+    return [false, true];
+  }
+  if ((arr[1] && arr[2]) || (arr[3] && arr[0])) {
+    return [true, false];
+  }
+  var [oldXX, oldYY] = findCoords(oldX, oldY);
+  if (arr[0]) {
+    [xx, yy] = findCoords(x, y);
+    return [xx < oldXX, yy < oldYY];
+  }
+  if (arr[1]) {
+    [xx, yy] = findCoords(x + playerSize, y);
+    return [xx > oldXX, yy < oldYY];
+  }
+  if (arr[2]) {
+    [xx, yy] = findCoords(x + playerSize, y + playerSize);
+    return [xx > oldXX, yy > oldYY];
+  }
+  [xx, yy] = findCoords(x, y + playerSize);
+  return [xx < oldXX, yy > oldYY];
+}
+
 function Tick() {
-  vx *= (99 / 100);
+  canJump = (y == (screen.height - playerSize - 1))
+  var [xx, yy] = findCoords(x, y + 1);
+  if (m[yy][xx] == "#") {
+    canJump = true;
+  }
+
+  vx *= (19 / 20);
   vy += 0.25;
 
   if (Math.abs(vx) < 0.05) {
@@ -82,20 +117,22 @@ function Tick() {
     vx -= 0.25;
   }
 
-  if (keySet["ArrowUp"] && y == (screen.height - playerSize)) {
-    vy -= 5;
+  if (keySet["ArrowUp"] && canJump) {
+    vy -= pixelSize / 5;
   }
 
-  vx = Math.min(Math.max(vx, -5), 5);
-  vy = Math.min(Math.max(vy, -5), 5);
+  vx = Math.min(Math.max(vx, -pixelSize / 5), pixelSize / 5);
+
+  var oldX = x;
+  var oldY = y;
 
   x += vx;
   if (x < 0) {
     x = 0;
     vx = -vx / 2;
   }
-  else if (x > (screen.width - playerSize)) {
-    x = (screen.width - playerSize);
+  else if (x >= (screen.width - playerSize)) {
+    x = (screen.width - playerSize - 1);
     vx = -vx / 2;
   }
 
@@ -104,15 +141,25 @@ function Tick() {
     y = 0;
     vy = -vy / 2;
   }
-  else if (y > (screen.height - playerSize)) {
-    y = (screen.height - playerSize);
+  else if (y >= (screen.height - playerSize)) {
+    y = (screen.height - playerSize - 1);
+    vy = -vy / 2;
+  }
+
+  var val = deflect(oldX, oldY);
+  if (val[0]) {
+    x = oldX;
+    vx = -vx / 2;
+  }
+  if (val[1]) {
+    y = oldY;
     vy = -vy / 2;
   }
 
   Draw();
 }
 
-setInterval(Tick, 50);
+setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
   keySet[e.key] = true;
