@@ -206,6 +206,7 @@ async function main() {
           print("\"You and your kin are cursed for nine generations.\" \"Oh my,\" intones Mr. Slavan.");
           print("The instructions declare that your hand will be forced to stab pins into your own player every turn rather than your true target.");
           print("You will, however, only lose 5 points from doing so rather than the customary 25.");
+          print("This will apply to every player on your team.");
           for (var i = 0; i < playerCount; ++i) {
             if (!stats[i][0] && teams[i] == teams[turn]) {
               cursedPlayers.push(i + 1);
@@ -248,6 +249,7 @@ async function main() {
         else if (card == 3) {
           print("\"You and your kin are blessed for five generations.\" \"Oh dear,\" intones Mr. Slavan.");
           print("The instructions declare that you may stick a pin into any player on your turn, whether they are nearby or not.");
+          print("This will apply to every player on your team.");
           for (var i = 0; i < playerCount; ++i) {
             if (!stats[i][3] && teams[i] == teams[turn]) {
               blessedPlayers.push(i + 1);
