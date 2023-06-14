@@ -61,11 +61,11 @@ function deflect(oldX, oldY) {
   var arr = [];
   var [xx, yy] = findCoords(x, y);
   arr.push(m[yy][xx] == "#");
-  [xx, yy] = findCoords(x + playerSize, y);
+  [xx, yy] = findCoords(x + playerSize - 1, y);
   arr.push(m[yy][xx] == "#");
-  [xx, yy] = findCoords(x + playerSize, y + playerSize);
+  [xx, yy] = findCoords(x + playerSize - 1, y + playerSize - 1);
   arr.push(m[yy][xx] == "#");
-  [xx, yy] = findCoords(x, y + playerSize);
+  [xx, yy] = findCoords(x, y + playerSize - 1);
   arr.push(m[yy][xx] == "#");
   if (!arr[0] && !arr[1] && !arr[2] && !arr[3]) {
     return [false, false];
@@ -82,22 +82,29 @@ function deflect(oldX, oldY) {
     return [xx < oldXX, yy < oldYY];
   }
   if (arr[1]) {
-    [xx, yy] = findCoords(x + playerSize, y);
+    [xx, yy] = findCoords(x + playerSize - 1, y);
     return [xx > oldXX, yy < oldYY];
   }
   if (arr[2]) {
-    [xx, yy] = findCoords(x + playerSize, y + playerSize);
+    [xx, yy] = findCoords(x + playerSize - 1, y + playerSize - 1);
     return [xx > oldXX, yy > oldYY];
   }
-  [xx, yy] = findCoords(x, y + playerSize);
+  [xx, yy] = findCoords(x, y + playerSize - 1);
   return [xx < oldXX, yy > oldYY];
 }
 
 function Tick() {
-  canJump = (y == (screen.height - playerSize - 1))
-  var [xx, yy] = findCoords(x, y + 1);
-  if (m[yy][xx] == "#") {
-    canJump = true;
+  canJump = (y == (screen.height - playerSize));
+  if (y + playerSize)
+  if (!canJump) {
+    var [xx, yy] = findCoords(x, y + playerSize);
+    if (m[yy][xx] == "#") {
+      canJump = true;
+    }
+    [xx, yy] = findCoords(x + playerSize, y + playerSize);
+    if (m[yy][xx] == "#") {
+      canJump = true;
+    }
   }
 
   vx *= (19 / 20);
@@ -131,8 +138,8 @@ function Tick() {
     x = 0;
     vx = -vx / 2;
   }
-  else if (x >= (screen.width - playerSize)) {
-    x = (screen.width - playerSize - 1);
+  else if (x > (screen.width - playerSize)) {
+    x = (screen.width - playerSize);
     vx = -vx / 2;
   }
 
@@ -141,8 +148,8 @@ function Tick() {
     y = 0;
     vy = -vy / 2;
   }
-  else if (y >= (screen.height - playerSize)) {
-    y = (screen.height - playerSize - 1);
+  else if (y > (screen.height - playerSize)) {
+    y = (screen.height - playerSize);
     vy = -vy / 2;
   }
 
