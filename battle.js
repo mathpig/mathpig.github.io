@@ -160,6 +160,20 @@ function Tick() {
   Draw();
 }
 
+class Giant extends Warrior {
+  constructor() {
+    super();
+    this.speed = 0.5;
+    this.health = randint(320, 480);
+    this.maxHealth = this.health;
+    this.minAttack = 32;
+    this.maxAttack = 64;
+    this.size = 40;
+    this.cooldown = 80;
+    this.maxCooldown = this.cooldown;
+  }
+}
+
 class BigWarrior extends Warrior {
   constructor() {
     super();
@@ -170,6 +184,30 @@ class BigWarrior extends Warrior {
     this.maxAttack = 20;
     this.size = 30;
     this.cooldown = 40;
+    this.maxCooldown = this.cooldown;
+  }
+}
+
+class Drainer extends Warrior {
+  constructor() {
+    super();
+    this.speed = 0.25;
+    this.minAttack = 1;
+    this.maxAttack = 2;
+    this.cooldown = 5;
+    this.maxCooldown = this.cooldown;
+  }
+}
+
+class Decoy extends Warrior {
+  constructor() {
+    super();
+    this.speed = 0;
+    this.health = randint(640, 960);
+    this.maxHealth = this.health;
+    this.minAttack = 0;
+    this.maxAttack = 0;
+    this.cooldown = 0;
     this.maxCooldown = this.cooldown;
   }
 }
@@ -188,31 +226,6 @@ class Rogue extends Warrior {
   }
 }
 
-class Giant extends Warrior {
-  constructor() {
-    super();
-    this.speed = 0.5;
-    this.health = randint(320, 480);
-    this.maxHealth = this.health;
-    this.minAttack = 32;
-    this.maxAttack = 64;
-    this.size = 40;
-    this.cooldown = 80;
-    this.maxCooldown = this.cooldown;
-  }
-}
-
-class Drainer extends Warrior {
-  constructor() {
-    super();
-    this.speed = 0.25;
-    this.minAttack = 1;
-    this.maxAttack = 2;
-    this.cooldown = 5;
-    this.maxCooldown = this.cooldown;
-  }
-}
-
 var x = randint(100, screen.width - 100);
 var y = randint(100, screen.height - 100);
 entities.push(new Giant().setPosition(x, y).setTeam(0));
@@ -221,17 +234,21 @@ for (var i = 0; i < 250; ++i) {
     x = randint(100, screen.width - 100);
     y = randint(100, screen.height - 100);
     var val = randint(0, 9);
+    var team = randint(1, colors.length - 1);
     if (val == 0) {
-      entities.push(new BigWarrior().setPosition(x, y).setTeam(randint(1, colors.length - 1)));
+      entities.push(new BigWarrior().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 3) {
-      entities.push(new Rogue().setPosition(x, y).setTeam(randint(1, colors.length - 1)));
+    else if (val == 1) {
+      entities.push(new Drainer().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 6) {
-      entities.push(new Drainer().setPosition(x, y).setTeam(randint(1, colors.length - 1)));
+    else if (val == 2) {
+      entities.push(new Decoy().setPosition(x, y).setTeam(team));
+    }
+    else if (val <= 4) {
+      entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
     else {
-      entities.push(new Warrior().setPosition(x, y).setTeam(randint(1, colors.length - 1)));
+      entities.push(new Warrior().setPosition(x, y).setTeam(team));
     }
     var doAgain = false;
     for (var j = 0; j < (entities.length - 1); ++j) {
