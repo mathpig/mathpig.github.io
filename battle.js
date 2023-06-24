@@ -227,11 +227,11 @@ class Rogue extends Warrior {
 }
 
 entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
-for (var i = 0; i < 250; ++i) {
+for (var i = 0; i < 500; ++i) {
   while (true) {
     var x = randint(100, screen.width - 100);
     var y = randint(100, screen.height - 100);
-    var val = randint(0, 9);
+    var val = randint(0, 19);
     var team = randint(1, colors.length - 1);
     if (val == 0) {
       entities.push(new BigWarrior().setPosition(x, y).setTeam(team));
