@@ -261,4 +261,4 @@ for (var i = 0; i < 250; ++i) {
   }
 }
 
-setInterval(Tick, 20);
+setInterval(Tick, 25);
