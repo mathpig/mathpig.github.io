@@ -164,10 +164,10 @@ class Giant extends Warrior {
   constructor() {
     super();
     this.speed = 0.5;
-    this.health = randint(320, 480);
+    this.health = randint(640, 960);
     this.maxHealth = this.health;
-    this.minAttack = 32;
-    this.maxAttack = 64;
+    this.minAttack = 64;
+    this.maxAttack = 128;
     this.size = 40;
     this.cooldown = 80;
     this.maxCooldown = this.cooldown;
@@ -178,10 +178,10 @@ class BigWarrior extends Warrior {
   constructor() {
     super();
     this.speed = 0.75;
-    this.health = randint(240, 360);
+    this.health = randint(320, 480);
     this.maxHealth = this.health;
-    this.minAttack = 10;
-    this.maxAttack = 20;
+    this.minAttack = 16;
+    this.maxAttack = 32;
     this.size = 30;
     this.cooldown = 40;
     this.maxCooldown = this.cooldown;
@@ -216,23 +216,21 @@ class Rogue extends Warrior {
   constructor() {
     super();
     this.speed = 2;
-    this.health = randint(80, 120);
+    this.health = randint(40, 60);
     this.maxHealth = this.health;
-    this.minAttack = 8;
-    this.maxAttack = 16;
+    this.minAttack = 16;
+    this.maxAttack = 32;
     this.size = 10;
     this.cooldown = 10;
     this.maxCooldown = this.cooldown;
   }
 }
 
-var x = randint(100, screen.width - 100);
-var y = randint(100, screen.height - 100);
-entities.push(new Giant().setPosition(x, y).setTeam(0));
+entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
 for (var i = 0; i < 250; ++i) {
   while (true) {
-    x = randint(100, screen.width - 100);
-    y = randint(100, screen.height - 100);
+    var x = randint(100, screen.width - 100);
+    var y = randint(100, screen.height - 100);
     var val = randint(0, 9);
     var team = randint(1, colors.length - 1);
     if (val == 0) {
@@ -263,4 +261,4 @@ for (var i = 0; i < 250; ++i) {
   }
 }
 
-setInterval(Tick, 50);
+setInterval(Tick, 20);
