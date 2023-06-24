@@ -192,9 +192,9 @@ class Drainer extends Warrior {
   constructor() {
     super();
     this.speed = 0.25;
-    this.minAttack = 1;
-    this.maxAttack = 2;
-    this.cooldown = 5;
+    this.minAttack = 2;
+    this.maxAttack = 3;
+    this.cooldown = 0;
     this.maxCooldown = this.cooldown;
   }
 }
