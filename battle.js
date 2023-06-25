@@ -3,7 +3,7 @@
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-var colors = ["gray", "red", "orange", "yellow", "green", "blue", "purple", "pink", "brown", "black"];
+var colors = ["gray", "red", "orange", "yellow", "green", "blue", "purple", "pink", "magenta", "brown", "black"];
 
 var entities = [];
 
@@ -375,8 +375,8 @@ for (var i = 0; i < 250; ++i) {
   while (true) {
     var x = randint(100, screen.width - 100);
     var y = randint(100, screen.height - 100);
-    var val = randint(0, 19);
     var team = randint(1, colors.length - 1);
+    var val = randint(0, 19);
     if (val == 0) {
       entities.push(new BigWarrior().setPosition(x, y).setTeam(team));
     }
