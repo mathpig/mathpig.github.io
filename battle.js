@@ -187,7 +187,7 @@ class BigWarrior extends Warrior {
   }
 }
 
-class Drainer extends Warrior {
+class Vampire extends Warrior {
   constructor() {
     super();
     this.speed = 0.25;
@@ -381,7 +381,7 @@ for (var i = 0; i < 250; ++i) {
       entities.push(new BigWarrior().setPosition(x, y).setTeam(team));
     }
     else if (val == 1) {
-      entities.push(new Drainer().setPosition(x, y).setTeam(team));
+      entities.push(new Vampire().setPosition(x, y).setTeam(team));
     }
     else if (val == 2) {
       entities.push(new Decoy().setPosition(x, y).setTeam(team));
