@@ -32,6 +32,8 @@ class Warrior {
     this.maxCooldown = this.cooldown;
     this.frozen = false;
     this.frozenCooldown = 0;
+    this.burning = false;
+    this.burningCooldown = 0;
   }
 
   setSpeed(speed) {
@@ -87,6 +89,16 @@ class Warrior {
     return this;
   }
 
+  setBurning(burning) {
+    this.burning = burning;
+    return this;
+  }
+
+  setBurningCooldown(burningCooldown) {
+    this.burningCooldown = burningCooldown;
+    return this;
+  }
+
   touches(other) {
     return (overlaps(this.x - this.size / 2, this.x + this.size / 2, other.x - other.size / 2, other.x + other.size / 2) &&
             overlaps(this.y - this.size / 2, this.y + this.size / 2, other.y - other.size / 2, other.y + other.size / 2));
@@ -95,6 +107,9 @@ class Warrior {
   draw() {
     if (this.frozen) {
       ctx.fillStyle = "cyan";
+    }
+    else if (this.burning) {
+      ctx.fillStyle = "orangered";
     }
     else {
       ctx.fillStyle = colors[this.team];
@@ -110,12 +125,38 @@ class Warrior {
     ctx.fillRect(this.x - this.size / 2 + val, this.y - 7 * this.size / 10 - 1, this.size - val, this.size / 5);
   }
 
-  tick() {
+  updateStatus() {
+    this.frozenCooldown--;
+    this.burningCooldown--;
     if (this.frozen) {
-      this.frozenCooldown -= 1;
+      this.burning = false;
       if (this.frozenCooldown <= 0) {
         this.frozen = false;
       }
+      return true;
+    }
+    if (this.burning) {
+      this.health -= randint(1, 2);
+      if (this.health <= 0) {
+        var index = 0;
+        for (var i = 0; i < entities.length; ++i) {
+          if (entities[i] === this) {
+            index = i;
+            break;
+          }
+        }
+        entities.splice(index, 1);
+        return true;
+      }
+      if (this.burningCooldown <= 0) {
+        this.burning = false;
+      }
+    }
+    return false;
+  }
+
+  tick() {
+    if (this.updateStatus()) {
       return;
     }
     var bestDistance = 10000;
@@ -258,6 +299,7 @@ class Bullet {
     this.attack = 0;
     this.size = 10;
     this.freezeTime = 0;
+    this.burnTime = 0;
     this.color = "black";
     this.source = 0;
   }
@@ -286,6 +328,11 @@ class Bullet {
 
   setFreezeTime(freezeTime) {
     this.freezeTime = freezeTime;
+    return this;
+  }
+
+  setBurnTime(burnTime) {
+    this.burnTime = burnTime;
     return this;
   }
 
@@ -344,6 +391,10 @@ class Bullet {
         entities[index].frozen = true;
         entities[index].frozenCooldown = this.freezeTime;
       }
+      else if (this.burnTime > 0) {
+        entities[index].burning = true;
+        entities[index].burningCooldown = this.burnTime;
+      }
       this.remove();
     }
   }
@@ -361,6 +412,7 @@ class Archer extends Warrior {
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
     this.bulletSpeed = 3;
+    this.bulletBurnTime = 0;
     this.bulletFreezeTime = 0;
     this.bulletColor = "black";
   }
@@ -375,18 +427,44 @@ class Archer extends Warrior {
     return this;
   }
 
+  setBulletBurnTime(bulletBurnTime) {
+    this.bulletBurnTime = bulletBurnTime;
+    return this;
+  }
+
   setBulletFreezeTime(bulletFreezeTime) {
     this.bulletFreezeTime = bulletFreezeTime;
     return this;
   }
 
   tick() {
+    if (this.updateStatus()) {
+      return;
+    }
+    this.frozenCooldown--;
+    this.burningCooldown--;
     if (this.frozen) {
-      this.frozenCooldown -= 1;
       if (this.frozenCooldown <= 0) {
         this.frozen = false;
       }
       return;
+    }
+    if (this.burning) {
+      this.hp -= 1;
+      if (this.hp <= 0) {
+        var index = 0;
+        for (var i = 0; i < entities.length; ++i) {
+          if (entities[i] === this) {
+            index = i;
+            break;
+          }
+        }
+        entities.splice(index, 1);
+        return;
+      }
+      if (this.burningCooldown <= 0) {
+        this.burning = false;
+      }
     }
     var bestDistance = 10000;
     var index = 0;
@@ -403,7 +481,7 @@ class Archer extends Warrior {
     if (bestDistance != 10000 && this.cooldown <= 0) {
       var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance;
       var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance;
-      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setFreezeTime(this.bulletFreezeTime).setColor(this.bulletColor).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setColor(this.bulletColor).setSource(this));
       this.cooldown = this.maxCooldown;
     }
     this.cooldown -= 1;
@@ -424,7 +502,39 @@ class Gunner extends Archer {
   }
 }
 
-class Sorcerer extends Archer {
+class Flamethrower extends Archer {
+  constructor() {
+    super();
+    this.health = randint(20, 30);
+    this.maxHealth = this.health;
+    this.minAttack = 0;
+    this.maxAttack = 0;
+    this.cooldown = 1;
+    this.maxCooldown = this.cooldown;
+    this.bulletSize = 10;
+    this.bulletSpeed = 2;
+    this.bulletBurnTime = 20;
+    this.bulletColor = "orangered";
+  }
+}
+
+class FireMage extends Archer {
+  constructor() {
+    super();
+    this.health = randint(30, 45);
+    this.maxHealth = this.health;
+    this.minAttack = 8;
+    this.maxAttack = 16;
+    this.cooldown = 160;
+    this.maxCooldown = this.cooldown;
+    this.bulletSize = 15;
+    this.bulletSpeed = 2;
+    this.bulletBurnTime = 80;
+    this.bulletColor = "orangered";
+  }
+}
+
+class IceMage extends Archer {
   constructor() {
     super();
     this.minAttack = 4;
@@ -457,11 +567,17 @@ for (var i = 0; i < 250; ++i) {
     else if (val <= 7) {
       entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 9) {
+    else if (val == 8) {
       entities.push(new Gunner().setPosition(x, y).setTeam(team));
     }
+    else if (val == 9) {
+      entities.push(new Flamethrower().setPosition(x, y).setTeam(team));
+    }
+    else if (val <= 11) {
+      entities.push(new FireMage().setPosition(x, y).setTeam(team));
+    }
     else if (val <= 13) {
-      entities.push(new Sorcerer().setPosition(x, y).setTeam(team));
+      entities.push(new IceMage().setPosition(x, y).setTeam(team));
     }
     else if (val <= 19) {
       entities.push(new Archer().setPosition(x, y).setTeam(team));
