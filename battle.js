@@ -507,8 +507,8 @@ class Flamethrower extends Archer {
     super();
     this.health = randint(20, 30);
     this.maxHealth = this.health;
-    this.minAttack = 0;
-    this.maxAttack = 0;
+    this.minAttack = 1;
+    this.maxAttack = 1;
     this.cooldown = 1;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
