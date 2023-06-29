@@ -340,7 +340,7 @@ class Bullet {
       if (entities[index].health <= 0) {
         entities.splice(index, 1);
       }
-      if (this.freezeTime > 0) {
+      else if (this.freezeTime > 0) {
         entities[index].frozen = true;
         entities[index].frozenCooldown = this.freezeTime;
       }
