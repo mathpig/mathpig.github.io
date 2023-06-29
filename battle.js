@@ -69,6 +69,11 @@ class Warrior {
     return this;
   }
 
+  setMaxHealth(maxHealth) {
+    this.maxHealth = maxHealth;
+    return this;
+  }
+
   setTeam(team) {
     this.team = team;
     return this;
