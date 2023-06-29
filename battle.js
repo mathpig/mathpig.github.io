@@ -493,8 +493,8 @@ class Gunner extends Archer {
     super();
     this.health = randint(20, 30);
     this.maxHealth = this.health;
-    this.minAttack = 1;
-    this.maxAttack = 2;
+    this.minAttack = 2;
+    this.maxAttack = 4;
     this.cooldown = 5;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 4;
