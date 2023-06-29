@@ -513,7 +513,7 @@ class Flamethrower extends Archer {
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
     this.bulletSpeed = 5;
-    this.bulletBurnTime = 1;
+    this.bulletBurnTime = 10;
     this.bulletColor = "orangered";
   }
 }
