@@ -508,13 +508,27 @@ class Flamethrower extends Archer {
     this.health = randint(20, 30);
     this.maxHealth = this.health;
     this.minAttack = 1;
-    this.maxAttack = 1;
-    this.cooldown = 1;
+    this.maxAttack = 2;
+    this.cooldown = 5;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
     this.bulletSpeed = 5;
-    this.bulletBurnTime = 5;
+    this.bulletBurnTime = 1;
     this.bulletColor = "orangered";
+  }
+}
+
+class Icethrower extends Archer {
+  constructor() {
+    super();
+    this.minAttack = 2;
+    this.maxAttack = 4;
+    this.cooldown = 5;
+    this.maxCooldown = this.cooldown;
+    this.bulletSize = 8;
+    this.bulletSpeed = 5;
+    this.bulletFreezeTime = 10;
+    this.bulletColor = "cyan";
   }
 }
 
@@ -523,8 +537,8 @@ class FireMage extends Archer {
     super();
     this.health = randint(30, 45);
     this.maxHealth = this.health;
-    this.minAttack = 8;
-    this.maxAttack = 16;
+    this.minAttack = 2;
+    this.maxAttack = 4;
     this.cooldown = 160;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 16;
@@ -567,16 +581,19 @@ for (var i = 0; i < 250; ++i) {
     else if (val <= 7) {
       entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
-    else if (val == 8) {
+    else if (val <= 9) {
       entities.push(new Gunner().setPosition(x, y).setTeam(team));
     }
-    else if (val == 9) {
+    else if (val == 10) {
       entities.push(new Flamethrower().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 11) {
+    else if (val == 11) {
+      entities.push(new Icethrower().setPosition(x, y).setTeam(team));
+    }
+    else if (val == 12) {
       entities.push(new FireMage().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 13) {
+    else if (val == 13) {
       entities.push(new IceMage().setPosition(x, y).setTeam(team));
     }
     else if (val <= 19) {
