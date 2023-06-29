@@ -389,11 +389,11 @@ class Bullet {
       }
       else if (this.freezeTime > 0) {
         entities[index].frozen = true;
-        entities[index].frozenCooldown = this.freezeTime;
+        entities[index].frozenCooldown = Math.max(entities[index].frozenCooldown, this.freezeTime);
       }
       else if (this.burnTime > 0) {
         entities[index].burning = true;
-        entities[index].burningCooldown = this.burnTime;
+        entities[index].burningCooldown = Math.max(entities[index].burningCooldown, this.burnTime);
       }
       this.remove();
     }
