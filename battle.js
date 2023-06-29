@@ -523,11 +523,11 @@ class Icethrower extends Archer {
     super();
     this.minAttack = 2;
     this.maxAttack = 4;
-    this.cooldown = 5;
+    this.cooldown = 10;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
     this.bulletSpeed = 5;
-    this.bulletFreezeTime = 10;
+    this.bulletFreezeTime = 20;
     this.bulletColor = "cyan";
   }
 }
