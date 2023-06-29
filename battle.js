@@ -511,9 +511,9 @@ class Flamethrower extends Archer {
     this.maxAttack = 0;
     this.cooldown = 1;
     this.maxCooldown = this.cooldown;
-    this.bulletSize = 10;
+    this.bulletSize = 8;
     this.bulletSpeed = 2;
-    this.bulletBurnTime = 20;
+    this.bulletBurnTime = 5;
     this.bulletColor = "orangered";
   }
 }
@@ -527,7 +527,7 @@ class FireMage extends Archer {
     this.maxAttack = 16;
     this.cooldown = 160;
     this.maxCooldown = this.cooldown;
-    this.bulletSize = 15;
+    this.bulletSize = 16;
     this.bulletSpeed = 2;
     this.bulletBurnTime = 80;
     this.bulletColor = "orangered";
@@ -541,7 +541,7 @@ class IceMage extends Archer {
     this.maxAttack = 8;
     this.cooldown = 320;
     this.maxCooldown = this.cooldown;
-    this.bulletSize = 15;
+    this.bulletSize = 16;
     this.bulletSpeed = 2;
     this.bulletFreezeTime = 640;
     this.bulletColor = "cyan";
