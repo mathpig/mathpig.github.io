@@ -30,6 +30,8 @@ class Warrior {
     this.team = 0;
     this.cooldown = 20;
     this.maxCooldown = this.cooldown;
+    this.frozen = false;
+    this.frozenCooldown = 0;
   }
 
   setSpeed(speed) {
@@ -75,13 +77,28 @@ class Warrior {
     return this;
   }
 
+  setFrozen(frozen) {
+    this.frozen = frozen;
+    return this;
+  }
+
+  setFrozenCooldown(frozenCooldown) {
+    this.frozenCooldown = frozenCooldown;
+    return this;
+  }
+
   touches(other) {
     return (overlaps(this.x - this.size / 2, this.x + this.size / 2, other.x - other.size / 2, other.x + other.size / 2) &&
             overlaps(this.y - this.size / 2, this.y + this.size / 2, other.y - other.size / 2, other.y + other.size / 2));
   }
 
   draw() {
-    ctx.fillStyle = colors[this.team];
+    if (this.frozen) {
+      ctx.fillStyle = "cyan";
+    }
+    else {
+      ctx.fillStyle = colors[this.team];
+    }
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
 
@@ -94,6 +111,13 @@ class Warrior {
   }
 
   tick() {
+    if (this.frozen) {
+      this.frozenCooldown -= 1;
+      if (this.frozenCooldown <= 0) {
+        this.frozen = false;
+      }
+      return;
+    }
     var bestDistance = 10000;
     var index = 0;
     for (var i = 0; i < entities.length; ++i) {
@@ -233,6 +257,8 @@ class Bullet {
     this.vy = 0;
     this.attack = 0;
     this.size = 10;
+    this.freezeTime = 0;
+    this.color = "black";
     this.source = 0;
   }
 
@@ -258,13 +284,23 @@ class Bullet {
     return this;
   }
 
+  setFreezeTime(freezeTime) {
+    this.freezeTime = freezeTime;
+    return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
   setSource(source) {
     this.source = source;
     return this;
   }
 
   draw() {
-    ctx.fillStyle = "black";
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
 
@@ -304,6 +340,10 @@ class Bullet {
       if (entities[index].health <= 0) {
         entities.splice(index, 1);
       }
+      if (this.freezeTime > 0) {
+        entities[index].frozen = true;
+        entities[index].frozenCooldown = this.freezeTime;
+      }
       this.remove();
     }
   }
@@ -321,6 +361,8 @@ class Archer extends Warrior {
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
     this.bulletSpeed = 3;
+    this.bulletFreezeTime = 0;
+    this.bulletColor = "black";
   }
 
   setBulletSize(bulletSize) {
@@ -333,7 +375,19 @@ class Archer extends Warrior {
     return this;
   }
 
+  setBulletFreezeTime(bulletFreezeTime) {
+    this.bulletFreezeTime = bulletFreezeTime;
+    return this;
+  }
+
   tick() {
+    if (this.frozen) {
+      this.frozenCooldown -= 1;
+      if (this.frozenCooldown <= 0) {
+        this.frozen = false;
+      }
+      return;
+    }
     var bestDistance = 10000;
     var index = 0;
     for (var i = 0; i < entities.length; ++i) {
@@ -349,7 +403,7 @@ class Archer extends Warrior {
     if (bestDistance != 10000 && this.cooldown <= 0) {
       var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance;
       var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance;
-      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setFreezeTime(this.bulletFreezeTime).setColor(this.bulletColor).setSource(this));
       this.cooldown = this.maxCooldown;
     }
     this.cooldown -= 1;
@@ -370,29 +424,46 @@ class Gunner extends Archer {
   }
 }
 
+class Sorcerer extends Archer {
+  constructor() {
+    super();
+    this.minAttack = 4;
+    this.maxAttack = 8;
+    this.cooldown = 320;
+    this.maxCooldown = this.cooldown;
+    this.bulletSize = 15;
+    this.bulletSpeed = 2;
+    this.bulletFreezeTime = 640;
+    this.bulletColor = "cyan";
+  }
+}
+
 entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
 for (var i = 0; i < 250; ++i) {
   while (true) {
     var x = randint(100, screen.width - 100);
     var y = randint(100, screen.height - 100);
     var team = randint(1, colors.length - 1);
-    var val = randint(0, 19);
-    if (val == 0) {
+    var val = randint(0, 29);
+    if (val <= 2) {
       entities.push(new BigWarrior().setPosition(x, y).setTeam(team));
     }
-    else if (val == 1) {
+    else if (val == 3) {
       entities.push(new Vampire().setPosition(x, y).setTeam(team));
     }
-    else if (val == 2) {
+    else if (val == 4) {
       entities.push(new Decoy().setPosition(x, y).setTeam(team));
     }
-    else if (val == 3) {
+    else if (val <= 7) {
       entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
-    else if (val == 4) {
+    else if (val <= 9) {
       entities.push(new Gunner().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 9) {
+    else if (val <= 13) {
+      entities.push(new Sorcerer().setPosition(x, y).setTeam(team));
+    }
+    else if (val <= 19) {
       entities.push(new Archer().setPosition(x, y).setTeam(team));
     }
     else {
