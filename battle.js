@@ -555,7 +555,7 @@ class Icethrower extends Archer {
 class FireMage extends Archer {
   constructor() {
     super();
-    this.health = randint(160, 240);
+    this.health = randint(640, 960);
     this.maxHealth = this.health;
     this.minAttack = 2;
     this.maxAttack = 4;
@@ -571,7 +571,7 @@ class FireMage extends Archer {
 class IceMage extends Archer {
   constructor() {
     super();
-    this.health = randint(320, 480);
+    this.health = randint(640, 960);
     this.maxHealth = this.health;
     this.minAttack = 4;
     this.maxAttack = 8;
