@@ -22,7 +22,7 @@ class Warrior {
     this.y = 0;
     this.vx = 0;
     this.vy = 0;
-    this.health = randint(160, 240);
+    this.health = randint(320, 480);
     this.maxHealth = this.health;
     this.minAttack = 4;
     this.maxAttack = 8;
@@ -248,7 +248,7 @@ class Giant extends Warrior {
   constructor() {
     super();
     this.speed = 0.5;
-    this.health = randint(640, 960);
+    this.health = randint(1280, 1920);
     this.maxHealth = this.health;
     this.minAttack = 64;
     this.maxAttack = 128;
@@ -262,7 +262,7 @@ class BigWarrior extends Warrior {
   constructor() {
     super();
     this.speed = 0.75;
-    this.health = randint(320, 480);
+    this.health = randint(640, 960);
     this.maxHealth = this.health;
     this.minAttack = 16;
     this.maxAttack = 32;
@@ -287,7 +287,7 @@ class Decoy extends Warrior {
   constructor() {
     super();
     this.speed = 0;
-    this.health = randint(640, 960);
+    this.health = randint(1280, 1920);
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
@@ -300,7 +300,7 @@ class Rogue extends Warrior {
   constructor() {
     super();
     this.speed = 2;
-    this.health = randint(40, 60);
+    this.health = randint(80, 120);
     this.maxHealth = this.health;
     this.minAttack = 16;
     this.maxAttack = 32;
@@ -423,7 +423,7 @@ class Bullet {
 class Archer extends Warrior {
   constructor() {
     super();
-    this.health = randint(40, 60);
+    this.health = randint(80, 120);
     this.maxHealth = this.health;
     this.minAttack = 32;
     this.maxAttack = 64;
@@ -511,7 +511,7 @@ class Archer extends Warrior {
 class Gunner extends Archer {
   constructor() {
     super();
-    this.health = randint(20, 30);
+    this.health = randint(40, 60);
     this.maxHealth = this.health;
     this.minAttack = 2;
     this.maxAttack = 4;
@@ -525,7 +525,7 @@ class Gunner extends Archer {
 class Flamethrower extends Archer {
   constructor() {
     super();
-    this.health = randint(20, 30);
+    this.health = randint(40, 60);
     this.maxHealth = this.health;
     this.minAttack = 1;
     this.maxAttack = 2;
@@ -555,7 +555,7 @@ class Icethrower extends Archer {
 class FireMage extends Archer {
   constructor() {
     super();
-    this.health = randint(80, 120);
+    this.health = randint(160, 240);
     this.maxHealth = this.health;
     this.minAttack = 2;
     this.maxAttack = 4;
@@ -571,7 +571,7 @@ class FireMage extends Archer {
 class IceMage extends Archer {
   constructor() {
     super();
-    this.health = randint(160, 240);
+    this.health = randint(320, 480);
     this.maxHealth = this.health;
     this.minAttack = 4;
     this.maxAttack = 8;
