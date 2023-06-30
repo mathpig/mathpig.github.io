@@ -391,7 +391,7 @@ class Bullet {
   tick() {
     this.x += this.vx;
     this.y += this.vy;
-    if (this.x < 100 || this.x > (screen.width - 100) || this.y < 100 || this.y > (screen.height - 100)) {
+    if (this.x < -50 || this.x > (screen.width + 50) || this.y < -50 || this.y > (screen.height + 50)) {
       this.remove();
       return;
     }
