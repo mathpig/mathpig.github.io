@@ -538,7 +538,7 @@ class Flamethrower extends Archer {
   }
 }
 
-class Icethrower extends Archer {
+class Frostthrower extends Archer {
   constructor() {
     super();
     this.minAttack = 2;
@@ -610,7 +610,7 @@ for (var i = 0; i < 250; ++i) {
       entities.push(new Flamethrower().setPosition(x, y).setTeam(team));
     }
     else if (val == 11) {
-      entities.push(new Icethrower().setPosition(x, y).setTeam(team));
+      entities.push(new Frostthrower().setPosition(x, y).setTeam(team));
     }
     else if (val <= 13) {
       entities.push(new FireMage().setPosition(x, y).setTeam(team));
