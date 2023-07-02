@@ -292,8 +292,8 @@ class Vampire extends Warrior {
     this.health = randint(960, 1440);
     this.maxHealth = this.health;
     this.speed = 0.25;
-    this.minAttack = 1;
-    this.maxAttack = 1;
+    this.minAttack = 4;
+    this.maxAttack = 8;
     this.cooldown = 1;
     this.maxCooldown = this.cooldown;
   }
