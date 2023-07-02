@@ -4,10 +4,10 @@ function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
 
-var pillager1 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillage_idle1.ogg');
-var pillager2 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillage_idle2.ogg');
-var pillager3 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillage_idle3.ogg');
-var pillager4 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillage_idle4.ogg');
+var pillager1 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillager_idle1.ogg');
+var pillager2 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillager_idle2.ogg');
+var pillager3 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillager_idle3.ogg');
+var pillager4 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pillager_idle4.ogg');
 
 var pillagerSounds = [[pillager1, pillager2, pillager3, pillager4]];
 
