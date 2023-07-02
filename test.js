@@ -11,21 +11,21 @@ var pillager4 = new Audio('sounds/Pillage_idle4.ogg');
 
 var pillagerSounds = [[pillager1, pillager2, pillager3, pillager4]];
 
-var loadA1 = new Audio('/minecraftsounds/sounds/Crossbow_loading_start.ogg);
+var loadA1 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_loading_start.ogg');
 
-var loadB1 = new Audio('/minecraftsounds/sounds/Crossbow_loading_middle1.ogg');
-var loadB2 = new Audio('/minecraftsounds/sounds/Crossbow_loading_middle2.ogg');
-var loadB3 = new Audio('/minecraftsounds/sounds/Crossbow_loading_middle3.ogg');
-var loadB4 = new Audio('/minecraftsounds/sounds/Crossbow_loading_middle4.ogg');
+var loadB1 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_loading_middle1.ogg');
+var loadB2 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_loading_middle2.ogg');
+var loadB3 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_loading_middle3.ogg');
+var loadB4 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_loading_middle4.ogg');
 
-var fire1 = new Audio('/minecraftsounds/sounds/Crossbow_shoot1.ogg');
-var fire2 = new Audio('/minecraftsounds/sounds/Crossbow_shoot2.ogg');
-var fire3 = new Audio('/minecraftsounds/sounds/Crossbow_shoot3.ogg');
+var fire1 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_shoot1.ogg');
+var fire2 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_shoot2.ogg');
+var fire3 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Crossbow_shoot3.ogg');
 
-var hit1 = new Audio('/minecraftsounds/sounds/Arrow_hit1.ogg');
-var hit2 = new Audio('/minecraftsounds/sounds/Arrow_hit2.ogg');
-var hit3 = new Audio('/minecraftsounds/sounds/Arrow_hit3.ogg');
-var hit4 = new Audio('/minecraftsounds/sounds/Arrow_hit4.ogg');
+var hit1 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Arrow_hit1.ogg');
+var hit2 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Arrow_hit2.ogg');
+var hit3 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Arrow_hit3.ogg');
+var hit4 = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Arrow_hit4.ogg');
 
 var crossbowSounds = [[loadA1], [loadB1, loadB2, loadB3, loadB4], [fire1, fire2, fire3], [hit1, hit2, hit3, hit4]];
 
