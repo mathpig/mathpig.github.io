@@ -289,6 +289,8 @@ class BigWarrior extends Warrior {
 class Vampire extends Warrior {
   constructor() {
     super();
+    this.health = randint(960, 1440);
+    this.maxHealth = this.health;
     this.speed = 0.25;
     this.minAttack = 1;
     this.maxAttack = 1;
