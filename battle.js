@@ -22,7 +22,7 @@ class Warrior {
     this.y = 0;
     this.vx = 0;
     this.vy = 0;
-    this.health = randint(320, 480);
+    this.health = randint(640, 960);
     this.maxHealth = this.health;
     this.minAttack = 4;
     this.maxAttack = 8;
@@ -30,10 +30,11 @@ class Warrior {
     this.team = 0;
     this.cooldown = 20;
     this.maxCooldown = this.cooldown;
-    this.frozen = false;
-    this.frozenCooldown = 0;
     this.burning = false;
     this.burningCooldown = 0;
+    this.frozen = false;
+    this.frozenCooldown = 0;
+    this.poisoned = false;
   }
 
   setSpeed(speed) {
@@ -84,16 +85,6 @@ class Warrior {
     return this;
   }
 
-  setFrozen(frozen) {
-    this.frozen = frozen;
-    return this;
-  }
-
-  setFrozenCooldown(frozenCooldown) {
-    this.frozenCooldown = frozenCooldown;
-    return this;
-  }
-
   setBurning(burning) {
     this.burning = burning;
     return this;
@@ -101,6 +92,16 @@ class Warrior {
 
   setBurningCooldown(burningCooldown) {
     this.burningCooldown = burningCooldown;
+    return this;
+  }
+
+  setFrozen(frozen) {
+    this.frozen = frozen;
+    return this;
+  }
+
+  setFrozenCooldown(frozenCooldown) {
+    this.frozenCooldown = frozenCooldown;
     return this;
   }
 
@@ -115,6 +116,9 @@ class Warrior {
     }
     else if (this.burning) {
       ctx.fillStyle = "orangered";
+    }
+    else if (this.poisoned) {
+      ctx.fillStyle = "darkgreen";
     }
     else {
       ctx.fillStyle = colors[this.team];
@@ -147,9 +151,10 @@ class Warrior {
     if (this.burning && this.frozen) {
       this.burning = false;
       this.frozen = false;
+      this.poisoned = false;
       this.burningCountdown = 0;
       this.frozenCountdown = 0;
-      this.health -= randint(10, 20);
+      this.health -= randint(32, 64);
       if (this.health <= 0) {
         this.kill();
         return true;
@@ -157,6 +162,7 @@ class Warrior {
       return false;
     }
     if (this.burning) {
+      this.poisoned = false;
       this.health -= randint(1, 2);
       if (this.health <= 0) {
         this.kill();
@@ -167,10 +173,18 @@ class Warrior {
       }
     }
     if (this.frozen) {
+      this.poisoned = false;
       if (this.frozenCooldown <= 0) {
         this.frozen = false;
       }
       return true;
+    }
+    if (this.poisoned) {
+      this.health -= randint(0, 1);
+      if (this.health <= 0) {
+        this.kill();
+        return true;
+      }
     }
     return false;
   }
@@ -248,7 +262,7 @@ class Giant extends Warrior {
   constructor() {
     super();
     this.speed = 0.5;
-    this.health = randint(1280, 1920);
+    this.health = randint(2560, 3840);
     this.maxHealth = this.health;
     this.minAttack = 64;
     this.maxAttack = 128;
@@ -262,7 +276,7 @@ class BigWarrior extends Warrior {
   constructor() {
     super();
     this.speed = 0.75;
-    this.health = randint(640, 960);
+    this.health = randint(1280, 1920);
     this.maxHealth = this.health;
     this.minAttack = 16;
     this.maxAttack = 32;
@@ -287,7 +301,7 @@ class Decoy extends Warrior {
   constructor() {
     super();
     this.speed = 0;
-    this.health = randint(1280, 1920);
+    this.health = randint(2560, 3840);
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
@@ -300,7 +314,7 @@ class Rogue extends Warrior {
   constructor() {
     super();
     this.speed = 2;
-    this.health = randint(80, 120);
+    this.health = randint(160, 240);
     this.maxHealth = this.health;
     this.minAttack = 16;
     this.maxAttack = 32;
@@ -318,8 +332,9 @@ class Bullet {
     this.vy = 0;
     this.attack = 0;
     this.size = 10;
-    this.freezeTime = 0;
     this.burnTime = 0;
+    this.freezeTime = 0;
+    this.poisons = false;
     this.color = "black";
     this.source = 0;
   }
@@ -346,13 +361,18 @@ class Bullet {
     return this;
   }
 
+  setBurnTime(burnTime) {
+    this.burnTime = burnTime;
+    return this;
+  }
+
   setFreezeTime(freezeTime) {
     this.freezeTime = freezeTime;
     return this;
   }
 
-  setBurnTime(burnTime) {
-    this.burnTime = burnTime;
+  setPoisons(poisons) {
+    this.poisons = poisons;
     return this;
   }
 
@@ -415,6 +435,9 @@ class Bullet {
         entities[index].burning = true;
         entities[index].burningCooldown = Math.max(entities[index].burningCooldown, this.burnTime);
       }
+      else if (this.poisons) {
+        entities[index].poisoned = true;
+      }
       this.remove();
     }
   }
@@ -434,6 +457,7 @@ class Archer extends Warrior {
     this.bulletSpeed = 3;
     this.bulletBurnTime = 0;
     this.bulletFreezeTime = 0;
+    this.bulletPoisons = false;
     this.bulletColor = "black";
   }
 
@@ -454,6 +478,11 @@ class Archer extends Warrior {
 
   setBulletFreezeTime(bulletFreezeTime) {
     this.bulletFreezeTime = bulletFreezeTime;
+    return this;
+  }
+
+  setBulletPoisons(bulletPoisons) {
+    this.bulletPoisons = bulletPoisons;
     return this;
   }
 
@@ -501,7 +530,7 @@ class Archer extends Warrior {
     if (bestDistance != 10000 && this.cooldown <= 0) {
       var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
       var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
-      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setColor(this.bulletColor).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
       this.cooldown = this.maxCooldown;
     }
     this.cooldown -= 1;
@@ -541,14 +570,30 @@ class Flamethrower extends Archer {
 class Frostthrower extends Archer {
   constructor() {
     super();
-    this.minAttack = 2;
-    this.maxAttack = 4;
+    this.minAttack = 4;
+    this.maxAttack = 8;
     this.cooldown = 8;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
     this.bulletSpeed = 5;
     this.bulletFreezeTime = 32;
     this.bulletColor = "cyan";
+  }
+}
+
+class Poisonthrower extends Archer {
+  constructor() {
+    super();
+    this.health = randint(60, 90);
+    this.maxHealth = this.health;
+    this.minAttack = 2;
+    this.maxAttack = 4;
+    this.cooldown = 6;
+    this.maxCooldown = this.cooldown;
+    this.bulletSize = 8;
+    this.bulletSpeed = 5;
+    this.bulletPoisons = true;
+    this.bulletColor = "darkgreen";
   }
 }
 
@@ -584,6 +629,22 @@ class IceMage extends Archer {
   }
 }
 
+class PoisonMage extends Archer {
+  constructor() {
+    super();
+    this.health = randint(480, 720);
+    this.maxHealth = this.health;
+    this.minAttack = 3;
+    this.maxAttack = 6;
+    this.cooldown = 60;
+    this.maxCooldown = this.cooldown;
+    this.bulletSize = 16;
+    this.bulletSpeed = 2;
+    this.bulletPoisons = true;
+    this.bulletColor = "darkgreen";
+  }
+}
+
 entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
 for (var i = 0; i < 250; ++i) {
   while (true) {
@@ -612,11 +673,17 @@ for (var i = 0; i < 250; ++i) {
     else if (val == 11) {
       entities.push(new Frostthrower().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 13) {
+    else if (val == 12) {
+      entities.push(new Poisonthrower().setPosition(x, y).setTeam(team));
+    }
+    else if (val == 13) {
       entities.push(new FireMage().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 15) {
+    else if (val == 14) {
       entities.push(new IceMage().setPosition(x, y).setTeam(team));
+    }
+    else if (val == 15) {
+      entities.push(new PoisonMage().setPosition(x, y).setTeam(team));
     }
     else if (val <= 19) {
       entities.push(new Archer().setPosition(x, y).setTeam(team));
