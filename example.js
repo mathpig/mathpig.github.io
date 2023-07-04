@@ -98,7 +98,6 @@ function deflect(oldX, oldY) {
 
 function Tick() {
   canJump = (y == (screen.height - playerSize));
-  if (y + playerSize)
   if (!canJump) {
     var [xx, yy] = findCoords(x, y + playerSize);
     if (m[yy][xx] == "#") {
