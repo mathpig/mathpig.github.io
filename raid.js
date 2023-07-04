@@ -142,7 +142,6 @@ class Player {
         while (this.touches(entities[i])) {
           this.y -= Math.sign(yGain);
         }
-        break;
       }
     }
 
