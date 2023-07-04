@@ -162,10 +162,10 @@ function Tick() {
 }
 
 var gameMap = ["DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-               "DS                             D",
+               "DS             SS             SD",
                "DDDDD      DDDDDDDDDD      DDDDD",
-               "D   D       D      D       D   D",
-               "D D D       DD DD DD       D D D",
+               "D   D       D  SS  D       D   D",
+               "D DSD       DD DD DD       DSD D",
                "D DDD        D    D        DDD D",
                "D            D    D            D",
                "D             D  D             D",
@@ -178,10 +178,10 @@ var gameMap = ["DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
                "D             DDDD             D",
                "D            DD  DD            D",
                "D                              D",
-               "D            DD  DD            D",
+               "D            DDSSDD            D",
                "D             DDDD             D",
                "D DDDDDDDDDDDDDDDDDDDDDDDDDDDD D",
-               "D DD           DD           DD D",
+               "D DD     S     DD     S     DD D",
                "D        D     DD     D        D",
                "D              DD              D",
                "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
@@ -189,8 +189,7 @@ var gameMap = ["DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
 for (var i = 0; i < gameMap.length; ++i) {
   for (var j = 0; j < gameMap[i].length; ++j) {
     if (gameMap[i][j] == "S") {
-      var player = new Player().setSize(blockSize * 3 / 4, blockSize * 3 / 4).setPosition((j + 1 / 8) * blockSize, (i + 1 / 8) * blockSize).setColor("yellow");
-      entities.push(player);
+      entities.push(new Player().setSize(blockSize * 3 / 4, blockSize * 3 / 4).setPosition((j + 1 / 8) * blockSize, (i + 1 / 8) * blockSize).setColor("yellow"));
     }
     else if (gameMap[i][j] == "D") {
       entities.push(new Dirt().setPosition(j * blockSize, i * blockSize));
@@ -201,9 +200,17 @@ for (var i = 0; i < gameMap.length; ++i) {
 setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
-  player.keySet[e.key] = true;
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Player) {
+      entities[i].keySet[e.key] = true;
+    }
+  }
 };
 
 window.onkeyup = function(e) {
-  player.keySet[e.key] = false;
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Player) {
+      entities[i].keySet[e.key] = false;
+    }
+  }
 };
