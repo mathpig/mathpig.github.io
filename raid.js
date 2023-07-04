@@ -121,8 +121,9 @@ class Player {
 
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i] !== this) {
-        this.x -= xGain;
-        break;
+        while (this.touches(entities[i])) {
+          this.x -= Math.sign(xGain);
+        }
       }
     }
 
@@ -138,7 +139,9 @@ class Player {
 
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i] !== this) {
-        this.y -= yGain;
+        while (this.touches(entities[i])) {
+          this.y -= Math.sign(yGain);
+        }
         break;
       }
     }
