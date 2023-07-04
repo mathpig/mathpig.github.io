@@ -127,12 +127,12 @@ class Player {
       }
     }
 
-    this.vy += 1;
+    this.vy += 0.5;
 
     if (this.keySet["ArrowUp"]) {
       this.vy -= 5;
     }
-    this.vy = Math.max(Math.min(this.vy, 5), -5);
+    this.vy = Math.max(Math.min(this.vy, 10), -5);
     var yGain = this.vy;
 
     this.y += yGain;
@@ -141,6 +141,7 @@ class Player {
       if (this.touches(entities[i]) && entities[i] !== this) {
         while (this.touches(entities[i])) {
           this.y -= Math.sign(yGain);
+          this.vy = 0;
         }
       }
     }

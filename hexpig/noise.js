@@ -4,7 +4,7 @@ function Noise(seed, w, x, y, z) {
   return Math.cos(101027 * (Math.cos(seed * 102763 + w * 101477 + x * 103979 +
                             y * 102293 + z * 102101 + 104053) +
                             Math.sin(seed * 101537 + w * 103553 + x * 102503 +
-                            y * 102259 + z * 101641 + 100927)), 1) * 0.5 + 0.5;
+                            y * 102259 + z * 101641 + 100927))) * 0.5 + 0.5;
 }
 
 function LodNoise(seed, lod, x, y, z) {
