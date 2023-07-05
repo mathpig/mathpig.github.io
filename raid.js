@@ -11,7 +11,10 @@ function rangeTouches(a, b, c, d) {
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-var blockSize = screen.width / 32;
+var mapWidth = 96;
+var mapHeight = Math.round(mapWidth * 3 / 4);
+
+var blockSize = Math.floor(screen.width / mapWidth);
 
 var entities = [];
 
@@ -19,8 +22,8 @@ class Block {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.sx = 0;
-    this.sy = 0;
+    this.sx = blockSize;
+    this.sy = blockSize;
     this.solid = true;
   }
 
@@ -45,16 +48,31 @@ class Block {
   }
 }
 
-class Dirt extends Block {
+class Air extends Block {
   constructor() {
     super();
-    this.sx = blockSize;
-    this.sy = blockSize;
+    this.solid = false;
   }
 
   draw() {
+    ctx.fillStyle = "cyan";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Dirt extends Block {
+  draw() {
     ctx.fillStyle = "brown";
     ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Grass extends Block {
+  draw() {
+    ctx.fillStyle = "lime";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
+    ctx.fillStyle = "brown";
+    ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
   }
 }
 
@@ -112,15 +130,15 @@ class Player {
       xGain = 0;
     }
     else if (this.keySet["ArrowLeft"]) {
-      xGain = -5;
+      xGain = -blockSize / 8;
     }
     else if (this.keySet["ArrowRight"]) {
-      xGain = 5;
+      xGain = blockSize / 8;
     }
     this.x += xGain;
 
     for (var i = 0; i < entities.length; ++i) {
-      if (this.touches(entities[i]) && entities[i] !== this) {
+      if (this.touches(entities[i]) && entities[i].solid && entities[i] !== this) {
         while (this.touches(entities[i])) {
           this.x -= Math.sign(xGain);
         }
@@ -130,15 +148,15 @@ class Player {
     this.vy += 0.5;
 
     if (this.keySet["ArrowUp"]) {
-      this.vy -= 5;
+      this.vy -= blockSize / 2;
     }
-    this.vy = Math.max(Math.min(this.vy, 10), -5);
+    this.vy = Math.max(Math.min(this.vy, blockSize / 2), -blockSize / 4);
     var yGain = this.vy;
 
     this.y += yGain;
 
     for (var i = 0; i < entities.length; ++i) {
-      if (this.touches(entities[i]) && entities[i] !== this) {
+      if (this.touches(entities[i]) && entities[i].solid && entities[i] !== this) {
         while (this.touches(entities[i])) {
           this.y -= Math.sign(yGain);
           this.vy = 0;
@@ -152,18 +170,75 @@ class Player {
 }
 
 function Tick() {
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, screen.width, screen.height);
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Block && !entities[i].solid) {
+      entities[i].draw();
+    }
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    if (!entities[i] instanceof Block || entities[i].solid) {
+      entities[i].draw();
+    }
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
-  ctx.fillStyle = "cyan";
-  ctx.fillRect(0, 0, screen.width, screen.height);
-  for (var i = 0; i < entities.length; ++i) {
-    entities[i].draw();
+}
+
+var seedX = randint(-1000000, 1000000);
+var seedY = randint(-1000000, 1000000);
+
+var donePlayer = false;
+
+for (var i = 0; i < mapWidth; ++i) {
+  var seenDirt = false;
+  for (var j = 0; j < mapHeight; ++j) {
+    var val = perlin(seedX + i / 16, seedY + j / 16) + (mapHeight / 2 - j) / mapHeight;
+    if (val < 0) {
+      if (seenDirt) {
+        entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
+      }
+      else {
+        if (j >= 2 && !donePlayer) {
+          donePlayer = true;
+          entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2).setColor("yellow"));
+        }
+        entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
+      }
+      seenDirt = true;
+    }
+    else {
+      entities.push(new Air().setPosition(i * blockSize, j * blockSize));
+    }
   }
 }
 
+screen.width = blockSize * mapWidth;
+screen.height = blockSize * mapHeight;
+
+setInterval(Tick, 20);
+
+window.onkeydown = function(e) {
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Player) {
+      entities[i].keySet[e.key] = true;
+    }
+  }
+};
+
+window.onkeyup = function(e) {
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Player) {
+      entities[i].keySet[e.key] = false;
+    }
+  }
+};
+
+/*
 var gameMap = ["DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-               "DS                             D",
+               "D                              D",
                "DDDDD      DDDDDDDDDD      DDDDD",
                "D   D       D      D       D   D",
                "D D D       DD DD DD       D D D",
@@ -184,34 +259,6 @@ var gameMap = ["DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
                "D DDDDDDDDDDDDDDDDDDDDDDDDDDDD D",
                "D DD           DD           DD D",
                "D        D     DD     D        D",
-               "D              DD              D",
+               "DS             DD              D",
                "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
-
-for (var i = 0; i < gameMap.length; ++i) {
-  for (var j = 0; j < gameMap[i].length; ++j) {
-    if (gameMap[i][j] == "S") {
-      entities.push(new Player().setSize(blockSize * 3 / 4, blockSize * 3 / 4).setPosition((j + 1 / 8) * blockSize, (i + 1 / 8) * blockSize).setColor("yellow"));
-    }
-    else if (gameMap[i][j] == "D") {
-      entities.push(new Dirt().setPosition(j * blockSize, i * blockSize));
-    }
-  }
-}
-
-setInterval(Tick, 20);
-
-window.onkeydown = function(e) {
-  for (var i = 0; i < entities.length; ++i) {
-    if (entities[i] instanceof Player) {
-      entities[i].keySet[e.key] = true;
-    }
-  }
-};
-
-window.onkeyup = function(e) {
-  for (var i = 0; i < entities.length; ++i) {
-    if (entities[i] instanceof Player) {
-      entities[i].keySet[e.key] = false;
-    }
-  }
-};
+*/
