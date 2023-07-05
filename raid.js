@@ -60,6 +60,15 @@ class Air extends Block {
   }
 }
 
+class Grass extends Block {
+  draw() {
+    ctx.fillStyle = "lime";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
+    ctx.fillStyle = "brown";
+    ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+  }
+}
+
 class Dirt extends Block {
   draw() {
     ctx.fillStyle = "brown";
@@ -67,12 +76,24 @@ class Dirt extends Block {
   }
 }
 
-class Grass extends Block {
+class Stone extends Block {
   draw() {
-    ctx.fillStyle = "lime";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
-    ctx.fillStyle = "brown";
-    ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+    ctx.fillStyle = "gray";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Coal extends Block {
+  draw() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Iron extends Block {
+  draw() {
+    ctx.fillStyle = "moccasin";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
   }
 }
 
@@ -193,21 +214,36 @@ var seedY = randint(-1000000, 1000000);
 var donePlayer = false;
 
 for (var i = 0; i < mapWidth; ++i) {
-  var seenDirt = false;
+  var blockCount = 0;
   for (var j = 0; j < mapHeight; ++j) {
     var val = perlin(seedX + i / 16, seedY + j / 16) + (mapHeight / 2 - j) / mapHeight;
     if (val < 0) {
-      if (seenDirt) {
-        entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
-      }
-      else {
+      if (blockCount == 0) {
         if (j >= 2 && !donePlayer) {
           donePlayer = true;
           entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2).setColor("yellow"));
         }
         entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
       }
-      seenDirt = true;
+      else if (blockCount <= randint(9, 14)) {
+        entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
+      }
+      else {
+        var ironVal = perlin(seedX + i / 3, seedY + j / 3);
+        if (ironVal < -0.4) {
+          entities.push(new Iron().setPosition(i * blockSize, j * blockSize));
+        }
+        else {
+          var coalVal = perlin(seedX + i / 4, seedY + j / 4);
+          if (coalVal < -0.25) {
+            entities.push(new Coal().setPosition(i * blockSize, j * blockSize));
+          }
+          else {
+            entities.push(new Stone().setPosition(i * blockSize, j * blockSize));
+          }
+        }
+      }
+      blockCount++;
     }
     else {
       entities.push(new Air().setPosition(i * blockSize, j * blockSize));
