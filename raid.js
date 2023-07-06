@@ -55,7 +55,7 @@ class Air extends Block {
   }
 
   draw() {
-    ctx.fillStyle = "cyan";
+    ctx.fillStyle = "skyblue";
     ctx.fillRect(this.x, this.y, this.sx, this.sy);
   }
 }
@@ -90,9 +90,51 @@ class Coal extends Block {
   }
 }
 
+class Copper extends Block {
+  draw() {
+    ctx.fillStyle = "darksalmon";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
 class Iron extends Block {
   draw() {
     ctx.fillStyle = "moccasin";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Redstone extends Block {
+  draw() {
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Gold extends Block {
+  draw() {
+    ctx.fillStyle = "gold";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Lapiz extends Block {
+  draw() {
+    ctx.fillStyle = "blue";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Diamond extends Block {
+  draw() {
+    ctx.fillStyle = "cyan";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  }
+}
+
+class Emerald extends Block {
+  draw() {
+    ctx.fillStyle = "green";
     ctx.fillRect(this.x, this.y, this.sx, this.sy);
   }
 }
@@ -208,8 +250,8 @@ function Tick() {
   }
 }
 
-var seedX = randint(-1000000, 1000000);
-var seedY = randint(-1000000, 1000000);
+var seedX = randint(500000, 1000000);
+var seedY = randint(500000, 1000000);
 
 var donePlayer = false;
 
@@ -229,17 +271,53 @@ for (var i = 0; i < mapWidth; ++i) {
         entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
       }
       else {
-        var ironVal = perlin(seedX + i / 3, seedY + j / 3);
-        if (ironVal < -0.4) {
-          entities.push(new Iron().setPosition(i * blockSize, j * blockSize));
+        var emeraldVal = perlin(seedX / 2 + i / 2, seedY / 2 + j / 2);
+        if (emeraldVal < -0.55) {
+          entities.push(new Emerald().setPosition(i * blockSize, j * blockSize));
         }
         else {
-          var coalVal = perlin(seedX + i / 4, seedY + j / 4);
-          if (coalVal < -0.25) {
-            entities.push(new Coal().setPosition(i * blockSize, j * blockSize));
+          var diamondVal = perlin(seedX / 2 + i / 2, seedY / 2 + j / 2);
+          if (diamondVal < -0.5) {
+            entities.push(new Diamond().setPosition(i * blockSize, j * blockSize));
           }
           else {
-            entities.push(new Stone().setPosition(i * blockSize, j * blockSize));
+            var lapizVal = perlin(seedX / 4 + i / 3, seedY / 4 + j / 3);
+            if (lapizVal < -0.45) {
+              entities.push(new Lapiz().setPosition(i * blockSize, j * blockSize));
+            }
+            else {
+              var goldVal = perlin(seedX / 8 + i / 3, seedY / 8 + j / 3);
+              if (goldVal < -0.4) {
+                entities.push(new Gold().setPosition(i * blockSize, j * blockSize));
+              }
+              else {
+                var redstoneVal = perlin(seedX / 16 + i / 3, seedY / 16 + j / 3);
+                if (redstoneVal < -0.4) {
+                  entities.push(new Redstone().setPosition(i * blockSize, j * blockSize));
+                }
+                else {
+                  var copperVal = perlin(seedX / 32 + i / 4, seedY / 32 + j / 4);
+                  if (copperVal < -0.35) {
+                    entities.push(new Copper().setPosition(i * blockSize, j * blockSize));
+                  }
+                  else {
+                    var ironVal = perlin(seedX / 64 + i / 4, seedY / 64 + j / 4);
+                    if (ironVal < -0.35) {
+                      entities.push(new Iron().setPosition(i * blockSize, j * blockSize));
+                    }
+                    else {
+                      var coalVal = perlin(seedX / 128 + i / 6, seedY / 128 + j / 6);
+                      if (coalVal < -0.3) {
+                        entities.push(new Coal().setPosition(i * blockSize, j * blockSize));
+                      }
+                      else {
+                        entities.push(new Stone().setPosition(i * blockSize, j * blockSize));
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
