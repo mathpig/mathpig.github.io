@@ -255,6 +255,15 @@ var seedY = randint(500000, 1000000);
 
 var donePlayer = false;
 
+var arr = [[Coal, -0.35, 6],
+           [Copper, -0.4, 4],
+           [Iron, -0.4, 4],
+           [Redstone, -0.45, 3],
+           [Gold, -0.45, 3],
+           [Lapiz, -0.5, 3],
+           [Diamond, -0.55, 2],
+           [Emerald, -0.6, 2]];
+
 for (var i = 0; i < mapWidth; ++i) {
   var blockCount = 0;
   for (var j = 0; j < mapHeight; ++j) {
@@ -263,7 +272,7 @@ for (var i = 0; i < mapWidth; ++i) {
       if (blockCount == 0) {
         if (j >= 2 && !donePlayer) {
           donePlayer = true;
-          entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2).setColor("yellow"));
+          entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2).setColor("purple"));
         }
         entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
       }
@@ -271,54 +280,17 @@ for (var i = 0; i < mapWidth; ++i) {
         entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
       }
       else {
-        var emeraldVal = perlin(seedX / 2 + i / 2, seedY / 2 + j / 2);
-        if (emeraldVal < -0.55) {
-          entities.push(new Emerald().setPosition(i * blockSize, j * blockSize));
+        var foundOre = false;
+        for (var k = 0; k < arr.length; ++k) {
+          var oreVal = perlin(seedX / Math.pow(2, k + 1) + i / arr[k][2], seedY / Math.pow(2, k + 1) + j / arr[k][2]);
+          if (oreVal < arr[k][1]) {
+            entities.push(new arr[k][0]().setPosition(i * blockSize, j * blockSize));
+            foundOre = true;
+            break;
+          }
         }
-        else {
-          var diamondVal = perlin(seedX / 2 + i / 2, seedY / 2 + j / 2);
-          if (diamondVal < -0.5) {
-            entities.push(new Diamond().setPosition(i * blockSize, j * blockSize));
-          }
-          else {
-            var lapizVal = perlin(seedX / 4 + i / 3, seedY / 4 + j / 3);
-            if (lapizVal < -0.45) {
-              entities.push(new Lapiz().setPosition(i * blockSize, j * blockSize));
-            }
-            else {
-              var goldVal = perlin(seedX / 8 + i / 3, seedY / 8 + j / 3);
-              if (goldVal < -0.4) {
-                entities.push(new Gold().setPosition(i * blockSize, j * blockSize));
-              }
-              else {
-                var redstoneVal = perlin(seedX / 16 + i / 3, seedY / 16 + j / 3);
-                if (redstoneVal < -0.4) {
-                  entities.push(new Redstone().setPosition(i * blockSize, j * blockSize));
-                }
-                else {
-                  var copperVal = perlin(seedX / 32 + i / 4, seedY / 32 + j / 4);
-                  if (copperVal < -0.35) {
-                    entities.push(new Copper().setPosition(i * blockSize, j * blockSize));
-                  }
-                  else {
-                    var ironVal = perlin(seedX / 64 + i / 4, seedY / 64 + j / 4);
-                    if (ironVal < -0.35) {
-                      entities.push(new Iron().setPosition(i * blockSize, j * blockSize));
-                    }
-                    else {
-                      var coalVal = perlin(seedX / 128 + i / 6, seedY / 128 + j / 6);
-                      if (coalVal < -0.3) {
-                        entities.push(new Coal().setPosition(i * blockSize, j * blockSize));
-                      }
-                      else {
-                        entities.push(new Stone().setPosition(i * blockSize, j * blockSize));
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+        if (!foundOre) {
+          entities.push(new Stone().setPosition(i * blockSize, j * blockSize));
         }
       }
       blockCount++;
