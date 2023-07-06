@@ -146,8 +146,8 @@ class Player {
     this.vy = 0;
     this.sx = 0;
     this.sy = 0;
+    this.frame = 0;
     this.solid = true;
-    this.color = "";
     this.keySet = {};
   }
 
@@ -173,21 +173,26 @@ class Player {
     return this;
   }
 
-  setColor(color) {
-    this.color = color;
-    return this;
-  }
-
   touches(other) {
     return (rangeTouches(this.x, this.x + this.sx, other.x, other.x + other.sx) && rangeTouches(this.y, this.y + this.sy, other.y, other.y + other.sy));
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    if (this.frame < 25) {
+      var ratio = 5 / 12;
+    }
+    else {
+      var ratio = 1 / 3;
+    }
+    ctx.fillStyle = "white";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy * ratio);
+    ctx.fillStyle = "purple";
+    ctx.fillRect(this.x, this.y + this.sy * ratio, this.sx, this.sy * (1 - ratio));
   }
 
   tick() {
+    this.frame = (this.frame + 1) % 50;
+
     var xGain = 0;
     if (this.keySet["ArrowLeft"] && this.keySet["ArrowRight"]) {
       xGain = 0;
@@ -272,7 +277,7 @@ for (var i = 0; i < mapWidth; ++i) {
       if (blockCount == 0) {
         if (j >= 2 && !donePlayer) {
           donePlayer = true;
-          entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2).setColor("purple"));
+          entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2));
         }
         entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
       }
