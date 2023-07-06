@@ -203,7 +203,7 @@ class Player {
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i].solid && entities[i] !== this) {
         while (this.touches(entities[i])) {
-          this.x -= Math.sign(xGain);
+          this.x -= Math.sign(xGain) / 10;
         }
       }
     }
@@ -221,7 +221,7 @@ class Player {
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i].solid && entities[i] !== this) {
         while (this.touches(entities[i])) {
-          this.y -= Math.sign(yGain);
+          this.y -= Math.sign(yGain) / 10;
           this.vy = 0;
         }
       }
