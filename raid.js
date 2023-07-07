@@ -329,7 +329,7 @@ class Player {
   }
 
   draw() {
-    if (this.frame < 50) {
+    if (this.frame < 100) {
       var ratio = 5 / 12;
     }
     else {
@@ -342,7 +342,7 @@ class Player {
   }
 
   tick() {
-    this.frame = (this.frame + 1) % 100;
+    this.frame = (this.frame + 1) % 200;
 
     var xGain = 0;
     if (this.keySet["ArrowLeft"] && this.keySet["ArrowRight"]) {
@@ -440,7 +440,7 @@ for (var i = 0; i < mapWidth; ++i) {
         }
         entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
       }
-      else if (blockCount <= randint(9, 14)) {
+      else if (blockCount <= randint(4, 9)) {
         entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
       }
       else {
