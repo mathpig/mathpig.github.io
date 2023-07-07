@@ -13,7 +13,7 @@ var ctx = screen.getContext("2d");
 
 var rect = screen.getBoundingClientRect();
 
-var mapWidth = 64;
+var mapWidth = 128;
 var mapHeight = Math.round(mapWidth * 3 / 4);
 
 var blockSize = Math.floor(screen.width / mapWidth);
@@ -402,7 +402,14 @@ var arr = [[Coal, -0.35, 6],
 for (var i = 0; i < mapWidth; ++i) {
   var blockCount = 0;
   for (var j = 0; j < mapHeight; ++j) {
-    var val = perlin(seedX + i / 16, seedY + j / 16) + (mapHeight / 2 - j) / mapHeight;
+    var val = perlin(seedX + i / 16, seedY + j / 16);
+    var num = (mapHeight - 2 * j - 1) / mapHeight;
+    if (num < 0) {
+      val += num / 3;
+    }
+    else {
+      val += num / 2;
+    }
     if (val < 0) {
       if (blockCount == 0) {
         if (j >= 2 && !donePlayer) {
