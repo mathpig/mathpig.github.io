@@ -395,7 +395,8 @@ var seedY = randint(500000, 1000000);
 
 var donePlayer = false;
 
-var arr = [[Coal, -0.35, 6],
+var arr = [[Dirt, -0.3, 5],
+           [Coal, -0.35, 6],
            [Copper, -0.4, 4],
            [Iron, -0.4, 4],
            [Redstone, -0.45, 3],
