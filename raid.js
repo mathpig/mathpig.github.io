@@ -11,6 +11,8 @@ function rangeTouches(a, b, c, d) {
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
+var rect = screen.getBoundingClientRect();
+
 var mapWidth = 96;
 var mapHeight = Math.round(mapWidth * 3 / 4);
 
@@ -432,8 +434,8 @@ window.onkeyup = function(e) {
 };
 
 screen.onmousemove = function(e) {
-  mouseX = e.clientX - 8;
-  mouseY = e.clientY - 8;
+  mouseX = e.clientX - rect.x;
+  mouseY = e.clientY - rect.y;
 };
 
 screen.onmousedown = function(e) {
