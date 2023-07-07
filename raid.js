@@ -137,18 +137,16 @@ class Grass extends Block {
   }
 
   draw() {
-    ctx.fillStyle = "lime";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
-    ctx.fillStyle = "brown";
-    ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
-    if (this.hovering) {
+   if (this.hovering) {
       ctx.fillStyle = "purple";
       ctx.fillRect(this.x, this.y, this.sx, this.sy);
     }
-    ctx.fillStyle = "lime";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
-    ctx.fillStyle = "brown";
-    ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+    else {
+      ctx.fillStyle = "lime";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
+      ctx.fillStyle = "brown";
+      ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+    }
     if (this.count > 0) {
       this.drawShell();
     }
@@ -176,7 +174,7 @@ class Stone extends Block {
 class Coal extends Block {
   constructor() {
     super();
-    this.color = "darkslategray";
+    this.color = "black";
     this.toolType = "pickaxe";
     this.toolTimes = [750, 113, 58, 38, 20, 30];
   }
