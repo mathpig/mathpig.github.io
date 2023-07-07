@@ -359,7 +359,7 @@ class Player {
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i].solid && entities[i] !== this) {
         while (this.touches(entities[i])) {
-          this.x -= Math.sign(xGain) / 10;
+          this.x -= Math.sign(xGain) / 16;
         }
       }
     }
@@ -377,7 +377,7 @@ class Player {
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i].solid && entities[i] !== this) {
         while (this.touches(entities[i])) {
-          this.y -= Math.sign(yGain) / 10;
+          this.y -= Math.sign(yGain) / 16;
           this.vy = 0;
         }
       }
