@@ -298,6 +298,11 @@ class Player {
     return this;
   }
 
+  setFrame(frame) {
+    this.frame = frame;
+    return this;
+  }
+
   setSolid(solid) {
     this.solid = solid;
     return this;
@@ -308,7 +313,7 @@ class Player {
   }
 
   draw() {
-    if (this.frame < 25) {
+    if (this.frame < 50) {
       var ratio = 5 / 12;
     }
     else {
@@ -321,7 +326,7 @@ class Player {
   }
 
   tick() {
-    this.frame = (this.frame + 1) % 50;
+    this.frame = (this.frame + 1) % 100;
 
     var xGain = 0;
     if (this.keySet["ArrowLeft"] && this.keySet["ArrowRight"]) {
