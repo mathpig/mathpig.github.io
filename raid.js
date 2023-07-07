@@ -18,6 +18,11 @@ var blockSize = Math.floor(screen.width / mapWidth);
 
 var entities = [];
 
+var mouseX = -1;
+var mouseY = -1;
+
+var mouseDown = false;
+
 class Block {
   constructor() {
     this.x = 0;
@@ -25,6 +30,11 @@ class Block {
     this.sx = blockSize;
     this.sy = blockSize;
     this.solid = true;
+    this.color = "";
+    this.toolType = "";
+    this.toolTimes = [];
+    this.hovering = false;
+    this.count = 0;
   }
 
   setPosition(x, y) {
@@ -44,7 +54,70 @@ class Block {
     return this;
   }
 
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  setToolType(toolType) {
+    this.toolType = toolType;
+    return this;
+  }
+
+  setToolTimes(toolTimes) {
+    this.toolTimes = toolTimes;
+    return this;
+  }
+
+  setCount(count) {
+    this.count = count;
+    return this;
+  }
+
+  drawShell(stage) {
+    ctx.fillStyle = "black";
+    ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
+    ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
+    if (stage > 0) {
+      ctx.fillRect(this.x + this.sx * 3 / 4, this.y, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
+    }
+  }
+
+  draw() {
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+    }
+    else {
+      ctx.fillStyle = this.color;
+    }
+    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    if (this.count > 0 && this.solid) {
+      this.drawShell(Math.floor(this.count * 2));
+    }
+  }
+
   tick() {
+    if (mouseX >= this.x && mouseX < (this.x + this.sx) && mouseY >= this.y && mouseY < (this.y + this.sy)) {
+      this.hovering = true;
+      if (mouseDown) {
+        this.count += 1 / this.toolTimes[0];
+        if (this.count >= 1) {
+          for (var i = 0; i < entities.length; ++i) {
+            if (entities[i] === this) {
+              entities[i] = new Air().setPosition(this.x, this.y);
+            }
+          }
+        }
+      }
+      else {
+        this.count = 0;
+      }
+    }
+    else {
+      this.hovering = false;
+      this.count = 0;
+    }
   }
 }
 
@@ -52,90 +125,123 @@ class Air extends Block {
   constructor() {
     super();
     this.solid = false;
-  }
-
-  draw() {
-    ctx.fillStyle = "skyblue";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    this.color = "skyblue";
   }
 }
 
 class Grass extends Block {
+  constructor() {
+    super();
+    this.toolType = "shovel";
+    this.toolTimes = [38, 20, 10, 8, 5, 5];
+  }
+
   draw() {
     ctx.fillStyle = "lime";
     ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
     ctx.fillStyle = "brown";
     ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    ctx.fillStyle = "lime";
+    ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
+    ctx.fillStyle = "brown";
+    ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+    if (this.count > 0) {
+      this.drawShell();
+    }
   }
 }
 
 class Dirt extends Block {
-  draw() {
-    ctx.fillStyle = "brown";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "brown";
+    this.toolType = "shovel";
+    this.toolTimes = [45, 23, 13, 8, 5, 8];
   }
 }
 
 class Stone extends Block {
-  draw() {
-    ctx.fillStyle = "gray";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "gray";
+    this.toolType = "pickaxe";
+    this.toolTimes = [375, 58, 30, 20, 10, 15];
   }
 }
 
 class Coal extends Block {
-  draw() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "darkslategray";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 113, 58, 38, 20, 30];
   }
 }
 
 class Copper extends Block {
-  draw() {
-    ctx.fillStyle = "darksalmon";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "darksalmon";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
 }
 
 class Iron extends Block {
-  draw() {
-    ctx.fillStyle = "moccasin";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "moccasin";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
 }
 
 class Redstone extends Block {
-  draw() {
-    ctx.fillStyle = "red";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "red";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 }
 
 class Gold extends Block {
-  draw() {
-    ctx.fillStyle = "gold";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "gold";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 }
 
-class Lapiz extends Block {
-  draw() {
-    ctx.fillStyle = "blue";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+class Lapis extends Block {
+  constructor() {
+    super();
+    this.color = "blue";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
 }
 
 class Diamond extends Block {
-  draw() {
-    ctx.fillStyle = "cyan";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "cyan";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 }
 
 class Emerald extends Block {
-  draw() {
-    ctx.fillStyle = "green";
-    ctx.fillRect(this.x, this.y, this.sx, this.sy);
+  constructor() {
+    super();
+    this.color = "green";
+    this.toolType = "pickaxe";
+    this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 }
 
@@ -265,7 +371,7 @@ var arr = [[Coal, -0.35, 6],
            [Iron, -0.4, 4],
            [Redstone, -0.45, 3],
            [Gold, -0.45, 3],
-           [Lapiz, -0.5, 3],
+           [Lapis, -0.5, 3],
            [Diamond, -0.55, 2],
            [Emerald, -0.6, 2]];
 
@@ -325,6 +431,19 @@ window.onkeyup = function(e) {
       entities[i].keySet[e.key] = false;
     }
   }
+};
+
+screen.onmousemove = function(e) {
+  mouseX = e.clientX - 8;
+  mouseY = e.clientY - 8;
+};
+
+screen.onmousedown = function(e) {
+  mouseDown = true;
+};
+
+screen.onmouseup = function(e) {
+  mouseDown = false;
 };
 
 /*
