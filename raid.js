@@ -125,6 +125,22 @@ class Block {
 
   tick() {
     if (mouseX >= this.x && mouseX < (this.x + this.sx) && mouseY >= this.y && mouseY < (this.y + this.sy)) {
+      var found = false;
+      for (var i = 0; i < entities.length; ++i) {
+        if (entities[i] instanceof Player) {
+          var coord1 = (entities[i].x + entities[i].sx / 2);
+          var coord2 = (entities[i].y + entities[i].sy / 2);
+          var coord3 = (this.x + this.sx / 2);
+          var coord4 = (this.y + this.sy / 2);
+          if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) <= (6 * blockSize)) {
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found) {
+        return;
+      }
       this.hovering = true;
       if (mouseDown) {
         this.count += 1 / this.toolTimes[0];
