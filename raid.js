@@ -84,6 +84,14 @@ class Block {
       ctx.fillRect(this.x + this.sx * 3 / 4, this.y, this.sx / 4, this.sy / 4);
       ctx.fillRect(this.x, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
     }
+    if (stage > 1) {
+      ctx.fillRect(this.x, this.y, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx * 3 / 4, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
+    }
+    if (stage > 2) {
+      ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
+    }
   }
 
   draw() {
@@ -95,7 +103,7 @@ class Block {
     }
     ctx.fillRect(this.x, this.y, this.sx, this.sy);
     if (this.count > 0 && this.solid) {
-      this.drawShell(Math.floor(this.count * 2));
+      this.drawShell(Math.floor(this.count * 4));
     }
   }
 
