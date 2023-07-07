@@ -13,7 +13,7 @@ var ctx = screen.getContext("2d");
 
 var rect = screen.getBoundingClientRect();
 
-var mapWidth = 96;
+var mapWidth = 64;
 var mapHeight = Math.round(mapWidth * 3 / 4);
 
 var blockSize = Math.floor(screen.width / mapWidth);
@@ -80,17 +80,33 @@ class Block {
     ctx.fillStyle = "black";
     ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
     ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
-    if (stage > 0) {
+    if (stage >= 1) {
       ctx.fillRect(this.x + this.sx * 3 / 4, this.y, this.sx / 4, this.sy / 4);
       ctx.fillRect(this.x, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
     }
-    if (stage > 1) {
+    if (stage >= 2) {
       ctx.fillRect(this.x, this.y, this.sx / 4, this.sy / 4);
       ctx.fillRect(this.x + this.sx * 3 / 4, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
     }
-    if (stage > 2) {
+    if (stage >= 3) {
       ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
       ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
+    }
+    if (stage >= 4) {
+      ctx.fillRect(this.x, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx * 3 / 4, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
+    }
+    if (stage >= 5) {
+      ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx / 4, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
+    }
+    if (stage >= 6) {
+      ctx.fillRect(this.x + this.sx * 3 / 4, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
+    }
+    if (stage >= 7) {
+      ctx.fillRect(this.x + this.sx / 4, this.y, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy * 3 / 4, this.sx / 4, this.sy / 4);
     }
   }
 
@@ -103,7 +119,7 @@ class Block {
     }
     ctx.fillRect(this.x, this.y, this.sx, this.sy);
     if (this.count > 0 && this.solid) {
-      this.drawShell(Math.floor(this.count * 4));
+      this.drawShell(Math.floor(this.count * 8));
     }
   }
 
@@ -158,7 +174,7 @@ class Grass extends Block {
       ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
     }
     if (this.count > 0) {
-      this.drawShell();
+      this.drawShell(Math.floor(this.count * 8));
     }
   }
 }
