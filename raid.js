@@ -111,7 +111,7 @@ class Block {
   }
 
   draw() {
-    if (this.hovering) {
+    if (this.hovering && this.solid) {
       ctx.fillStyle = "purple";
     }
     else {
