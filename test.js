@@ -56,8 +56,6 @@ for (var i = 0; i < 10; ++i) {
 }
 doorSounds.push([[doorBreak]]);
 
-var pigstep = new Audio('https://mathpig.github.io/minecraftsounds/sounds/Pigstep.ogg');
-
 function playAt(sound, time, volumeFactor) {
   setTimeout(function() {
     sound.volume = volumeFactor;
@@ -86,22 +84,18 @@ for (var i = 0; i < 11; ++i) {
 }
 
 window.onkeydown = function(e) {
-  var val = randint(0, 10);
-  if (val <= 4) {
+  if (randint(0, 1) == 0) {
     var pillagerVolume = 1 / 3;
     if (randint(0, 2) == 0) {
       pillagerVolume = 1;
     }
     playAudio([pillagerSounds, crossbowSounds], [[[pillagerVolume]], [[1], [1], [1], [1, 1]]]);
   }
-  else if (val <= 9) {
+  else {
     var vindicatorVolume = 1 / 3;
     if (randint(0, 2) == 0) {
       vindicatorVolume = 1;
     }
     playAudio([doorSounds, vindicatorSounds], [doorVolumes, [[vindicatorVolume, 1]]]);
-  }
-  else {
-    playAudio([[[[pigstep]]]], [[[1]]]);
   }
 };
