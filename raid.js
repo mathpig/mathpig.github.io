@@ -243,7 +243,7 @@ function giveDrop(quantity, item) {
     }
   }
   while (quantity > 0 && player.inventory.length < 9) {
-    player.inventory.append([item, Math.min(quantity, item.stackLimit)]);
+    player.inventory.push([item, Math.min(quantity, item.stackLimit)]);
     quantity -= item.stackLimit;
   }
 }
