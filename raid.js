@@ -76,7 +76,7 @@ class Block {
     return this;
   }
 
-  giveDrops(index) {
+  giveDrops() {
   }
 
   drawShell(stage) {
@@ -114,7 +114,7 @@ class Block {
   }
 
   draw() {
-    if (this.hovering && this.solid) {
+    if (this.hovering) {
       ctx.fillStyle = "purple";
     }
     else {
@@ -129,17 +129,13 @@ class Block {
   tick() {
     if (mouseX >= this.x && mouseX < (this.x + this.sx) && mouseY >= this.y && mouseY < (this.y + this.sy)) {
       var index = -1;
-      for (var i = 0; i < entities.length; ++i) {
-        if (entities[i] instanceof Player) {
-          var coord1 = (entities[i].x + entities[i].sx / 2);
-          var coord2 = (entities[i].y + entities[i].sy / 2);
-          var coord3 = (this.x + this.sx / 2);
-          var coord4 = (this.y + this.sy / 2);
-          if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) <= (6 * blockSize)) {
-            index = i;
-            break;
-          }
-        }
+      var coord1 = (player.x + player.sx / 2);
+      var coord2 = (player.y + player.sy / 2);
+      var coord3 = (this.x + this.sx / 2);
+      var coord4 = (this.y + this.sy / 2);
+      if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) <= (6 * blockSize)) {
+        index = i;
+        break;
       }
       if (index == -1) {
         return;
@@ -153,7 +149,7 @@ class Block {
               entities[i] = new Air().setPosition(this.x, this.y);
             }
           }
-          this.giveDrops(index);
+          this.giveDrops();
         }
       }
       else {
@@ -167,7 +163,83 @@ class Block {
   }
 }
 
-function giveDrop(player, quantity, item) {
+class Item {
+  constructor() {
+    this.name = "";
+  }
+}
+
+class DirtItem extends Item {
+  constructor() {
+    super();
+    this.name = "Dirt";
+  }
+}
+
+class CobblestoneItem extends Item {
+  constructor() {
+    super();
+    this.name = "Cobblestone";
+  }
+}
+
+class CoalItem extends Item {
+  constructor() {
+    super();
+    this.name = "Coal";
+  }
+}
+
+class RawCopperItem extends Item {
+  constructor() {
+    super();
+    this.name = "Raw Copper";
+  }
+}
+
+class RawIronItem extends Item {
+  constructor() {
+    super();
+    this.name = "Raw Iron";
+  }
+}
+
+class RedstoneDustItem extends Item {
+  constructor() {
+    super();
+    this.name = "Redstone Dust";
+  }
+}
+
+class RawGoldItem extends Item {
+  constructor() {
+    super();
+    this.name = "Raw Gold";
+  }
+}
+
+class LapisItem extends Item {
+  constructor() {
+    super();
+    this.name = "Lapis Lazuli";
+  }
+}
+
+class DiamondItem extends Item {
+  constructor() {
+    super();
+    this.name = "Diamond";
+  }
+}
+
+class EmeraldItem extends Item {
+  constructor() {
+    super();
+    this.name = "Emerald";
+  }
+}
+
+function giveDrop(quantity, item) {
   for (var i = 0; i < player.inventory.length; ++i) {
     if (player.inventory[i][0] == item) {
       var val = Math.min(quantity, item.stackLimit - player.inventory[i][1]);
@@ -196,8 +268,8 @@ class Grass extends Block {
     this.toolTimes = [38, 20, 10, 8, 5, 5];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, DirtItem);
+  giveDrops() {
+    giveDrop(1, DirtItem);
   }
 
   draw() {
@@ -225,8 +297,8 @@ class Dirt extends Block {
     this.toolTimes = [45, 23, 13, 8, 5, 8];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, DirtItem);
+  giveDrops() {
+    giveDrop(1, DirtItem);
   }
 }
 
@@ -238,8 +310,8 @@ class Stone extends Block {
     this.toolTimes = [375, 58, 30, 20, 10, 15];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, CobblestoneItem);
+  giveDrops() {
+    giveDrop(1, CobblestoneItem);
   }
 }
 
@@ -251,8 +323,8 @@ class Coal extends Block {
     this.toolTimes = [750, 113, 58, 38, 20, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, CoalItem);
+  giveDrops() {
+    giveDrop(1, CoalItem);
   }
 }
 
@@ -264,8 +336,8 @@ class Copper extends Block {
     this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], randint(2, 5), RawCopperItem);
+  giveDrops() {
+    giveDrop(randint(2, 5), RawCopperItem);
   }
 }
 
@@ -277,8 +349,8 @@ class Iron extends Block {
     this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, RawIronItem);
+  giveDrops() {
+    giveDrop(1, RawIronItem);
   }
 }
 
@@ -290,8 +362,8 @@ class Redstone extends Block {
     this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], randint(4, 5), RedstoneDustItem);
+  giveDrops() {
+    giveDrop(randint(4, 5), RedstoneDustItem);
   }
 }
 
@@ -303,8 +375,8 @@ class Gold extends Block {
     this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, RawGoldItem);
+  giveDrops() {
+    giveDrop(1, RawGoldItem);
   }
 }
 
@@ -316,8 +388,8 @@ class Lapis extends Block {
     this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], randint(4, 9), LapisLazuliItem);
+  giveDrops() {
+    giveDrop(randint(4, 9), LapisItem);
   }
 }
 
@@ -329,8 +401,8 @@ class Diamond extends Block {
     this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, DiamondItem);
+  giveDrops() {
+    giveDrop(1, DiamondItem);
   }
 }
 
@@ -342,8 +414,8 @@ class Emerald extends Block {
     this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
 
-  giveDrops(index) {
-    giveDrop(entities[index], 1, EmeraldItem);
+  giveDrops() {
+    giveDrop(1, EmeraldItem);
   }
 }
 
@@ -472,6 +544,10 @@ function Tick() {
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
+  hotbar.innerHTML = "<br/>";
+  for (var i = 0; i < player.inventory.length; ++i) {
+    hotbar.innerHTML += player.inventory[i][0] + " x " + player.inventory[i][1] + "<br/>";
+  }
 }
 
 var seedX = randint(500000, 1000000);
@@ -504,7 +580,8 @@ for (var i = 0; i < mapWidth; ++i) {
       if (blockCount == 0) {
         if (j >= 2 && !donePlayer) {
           donePlayer = true;
-          entities.push(new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2));
+          var player = new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2);
+          entities.push(player);
         }
         entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
       }
@@ -539,19 +616,11 @@ screen.height = blockSize * mapHeight;
 setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
-  for (var i = 0; i < entities.length; ++i) {
-    if (entities[i] instanceof Player) {
-      entities[i].keySet[e.key] = true;
-    }
-  }
+  player.keySet[e.key] = true;
 };
 
 window.onkeyup = function(e) {
-  for (var i = 0; i < entities.length; ++i) {
-    if (entities[i] instanceof Player) {
-      entities[i].keySet[e.key] = false;
-    }
-  }
+  player.keySet[e.key] = false;
 };
 
 screen.onmousemove = function(e) {
