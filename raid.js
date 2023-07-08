@@ -236,7 +236,7 @@ class EmeraldItem extends Item {
 
 function giveDrop(quantity, item) {
   for (var i = 0; i < player.inventory.length; ++i) {
-    if (player.inventory[i][0] == item) {
+    if (player.inventory[i][0] === item) {
       var val = Math.min(quantity, item.stackLimit - player.inventory[i][1]);
       player.inventory[i][0] += val;
       quantity -= val;
