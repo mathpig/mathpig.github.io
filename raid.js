@@ -25,6 +25,8 @@ var mouseY = -1;
 
 var mouseDown = false;
 
+var selection = -1;
+
 class Block {
   constructor() {
     this.x = 0;
@@ -74,6 +76,10 @@ class Block {
   setCount(count) {
     this.count = count;
     return this;
+  }
+
+  isAir() {
+    return false;
   }
 
   giveDrops() {
@@ -142,6 +148,7 @@ class Block {
           for (var i = 0; i < entities.length; ++i) {
             if (entities[i] === this) {
               entities[i] = new Air().setPosition(this.x, this.y);
+              break;
             }
           }
           this.giveDrops();
@@ -149,6 +156,15 @@ class Block {
       }
       else {
         this.count = 0;
+        if (player.keySet["p"] && this.isAir() && selection >= 0 && player.inventory[selection][0].placeable && player.inventory[selection][1] > 0) {
+          player.inventory[selection][1] -= 1;
+          for (var i = 0; i < entities.length; ++i) {
+            if (entities[i] === this) {
+              entities[i] = new player.inventory[selection][0].block().setPosition(this.x, this.y);
+              break;
+            }
+          }
+        }
       }
     }
     else {
@@ -158,95 +174,15 @@ class Block {
   }
 }
 
-class Item {
-  constructor() {
-    this.name = "";
-    this.stackLimit = 64;
-  }
-}
-
-class DirtItem extends Item {
-  constructor() {
-    super();
-    this.name = "Dirt";
-  }
-}
-
-class CobblestoneItem extends Item {
-  constructor() {
-    super();
-    this.name = "Cobblestone";
-  }
-}
-
-class CoalItem extends Item {
-  constructor() {
-    super();
-    this.name = "Coal";
-  }
-}
-
-class RawCopperItem extends Item {
-  constructor() {
-    super();
-    this.name = "Raw Copper";
-  }
-}
-
-class RawIronItem extends Item {
-  constructor() {
-    super();
-    this.name = "Raw Iron";
-  }
-}
-
-class RedstoneDustItem extends Item {
-  constructor() {
-    super();
-    this.name = "Redstone Dust";
-  }
-}
-
-class RawGoldItem extends Item {
-  constructor() {
-    super();
-    this.name = "Raw Gold";
-  }
-}
-
-class LapisItem extends Item {
-  constructor() {
-    super();
-    this.name = "Lapis Lazuli";
-  }
-}
-
-class DiamondItem extends Item {
-  constructor() {
-    super();
-    this.name = "Diamond";
-  }
-}
-
-class EmeraldItem extends Item {
-  constructor() {
-    super();
-    this.name = "Emerald";
-  }
-}
-
 function giveDrop(quantity, itemType) {
   var newItem = new itemType();
   for (var i = 0; i < player.inventory.length; ++i) {
-    if (player.inventory[i][0].name === newItem.name) {
+    if (player.inventory[i][0].name === newItem.name || player.inventory[i][1] == 0) {
+      player.inventory[i][0] = newItem;
       var val = Math.min(quantity, newItem.stackLimit - player.inventory[i][1]);
       player.inventory[i][1] += val;
       quantity -= val;
     }
-  }
-  while (quantity > 0 && player.inventory.length < 9) {
-    player.inventory.push([newItem, Math.min(quantity, newItem.stackLimit)]);
-    quantity -= newItem.stackLimit;
   }
 }
 
@@ -255,6 +191,10 @@ class Air extends Block {
     super();
     this.solid = false;
     this.color = "skyblue";
+  }
+
+  isAir() {
+    return true;
   }
 }
 
@@ -309,6 +249,36 @@ class Stone extends Block {
 
   giveDrops() {
     giveDrop(1, CobblestoneItem);
+  }
+}
+
+class Cobblestone extends Block {
+  constructor() {
+    super();
+    this.toolType = "pickaxe";
+    this.toolTimes = [500, 75, 38, 25, 13, 20];
+  }
+
+  giveDrops() {
+    giveDrop(1, CobblestoneItem);
+  }
+
+  draw() {
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    else {
+      ctx.fillStyle = "darkgray";
+      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillStyle = "lightgray";
+      ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+    }
+    if (this.count > 0) {
+      this.drawShell(Math.floor(this.count * 8));
+    }
   }
 }
 
@@ -416,6 +386,95 @@ class Emerald extends Block {
   }
 }
 
+class Item {
+  constructor() {
+    this.name = "";
+    this.stackLimit = 64;
+    this.placeable = true;
+    this.block = Air;
+  }
+}
+
+class DirtItem extends Item {
+  constructor() {
+    super();
+    this.name = "Dirt";
+    this.block = Dirt;
+  }
+}
+
+class CobblestoneItem extends Item {
+  constructor() {
+    super();
+    this.name = "Cobblestone";
+    this.block = Cobblestone;
+  }
+}
+
+class CoalItem extends Item {
+  constructor() {
+    super();
+    this.name = "Coal";
+    this.placeable = false;
+  }
+}
+
+class RawCopperItem extends Item {
+  constructor() {
+    super();
+    this.name = "Raw Copper";
+    this.placeable = false;
+  }
+}
+
+class RawIronItem extends Item {
+  constructor() {
+    super();
+    this.name = "Raw Iron";
+    this.placeable = false;
+  }
+}
+
+class RedstoneDustItem extends Item {
+  constructor() {
+    super();
+    this.name = "Redstone Dust";
+    this.placeable = false;
+  }
+}
+
+class RawGoldItem extends Item {
+  constructor() {
+    super();
+    this.name = "Raw Gold";
+    this.placeable = false;
+  }
+}
+
+class LapisItem extends Item {
+  constructor() {
+    super();
+    this.name = "Lapis Lazuli";
+    this.placeable = false;
+  }
+}
+
+class DiamondItem extends Item {
+  constructor() {
+    super();
+    this.name = "Diamond";
+    this.placeable = false;
+  }
+}
+
+class EmeraldItem extends Item {
+  constructor() {
+    super();
+    this.name = "Emerald";
+    this.placeable = false;
+  }
+}
+
 class Player {
   constructor() {
     this.x = 0;
@@ -426,7 +485,11 @@ class Player {
     this.frame = 0;
     this.solid = true;
     this.keySet = {};
+    var filler = new Dirt();
     this.inventory = [];
+    for (var i = 0; i < 9; ++i) {
+      this.inventory.push([filler, 0]);
+    }
   }
 
   setPosition(x, y) {
@@ -541,9 +604,18 @@ function Tick() {
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
-  hotbar.innerHTML = "<br/>";
+  hotbar.innerHTML = "<br/>Your inventory:<br/><br/>";
   for (var i = 0; i < player.inventory.length; ++i) {
-    hotbar.innerHTML += player.inventory[i][1] + " x " + player.inventory[i][0].name + "<br/>";
+    if (player.inventory[i][1] == 0) {
+      hotbar.innerHTML += "[Empty slot]";
+    }
+    else {
+      hotbar.innerHTML += player.inventory[i][1] + " x " + player.inventory[i][0].name;
+    }
+    if (i == selection) {
+      hotbar.innerHTML += " [selected]";
+    }
+    hotbar.innerHTML += "<br/>";
   }
 }
 
@@ -614,6 +686,17 @@ setInterval(Tick, 20);
 
 window.onkeydown = function(e) {
   player.keySet[e.key] = true;
+  if (e.key == "1" ||
+      e.key == "2" ||
+      e.key == "3" ||
+      e.key == "4" ||
+      e.key == "5" ||
+      e.key == "6" ||
+      e.key == "7" ||
+      e.key == "8" ||
+      e.key == "9") {
+    selection = parseInt(e.key) - 1;
+  }
 };
 
 window.onkeyup = function(e) {
