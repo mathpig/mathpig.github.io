@@ -235,17 +235,18 @@ class EmeraldItem extends Item {
   }
 }
 
-function giveDrop(quantity, item) {
+function giveDrop(quantity, itemType) {
+  var newItem = new itemType();
   for (var i = 0; i < player.inventory.length; ++i) {
-    if (player.inventory[i][0] === item) {
-      var val = Math.min(quantity, item.stackLimit - player.inventory[i][1]);
+    if (player.inventory[i][0].name === newItem.name) {
+      var val = Math.min(quantity, newItem.stackLimit - player.inventory[i][1]);
       player.inventory[i][1] += val;
       quantity -= val;
     }
   }
   while (quantity > 0 && player.inventory.length < 9) {
-    player.inventory.push([item, Math.min(quantity, item.stackLimit)]);
-    quantity -= item.stackLimit;
+    player.inventory.push([newItem, Math.min(quantity, newItem.stackLimit)]);
+    quantity -= newItem.stackLimit;
   }
 }
 
