@@ -13,7 +13,7 @@ var ctx = screen.getContext("2d");
 
 var rect = screen.getBoundingClientRect();
 
-var mapWidth = 96;
+var mapWidth = 128;
 var mapHeight = Math.floor(mapWidth * screen.height / screen.width);
 
 var blockSize = Math.floor(screen.width / mapWidth);
