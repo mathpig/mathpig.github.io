@@ -138,7 +138,8 @@ class Block {
       var coord2 = (player.y + player.sy / 2);
       var coord3 = (this.x + this.sx / 2);
       var coord4 = (this.y + this.sy / 2);
-      if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) > (6 * blockSize)) {
+      var dist = Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) / blockSize;
+      if (dist > 6) {
         return;
       }
       this.hovering = true;
@@ -157,10 +158,15 @@ class Block {
       else {
         this.count = 0;
         if (player.keySet["p"] && this.isAir() && selection >= 0 && player.inventory[selection][0].placeable && player.inventory[selection][1] > 0) {
-          player.inventory[selection][1] -= 1;
           for (var i = 0; i < entities.length; ++i) {
             if (entities[i] === this) {
               entities[i] = new player.inventory[selection][0].block().setPosition(this.x, this.y);
+              if (player.touches(entities[i])) {
+                entities[i] = new Air().setPosition(this.x, this.y);
+              }
+              else {
+                player.inventory[selection][1]--;
+              }
               break;
             }
           }
