@@ -208,7 +208,7 @@ class Grass extends Block {
   constructor() {
     super();
     this.toolType = "shovel";
-    this.toolTimes = [38, 20, 10, 8, 5, 5];
+    this.toolTimes = [45, 23, 13, 8, 5, 8];
   }
 
   giveDrops() {
@@ -237,7 +237,7 @@ class Dirt extends Block {
     super();
     this.color = "brown";
     this.toolType = "shovel";
-    this.toolTimes = [45, 23, 13, 8, 5, 8];
+    this.toolTimes = [38, 20, 10, 8, 5, 5];
   }
 
   giveDrops() {
