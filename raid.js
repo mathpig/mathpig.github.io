@@ -128,16 +128,11 @@ class Block {
 
   tick() {
     if (mouseX >= this.x && mouseX < (this.x + this.sx) && mouseY >= this.y && mouseY < (this.y + this.sy)) {
-      var index = -1;
       var coord1 = (player.x + player.sx / 2);
       var coord2 = (player.y + player.sy / 2);
       var coord3 = (this.x + this.sx / 2);
       var coord4 = (this.y + this.sy / 2);
-      if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) <= (6 * blockSize)) {
-        index = i;
-        break;
-      }
-      if (index == -1) {
+      if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) > (6 * blockSize)) {
         return;
       }
       this.hovering = true;
