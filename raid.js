@@ -541,7 +541,7 @@ function Tick() {
   }
   hotbar.innerHTML = "<br/>";
   for (var i = 0; i < player.inventory.length; ++i) {
-    hotbar.innerHTML += player.inventory[i][0] + " x " + player.inventory[i][1] + "<br/>";
+    hotbar.innerHTML += player.inventory[i][0] + " x " + player.inventory[i][1].name + "<br/>";
   }
 }
 
