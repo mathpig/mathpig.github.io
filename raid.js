@@ -76,6 +76,9 @@ class Block {
     return this;
   }
 
+  giveDrops(index) {
+  }
+
   drawShell(stage) {
     ctx.fillStyle = "black";
     ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 4, this.sx / 4, this.sy / 4);
@@ -125,7 +128,7 @@ class Block {
 
   tick() {
     if (mouseX >= this.x && mouseX < (this.x + this.sx) && mouseY >= this.y && mouseY < (this.y + this.sy)) {
-      var found = false;
+      var index = -1;
       for (var i = 0; i < entities.length; ++i) {
         if (entities[i] instanceof Player) {
           var coord1 = (entities[i].x + entities[i].sx / 2);
@@ -133,12 +136,12 @@ class Block {
           var coord3 = (this.x + this.sx / 2);
           var coord4 = (this.y + this.sy / 2);
           if (Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) <= (6 * blockSize)) {
-            found = true;
+            index = i;
             break;
           }
         }
       }
-      if (!found) {
+      if (index == -1) {
         return;
       }
       this.hovering = true;
@@ -150,6 +153,7 @@ class Block {
               entities[i] = new Air().setPosition(this.x, this.y);
             }
           }
+          this.giveDrops(index);
         }
       }
       else {
@@ -160,6 +164,20 @@ class Block {
       this.hovering = false;
       this.count = 0;
     }
+  }
+}
+
+function giveDrop(player, quantity, item) {
+  for (var i = 0; i < player.inventory.length; ++i) {
+    if (player.inventory[i][0] == item) {
+      var val = Math.min(quantity, item.stackLimit - player.inventory[i][1]);
+      player.inventory[i][0] += val;
+      quantity -= val;
+    }
+  }
+  while (quantity > 0 && player.inventory.length < 9) {
+    player.inventory.append([item, Math.min(quantity, item.stackLimit)]);
+    quantity -= item.stackLimit;
   }
 }
 
@@ -176,6 +194,10 @@ class Grass extends Block {
     super();
     this.toolType = "shovel";
     this.toolTimes = [38, 20, 10, 8, 5, 5];
+  }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, DirtItem);
   }
 
   draw() {
@@ -202,6 +224,10 @@ class Dirt extends Block {
     this.toolType = "shovel";
     this.toolTimes = [45, 23, 13, 8, 5, 8];
   }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, DirtItem);
+  }
 }
 
 class Stone extends Block {
@@ -210,6 +236,10 @@ class Stone extends Block {
     this.color = "gray";
     this.toolType = "pickaxe";
     this.toolTimes = [375, 58, 30, 20, 10, 15];
+  }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, CobblestoneItem);
   }
 }
 
@@ -220,6 +250,10 @@ class Coal extends Block {
     this.toolType = "pickaxe";
     this.toolTimes = [750, 113, 58, 38, 20, 30];
   }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, CoalItem);
+  }
 }
 
 class Copper extends Block {
@@ -228,6 +262,10 @@ class Copper extends Block {
     this.color = "darksalmon";
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 58, 38, 63, 30];
+  }
+
+  giveDrops(index) {
+    giveDrop(entities[index], randint(2, 5), RawCopperItem);
   }
 }
 
@@ -238,6 +276,10 @@ class Iron extends Block {
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 58, 38, 63, 30];
   }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, RawIronItem);
+  }
 }
 
 class Redstone extends Block {
@@ -246,6 +288,10 @@ class Redstone extends Block {
     this.color = "red";
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 188, 38, 63, 30];
+  }
+
+  giveDrops(index) {
+    giveDrop(entities[index], randint(4, 5), RedstoneDustItem);
   }
 }
 
@@ -256,6 +302,10 @@ class Gold extends Block {
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, RawGoldItem);
+  }
 }
 
 class Lapis extends Block {
@@ -264,6 +314,10 @@ class Lapis extends Block {
     this.color = "blue";
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 58, 38, 63, 30];
+  }
+
+  giveDrops(index) {
+    giveDrop(entities[index], randint(4, 9), LapisLazuliItem);
   }
 }
 
@@ -274,6 +328,10 @@ class Diamond extends Block {
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 188, 38, 63, 30];
   }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, DiamondItem);
+  }
 }
 
 class Emerald extends Block {
@@ -282,6 +340,10 @@ class Emerald extends Block {
     this.color = "green";
     this.toolType = "pickaxe";
     this.toolTimes = [750, 375, 188, 38, 63, 30];
+  }
+
+  giveDrops(index) {
+    giveDrop(entities[index], 1, EmeraldItem);
   }
 }
 
@@ -295,6 +357,7 @@ class Player {
     this.frame = 0;
     this.solid = true;
     this.keySet = {};
+    this.inventory = [];
   }
 
   setPosition(x, y) {
@@ -321,6 +384,11 @@ class Player {
 
   setSolid(solid) {
     this.solid = solid;
+    return this;
+  }
+
+  setInventory(inventory) {
+    this.inventory = inventory;
     return this;
   }
 
