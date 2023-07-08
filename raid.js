@@ -161,6 +161,7 @@ class Block {
 class Item {
   constructor() {
     this.name = "";
+    this.stackLimit = 64;
   }
 }
 
