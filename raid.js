@@ -239,7 +239,7 @@ function giveDrop(quantity, item) {
   for (var i = 0; i < player.inventory.length; ++i) {
     if (player.inventory[i][0] === item) {
       var val = Math.min(quantity, item.stackLimit - player.inventory[i][1]);
-      player.inventory[i][0] += val;
+      player.inventory[i][1] += val;
       quantity -= val;
     }
   }
@@ -542,7 +542,7 @@ function Tick() {
   }
   hotbar.innerHTML = "<br/>";
   for (var i = 0; i < player.inventory.length; ++i) {
-    hotbar.innerHTML += player.inventory[i][0] + " x " + player.inventory[i][1].name + "<br/>";
+    hotbar.innerHTML += player.inventory[i][1] + " x " + player.inventory[i][0].name + "<br/>";
   }
 }
 
