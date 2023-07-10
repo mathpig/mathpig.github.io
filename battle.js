@@ -499,14 +499,11 @@ class Archer extends Warrior {
     return true;
   }
 
-  tick() {
-    if (this.updateStatus()) {
-      return;
-    }
+  findEnemy(conditional) {
     var bestDistance = 10000;
     var index = 0;
     for (var i = 0; i < entities.length; ++i) {
-      if ((entities[i] instanceof Bullet) || entities[i].team == this.team || !this.extraConditions(entities[i])) {
+      if ((entities[i] instanceof Bullet) || entities[i].team == this.team || (conditional && !this.extraConditions(entities[i]))) {
         continue;
       }
       var distance = Math.sqrt(Math.pow(entities[i].x - this.x, 2) + Math.pow(entities[i].y - this.y, 2));
@@ -515,6 +512,20 @@ class Archer extends Warrior {
         index = i;
       }
     }
+    return [bestDistance, index];
+  }
+
+  tick() {
+    if (this.updateStatus()) {
+      return;
+    }
+    var val = this.findEnemy(true);
+    var bestDistance = val[0];
+    if (bestDistance == 10000) {
+      val = this.findEnemy(false);
+      bestDistance = val[0];
+    }
+    var index = val[1];
     if (bestDistance != 10000) {
       if (bestDistance > this.range) {
         this.x += (entities[index].x - this.x) * this.speed / bestDistance;
