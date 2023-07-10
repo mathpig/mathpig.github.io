@@ -726,7 +726,7 @@ function setBlock(block) {
 }
 
 for (var i = 0; i < entities.length; ++i) {
-  if (entities[i] instanceof Grass && randint(0, 4) == 0) {
+  if (entities[i] instanceof Grass && randint(0, 9) == 0) {
     var val = randint(4, 6);
     if (entities[i].y < (val + 3) * blockSize) {
       continue;
@@ -767,6 +767,16 @@ function spreadLeaves(entities) {
 
 for (var i = 0; i < 6; ++i) {
   spreadLeaves(entities);
+}
+
+for (var i = 0; i < entities.length; ++i) {
+  if (entities[i] instanceof Grass &&
+     findBlock(entities[i].x, entities[i].y - blockSize) instanceof Air &&
+     findBlock(entities[i].x, entities[i].y - 2 * blockSize) instanceof Air) {
+    var player = new Player().setPosition(entities[i].x + blockSize / 8, entities[i].y - blockSize * 7 / 4).setSize(blockSize * 3 / 4, blockSize * 3 / 2);
+    entities.push(player);
+    break;
+  }
 }
 
 setInterval(Tick, 20);
