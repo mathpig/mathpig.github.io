@@ -240,7 +240,12 @@ class Leaves extends Block {
   }
 
   giveDrops() {
-    giveDrop(0, DirtItem);
+    if (randint(0, 49) == 0) {
+      giveDrop(randint(1, 2), StickItem);
+    }
+    if (randint(0, 199) == 0) {
+      giveDrop(1, AppleItem);
+    }
   }
 
   draw() {
@@ -425,6 +430,22 @@ class DirtItem extends Item {
     super();
     this.name = "Dirt";
     this.block = Dirt;
+  }
+}
+
+class StickItem extends Item {
+  constructor() {
+    super();
+    this.name = "Stick";
+    this.placeable = false;
+  }
+}
+
+class AppleItem extends Item {
+  constructor() {
+    super();
+    this.name = "Apple";
+    this.placeable = false
   }
 }
 
