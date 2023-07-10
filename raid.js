@@ -731,6 +731,7 @@ for (var i = 0; i < entities.length; ++i) {
     if (entities[i].y < (val + 3) * blockSize) {
       continue;
     }
+    setBlock(new Dirt().setPosition(entities[i].x, entities[i].y));
     for (var j = 0; j < val; ++j) {
       setBlock(new Log().setPosition(entities[i].x, entities[i].y - blockSize * (j + 1)));
     }
