@@ -564,6 +564,10 @@ class Flamethrower extends Archer {
     this.bulletBurnTime = 16;
     this.bulletColor = "orangered";
   }
+
+  extraConditions(enemy) {
+    return !enemy.burning;
+  }
 }
 
 class Frostthrower extends Archer {
@@ -619,6 +623,10 @@ class FireMage extends Archer {
     this.bulletSpeed = 2;
     this.bulletBurnTime = 80;
     this.bulletColor = "orangered";
+  }
+
+  extraConditions(enemy) {
+    return !enemy.burning;
   }
 }
 
