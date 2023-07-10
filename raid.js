@@ -35,8 +35,8 @@ class Block {
     this.sy = blockSize;
     this.solid = true;
     this.color = "";
-    this.toolType = "";
-    this.toolTimes = [];
+    this.mineable = true;
+    this.mineTime = 0;
     this.hovering = false;
     this.count = 0;
   }
@@ -63,23 +63,19 @@ class Block {
     return this;
   }
 
-  setToolType(toolType) {
-    this.toolType = toolType;
+  setMineable(mineable) {
+    this.mineable = mineable;
     return this;
   }
 
-  setToolTimes(toolTimes) {
-    this.toolTimes = toolTimes;
+  setMineTime(mineTime) {
+    this.mineTime = mineTime;
     return this;
   }
 
   setCount(count) {
     this.count = count;
     return this;
-  }
-
-  isAir() {
-    return false;
   }
 
   giveDrops() {
@@ -127,7 +123,7 @@ class Block {
       ctx.fillStyle = this.color;
     }
     ctx.fillRect(this.x, this.y, this.sx, this.sy);
-    if (this.count > 0 && this.solid) {
+    if (this.count > 0) {
       this.drawShell(Math.floor(this.count * 8));
     }
   }
@@ -140,24 +136,21 @@ class Block {
       var coord4 = (this.y + this.sy / 2);
       var dist = Math.sqrt((coord3 - coord1) * (coord3 - coord1) + (coord4 - coord2) * (coord4 - coord2)) / blockSize;
       if (dist > 6) {
+        this.hovering = false;
+        this.count = 0;
         return;
       }
       this.hovering = true;
-      if (mouseDown) {
-        this.count += 1 / this.toolTimes[0];
+      if (mouseDown && this.mineable) {
+        this.count += 1 / this.mineTime;
         if (this.count >= 1) {
-          for (var i = 0; i < entities.length; ++i) {
-            if (entities[i] === this) {
-              entities[i] = new Air().setPosition(this.x, this.y);
-              break;
-            }
-          }
+          setBlock(new Air().setPosition(this.x, this.y));
           this.giveDrops();
         }
       }
       else {
         this.count = 0;
-        if (player.keySet["p"] && this.isAir() && selection >= 0 && player.inventory[selection][0].placeable && player.inventory[selection][1] > 0) {
+        if (player.keySet["p"] && (findBlock(this.x, this.y) instanceof Air) && selection >= 0 && player.inventory[selection][0].placeable && player.inventory[selection][1] > 0) {
           for (var i = 0; i < entities.length; ++i) {
             if (entities[i] === this) {
               entities[i] = new player.inventory[selection][0].block().setPosition(this.x, this.y);
@@ -196,19 +189,15 @@ class Air extends Block {
   constructor() {
     super();
     this.solid = false;
+    this.mineable = false;
     this.color = "skyblue";
-  }
-
-  isAir() {
-    return true;
   }
 }
 
 class Grass extends Block {
   constructor() {
     super();
-    this.toolType = "shovel";
-    this.toolTimes = [45, 23, 13, 8, 5, 8];
+    this.mineTime = 45;
   }
 
   giveDrops() {
@@ -236,8 +225,7 @@ class Dirt extends Block {
   constructor() {
     super();
     this.color = "brown";
-    this.toolType = "shovel";
-    this.toolTimes = [38, 20, 10, 8, 5, 5];
+    this.mineTime = 38;
   }
 
   giveDrops() {
@@ -245,12 +233,52 @@ class Dirt extends Block {
   }
 }
 
+class Leaves extends Block {
+  constructor() {
+    super();
+    this.mineTime = 15;
+  }
+
+  giveDrops() {
+    giveDrop(0, DirtItem);
+  }
+
+  draw() {
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    else {
+      ctx.fillStyle = "forestgreen";
+      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillStyle = "darkgreen";
+      ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+    }
+    if (this.count > 0) {
+      this.drawShell(Math.floor(this.count * 8));
+    }
+  }
+}
+
+class Log extends Block {
+  constructor() {
+    super();
+    this.color = "saddlebrown";
+    this.mineTime = 150;
+  }
+
+  giveDrops() {
+    giveDrop(1, LogItem);
+  }
+}
+
 class Stone extends Block {
   constructor() {
     super();
     this.color = "gray";
-    this.toolType = "pickaxe";
-    this.toolTimes = [375, 58, 30, 20, 10, 15];
+    this.mineTime = 375;
   }
 
   giveDrops() {
@@ -261,8 +289,7 @@ class Stone extends Block {
 class Cobblestone extends Block {
   constructor() {
     super();
-    this.toolType = "pickaxe";
-    this.toolTimes = [500, 75, 38, 25, 13, 20];
+    this.mineTime = 500;
   }
 
   giveDrops() {
@@ -292,8 +319,7 @@ class Coal extends Block {
   constructor() {
     super();
     this.color = "black";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 113, 58, 38, 20, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -305,8 +331,7 @@ class Copper extends Block {
   constructor() {
     super();
     this.color = "darksalmon";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 58, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -318,8 +343,7 @@ class Iron extends Block {
   constructor() {
     super();
     this.color = "moccasin";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 58, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -331,8 +355,7 @@ class Redstone extends Block {
   constructor() {
     super();
     this.color = "red";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 188, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -344,8 +367,7 @@ class Gold extends Block {
   constructor() {
     super();
     this.color = "gold";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 188, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -357,8 +379,7 @@ class Lapis extends Block {
   constructor() {
     super();
     this.color = "blue";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 58, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -370,8 +391,7 @@ class Diamond extends Block {
   constructor() {
     super();
     this.color = "cyan";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 188, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -383,8 +403,7 @@ class Emerald extends Block {
   constructor() {
     super();
     this.color = "green";
-    this.toolType = "pickaxe";
-    this.toolTimes = [750, 375, 188, 38, 63, 30];
+    this.mineTime = 750;
   }
 
   giveDrops() {
@@ -406,6 +425,14 @@ class DirtItem extends Item {
     super();
     this.name = "Dirt";
     this.block = Dirt;
+  }
+}
+
+class LogItem extends Item {
+  constructor() {
+    super();
+    this.name = "Log";
+    this.block = Log;
   }
 }
 
@@ -628,8 +655,6 @@ function Tick() {
 var seedX = randint(500000, 1000000);
 var seedY = randint(500000, 1000000);
 
-var donePlayer = false;
-
 var arr = [[Dirt, -0.3, 5],
            [Coal, -0.35, 6],
            [Copper, -0.4, 4],
@@ -653,11 +678,6 @@ for (var i = 0; i < mapWidth; ++i) {
     }
     if (val < 0) {
       if (blockCount == 0) {
-        if (j >= 2 && !donePlayer) {
-          donePlayer = true;
-          var player = new Player().setPosition((i + 1 / 8) * blockSize, (j - 7 / 4) * blockSize).setSize(blockSize * 3 / 4, blockSize * 3 / 2);
-          entities.push(player);
-        }
         entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
       }
       else if (blockCount <= randint(4, 9)) {
@@ -687,6 +707,66 @@ for (var i = 0; i < mapWidth; ++i) {
 
 screen.width = blockSize * mapWidth;
 screen.height = blockSize * mapHeight;
+
+function findBlock(x, y) {
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Block && entities[i].x == x && entities[i].y == y) {
+      return entities[i];
+    }
+  }
+}
+
+function setBlock(block) {
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Block && entities[i].x == block.x && entities[i].y == block.y) {
+      entities[i] = block;
+      return;
+    }
+  }
+}
+
+for (var i = 0; i < entities.length; ++i) {
+  if (entities[i] instanceof Grass && randint(0, 4) == 0) {
+    var val = randint(4, 6);
+    if (entities[i].y < (val + 3) * blockSize) {
+      continue;
+    }
+    for (var j = 0; j < val; ++j) {
+      setBlock(new Log().setPosition(entities[i].x, entities[i].y - blockSize * (j + 1)));
+    }
+    setBlock(new Leaves().setPosition(entities[i].x, entities[i].y - blockSize * (val + 1)));
+  }
+}
+
+function spreadLeaves(entities) {
+  var toSpread = [];
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Leaves) {
+      toSpread.push(entities[i]);
+    }
+  }
+  for (var i = 0; i < toSpread.length; ++i) {
+    var x = toSpread[i].x;
+    var y = toSpread[i].y;
+    var val = 2 / 3;
+    if ((findBlock(x, y - blockSize) instanceof Air) && Math.random() < val) {
+      setBlock(new Leaves().setPosition(x, y - blockSize));
+    }
+    if ((findBlock(x + blockSize, y) instanceof Air) && Math.random() < val) {
+      setBlock(new Leaves().setPosition(x + blockSize, y));
+    }
+    if ((findBlock(x, y + blockSize) instanceof Air) && Math.random() < val) {
+      setBlock(new Leaves().setPosition(x, y + blockSize));
+    }
+    if ((findBlock(x - blockSize, y) instanceof Air) && Math.random() < val) {
+      setBlock(new Leaves().setPosition(x - blockSize, y));
+    }
+  }
+}
+
+for (var i = 0; i < 6; ++i) {
+  spreadLeaves(entities);
+}
 
 setInterval(Tick, 20);
 
