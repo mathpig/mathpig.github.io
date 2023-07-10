@@ -495,6 +495,10 @@ class Archer extends Warrior {
     return this;
   }
 
+  extraConditions(entity) {
+    return true;
+  }
+
   tick() {
     if (this.updateStatus()) {
       return;
@@ -502,7 +506,7 @@ class Archer extends Warrior {
     var bestDistance = 10000;
     var index = 0;
     for (var i = 0; i < entities.length; ++i) {
-      if ((entities[i] instanceof Bullet) || entities[i].team == this.team) {
+      if ((entities[i] instanceof Bullet) || entities[i].team == this.team || !this.extraConditions(entities[i])) {
         continue;
       }
       var distance = Math.sqrt(Math.pow(entities[i].x - this.x, 2) + Math.pow(entities[i].y - this.y, 2));
@@ -594,6 +598,10 @@ class Poisonthrower extends Archer {
     this.bulletPoisons = true;
     this.bulletColor = "darkgreen";
   }
+
+  extraConditions(enemy) {
+    return !enemy.poisoned;
+  }
 }
 
 class FireMage extends Archer {
@@ -647,6 +655,10 @@ class PoisonMage extends Archer {
     this.bulletSpeed = 2;
     this.bulletPoisons = true;
     this.bulletColor = "darkgreen";
+  }
+
+  extraConditions(enemy) {
+    return !enemy.poisoned;
   }
 }
 
