@@ -289,9 +289,9 @@ class BigWarrior extends Warrior {
 class Vampire extends Warrior {
   constructor() {
     super();
+    this.speed = 0.25;
     this.health = randint(960, 1440);
     this.maxHealth = this.health;
-    this.speed = 0.25;
     this.minAttack = 4;
     this.maxAttack = 8;
     this.cooldown = 1;
@@ -303,7 +303,7 @@ class Decoy extends Warrior {
   constructor() {
     super();
     this.speed = 0;
-    this.health = randint(2560, 3840);
+    this.health = randint(1280, 1920);
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
@@ -448,11 +448,13 @@ class Bullet {
 class Archer extends Warrior {
   constructor() {
     super();
+    this.speed = 1.5;
     this.health = randint(80, 120);
     this.maxHealth = this.health;
     this.minAttack = 32;
     this.maxAttack = 64;
     this.size = 15;
+    this.range = 10000;
     this.cooldown = 160;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
@@ -461,6 +463,11 @@ class Archer extends Warrior {
     this.bulletFreezeTime = 0;
     this.bulletPoisons = false;
     this.bulletColor = "black";
+  }
+
+  setRange(range) {
+    this.range = range;
+    return this;
   }
 
   setBulletSize(bulletSize) {
@@ -492,31 +499,6 @@ class Archer extends Warrior {
     if (this.updateStatus()) {
       return;
     }
-    this.frozenCooldown--;
-    this.burningCooldown--;
-    if (this.frozen) {
-      if (this.frozenCooldown <= 0) {
-        this.frozen = false;
-      }
-      return;
-    }
-    if (this.burning) {
-      this.hp -= 1;
-      if (this.hp <= 0) {
-        var index = 0;
-        for (var i = 0; i < entities.length; ++i) {
-          if (entities[i] === this) {
-            index = i;
-            break;
-          }
-        }
-        entities.splice(index, 1);
-        return;
-      }
-      if (this.burningCooldown <= 0) {
-        this.burning = false;
-      }
-    }
     var bestDistance = 10000;
     var index = 0;
     for (var i = 0; i < entities.length; ++i) {
@@ -529,23 +511,33 @@ class Archer extends Warrior {
         index = i;
       }
     }
-    if (bestDistance != 10000 && this.cooldown <= 0) {
-      var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
-      var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
-      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
-      this.cooldown = this.maxCooldown;
+    if (bestDistance != 10000) {
+      if (bestDistance > this.range) {
+        this.x += (entities[index].x - this.x) * this.speed / bestDistance;
+        this.y += (entities[index].y - this.y) * this.speed / bestDistance;
+      }
+      else {
+        if (this.cooldown <= 0) {
+          var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
+          var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
+          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
+          this.cooldown = this.maxCooldown;
+        }
+        this.cooldown -= 1;
+      }
     }
-    this.cooldown -= 1;
   }
 }
 
 class Gunner extends Archer {
   constructor() {
     super();
+    this.speed = 2;
     this.health = randint(40, 60);
     this.maxHealth = this.health;
     this.minAttack = 2;
     this.maxAttack = 4;
+    this.range = 250;
     this.cooldown = 2;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 4;
@@ -560,6 +552,7 @@ class Flamethrower extends Archer {
     this.maxHealth = this.health;
     this.minAttack = 1;
     this.maxAttack = 2;
+    this.range = 100;
     this.cooldown = 4;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
@@ -572,8 +565,10 @@ class Flamethrower extends Archer {
 class Frostthrower extends Archer {
   constructor() {
     super();
+    this.speed = 1;
     this.minAttack = 4;
     this.maxAttack = 8;
+    this.range = 200;
     this.cooldown = 8;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
@@ -586,10 +581,12 @@ class Frostthrower extends Archer {
 class Poisonthrower extends Archer {
   constructor() {
     super();
+    this.speed = 1.25;
     this.health = randint(60, 90);
     this.maxHealth = this.health;
     this.minAttack = 2;
     this.maxAttack = 4;
+    this.range = 150;
     this.cooldown = 6;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
@@ -602,10 +599,12 @@ class Poisonthrower extends Archer {
 class FireMage extends Archer {
   constructor() {
     super();
+    this.speed = 0.75;
     this.health = randint(320, 480);
     this.maxHealth = this.health;
     this.minAttack = 2;
     this.maxAttack = 4;
+    this.range = 500;
     this.cooldown = 40;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 16;
@@ -618,10 +617,12 @@ class FireMage extends Archer {
 class IceMage extends Archer {
   constructor() {
     super();
+    this.speed = 0.75;
     this.health = randint(640, 960);
     this.maxHealth = this.health;
     this.minAttack = 4;
     this.maxAttack = 8;
+    this.range = 500;
     this.cooldown = 80;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 16;
@@ -634,10 +635,12 @@ class IceMage extends Archer {
 class PoisonMage extends Archer {
   constructor() {
     super();
+    this.speed = 0.75;
     this.health = randint(480, 720);
     this.maxHealth = this.health;
     this.minAttack = 3;
     this.maxAttack = 6;
+    this.range = 500;
     this.cooldown = 60;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 16;
