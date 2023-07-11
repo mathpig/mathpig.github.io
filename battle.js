@@ -528,8 +528,17 @@ class Archer extends Warrior {
     var index = val[1];
     if (bestDistance != 10000) {
       if (bestDistance > this.range) {
+        var oldX = this.x;
+        var oldY = this.y;
         this.x += (entities[index].x - this.x) * this.speed / bestDistance;
         this.y += (entities[index].y - this.y) * this.speed / bestDistance;
+        for (var i = 0; i < entities.length; ++i) {
+          if (this.touches(entities[i]) && entities[i].touches(this) && this !== entities[i]) {
+            this.x = oldX;
+            this.y = oldY;
+            return;
+          }
+        }
       }
       else {
         if (this.cooldown <= 0) {
