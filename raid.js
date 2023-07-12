@@ -4,6 +4,10 @@ function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
 
+function uniform(a, b) {
+  return a + Math.random() * (b - a);
+}
+
 function rangeTouches(a, b, c, d) {
   return (b > c && d > a);
 }
@@ -230,6 +234,33 @@ class Dirt extends Block {
 
   giveDrops() {
     giveDrop(1, DirtItem);
+  }
+}
+
+class Sandygrass extends Block {
+  constructor() {
+    super();
+    this.mineTime = 45;
+  }
+
+  giveDrops() {
+    giveDrop(1, SandItem);
+  }
+
+  draw() {
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    else {
+      ctx.fillStyle = "burlywood";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
+      ctx.fillStyle = "bisque";
+      ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
+    }
+    if (this.count > 0) {
+      this.drawShell(Math.floor(this.count * 8));
+    }
   }
 }
 
@@ -735,6 +766,7 @@ var seedY = randint(500000, 1000000);
 var seedZ = randint(500000, 1000000);
 
 var arr = [[Dirt, -0.3, 5],
+           [Sand, -0.3, 3],
            [Coal, -0.35, 6],
            [Copper, -0.4, 4],
            [Iron, -0.4, 4],
@@ -756,22 +788,29 @@ for (var i = 0; i < mapWidth; ++i) {
     else {
       val += num / 2;
     }
+    num = uniform(0, 0.1);
     if (val < 0) {
-      if (biome < 0 && blockCount <= randint(4, 9)) {
-        if (blockCount == 0) {
+      if (blockCount == 0) {
+        if (biome < 0) {
           entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
         }
-        else {
-          entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
-        }
-      }
-      else if (biome >= 0 && blockCount <= randint(9, 14)) {
-        if (blockCount <= randint(4, 9)) {
+        else if (biome > 0.1) {
           entities.push(new Sand().setPosition(i * blockSize, j * blockSize));
         }
         else {
-          entities.push(new Sandstone().setPosition(i * blockSize, j * blockSize));
+          entities.push(new Sandygrass().setPosition(i * blockSize, j * blockSize));
         }
+      }
+      else if (blockCount <= randint(4, 9)) {
+        if (biome < num) {
+          entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
+        }
+        else {
+          entities.push(new Sand().setPosition(i * blockSize, j * blockSize));
+        }
+      }
+      else if (blockCount <= randint(9, 14) && biome >= num) {
+        entities.push(new Sandstone().setPosition(i * blockSize, j * blockSize));
       }
       else {
         var foundOre = false;
@@ -816,7 +855,7 @@ function setBlock(block) {
 }
 
 for (var i = 0; i < entities.length; ++i) {
-  if (entities[i] instanceof Grass && randint(0, 9) == 0) {
+  if (entities[i] instanceof Grass && randint(0, 4) == 0) {
     var val = randint(4, 6);
     if (entities[i].y < (val + 3) * blockSize) {
       continue;
@@ -860,7 +899,7 @@ for (var i = 0; i < 6; ++i) {
 }
 
 for (var i = 0; i < entities.length; ++i) {
-  if ((entities[i] instanceof Grass || entities[i] instanceof Sand) &&
+  if ((entities[i] instanceof Grass || entities[i] instanceof Sandygrass || entities[i] instanceof Sand) &&
        findBlock(entities[i].x, entities[i].y - blockSize) instanceof Air &&
        findBlock(entities[i].x, entities[i].y - 2 * blockSize) instanceof Air) {
     var player = new Player().setPosition(entities[i].x + blockSize / 8, entities[i].y - blockSize * 7 / 4).setSize(blockSize * 3 / 4, blockSize * 3 / 2);
