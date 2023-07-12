@@ -787,13 +787,13 @@ for (var i = 0; i < mapWidth; ++i) {
     else {
       val += num / 2;
     }
-    num = uniform(0, 0.1);
+    num = uniform(-0.1, 0.1);
     if (val < 0) {
       if (blockCount == 0) {
-        if (biome < 0) {
+        if (biome < -0.05) {
           entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
         }
-        else if (biome > 0.1) {
+        else if (biome > 0.05) {
           entities.push(new Sand().setPosition(i * blockSize, j * blockSize));
         }
         else {
