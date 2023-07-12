@@ -351,6 +351,35 @@ class Log extends Block {
   }
 }
 
+class Cactus extends Block {
+  constructor() {
+    super();
+    this.mineTime = 30;
+  }
+
+  giveDrops() {
+    giveDrop(1, CactusItem);
+  }
+
+  draw() {
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    else {
+      ctx.fillStyle = "green";
+      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillStyle = "black";
+      ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+    }
+    if (this.count > 0) {
+      this.drawShell(Math.floor(this.count * 8));
+    }
+  }
+}
+
 class Stone extends Block {
   constructor() {
     super();
@@ -542,6 +571,14 @@ class LogItem extends Item {
     super();
     this.name = "Log";
     this.block = Log;
+  }
+}
+
+class CactusItem extends Item {
+  constructor() {
+    super();
+    this.name = "Cactus";
+    this.block = Cactus;
   }
 }
 
@@ -855,15 +892,42 @@ function setBlock(block) {
 
 for (var i = 0; i < entities.length; ++i) {
   if (entities[i] instanceof Grass && randint(0, 4) == 0) {
-    var val = randint(4, 6);
-    if (entities[i].y < (val + 3) * blockSize) {
+    var height = randint(4, 6);
+    if (entities[i].y < (height + 3) * blockSize) {
       continue;
     }
     setBlock(new Dirt().setPosition(entities[i].x, entities[i].y));
-    for (var j = 0; j < val; ++j) {
+    for (var j = 0; j < height; ++j) {
       setBlock(new Log().setPosition(entities[i].x, entities[i].y - blockSize * (j + 1)));
     }
-    setBlock(new Leaves().setPosition(entities[i].x, entities[i].y - blockSize * (val + 1)));
+    setBlock(new Leaves().setPosition(entities[i].x, entities[i].y - blockSize * (height + 1)));
+  }
+  else if (entities[i] instanceof Sand && randint(0, 4) == 0) {
+    var val = randint(0, 17);
+    if (val <= 1) {
+      var height = 3;
+    }
+    else if (val <= 6) {
+      var height = 2;
+    }
+    else {
+      var height = 1;
+    }
+    if (entities[i].y < (height + 1) * blockSize) {
+      continue;
+    }
+    var failed = false;
+    for (var j = 0; j < height; ++j) {
+      if (!(findBlock(entities[i].x, entities[i].y - blockSize * (j + 1)) instanceof Air)) {
+        failed = true;
+        break;
+      }
+    }
+    if (!failed) {
+      for (var j = 0; j < height; ++j) {
+        setBlock(new Cactus().setPosition(entities[i].x, entities[i].y - blockSize * (j + 1)));
+      }
+    }
   }
 }
 
