@@ -766,7 +766,6 @@ var seedY = randint(500000, 1000000);
 var seedZ = randint(500000, 1000000);
 
 var arr = [[Dirt, -0.3, 5],
-           [Sand, -0.3, 3],
            [Coal, -0.35, 6],
            [Copper, -0.4, 4],
            [Iron, -0.4, 4],
