@@ -237,33 +237,6 @@ class Dirt extends Block {
   }
 }
 
-class Sandygrass extends Block {
-  constructor() {
-    super();
-    this.mineTime = 45;
-  }
-
-  giveDrops() {
-    giveDrop(1, SandItem);
-  }
-
-  draw() {
-    if (this.hovering) {
-      ctx.fillStyle = "purple";
-      ctx.fillRect(this.x, this.y, this.sx, this.sy);
-    }
-    else {
-      ctx.fillStyle = "burlywood";
-      ctx.fillRect(this.x, this.y, this.sx, this.sy / 4);
-      ctx.fillStyle = "bisque";
-      ctx.fillRect(this.x, this.y + this.sy / 4, this.sx, this.sy * 3 / 4);
-    }
-    if (this.count > 0) {
-      this.drawShell(Math.floor(this.count * 8));
-    }
-  }
-}
-
 class Sand extends Block {
   constructor() {
     super();
@@ -293,6 +266,47 @@ class Sandstone extends Block {
     }
     else {
       ctx.fillStyle = "bisque";
+      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillStyle = "gray";
+      ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+    }
+    if (this.count > 0) {
+      this.drawShell(Math.floor(this.count * 8));
+    }
+  }
+}
+
+class RedSand extends Block {
+  constructor() {
+    super();
+    this.color = "orangered";
+    this.mineTime = 38;
+  }
+
+  giveDrops() {
+    giveDrop(1, RedSandItem);
+  }
+}
+
+class RedSandstone extends Block {
+  constructor() {
+    super();
+    this.mineTime = 200;
+  }
+
+  giveDrops() {
+    giveDrop(1, RedSandstoneItem);
+  }
+
+  draw() {
+   if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    else {
+      ctx.fillStyle = "orangered";
       ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
       ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
       ctx.fillStyle = "gray";
@@ -547,6 +561,22 @@ class SandstoneItem extends Item {
     super();
     this.name = "Sandstone";
     this.block = Sandstone;
+  }
+}
+
+class RedSandItem extends Item {
+  constructor() {
+    super();
+    this.name = "Red Sand";
+    this.block = RedSand;
+  }
+}
+
+class RedSandstoneItem extends Item {
+  constructor() {
+    super();
+    this.name = "Red Sandstone";
+    this.block = RedSandstone;
   }
 }
 
@@ -812,9 +842,19 @@ var arr = [[Dirt, -0.3, 5],
            [Diamond, -0.55, 2],
            [Emerald, -0.6, 2]];
 
+var biomes = [[[Grass, 0, 0], [Dirt, 4, 9]],
+              [[Sand, 4, 9], [Sandstone, 9, 14]],
+              [[RedSand, 4, 9], [RedSandstone, 9, 14]]];
+
+var biome = randint(0, biomes.length - 1);
+var oldBiomeVal = 0;
+var biomeVal = 0;
 for (var i = 0; i < mapWidth; ++i) {
+  biomeVal = perlin(seedZ + i / 32, 0);
+  if ((biomeVal < -0.2 && oldBiomeVal > -0.2) || (biomeVal > 0.2 && oldBiomeVal < 0.2)) {
+    biome = randint(0, biomes.length - 1);
+  }
   var blockCount = 0;
-  var biome = perlin(seedZ + i / 32, 0);
   for (var j = 0; j < mapHeight; ++j) {
     var val = perlin(seedX + i / 16, seedY + j / 16);
     var num = (mapHeight - 2 * j - 1) / mapHeight;
@@ -824,31 +864,16 @@ for (var i = 0; i < mapWidth; ++i) {
     else {
       val += num / 2;
     }
-    num = uniform(-0.1, 0.1);
     if (val < 0) {
-      if (blockCount == 0) {
-        if (biome < -0.05) {
-          entities.push(new Grass().setPosition(i * blockSize, j * blockSize));
-        }
-        else if (biome > 0.05) {
-          entities.push(new Sand().setPosition(i * blockSize, j * blockSize));
-        }
-        else {
-          entities.push(new Sandygrass().setPosition(i * blockSize, j * blockSize));
+      var foundBlock = false;
+      for (var k = 0; k < biomes[biome].length; ++k) {
+        if (blockCount <= randint(biomes[biome][k][1], biomes[biome][k][2])) {
+          entities.push(new biomes[biome][k][0]().setPosition(i * blockSize, j * blockSize));
+          foundBlock = true;
+          break;
         }
       }
-      else if (blockCount <= randint(4, 9)) {
-        if (biome < num) {
-          entities.push(new Dirt().setPosition(i * blockSize, j * blockSize));
-        }
-        else {
-          entities.push(new Sand().setPosition(i * blockSize, j * blockSize));
-        }
-      }
-      else if (blockCount <= randint(9, 14) && biome >= num) {
-        entities.push(new Sandstone().setPosition(i * blockSize, j * blockSize));
-      }
-      else {
+      if (!foundBlock) {
         var foundOre = false;
         for (var k = 0; k < arr.length; ++k) {
           var oreVal = perlin(seedX / Math.pow(2, k + 1) + i / arr[k][2], seedY / Math.pow(2, k + 1) + j / arr[k][2]);
@@ -962,11 +987,20 @@ for (var i = 0; i < 6; ++i) {
 }
 
 for (var i = 0; i < entities.length; ++i) {
-  if ((entities[i] instanceof Grass || entities[i] instanceof Sandygrass || entities[i] instanceof Sand) &&
-       findBlock(entities[i].x, entities[i].y - blockSize) instanceof Air &&
-       findBlock(entities[i].x, entities[i].y - 2 * blockSize) instanceof Air) {
-    var player = new Player().setPosition(entities[i].x + blockSize / 8, entities[i].y - blockSize * 7 / 4).setSize(blockSize * 3 / 4, blockSize * 3 / 2);
-    entities.push(player);
+  if (!(findBlock(entities[i].x, entities[i].y - blockSize) instanceof Air) ||
+      !(findBlock(entities[i].x, entities[i].y - 2 * blockSize) instanceof Air)) {
+    continue;
+  }
+  var success = false;
+  for (var j = 0; j < biomes.length; ++j) {
+    if (entities[i] instanceof biomes[j][0][0]) {
+      var player = new Player().setPosition(entities[i].x + blockSize / 8, entities[i].y - blockSize * 7 / 4).setSize(blockSize * 3 / 4, blockSize * 3 / 2);
+      entities.push(player);
+      success = true;
+      break;
+    }
+  }
+  if (success) {
     break;
   }
 }
