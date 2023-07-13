@@ -851,7 +851,7 @@ var oldBiomeVal = 0;
 var biomeVal = 0;
 for (var i = 0; i < mapWidth; ++i) {
   biomeVal = perlin(seedZ + i / 32, 0);
-  if ((biomeVal < 0 && oldBiomeVal > 0) || (biomeVal > 0 && oldBiomeVal < 0)) {
+  if ((biomeVal < 0 && oldBiomeVal >= 0) || (biomeVal >= 0 && oldBiomeVal < 0)) {
     biome = randint(0, biomes.length - 1);
   }
   var blockCount = 0;
