@@ -180,7 +180,15 @@ class Block {
 function giveDrop(quantity, itemType) {
   var newItem = new itemType();
   for (var i = 0; i < player.inventory.length; ++i) {
-    if (player.inventory[i][0].name === newItem.name || player.inventory[i][1] == 0) {
+    if (player.inventory[i][0].name === newItem.name && player.inventory[i][1] != 0) {
+      player.inventory[i][0] = newItem;
+      var val = Math.min(quantity, newItem.stackLimit - player.inventory[i][1]);
+      player.inventory[i][1] += val;
+      quantity -= val;
+    }
+  }
+  for (var i = 0; i < player.inventory.length; ++i) {
+    if (player.inventory[i][1] == 0) {
       player.inventory[i][0] = newItem;
       var val = Math.min(quantity, newItem.stackLimit - player.inventory[i][1]);
       player.inventory[i][1] += val;
@@ -316,6 +324,18 @@ class RedSandstone extends Block {
     if (this.count > 0) {
       this.drawShell(Math.floor(this.count * 8));
     }
+  }
+}
+
+class Snow extends Block {
+  constructor() {
+    super();
+    this.color = "white";
+    this.mineTime = 25;
+  }
+
+  giveDrops() {
+    giveDrop(0, DirtItem);
   }
 }
 
@@ -832,28 +852,66 @@ var seedX = randint(500000, 1000000);
 var seedY = randint(500000, 1000000);
 var seedZ = randint(500000, 1000000);
 
-var arr = [[Dirt, -0.3, 5],
-           [Coal, -0.35, 6],
-           [Copper, -0.4, 4],
-           [Iron, -0.4, 4],
-           [Redstone, -0.45, 3],
-           [Gold, -0.45, 3],
-           [Lapis, -0.5, 3],
-           [Diamond, -0.55, 2],
-           [Emerald, -0.6, 2]];
+var ores = [[Dirt, -0.3, 5],
+            [Coal, -0.35, 6],
+            [Copper, -0.4, 4],
+            [Iron, -0.4, 4],
+            [Redstone, -0.45, 3],
+            [Gold, -0.45, 3],
+            [Lapis, -0.5, 3],
+            [Diamond, -0.55, 2],
+            [Emerald, -0.6, 2]];
 
 var biomes = [[[Grass, 0, 0], [Dirt, 4, 9]],
               [[Sand, 4, 9], [Sandstone, 9, 14]],
-              [[RedSand, 4, 9], [RedSandstone, 9, 14]]];
+              [[RedSand, 4, 9], [RedSandstone, 9, 14]],
+              [[Snow, 4, 9]]];
 
 var biome = randint(0, biomes.length - 1);
 var oldBiomeVal = 0;
 var biomeVal = 0;
+
+var arr = [];
+var count = 0;
 for (var i = 0; i < mapWidth; ++i) {
-  biomeVal = perlin(seedZ + i / 32, 0);
+  biomeVal = perlin(seedZ + i / 16, 0);
   if ((biomeVal < 0 && oldBiomeVal >= 0) || (biomeVal >= 0 && oldBiomeVal < 0)) {
+    arr.push([biome, count]);
     biome = randint(0, biomes.length - 1);
+    count = 0;
   }
+  count++;
+}
+arr.push([biome, count]);
+
+while (true) {
+  var found = false;
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i][1] <= 7) {
+      found = true;
+      if (i == 0) {
+        arr[1][1] += arr[0][1];
+      }
+      else {
+        arr[i - 1][1] += arr[i][1];
+      }
+      arr.splice(i, 1);
+      break;
+    }
+  }
+  if (!found) {
+    break;
+  }
+}
+
+var index = 0;
+var count = arr[index][1];
+for (var i = 0; i < mapWidth; ++i) {
+  if (i >= count) {
+    index++;
+    count += arr[index][1];
+  }
+  var biome = arr[index][0];
   var blockCount = 0;
   for (var j = 0; j < mapHeight; ++j) {
     var val = perlin(seedX + i / 16, seedY + j / 16);
@@ -875,10 +933,10 @@ for (var i = 0; i < mapWidth; ++i) {
       }
       if (!foundBlock) {
         var foundOre = false;
-        for (var k = 0; k < arr.length; ++k) {
-          var oreVal = perlin(seedX / Math.pow(2, k + 1) + i / arr[k][2], seedY / Math.pow(2, k + 1) + j / arr[k][2]);
-          if (oreVal < arr[k][1]) {
-            entities.push(new arr[k][0]().setPosition(i * blockSize, j * blockSize));
+        for (var k = 0; k < ores.length; ++k) {
+          var oreVal = perlin(seedX / Math.pow(2, k + 1) + i / ores[k][2], seedY / Math.pow(2, k + 1) + j / ores[k][2]);
+          if (oreVal < ores[k][1]) {
+            entities.push(new ores[k][0]().setPosition(i * blockSize, j * blockSize));
             foundOre = true;
             break;
           }
