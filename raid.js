@@ -274,8 +274,7 @@ class Sandstone extends Block {
     }
     else {
       ctx.fillStyle = "bisque";
-      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
-      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
       ctx.fillStyle = "gray";
       ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
       ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
@@ -315,8 +314,7 @@ class RedSandstone extends Block {
     }
     else {
       ctx.fillStyle = "orangered";
-      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
-      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
       ctx.fillStyle = "gray";
       ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
       ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
@@ -361,8 +359,7 @@ class Leaves extends Block {
     }
     else {
       ctx.fillStyle = "forestgreen";
-      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
-      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
       ctx.fillStyle = "darkgreen";
       ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
       ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
@@ -402,11 +399,40 @@ class Cactus extends Block {
     }
     else {
       ctx.fillStyle = "green";
-      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
-      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
       ctx.fillStyle = "black";
       ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
       ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+    }
+    if (this.count > 0) {
+      this.drawShell(Math.floor(this.count * 8));
+    }
+  }
+}
+
+class Deadbush extends Block {
+  constructor() {
+    super();
+    this.mineTime = 0;
+  }
+
+  giveDrops() {
+    giveDrop(randint(0, 2), StickItem);
+  }
+
+  draw() {
+    if (this.hovering) {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+    }
+    else {
+      ctx.fillStyle = "skyblue";
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
+      ctx.fillStyle = "burlywood";
+      ctx.fillRect(this.x, this.y, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 4, this.sx / 4, this.sy * 3 / 4);
+      ctx.fillRect(this.x + this.sx / 4, this.y + this.sy / 2, this.sx / 4, this.sy / 4);
+      ctx.fillRect(this.x + this.sx * 3 / 4, this.y, this.sx / 4, this.sy / 4);
     }
     if (this.count > 0) {
       this.drawShell(Math.floor(this.count * 8));
@@ -443,8 +469,7 @@ class Cobblestone extends Block {
     }
     else {
       ctx.fillStyle = "darkgray";
-      ctx.fillRect(this.x, this.y, this.sx / 2, this.sy / 2);
-      ctx.fillRect(this.x + this.sx / 2, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
+      ctx.fillRect(this.x, this.y, this.sx, this.sy);
       ctx.fillStyle = "lightgray";
       ctx.fillRect(this.x + this.sx / 2, this.y, this.sx / 2, this.sy / 2);
       ctx.fillRect(this.x, this.y + this.sy / 2, this.sx / 2, this.sy / 2);
@@ -1020,6 +1045,12 @@ for (var i = 0; i < entities.length; ++i) {
         setBlock(new Cactus().setPosition(entities[i].x, entities[i].y - blockSize * (j + 1)));
       }
     }
+  }
+  else if (entities[i] instanceof RedSand && randint(0, 9) == 0) {
+    if (entities[i].y == 0 || !(findBlock(entities[i].x, entities[i].y - blockSize) instanceof Air)) {
+      continue;
+    }
+    setBlock(new Deadbush().setPosition(entities[i].x, entities[i].y - blockSize));
   }
 }
 
