@@ -740,6 +740,14 @@ class Healer extends Archer {
     if (this.updateStatus()) {
       return;
     }
+    if (this.health < this.maxHealth) {
+      if (this.cooldown <= 0) {
+        this.health = Math.min(this.health + randint(this.minHeal, this.maxHeal), this.maxHealth);
+        this.cooldown = this.maxCooldown;
+      }
+      this.cooldown--;
+      return;
+    }
     var val = this.findEnemy(true);
     var bestDistance = val[0];
     if (bestDistance == 10000) {
