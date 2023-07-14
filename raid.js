@@ -867,6 +867,15 @@ var biomes = [[[Grass, 0, 0], [Dirt, 4, 9]],
               [[RedSand, 4, 9], [RedSandstone, 9, 14]],
               [[Snow, 4, 9]]];
 
+function chooseBiome(oldBiome) {
+  if (oldBiome == 0) {
+    return randint(1, 3);
+  }
+  else {
+    return 0;
+  }
+}
+
 var biome = randint(0, biomes.length - 1);
 var oldBiomeVal = 0;
 var biomeVal = 0;
@@ -877,7 +886,7 @@ for (var i = 0; i < mapWidth; ++i) {
   biomeVal = perlin(seedZ + i / 16, 0);
   if ((biomeVal < 0 && oldBiomeVal >= 0) || (biomeVal >= 0 && oldBiomeVal < 0)) {
     arr.push([biome, count]);
-    biome = randint(0, biomes.length - 1);
+    biome = chooseBiome(biome);
     count = 0;
   }
   count++;
