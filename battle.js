@@ -233,7 +233,7 @@ class Warrior {
       entities.splice(target, 1);
     }
     if (revert) {
-      this.cooldown -= 1;
+      this.cooldown--;
       this.x -= this.vx;
       this.y -= this.vy;
     }
@@ -333,6 +333,7 @@ class Bullet {
     this.vx = 0;
     this.vy = 0;
     this.attack = 0;
+    this.heal = 0;
     this.size = 10;
     this.burnTime = 0;
     this.freezeTime = 0;
@@ -355,6 +356,11 @@ class Bullet {
 
   setAttack(attack) {
     this.attack = attack;
+    return this;
+  }
+
+  setHeal(heal) {
+    this.heal = heal;
     return this;
   }
 
@@ -440,6 +446,7 @@ class Bullet {
       else if (this.poisons) {
         entities[index].poisoned = true;
       }
+      entities[index].health = Math.min(entities[index].health + this.heal, entities[index].maxHealth);
       this.remove();
     }
   }
@@ -451,8 +458,8 @@ class Archer extends Warrior {
     this.speed = 1.5;
     this.health = randint(80, 120);
     this.maxHealth = this.health;
-    this.minAttack = 32;
-    this.maxAttack = 64;
+    this.minAttack = 128;
+    this.maxAttack = 256;
     this.size = 15;
     this.range = 10000;
     this.cooldown = 160;
@@ -547,7 +554,7 @@ class Archer extends Warrior {
           entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
           this.cooldown = this.maxCooldown;
         }
-        this.cooldown -= 1;
+        this.cooldown--;
       }
     }
   }
@@ -639,7 +646,7 @@ class FireMage extends Archer {
     this.range = 500;
     this.cooldown = 40;
     this.maxCooldown = this.cooldown;
-    this.bulletSize = 16;
+    this.bulletSize = 12;
     this.bulletSpeed = 2;
     this.bulletBurnTime = 80;
     this.bulletColor = "orangered";
@@ -661,7 +668,7 @@ class IceMage extends Archer {
     this.range = 500;
     this.cooldown = 80;
     this.maxCooldown = this.cooldown;
-    this.bulletSize = 16;
+    this.bulletSize = 12;
     this.bulletSpeed = 2;
     this.bulletFreezeTime = 160;
     this.bulletColor = "cyan";
@@ -679,7 +686,7 @@ class PoisonMage extends Archer {
     this.range = 500;
     this.cooldown = 60;
     this.maxCooldown = this.cooldown;
-    this.bulletSize = 16;
+    this.bulletSize = 12;
     this.bulletSpeed = 2;
     this.bulletPoisons = true;
     this.bulletColor = "darkgreen";
@@ -687,6 +694,83 @@ class PoisonMage extends Archer {
 
   extraConditions(enemy) {
     return !enemy.poisoned;
+  }
+}
+
+class Healer extends Archer {
+  constructor() {
+    super();
+    this.speed = 0.5;
+    this.health = randint(640, 960);
+    this.maxHealth = this.health;
+    this.minAttack = 0;
+    this.maxAttack = 0;
+    this.minHeal = 256;
+    this.maxHeal = 512;
+    this.size = 20;
+    this.range = 300;
+    this.bulletSize = 12;
+    this.bulletSpeed = 1;
+    this.bulletColor = "darkgoldenrod";
+  }
+
+  setHeal(minHeal, maxHeal) {
+    this.minHeal = minHeal;
+    this.maxHeal = maxHeal;
+    return this;
+  }
+
+  findEnemy(conditional) {
+    var bestDistance = 10000;
+    var index = 0;
+    for (var i = 0; i < entities.length; ++i) {
+      if ((entities[i] instanceof Bullet) || entities[i].team != this.team || entities[i] === this || (conditional && !this.extraConditions(entities[i]))) {
+        continue;
+      }
+      var distance = Math.sqrt(Math.pow(entities[i].x - this.x, 2) + Math.pow(entities[i].y - this.y, 2));
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        index = i;
+      }
+    }
+    return [bestDistance, index];
+  }
+
+  tick() {
+    if (this.updateStatus()) {
+      return;
+    }
+    var val = this.findEnemy(true);
+    var bestDistance = val[0];
+    if (bestDistance == 10000) {
+      val = this.findEnemy(false);
+      bestDistance = val[0];
+    }
+    var index = val[1];
+    if (bestDistance != 10000) {
+      if (bestDistance > this.range) {
+        var oldX = this.x;
+        var oldY = this.y;
+        this.x += (entities[index].x - this.x) * this.speed / bestDistance;
+        this.y += (entities[index].y - this.y) * this.speed / bestDistance;
+        for (var i = 0; i < entities.length; ++i) {
+          if (this.touches(entities[i]) && entities[i].touches(this) && this !== entities[i]) {
+            this.x = oldX;
+            this.y = oldY;
+            return;
+          }
+        }
+      }
+      else {
+        if (this.cooldown <= 0) {
+          var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
+          var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
+          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setHeal(randint(this.minHeal, this.maxHeal)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
+          this.cooldown = this.maxCooldown;
+        }
+        this.cooldown--;
+      }
+    }
   }
 }
 
@@ -706,31 +790,34 @@ for (var i = 0; i < 250; ++i) {
     else if (val == 4) {
       entities.push(new Decoy().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 7) {
+    else if (val <= 6) {
       entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
     else if (val <= 9) {
+      entities.push(new Healer().setPosition(x, y).setTeam(team));
+    }
+    else if (val <= 11) {
       entities.push(new Gunner().setPosition(x, y).setTeam(team));
     }
-    else if (val == 10) {
+    else if (val == 12) {
       entities.push(new Flamethrower().setPosition(x, y).setTeam(team));
     }
-    else if (val == 11) {
+    else if (val == 13) {
       entities.push(new Frostthrower().setPosition(x, y).setTeam(team));
     }
-    else if (val == 12) {
+    else if (val == 14) {
       entities.push(new Poisonthrower().setPosition(x, y).setTeam(team));
     }
-    else if (val == 13) {
+    else if (val == 15) {
       entities.push(new FireMage().setPosition(x, y).setTeam(team));
     }
-    else if (val == 14) {
+    else if (val == 16) {
       entities.push(new IceMage().setPosition(x, y).setTeam(team));
     }
-    else if (val == 15) {
+    else if (val == 17) {
       entities.push(new PoisonMage().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 19) {
+    else if (val <= 21) {
       entities.push(new Archer().setPosition(x, y).setTeam(team));
     }
     else {
