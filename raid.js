@@ -877,16 +877,6 @@ var seedX = randint(500000, 1000000);
 var seedY = randint(500000, 1000000);
 var seedZ = randint(500000, 1000000);
 
-var ores = [[Dirt, -0.3, 5],
-            [Coal, -0.35, 6],
-            [Copper, -0.4, 4],
-            [Iron, -0.4, 4],
-            [Redstone, -0.45, 3],
-            [Gold, -0.45, 3],
-            [Lapis, -0.5, 3],
-            [Diamond, -0.55, 2],
-            [Emerald, -0.6, 2]];
-
 var biomes = [[[Grass, 0, 0], [Dirt, 4, 9]],
               [[Sand, 4, 9], [Sandstone, 9, 14]],
               [[RedSand, 4, 9], [RedSandstone, 9, 14]],
@@ -937,6 +927,16 @@ while (true) {
     break;
   }
 }
+
+var ores = [[Dirt, -0.3, 5],
+            [Coal, -0.35, 6],
+            [Copper, -0.4, 4],
+            [Iron, -0.4, 4],
+            [Redstone, -0.45, 3],
+            [Gold, -0.45, 3],
+            [Lapis, -0.5, 3],
+            [Diamond, -0.55, 2],
+            [Emerald, -0.6, 2]];
 
 var index = 0;
 var count = arr[index][1];
@@ -1019,7 +1019,7 @@ for (var i = 0; i < entities.length; ++i) {
     }
     setBlock(new Leaves().setPosition(entities[i].x, entities[i].y - blockSize * (height + 1)));
   }
-  else if (entities[i] instanceof Sand && randint(0, 4) == 0) {
+  else if ((entities[i] instanceof Sand || entities[i] instanceof RedSand) && randint(0, 4) == 0) {
     var val = randint(0, 17);
     if (val <= 1) {
       var height = 3;
@@ -1046,7 +1046,7 @@ for (var i = 0; i < entities.length; ++i) {
       }
     }
   }
-  else if (entities[i] instanceof RedSand && randint(0, 9) == 0) {
+  else if ((entities[i] instanceof Sand || entities[i] instanceof RedSand) && randint(0, 9) == 0) {
     if (entities[i].y == 0 || !(findBlock(entities[i].x, entities[i].y - blockSize) instanceof Air)) {
       continue;
     }
