@@ -572,7 +572,7 @@ class Gunner extends Archer {
     this.cooldown = 2;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 4;
-    this.bulletSpeed = 5;
+    this.bulletSpeed = 4;
   }
 }
 
@@ -587,7 +587,7 @@ class Flamethrower extends Archer {
     this.cooldown = 4;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
-    this.bulletSpeed = 5;
+    this.bulletSpeed = 4;
     this.bulletBurnTime = 16;
     this.bulletColor = "orangered";
   }
@@ -607,7 +607,7 @@ class Frostthrower extends Archer {
     this.cooldown = 8;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
-    this.bulletSpeed = 5;
+    this.bulletSpeed = 4;
     this.bulletFreezeTime = 32;
     this.bulletColor = "cyan";
   }
@@ -625,7 +625,7 @@ class Poisonthrower extends Archer {
     this.cooldown = 6;
     this.maxCooldown = this.cooldown;
     this.bulletSize = 8;
-    this.bulletSpeed = 5;
+    this.bulletSpeed = 4;
     this.bulletPoisons = true;
     this.bulletColor = "darkgreen";
   }
@@ -774,6 +774,26 @@ class Healer extends Archer {
   }
 }
 
+class Healththrower extends Healer {
+  constructor() {
+    super();
+    this.speed = 2;
+    this.health = randint(20, 30);
+    this.maxHealth = this.health;
+    this.minAttack = 0;
+    this.maxAttack = 0;
+    this.minHeal = 4;
+    this.maxHeal = 8;
+    this.size = 10;
+    this.range = 250;
+    this.cooldown = 2;
+    this.maxCooldown = 2;
+    this.bulletSize = 4;
+    this.bulletSpeed = 4;
+    this.bulletColor = "darkgoldenrod";
+  }
+}
+
 entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
 for (var i = 0; i < 250; ++i) {
   while (true) {
@@ -793,8 +813,11 @@ for (var i = 0; i < 250; ++i) {
     else if (val <= 6) {
       entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 9) {
+    else if (val <= 8) {
       entities.push(new Healer().setPosition(x, y).setTeam(team));
+    }
+    else if (val == 9) {
+      entities.push(new Healththrower().setPosition(x, y).setTeam(team));
     }
     else if (val <= 11) {
       entities.push(new Gunner().setPosition(x, y).setTeam(team));
