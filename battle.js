@@ -705,8 +705,8 @@ class Healer extends Archer {
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
-    this.minHeal = 256;
-    this.maxHeal = 512;
+    this.minHeal = 64;
+    this.maxHeal = 128;
     this.size = 20;
     this.range = 300;
     this.bulletSize = 12;
@@ -718,6 +718,10 @@ class Healer extends Archer {
     this.minHeal = minHeal;
     this.maxHeal = maxHeal;
     return this;
+  }
+
+  extraConditions(ally) {
+    return (ally.health < ally.maxHealth);
   }
 
   findEnemy(conditional) {
@@ -790,8 +794,8 @@ class Healththrower extends Healer {
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
-    this.minHeal = 4;
-    this.maxHeal = 8;
+    this.minHeal = 1;
+    this.maxHeal = 2;
     this.size = 10;
     this.range = 250;
     this.cooldown = 2;
