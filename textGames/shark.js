@@ -27,7 +27,7 @@ async function main() {
   var introduction = await get_string("");
   if (introduction == "y" || introduction == "yes") {
     await Print("");
-    await Print("Welcome to shark game version 3.2.0!");
+    await Print("Welcome to shark game!");
     await Print("");
     await Print("Controls:");
     await Print("\"c\" or \"catch\" to catch fish.");
