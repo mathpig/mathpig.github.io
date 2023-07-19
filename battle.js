@@ -316,7 +316,7 @@ class Rogue extends Warrior {
   constructor() {
     super();
     this.speed = 2;
-    this.health = randint(160, 240);
+    this.health = randint(40, 60);
     this.maxHealth = this.health;
     this.minAttack = 16;
     this.maxAttack = 32;
@@ -339,6 +339,7 @@ class Bullet {
     this.freezeTime = 0;
     this.poisons = false;
     this.color = "black";
+    this.converts = false;
     this.source = 0;
   }
 
@@ -386,6 +387,11 @@ class Bullet {
 
   setColor(color) {
     this.color = color;
+    return this;
+  }
+
+  setConverts(converts) {
+    this.converts = converts;
     return this;
   }
 
@@ -447,6 +453,9 @@ class Bullet {
         entities[index].poisoned = true;
       }
       entities[index].health = Math.min(entities[index].health + this.heal, entities[index].maxHealth);
+      if (this.converts) {
+        entities[index].team = this.source.team
+      }
       this.remove();
     }
   }
@@ -470,6 +479,7 @@ class Archer extends Warrior {
     this.bulletFreezeTime = 0;
     this.bulletPoisons = false;
     this.bulletColor = "black";
+    this.bulletConverts = false;
   }
 
   setRange(range) {
@@ -499,6 +509,11 @@ class Archer extends Warrior {
 
   setBulletPoisons(bulletPoisons) {
     this.bulletPoisons = bulletPoisons;
+    return this;
+  }
+
+  setBulletConverts(bulletConverts) {
+    this.bulletConverts = bulletConverts;
     return this;
   }
 
@@ -551,7 +566,7 @@ class Archer extends Warrior {
         if (this.cooldown <= 0) {
           var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
           var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
-          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
+          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setConverts(this.bulletConverts).setSource(this));
           this.cooldown = this.maxCooldown;
         }
         this.cooldown--;
@@ -806,6 +821,24 @@ class Healththrower extends Healer {
   }
 }
 
+class Converter extends Archer {
+  constructor() {
+    super();
+    this.speed = 0.25;
+    this.health = randint(160, 240);
+    this.maxHealth = this.health;
+    this.minAttack = 0;
+    this.maxAttack = 0;
+    this.size = 30;
+    this.range = 100;
+    this.cooldown = 320;
+    this.bulletSize = 12;
+    this.bulletSpeed = 1;
+    this.bulletColor = "gray";
+    this.bulletConverts = true;
+  }
+}
+
 entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
 for (var i = 0; i < 250; ++i) {
   while (true) {
@@ -825,7 +858,10 @@ for (var i = 0; i < 250; ++i) {
     else if (val <= 6) {
       entities.push(new Rogue().setPosition(x, y).setTeam(team));
     }
-    else if (val <= 8) {
+    else if (val == 7) {
+      entities.push(new Converter().setPosition(x, y).setTeam(team));
+    }
+    else if (val == 8) {
       entities.push(new Healer().setPosition(x, y).setTeam(team));
     }
     else if (val == 9) {
