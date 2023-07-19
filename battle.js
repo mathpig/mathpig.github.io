@@ -316,7 +316,7 @@ class Rogue extends Warrior {
   constructor() {
     super();
     this.speed = 2;
-    this.health = randint(40, 60);
+    this.health = randint(160, 240);
     this.maxHealth = this.health;
     this.minAttack = 16;
     this.maxAttack = 32;
@@ -825,7 +825,7 @@ class Converter extends Archer {
   constructor() {
     super();
     this.speed = 0.25;
-    this.health = randint(160, 240);
+    this.health = randint(1280, 1920);
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
