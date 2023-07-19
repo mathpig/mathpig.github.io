@@ -340,6 +340,7 @@ class Bullet {
     this.poisons = false;
     this.color = "black";
     this.converts = false;
+    this.team = 0;
     this.source = 0;
   }
 
@@ -392,6 +393,11 @@ class Bullet {
 
   setConverts(converts) {
     this.converts = converts;
+    return this;
+  }
+
+  setTeam(team) {
+    this.team = team;
     return this;
   }
 
@@ -454,7 +460,7 @@ class Bullet {
       }
       entities[index].health = Math.min(entities[index].health + this.heal, entities[index].maxHealth);
       if (this.converts) {
-        entities[index].team = this.source.team
+        entities[index].team = this.team
       }
       this.remove();
     }
@@ -566,7 +572,7 @@ class Archer extends Warrior {
         if (this.cooldown <= 0) {
           var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
           var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
-          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setConverts(this.bulletConverts).setSource(this));
+          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setConverts(this.bulletConverts).setTeam(this.team).setSource(this));
           this.cooldown = this.maxCooldown;
         }
         this.cooldown--;
@@ -792,7 +798,7 @@ class Healer extends Archer {
         if (this.cooldown <= 0) {
           var bvx = this.bulletSpeed * (entities[index].x - this.x) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
           var bvy = this.bulletSpeed * (entities[index].y - this.y) / bestDistance + (Math.random() - 0.5) * 5 / this.maxCooldown;
-          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setHeal(randint(this.minHeal, this.maxHeal)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setSource(this));
+          entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(randint(this.minAttack, this.maxAttack)).setHeal(randint(this.minHeal, this.maxHeal)).setSize(this.bulletSize).setBurnTime(this.bulletBurnTime).setFreezeTime(this.bulletFreezeTime).setPoisons(this.bulletPoisons).setColor(this.bulletColor).setConverts(this.bulletConverts).setTeam(this.team).setSource(this));
           this.cooldown = this.maxCooldown;
         }
         this.cooldown--;
