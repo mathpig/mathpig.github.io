@@ -830,7 +830,6 @@ class Converter extends Archer {
     this.minAttack = 0;
     this.maxAttack = 0;
     this.size = 30;
-    this.range = 100;
     this.cooldown = 320;
     this.bulletSize = 12;
     this.bulletSpeed = 1;
