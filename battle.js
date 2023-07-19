@@ -216,21 +216,21 @@ class Warrior {
     this.x += this.vx;
     this.y += this.vy;
     var revert = false;
-    var target = -1;
+    var index = -1;
     for (var i = 0; i < entities.length; ++i) {
       if (this.touches(entities[i]) && entities[i].touches(this) && this !== entities[i]) {
         if (entities[i].team != this.team && this.cooldown <= 0) {
           this.cooldown = this.maxCooldown;
           entities[i].health -= randint(this.minAttack, this.maxAttack);
           if (entities[i].health <= 0) {
-            target = i;
+            index = i;
           }
         }
         revert = true;
       }
     }
-    if (target >= 0) {
-      entities.splice(target, 1);
+    if (index >= 0) {
+      entities.splice(index, 1);
     }
     if (revert) {
       this.cooldown--;
