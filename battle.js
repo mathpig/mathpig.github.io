@@ -906,7 +906,7 @@ class Summoner extends Warrior {
           for (var i = 0; i < 12; ++i) {
             var sx = randint(this.x - 50, this.x + 50);
             var sy = randint(this.y - 50, this.y + 50);
-            entities.push(new Minion().setPosition(sx, sy).setTeam(this.team));
+            entities.push(new this.minionType().setPosition(sx, sy).setTeam(this.team));
             var failed = false;
             for (var j = 0; j < (entities.length - 1); ++j) {
               if (entities[entities.length - 1].touches(entities[j])) {
