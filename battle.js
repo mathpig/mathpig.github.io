@@ -866,7 +866,7 @@ class Summoner extends Warrior {
     this.maxHealth = this.health;
     this.size = 15;
     this.range = 200;
-    this.cooldown = 80;
+    this.cooldown = 160;
     this.maxCooldown = this.cooldown;
     this.minionType = Minion;
   }
@@ -907,14 +907,18 @@ class Summoner extends Warrior {
             var sx = randint(this.x - 50, this.x + 50);
             var sy = randint(this.y - 50, this.y + 50);
             entities.push(new Minion().setPosition(sx, sy).setTeam(this.team));
+            var failed = false;
             for (var j = 0; j < (entities.length - 1); ++j) {
               if (entities[entities.length - 1].touches(entities[j])) {
                 entities.pop();
+                failed = true;
                 break;
               }
             }
-            this.cooldown = this.maxCooldown;
-            break;
+            if (!failed) {
+              this.cooldown = this.maxCooldown;
+              break;
+            }
           }
         }
         this.cooldown--;
