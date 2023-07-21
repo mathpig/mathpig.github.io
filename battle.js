@@ -3,7 +3,7 @@
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-var colors = ["gray", "red", "orange", "yellow", "green", "blue", "purple", "pink", "magenta", "brown", "black"];
+ivar colors = ["gray", "red", "orange", "yellow", "green", "blue", "purple", "pink", "magenta", "brown", "black"];
 
 var entities = [];
 
