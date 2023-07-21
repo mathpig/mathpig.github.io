@@ -189,14 +189,15 @@ class Warrior {
     return false;
   }
 
-  tick() {
-    if (this.updateStatus()) {
-      return;
-    }
+  extraConditions(enemy) {
+    return true;
+  }
+
+  findEnemy(conditional) {
     var bestDistance = 10000;
     var index = 0;
     for (var i = 0; i < entities.length; ++i) {
-      if ((entities[i] instanceof Bullet) || entities[i].team == this.team) {
+      if ((entities[i] instanceof Bullet) || entities[i].team == this.team || (conditional && !this.extraConditions(entities[i]))) {
         continue;
       }
       var distance = Math.sqrt(Math.pow(entities[i].x - this.x, 2) + Math.pow(entities[i].y - this.y, 2));
@@ -205,6 +206,20 @@ class Warrior {
         index = i;
       }
     }
+    return [bestDistance, index];
+  }
+
+  tick() {
+    if (this.updateStatus()) {
+      return;
+    }
+    var val = this.findEnemy(true);
+    var bestDistance = val[0];
+    if (bestDistance == 10000) {
+      val = this.findEnemy(false);
+      bestDistance = val[0];
+    }
+    var index = val[1];
     if (bestDistance == 10000) {
       this.vx = 0;
       this.vy = 0;
@@ -321,6 +336,20 @@ class Rogue extends Warrior {
     this.minAttack = 16;
     this.maxAttack = 32;
     this.size = 10;
+    this.cooldown = 10;
+    this.maxCooldown = this.cooldown;
+  }
+}
+
+class Minion extends Warrior {
+  constructor() {
+    super();
+    this.speed = 1.5;
+    this.health = randint(320, 480);
+    this.maxHealth = this.health;
+    this.minAttack = 4;
+    this.maxAttack = 8;
+    this.size = 15;
     this.cooldown = 10;
     this.maxCooldown = this.cooldown;
   }
@@ -525,22 +554,6 @@ class Archer extends Warrior {
 
   extraConditions(entity) {
     return true;
-  }
-
-  findEnemy(conditional) {
-    var bestDistance = 10000;
-    var index = 0;
-    for (var i = 0; i < entities.length; ++i) {
-      if ((entities[i] instanceof Bullet) || entities[i].team == this.team || (conditional && !this.extraConditions(entities[i]))) {
-        continue;
-      }
-      var distance = Math.sqrt(Math.pow(entities[i].x - this.x, 2) + Math.pow(entities[i].y - this.y, 2));
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        index = i;
-      }
-    }
-    return [bestDistance, index];
   }
 
   tick() {
@@ -820,7 +833,7 @@ class Healththrower extends Healer {
     this.size = 10;
     this.range = 250;
     this.cooldown = 2;
-    this.maxCooldown = 2;
+    this.maxCooldown = this.cooldown;
     this.bulletSize = 4;
     this.bulletSpeed = 4;
     this.bulletColor = "darkgoldenrod";
@@ -837,10 +850,76 @@ class Converter extends Archer {
     this.maxAttack = 0;
     this.size = 30;
     this.cooldown = 320;
+    this.maxCooldown = this.cooldown;
     this.bulletSize = 12;
     this.bulletSpeed = 1;
     this.bulletColor = "gray";
     this.bulletConverts = true;
+  }
+}
+
+class Summoner extends Warrior {
+  constructor() {
+    super();
+    this.speed = 0.5;
+    this.health = randint(160, 240);
+    this.maxHealth = this.health;
+    this.size = 15;
+    this.range = 200;
+    this.cooldown = 320;
+    this.maxCooldown = this.cooldown;
+    this.minionType = Minion;
+  }
+
+  setMinionType(minionType) {
+    this.minionType = minionType;
+    return this;
+  }
+
+  tick() {
+    if (this.updateStatus()) {
+      return;
+    }
+    var val = this.findEnemy(true);
+    var bestDistance = val[0];
+    if (bestDistance == 10000) {
+      val = this.findEnemy(false);
+      bestDistance = val[0];
+    }
+    var index = val[1];
+    if (bestDistance != 10000) {
+      if (bestDistance > this.range) {
+        var oldX = this.x;
+        var oldY = this.y;
+        this.x += (entities[index].x - this.x) * this.speed / bestDistance;
+        this.y += (entities[index].y - this.y) * this.speed / bestDistance;
+        for (var i = 0; i < entities.length; ++i) {
+          if (this.touches(entities[i]) && entities[i].touches(this) && this !== entities[i]) {
+            this.x = oldX;
+            this.y = oldY;
+            return;
+          }
+        }
+      }
+      else {
+        if (this.cooldown <= 0) {
+          for (var i = 0; i < 12; ++i) {
+            var sx = randint(this.x - 50, this.x + 50);
+            var sy = randint(this.y - 50, this.y + 50);
+            entities.push(new Minion().setPosition(sx, sy).setTeam(this.team));
+            for (var j = 0; j < (entities.length - 1); ++j) {
+              if (entities[entities.length - 1].touches(entities[j])) {
+                entities.pop();
+                break;
+              }
+            }
+            this.cooldown = this.maxCooldown;
+            break;
+          }
+        }
+        this.cooldown--;
+      }
+    }
   }
 }
 
@@ -896,11 +975,9 @@ for (var i = 0; i < 250; ++i) {
     else if (val <= 21) {
       entities.push(new Archer().setPosition(x, y).setTeam(team));
     }
-/*
-    else if (val == 22) {
+    else if (val <= 23) {
       entities.push(new Summoner().setPosition(x, y).setTeam(team));
     }
-*/
     else {
       entities.push(new Warrior().setPosition(x, y).setTeam(team));
     }
