@@ -345,7 +345,7 @@ class Minion extends Warrior {
   constructor() {
     super();
     this.speed = 1.5;
-    this.health = randint(320, 480);
+    this.health = randint(20, 30);
     this.maxHealth = this.health;
     this.minAttack = 4;
     this.maxAttack = 8;
