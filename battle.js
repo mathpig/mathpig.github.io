@@ -896,6 +896,11 @@ for (var i = 0; i < 250; ++i) {
     else if (val <= 21) {
       entities.push(new Archer().setPosition(x, y).setTeam(team));
     }
+/*
+    else if (val == 22) {
+      entities.push(new Summoner().setPosition(x, y).setTeam(team));
+    }
+*/
     else {
       entities.push(new Warrior().setPosition(x, y).setTeam(team));
     }
