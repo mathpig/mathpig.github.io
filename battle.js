@@ -866,7 +866,7 @@ class Summoner extends Warrior {
     this.maxHealth = this.health;
     this.size = 15;
     this.range = 200;
-    this.cooldown = 320;
+    this.cooldown = 160;
     this.maxCooldown = this.cooldown;
     this.minionType = Minion;
   }
