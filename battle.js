@@ -824,7 +824,7 @@ class Healththrower extends Healer {
   constructor() {
     super();
     this.speed = 2;
-    this.health = randint(20, 30);
+    this.health = randint(40, 60);
     this.maxHealth = this.health;
     this.minAttack = 0;
     this.maxAttack = 0;
