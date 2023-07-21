@@ -862,7 +862,7 @@ class Summoner extends Warrior {
   constructor() {
     super();
     this.speed = 0.5;
-    this.health = randint(160, 240);
+    this.health = randint(320, 480);
     this.maxHealth = this.health;
     this.size = 15;
     this.range = 200;
