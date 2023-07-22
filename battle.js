@@ -928,8 +928,6 @@ class Summoner extends Warrior {
 }
 
 entities.push(new Giant().setPosition(screen.width / 2, screen.height / 2).setTeam(0));
-entities[0].x -= entities[0].size / 2;
-entities[0].y -= entities[0].size / 2;
 for (var i = 0; i < 250; ++i) {
   while (true) {
     var x = randint(100, screen.width - 100);
