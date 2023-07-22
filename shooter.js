@@ -66,32 +66,32 @@ class Player extends Block {
   }
 
   tick() {
-    var oldX = this.x;
+    var vx = 0;
     if (keySet["ArrowRight"]) {
-      this.x += this.speed;
+      vx += this.speed;
     }
     if (keySet["ArrowLeft"]) {
-      this.x -= this.speed;
+      vx -= this.speed;
     }
     for (var i = 0; i < entities.length; ++i) {
-      if (touches(this, entities[i]) && entities[i] !== this) {
-        this.x = oldX;
-        break;
+      while (touches(this, entities[i]) && entities[i] !== this) {
+        this.x -= Math.sign(this.vx);
       }
     }
-    var oldY = this.y;
+    this.x += vx;
+    var vy = 0;
     if (keySet["ArrowUp"]) {
-      this.y -= this.speed;
+      vy -= this.speed;
     }
     if (keySet["ArrowLeft"]) {
-      this.y += this.speed;
+      vy += this.speed;
     }
     for (var i = 0; i < entities.length; ++i) {
       if (touches(this, entities[i]) && entities[i] !== this) {
-        this.y = oldY;
-        break;
+        this.y -= Math.sign(this.vy);
       }
     }
+    this.y += vy;
   }
 }
 

@@ -864,7 +864,7 @@ class Summoner extends Warrior {
     this.speed = 0.5;
     this.health = randint(320, 480);
     this.maxHealth = this.health;
-    this.size = 15;
+    this.size = 20;
     this.range = 200;
     this.cooldown = 160;
     this.maxCooldown = this.cooldown;
