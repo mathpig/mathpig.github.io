@@ -11,6 +11,10 @@ function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
 
+function uniform(a, b) {
+  return a + Math.random() * (b - a);
+}
+
 function overlaps(a, b, c, d) {
   return (b >= c && d >= a);
 }
@@ -24,7 +28,8 @@ class Block {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.size = 10;
+    this.angle = 0;
+    this.size = 25;
     this.color = "green";
   }
 
@@ -34,14 +39,27 @@ class Block {
     return this;
   }
 
+  setAngle(angle) {
+    this.angle = angle;
+    return this;
+  }
+
   setSize(size) {
     this.size = size;
     return this;
   }
 
+  drawInside() {
+    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+  }
+
   draw() {
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle * Math.PI / 180);
+    this.drawInside();
+    ctx.restore();
   }
 
   tick() {
@@ -65,33 +83,35 @@ class Player extends Block {
     return this;
   }
 
+  drawInside() {
+    super.drawInside();
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, -this.size / 4, this.size / 2, this.size / 2);
+  }
+
   tick() {
-    var vx = 0;
     if (keySet["ArrowRight"]) {
-      vx += this.speed;
+      this.angle += this.speed * 3.6;
     }
     if (keySet["ArrowLeft"]) {
-      vx -= this.speed;
+      this.angle -= this.speed * 3.6;
     }
-    for (var i = 0; i < entities.length; ++i) {
-      while (touches(this, entities[i]) && entities[i] !== this) {
-        this.x -= Math.sign(this.vx);
-      }
-    }
-    this.x += vx;
-    var vy = 0;
     if (keySet["ArrowUp"]) {
-      vy -= this.speed;
-    }
-    if (keySet["ArrowLeft"]) {
-      vy += this.speed;
-    }
-    for (var i = 0; i < entities.length; ++i) {
-      if (touches(this, entities[i]) && entities[i] !== this) {
-        this.y -= Math.sign(this.vy);
+      var vx = Math.cos(this.angle * Math.PI / 180);
+      this.x += vx;
+      for (var i = 0; i < entities.length; ++i) {
+        while (touches(this, entities[i]) && entities[i] !== this) {
+          this.x -= Math.sign(vx);
+        }
+      }
+      var vy = Math.sin(this.angle * Math.PI / 180);
+      this.y += vy;
+      for (var i = 0; i < entities.length; ++i) {
+        if (touches(this, entities[i]) && entities[i] !== this) {
+          this.y -= Math.sign(vy);
+        }
       }
     }
-    this.y += vy;
   }
 }
 
@@ -121,7 +141,7 @@ function Tick() {
 var player = new Player().setPosition(screen.width / 2, screen.height / 2);
 entities.push(player);
 
-for (var i = 0; i < 500; ++i) {
+for (var i = 0; i < 100; ++i) {
   entities.push(new Block().setPosition(randint(100, screen.width - 100), randint(100, screen.height - 100)));
   for (var j = 0; j < (entities.length - 1); ++j) {
     if (touches(entities[entities.length - 1], entities[j])) {
