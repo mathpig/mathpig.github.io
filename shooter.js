@@ -275,7 +275,7 @@ class Bullet extends Block {
         break;
       }
     }
-    if (this.x < -this.size / 2 || this.x > (screen.width + this.size / 2) || this.y < -this.size / 2 || this.y > (screen.height + this.size / 2)) {
+    if (this.x < -2500 || this.x > 2500 || this.y < -2500 || this.y > 2500) {
       this.remove();
     }
   }
