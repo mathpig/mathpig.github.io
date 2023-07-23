@@ -275,9 +275,12 @@ function overlaps(a, b, c, d) {
 function Draw() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, screen.width, screen.height);
+  ctx.save();
+  ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
+  ctx.restore();
 }
 
 function Tick() {
@@ -287,11 +290,11 @@ function Tick() {
   Draw();
 }
 
-var player = new Player().setPosition(screen.width / 2, screen.height / 2);
+var player = new Player().setPosition(0, 0);
 entities.push(player);
 
-for (var i = 0; i < 100; ++i) {
-  entities.push(new Block().setPosition(randint(100, screen.width - 100), randint(100, screen.height - 100)));
+for (var i = 0; i < 1000; ++i) {
+  entities.push(new Block().setPosition(randint(-1000, 1000), randint(-1000, 1000)));
   for (var j = 0; j < (entities.length - 1); ++j) {
     if (touches(entities[entities.length - 1], entities[j])) {
       entities.pop();
