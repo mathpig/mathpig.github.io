@@ -219,7 +219,7 @@ class Player extends Block {
       this.cooldowns[1] = this.maxCooldowns[1];
       entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setVelocity(4 * cosDeg(this.angle), 4 * sinDeg(this.angle)).setSource(this));
     }
-    if (keySet["b"] && this.cooldowns[2] <= 0) {
+    if (keySet["g"] && this.cooldowns[2] <= 0) {
       this.cooldowns[2] = this.maxCooldowns[2];
       entities.push(new Bullet().setPosition(this.x, this.y).setSize(16).setVelocity(3 * cosDeg(this.angle), 3 * sinDeg(this.angle)).setSource(this));
     }
