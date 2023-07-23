@@ -72,14 +72,21 @@ function cosDeg(angle) {
   return Math.cos(angle * Math.PI / 180);
 }
 
+function findColor(ratio, r1, g1, b1, r2, g2, b2) {
+  var rr = Math.round(r1 * (1 - ratio) + r2 * ratio);
+  var rg = Math.round(g1 * (1 - ratio) + g2 * ratio);
+  var rb = Math.round(b1 * (1 - ratio) + b2 * ratio);
+  return "rgb(" + String(rr) + ", " + String(rg) + ", " + String(rb) + ")";
+}
+
 class Block {
   constructor() {
     this.x = 0;
     this.y = 0;
     this.health = 100;
     this.angle = uniform(0, 360);
-    this.size = 25;
-    this.color = "green";
+    this.size = 50;
+    this.color = "rgb(0, 255, 0)";
     this.collidable = true;
   }
 
@@ -131,6 +138,7 @@ class Block {
   }
 
   drawInside() {
+    ctx.fillStyle = this.color;
     ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
   }
 
@@ -144,18 +152,20 @@ class Block {
   }
 
   tick() {
+    this.color = findColor(this.health / 100, 255, 0, 0, 0, 255, 0);
   }
 }
 
 class Player extends Block {
   constructor() {
     super();
+    this.size = 25;
     this.health = 500;
     this.angle = 0;
     this.speed = 2;
     this.color = "black";
-    this.cooldowns = [0, 0, 0];
-    this.maxCooldowns = [10, 50, 250];
+    this.cooldowns = [0, 0, 0, 0];
+    this.maxCooldowns = [10, 50, 250, 50];
   }
 
   setSpeed(speed) {
@@ -185,6 +195,7 @@ class Player extends Block {
   }
 
   tick() {
+    this.color = findColor(this.health / 500, 255, 0, 0, 0, 0, 0);
     if (keySet["ArrowLeft"]) {
       this.angle -= this.speed;
       if (this.touchesSomething()) {
@@ -230,6 +241,10 @@ class Player extends Block {
     if (keySet["g"] && this.cooldowns[2] <= 0) {
       this.cooldowns[2] = this.maxCooldowns[2];
       entities.push(new Bullet().setPosition(this.x, this.y).setSize(16).setDamage(0).setBlastSpeed(10).setBlastRadius(250).setBlastDamage(5).setVelocity(3 * cosDeg(this.angle), 3 * sinDeg(this.angle)).setSource(this));
+    }
+    if (keySet["m"] && this.cooldowns[3] <= 0) {
+      this.cooldowns[3] = this.maxCooldowns[3];
+      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(0).setBlastSpeed(10).setBlastSpeed(100).setBlastDamage(25).setVelocity(0, 0).setSource(this));
     }
     for (var i = 0; i < this.cooldowns.length; ++i) {
       this.cooldowns[i]--;
