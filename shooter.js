@@ -293,7 +293,7 @@ function Tick() {
 var player = new Player().setPosition(0, 0);
 entities.push(player);
 
-for (var i = 0; i < 1000; ++i) {
+for (var i = 0; i < 500; ++i) {
   entities.push(new Block().setPosition(randint(-1000, 1000), randint(-1000, 1000)));
   for (var j = 0; j < (entities.length - 1); ++j) {
     if (touches(entities[entities.length - 1], entities[j])) {
