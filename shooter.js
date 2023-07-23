@@ -80,6 +80,7 @@ class Block {
     this.angle = uniform(0, 360);
     this.size = 25;
     this.color = "green";
+    this.collidable = true;
   }
 
   setPosition(x, y) {
@@ -95,6 +96,11 @@ class Block {
 
   setSize(size) {
     this.size = size;
+    return this;
+  }
+
+  setCollidable(collidable) {
+    this.collidable = collidable;
     return this;
   }
 
@@ -144,6 +150,7 @@ class Block {
 class Player extends Block {
   constructor() {
     super();
+    this.health = 500;
     this.angle = 0;
     this.speed = 2;
     this.color = "black";
@@ -170,7 +177,7 @@ class Player extends Block {
 
   touchesSomething() {
     for (var i = 0; i < entities.length; ++i) {
-      if (touches(this, entities[i]) && entities[i] !== this && !(entities[i] instanceof Bullet)) {
+      if (touches(this, entities[i]) && entities[i] !== this && entities[i].collidable) {
         return true;
       }
     }
@@ -222,7 +229,7 @@ class Player extends Block {
     }
     if (keySet["g"] && this.cooldowns[2] <= 0) {
       this.cooldowns[2] = this.maxCooldowns[2];
-      entities.push(new Bullet().setPosition(this.x, this.y).setSize(16).setDamage(100).setVelocity(3 * cosDeg(this.angle), 3 * sinDeg(this.angle)).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setSize(16).setDamage(0).setBlastSpeed(10).setBlastRadius(250).setBlastDamage(5).setVelocity(3 * cosDeg(this.angle), 3 * sinDeg(this.angle)).setSource(this));
     }
     for (var i = 0; i < this.cooldowns.length; ++i) {
       this.cooldowns[i]--;
@@ -235,7 +242,11 @@ class Bullet extends Block {
     super();
     this.size = 4;
     this.color = "black";
+    this.collidable = false;
     this.damage = 1;
+    this.blastSpeed = 0;
+    this.blastRadius = 0;
+    this.blastDamage = 0;
     this.vx = 0;
     this.vy = 0;
     this.source = 0;
@@ -243,6 +254,21 @@ class Bullet extends Block {
 
   setDamage(damage) {
     this.damage = damage;
+    return this;
+  }
+
+  setBlastSpeed(blastSpeed) {
+    this.blastSpeed = blastSpeed;
+    return this;
+  }
+
+  setBlastRadius(blastRadius) {
+    this.blastRadius = blastRadius;
+    return this;
+  }
+
+  setBlastDamage(blastDamage) {
+    this.blastDamage = blastDamage;
     return this;
   }
 
@@ -257,25 +283,96 @@ class Bullet extends Block {
     return this;
   }
 
+  detonate() {
+    this.remove();
+    if (this.blastRadius > 0) {
+      entities.push(new Explosion().setPosition(this.x, this.y).setAngle(this.angle).setSpeed(this.blastSpeed).setMaxSize(this.blastRadius).setDamage(this.blastDamage));
+    }
+  }
+
   tick() {
     this.x += this.vx;
     this.y += this.vy;
+    var toDetonate = [];
+    var toRemove = [];
     for (var i = 0; i < entities.length; ++i) {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source) {
         if (entities[i] instanceof Bullet) {
-          entities.splice(i, 1);
+          this.detonate();
+          toDetonate.push(entities[i]);
         }
         else {
           entities[i].health -= this.damage;
           if (entities[i].health <= 0) {
-            entities.splice(i, 1);
+            toRemove.push(entities[i]);
           }
+          this.detonate();
         }
-        this.remove();
         break;
       }
     }
+    for (var i = 0; i < toDetonate.length; ++i) {
+      toDetonate[i].detonate();
+    }
+    for (var i = 0; i < toRemove.length; ++i) {
+      toRemove[i].remove();
+    }
     if (this.x < -2500 || this.x > 2500 || this.y < -2500 || this.y > 2500) {
+      this.remove();
+    }
+  }
+}
+
+class Explosion extends Block {
+  constructor() {
+    super();
+    this.speed = 5;
+    this.size = 0;
+    this.color = "orange";
+    this.collidable = false;
+    this.maxSize = 0;
+    this.damage = 0;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
+    return this;
+  }
+
+  setMaxSize(maxSize) {
+    this.maxSize = maxSize;
+    return this;
+  }
+
+  setDamage(damage) {
+    this.damage = damage;
+    return this;
+  }
+
+  tick() {
+    this.size += this.speed;
+    var toDetonate = [];
+    var toRemove = [];
+    for (var i = 0; i < entities.length; ++i) {
+      if (touches(this, entities[i]) && !(entities[i] instanceof Explosion)) {
+        if (entities[i] instanceof Bullet) {
+          toDetonate.push(entities[i]);
+        }
+        else {
+          entities[i].health -= this.damage;
+          if (entities[i].health <= 0) {
+            toRemove.push(entities[i]);
+          }
+        }
+      }
+    }
+    for (var i = 0; i < toDetonate.length; ++i) {
+      toDetonate[i].detonate();
+    }
+    for (var i = 0; i < toRemove.length; ++i) {
+      toRemove[i].remove();
+    }
+    if (this.size >= this.maxSize) {
       this.remove();
     }
   }
