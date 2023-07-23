@@ -76,6 +76,7 @@ class Block {
   constructor() {
     this.x = 0;
     this.y = 0;
+    this.health = 100;
     this.angle = uniform(0, 360);
     this.size = 25;
     this.color = "green";
@@ -217,11 +218,11 @@ class Player extends Block {
     }
     if (keySet["s"] && this.cooldowns[1] <= 0) {
       this.cooldowns[1] = this.maxCooldowns[1];
-      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setVelocity(4 * cosDeg(this.angle), 4 * sinDeg(this.angle)).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(10).setVelocity(4 * cosDeg(this.angle), 4 * sinDeg(this.angle)).setSource(this));
     }
     if (keySet["g"] && this.cooldowns[2] <= 0) {
       this.cooldowns[2] = this.maxCooldowns[2];
-      entities.push(new Bullet().setPosition(this.x, this.y).setSize(16).setVelocity(3 * cosDeg(this.angle), 3 * sinDeg(this.angle)).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setSize(16).setDamage(100).setVelocity(3 * cosDeg(this.angle), 3 * sinDeg(this.angle)).setSource(this));
     }
     for (var i = 0; i < this.cooldowns.length; ++i) {
       this.cooldowns[i]--;
@@ -234,9 +235,15 @@ class Bullet extends Block {
     super();
     this.size = 4;
     this.color = "black";
+    this.damage = 1;
     this.vx = 0;
     this.vy = 0;
     this.source = 0;
+  }
+
+  setDamage(damage) {
+    this.damage = damage;
+    return this;
   }
 
   setVelocity(vx, vy) {
@@ -255,7 +262,17 @@ class Bullet extends Block {
     this.y += this.vy;
     for (var i = 0; i < entities.length; ++i) {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source) {
+        if (entities[i] instanceof Bullet) {
+          entities.splice(i, 1);
+        }
+        else {
+          entities[i].health -= this.damage;
+          if (entities[i].health <= 0) {
+            entities.splice(i, 1);
+          }
+        }
         this.remove();
+        break;
       }
     }
     if (this.x < -this.size / 2 || this.x > (screen.width + this.size / 2) || this.y < -this.size / 2 || this.y > (screen.height + this.size / 2)) {
