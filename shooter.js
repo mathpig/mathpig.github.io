@@ -286,7 +286,7 @@ class Bullet extends Block {
   detonate() {
     this.remove();
     if (this.blastRadius > 0) {
-      entities.push(new Explosion().setPosition(this.x, this.y).setAngle(this.angle).setSpeed(this.blastSpeed).setMaxSize(this.blastRadius).setDamage(this.blastDamage));
+      entities.push(new Explosion().setPosition(this.x, this.y).setSpeed(this.blastSpeed).setMaxSize(this.blastRadius).setDamage(this.blastDamage));
     }
   }
 
@@ -398,6 +398,9 @@ function Draw() {
 }
 
 function Tick() {
+  if (randint(0, 9) == 0) {
+    player.health = Math.min(player.health + 1, 500);
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
