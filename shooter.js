@@ -244,7 +244,7 @@ class Player extends Block {
     }
     if (keySet["m"] && this.cooldowns[3] <= 0) {
       this.cooldowns[3] = this.maxCooldowns[3];
-      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(0).setBlastSpeed(10).setBlastSpeed(100).setBlastDamage(25).setVelocity(0, 0).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(0).setBlastSpeed(10).setBlastRadius(100).setBlastDamage(25).setVelocity(0, 0).setSource(this));
     }
     for (var i = 0; i < this.cooldowns.length; ++i) {
       this.cooldowns[i]--;
