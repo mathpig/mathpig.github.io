@@ -236,7 +236,7 @@ class Player extends Block {
     }
     if (keySet["s"] && this.cooldowns[1] <= 0) {
       this.cooldowns[1] = this.maxCooldowns[1];
-      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(10).setVelocity(4 * cosDeg(this.angle), 4 * sinDeg(this.angle)).setSource(this));
+      entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(25).setVelocity(4 * cosDeg(this.angle), 4 * sinDeg(this.angle)).setSource(this));
     }
     if (keySet["g"] && this.cooldowns[2] <= 0) {
       this.cooldowns[2] = this.maxCooldowns[2];
@@ -258,7 +258,7 @@ class Bullet extends Block {
     this.size = 4;
     this.color = "black";
     this.collidable = false;
-    this.damage = 1;
+    this.damage = 5;
     this.blastSpeed = 0;
     this.blastRadius = 0;
     this.blastDamage = 0;
