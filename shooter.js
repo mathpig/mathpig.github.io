@@ -505,21 +505,28 @@ function overlaps(a, b, c, d) {
 }
 
 function Draw() {
-  ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, screen.width, screen.height);
-  ctx.save();
-  ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
-  for (var i = 0; i < entities.length; ++i) {
-    entities[i].draw();
+  if (player.health > 0) {
+    ctx.fillStyle = "white";
   }
-  ctx.restore();
+  else {
+    ctx.fillStyle = "black";
+  }
+  ctx.fillRect(0, 0, screen.width, screen.height);
+  if (player.health > 0) {
+    ctx.save();
+    ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
+    for (var i = 0; i < entities.length; ++i) {
+      entities[i].draw();
+    }
+    ctx.restore();
+  }
 }
 
 function Tick() {
   if (randint(0, 9) == 0) {
     player.health = Math.min(player.health + 1, 500);
   }
-  if (randint(0, 999) == 0) {
+  if (randint(0, 99) == 0) {
     var enemy = new Enemy().setPosition(randint(-1000, 1000), randint(-1000, 1000));
     entities.push(enemy);
     if (distance(enemy, player) <= 500) {
