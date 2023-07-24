@@ -528,7 +528,11 @@ function Draw() {
 }
 
 function Tick() {
-  if (randint(0, 9) == 0 && player.health > 0) {
+  if (player.health <= 0) {
+    Draw();
+    return;
+  }
+  if (randint(0, 9) == 0) {
     player.health = Math.min(player.health + 1, 500);
   }
   if (randint(0, 99) == 0) {
@@ -550,7 +554,7 @@ function Tick() {
     entities[i].tick();
   }
   Draw();
-  killcount.innerHTML = "</br>Enemies killed [possibly by their own hand]: " + String(kills);
+  killcount.innerHTML = "</br>Score: " + String(kills);
 }
 
 var player = new Player().setPosition(0, 0);
