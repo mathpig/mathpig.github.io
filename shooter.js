@@ -459,7 +459,7 @@ class Enemy extends Player {
     var diff = this.angle - goalAngle;
     var oldAngle = this.angle;
     var u = [0, 0];
-    if (Math.abs(diff) < 5) {
+    if (Math.abs(diff) < 2.5) {
       var dist = distance(this, player);
       if (dist > this.range) {
         var vx = this.speed * cosDeg(this.angle);
@@ -469,7 +469,11 @@ class Enemy extends Player {
         u = unit([vx, vy]);
       }
       else {
-        // shoot
+        if (this.cooldown <= 0) {
+          this.cooldown = this.maxCooldown;
+          entities.push(new Bullet().setPosition(this.x, this.y).setSize(8).setDamage(25).setVelocity(4 * cosDeg(this.angle), 4 * sinDeg(this.angle)).setSource(this));
+        }
+        this.cooldown--;
       }
     }
     else if (diff > 180) {
