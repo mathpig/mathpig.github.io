@@ -19,6 +19,10 @@ function overlaps(a, b, c, d) {
   return (b >= c && d >= a);
 }
 
+function distance(o1, o2) {
+  return Math.sqrt(Math.pow(o1.x - o2.x, 2) + Math.pow(o1.y - o2.y, 2));
+}
+
 /*
 function touches(e1, e2) {
   return (overlaps(e1.x - e1.size / 2, e1.x + e1.size / 2, e2.x - e2.size / 2, e2.x + e2.size / 2) &&
@@ -313,8 +317,8 @@ class Bullet extends Block {
     for (var i = 0; i < entities.length; ++i) {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source) {
         if (entities[i] instanceof Bullet) {
-          this.detonate();
           toDetonate.push(entities[i]);
+          this.detonate();
         }
         else {
           entities[i].health -= this.damage;
@@ -393,6 +397,65 @@ class Explosion extends Block {
   }
 }
 
+class Enemy extends Player {
+  constructor() {
+    super();
+    this.cooldown = 0;
+    this.maxCooldown = 25;
+    this.range = 250;
+  }
+
+  setRange(range) {
+    this.range = range;
+    return this;
+  }
+
+  drawInside() {
+    super.drawInside();
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.size / 8, -3 * this.size / 8, this.size / 4, this.size / 4);
+    ctx.fillRect(this.size / 8, this.size / 8, this.size / 4, this.size / 4);
+  }
+
+  tick() {
+    this.color = findColor(this.health / 500, 0, 0, 255, 0, 0, 0);
+    var goalAngle = Math.atan2(player.y - this.y, player.x - this.x);
+    if (goalAngle < 0) {
+      goalAngle += 2 * Math.PI;
+    }
+    goalAngle *= 180 / Math.PI;
+    var diff = this.angle - goalAngle;
+    var oldAngle = this.angle;
+    if (Math.abs(diff) < 5) {
+      var dist = distance(this, player);
+      if (dist > this.range) {
+        // move forward
+      }
+      else {
+        // shoot
+      }
+    }
+    else if (diff > 180) {
+      this.angle += this.speed;
+      if (this.angle >= 360) {
+        this.angle -= 360;
+      }
+    }
+    else if (diff < -180) {
+      this.angle -= this.speed;
+      if (this.angle < 0) {
+        this.angle += 360;
+      }
+    }
+    else {
+      this.angle -= this.speed * Math.sign(diff);
+    }
+    if (this.touchesSomething()) {
+      this.angle = oldAngle;
+    }
+  }
+}
+
 function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
@@ -415,6 +478,21 @@ function Draw() {
 function Tick() {
   if (randint(0, 9) == 0) {
     player.health = Math.min(player.health + 1, 500);
+  }
+  if (randint(0, 499) == 0) {
+    var enemy = new Enemy().setPosition(randint(-1000, 1000), randint(-1000, 1000));
+    entities.push(enemy);
+    if (distance(enemy, player) <= 500) {
+      entities.pop();
+    }
+    else {
+      for (var j = 0; j < (entities.length - 1); ++j) {
+        if (touches(enemy, entities[j])) {
+         entities.pop();
+          break;
+        }
+      }
+    }
   }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
