@@ -523,7 +523,7 @@ function Draw() {
 }
 
 function Tick() {
-  if (randint(0, 9) == 0) {
+  if (randint(0, 9) == 0 && player.health > 0) {
     player.health = Math.min(player.health + 1, 500);
   }
   if (randint(0, 99) == 0) {
