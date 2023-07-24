@@ -400,6 +400,7 @@ class Explosion extends Block {
 class Enemy extends Player {
   constructor() {
     super();
+    this.speed = 1;
     this.cooldown = 0;
     this.maxCooldown = 25;
     this.range = 250;
@@ -417,6 +418,37 @@ class Enemy extends Player {
     ctx.fillRect(this.size / 8, this.size / 8, this.size / 4, this.size / 4);
   }
 
+  doTouchingLogic(oldAngle, ux, uy) {
+    var toRemove = [];
+    var touched = false;
+    var removedSelf = false;
+    for (var i = 0; i < entities.length; ++i) {
+      if (touches(this, entities[i]) && entities[i] !== this && entities[i].collidable) {
+        touched = true;
+        entities[i].health--;
+        if (entities[i].health <= 0) {
+          toRemove.push(entities[i]);
+        }
+        this.health--;
+        if (this.health <= 0) {
+          removedSelf = true;
+          this.remove();
+          break;
+        }
+      }
+    }
+    for (var i = 0; i < toRemove.length; ++i) {
+      toRemove[i].remove();
+    }
+    if (touched && !removedSelf) {
+      this.angle = oldAngle;
+      while (this.touchesSomething()) {
+        this.x -= ux;
+        this.y -= uy;
+      }
+    }
+  }
+
   tick() {
     this.color = findColor(this.health / 500, 0, 0, 255, 0, 0, 0);
     var goalAngle = Math.atan2(player.y - this.y, player.x - this.x);
@@ -426,10 +458,15 @@ class Enemy extends Player {
     goalAngle *= 180 / Math.PI;
     var diff = this.angle - goalAngle;
     var oldAngle = this.angle;
+    var u = [0, 0];
     if (Math.abs(diff) < 5) {
       var dist = distance(this, player);
       if (dist > this.range) {
-        // move forward
+        var vx = this.speed * cosDeg(this.angle);
+        var vy = this.speed * sinDeg(this.angle);
+        this.x += vx;
+        this.y += vy;
+        u = unit([vx, vy]);
       }
       else {
         // shoot
@@ -450,9 +487,7 @@ class Enemy extends Player {
     else {
       this.angle -= this.speed * Math.sign(diff);
     }
-    if (this.touchesSomething()) {
-      this.angle = oldAngle;
-    }
+    this.doTouchingLogic(oldAngle, u[0], u[1]);
   }
 }
 
