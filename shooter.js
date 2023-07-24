@@ -7,6 +7,8 @@ var entities = [];
 
 var keySet = {};
 
+var kills = 0;
+
 function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
@@ -116,6 +118,9 @@ class Block {
   }
 
   remove() {
+    if (this instanceof Enemy) {
+      kills++;
+    }
     for (var i = 0; i < entities.length; ++i) {
       if (entities[i] === this) {
         entities.splice(i, 1);
@@ -545,6 +550,7 @@ function Tick() {
     entities[i].tick();
   }
   Draw();
+  killcount.innerHTML = "</br>Enemies killed [possibly by their own hand]: " + String(kills);
 }
 
 var player = new Player().setPosition(0, 0);
