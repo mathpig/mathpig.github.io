@@ -401,8 +401,9 @@ class Enemy extends Player {
   constructor() {
     super();
     this.speed = 1;
+    this.health = 250;
     this.cooldown = 0;
-    this.maxCooldown = 25;
+    this.maxCooldown = 100;
     this.range = 250;
   }
 
@@ -518,7 +519,7 @@ function Tick() {
   if (randint(0, 9) == 0) {
     player.health = Math.min(player.health + 1, 500);
   }
-  if (randint(0, 499) == 0) {
+  if (randint(0, 999) == 0) {
     var enemy = new Enemy().setPosition(randint(-1000, 1000), randint(-1000, 1000));
     entities.push(enemy);
     if (distance(enemy, player) <= 500) {
