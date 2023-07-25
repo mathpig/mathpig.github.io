@@ -7,6 +7,7 @@ var entities = [];
 
 var keySet = {};
 
+var time = 0;
 var kills = 0;
 
 function randint(a, b) {
@@ -532,6 +533,7 @@ function Tick() {
     Draw();
     return;
   }
+  time++;
   if (randint(0, 9) == 0) {
     player.health = Math.min(player.health + 1, 500);
   }
@@ -554,7 +556,7 @@ function Tick() {
     entities[i].tick();
   }
   Draw();
-  killcount.innerHTML = "</br>Score: " + String(kills);
+  killcount.innerHTML = "</br>Score: " + String(1000 * kills + time);
 }
 
 var player = new Player().setPosition(0, 0);
