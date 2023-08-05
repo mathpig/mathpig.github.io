@@ -26,13 +26,6 @@ function distance(o1, o2) {
   return Math.sqrt(Math.pow(o1.x - o2.x, 2) + Math.pow(o1.y - o2.y, 2));
 }
 
-/*
-function touches(e1, e2) {
-  return (overlaps(e1.x - e1.size / 2, e1.x + e1.size / 2, e2.x - e2.size / 2, e2.x + e2.size / 2) &&
-          overlaps(e1.y - e1.size / 2, e1.y + e1.size / 2, e2.y - e2.size / 2, e2.y + e2.size / 2));
-}
-*/
-
 function dot(v1, v2) {
   return v1[0] * v2[0] + v1[1] * v2[1];
 }
@@ -56,6 +49,13 @@ function project(axis, vertices) {
   }
   return [min, max];
 }
+
+/*
+function touches(e1, e2) {
+  return (overlaps(e1.x - e1.size / 2, e1.x + e1.size / 2, e2.x - e2.size / 2, e2.x + e2.size / 2) &&
+          overlaps(e1.y - e1.size / 2, e1.y + e1.size / 2, e2.y - e2.size / 2, e2.y + e2.size / 2));
+}
+*/
 
 function touches(e1, e2) {
   var axes = e1.getAxes().concat(e2.getAxes());
