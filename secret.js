@@ -1,3 +1,5 @@
+// TODO: Just keep a reference to which entity set is being used; have an entitiesList and entities will just have the ones in the current area. Change everything to incorporate this.
+
 "use strict";
 
 var screen = document.getElementById("screen");
@@ -8,12 +10,124 @@ var area = 0;
 
 var keySet = {};
 
+var rect = screen.getBoundingClientRect();
+
+var mouseX = -1;
+var mouseY = -1;
+
+var mouseDown = false;
+
+var selection = -1;
+
+var toDelete = [];
+
 function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
 
 function overlaps(a, b, c, d) {
   return (b >= c && d >= a);
+}
+
+function subtract(v1, v2) {
+  return [v1[0] - v2[0]. v1[1] - v2[1]];
+}
+
+function dot(v1, v2) {
+  return v1[0] * v2[0] + v1[1] + v2[1];
+}
+
+function magnitude(v) {
+  return Math.sqrt(dot(v, v));
+}
+
+function unit(v) {
+  var m = magnitude(v);
+  return [v[0] / m, v[1] / m];
+}
+
+function rotate90(v) {
+  return [-v[1], v[0]];
+}
+
+function getNormals(arr) {
+  var normals = [];
+  for (var i = 0; i < arr.length; ++i) {
+    normals.push(rotate90(subtract(arr[(i + 1) % arr.length], arr[i])));
+  }
+  return normals;
+}
+
+function outside(arr, normal, point) {
+  for (var i = 0; i < arr.length; ++i) {
+    if (dot(subtract(arr[i], point), normal) < 0) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function intersectPolygon(arr1, arr2) {
+  var normals1 = getNormals(arr1);
+  for (var i = 0; i < normals1.length; ++i) {a
+    if (outside(arr2, normals1[i], arr1[i])) {
+      return false;
+    }
+  }
+  var normals2 = getNormals(arr2);
+  for (var i = 0; i < normals2.length; ++i) {
+    if (outside(arr1, normals2[i], arr2[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+class Line {
+  constructor() {
+    this.color = "black";
+    this.x1 = 0;
+    this.y1 = 0;
+    this.x2 = 0;
+    this.y2 = 0;
+    this.lifespan = 10;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  setEndpoints(x1, y1, x2, y2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    return this;
+  }
+
+  setLifespan(lifespan) {
+    this.lifespan = lifespan;
+    return this;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.moveTo(this.x1, this.y1);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.stroke();
+  }
+
+  drawhealthbar() {
+  }
+
+  tick() {
+    this.lifespan--;
+    if (this.lifespan == 0) {
+      toDelete.push(this);
+    }
+  }
 }
 
 class Door {
@@ -85,10 +199,12 @@ class Player {
     this.vy = 0;
     this.health = 10;
     this.maxHealth = this.health;
-    this.attacks = [4, 6, 8];
+    this.damage = [4, 6, 8];
     this.size = 20;
-    this.cooldowns = [10, 10, 10];
-    this.maxCooldowns = [10, 10, 10];
+    this.cooldowns = [0, 0, 0];
+    this.maxCooldowns = [50, 50, 50];
+    this.doorCooldown = 0;
+    this.maxDoorCooldown = 50;
   }
 
   setColor(color) {
@@ -135,12 +251,34 @@ class Player {
   }
 
   setMaxHealth(maxHealth) {
+    if (maxHealth >= this.health) {
+      this.maxHealth = maxHealth;
+    }
+    return this;
+  }
+
+  setMaxHealth(maxHealth) {
     this.maxHealth = maxHealth;
     return this;
   }
 
   setCooldowns(cooldowns) {
     this.cooldowns = cooldowns;
+    return this;
+  }
+
+  setMaxCooldowns(maxCooldowns) {
+    this.maxCooldowns = maxCooldowns;
+    return this;
+  }
+
+  setDoorCooldown(doorCooldown) {
+    this.doorCooldown = doorCooldown;
+    return this;
+  }
+
+  setMaxDoorCooldown(maxDoorCooldown) {
+    this.maxDoorCooldown = maxDoorCooldown;
     return this;
   }
 
@@ -162,26 +300,19 @@ class Player {
     ctx.fillRect(this.x - this.size / 2 + val, this.y - 7 * this.size / 10 - 1, this.size - val, this.size / 5);
   }
 
-  kill() {
-    var index = 0;
-    for (var i = 0; i < entities[area].length; ++i) {
-      if (entities[area][i] === this) {
-        index = i;
-        break;
-      }
-    }
-    entities[area].splice(index, 1);
-  }
-
   tick() {
+    this.doorCooldown--;
     if (keySet["e"]) {
-      for (var i = 0; i < entities[area].length; ++i) {
-        if (entities[area][i] instanceof Door && this.touches(entities[area][i])) {
-          this.setXLimits(entities[area][i].xLimit1, entities[area][i].xLimit2);
-          this.setPosition(entities[area][i].x2, entities[area][i].y2);
-          area = entities[area][i].zone;
-          this.vy = 0;
-          return;
+      if (this.doorCooldown <= 0) {
+        this.doorCooldown = this.maxDoorCooldown;
+        for (var i = 0; i < entities[area].length; ++i) {
+          if (entities[area][i] instanceof Door && this.touches(entities[area][i])) {
+            this.setXLimits(entities[area][i].xLimit1, entities[area][i].xLimit2);
+            this.setPosition(entities[area][i].x2, entities[area][i].y2);
+            area = entities[area][i].zone;
+            this.vy = 0;
+            return;
+          }
         }
       }
     }
@@ -212,6 +343,50 @@ class Player {
     if (this.y >= (screen.height * 2 / 3 - this.size / 2)) {
       this.y = screen.height * 2 / 3 - this.size / 2;
       this.vy = 0;
+    }
+
+    for (var i = 0; i < this.cooldowns.length; ++i) {
+      this.cooldowns[i]--;
+    }
+
+    if (mouseDown && selection >= 0 && this.cooldowns[selection] <= 0) {
+      if (selection == 1) {
+        var dist = 100;
+      }
+      else if (selection == 2) {
+        var dist = 50;
+      }
+      if (selection == 0) {
+        // TODO
+      }
+      else {
+        var x1 = this.x;
+        var y1 = this.y;
+        var x2 = mouseX;
+        var y2 = mouseY;
+
+        var val = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        if (val > dist) {
+          x2 = x1 + (x2 - x1) * dist / val;
+          y2 = y1 + (y2 - y1) * dist / val;
+        }
+
+        entities[area].push(new Line().setEndpoints(x1, y1, x2, y2));
+/*
+        for (var i = 0; i < entities[area].length; ++i) {
+          if (!(entities[area][i] instanceof Enemy)) {
+            continue;
+          }
+          if (polygonIntersects([[x1, y1], [x2, y2]], [[entities[area][i].x - size / 2, entities[area][i].y - size / 2], [entities[area][i].x + size / 2, entities[area][i].y - size / 2], [entities[area][i].x + size / 2, entities[area][i].y + size / 2], [entities[area][i].x - size / 2, entities[area][i].y + size / 2]])) {
+            entities[area][i].health -= this.attacks[selection];
+            if (entities[area][i].health <= 0) {
+              toDelete.push(entities[area][i]);
+            }
+          }
+        }
+*/
+      }
+      this.cooldowns[selection] = this.maxCooldowns[selection];
     }
   }
 }
@@ -266,15 +441,11 @@ var colorSets = [["brown", "brown"],
 for (var i = 0; i < colorSets.length; ++i) {
   entities[0].push(new Background().setColors(colorSets[i][0], colorSets[i][1]).setX(1000 * i));
 }
-entities[0].push(new Door().setZone(1).setXLimits(1000, 2000));
+entities[0].push(new Door().setZone(1).setXLimits(1000, 1500));
 
-var colorSets = [["brown", "brown"],
-                 ["white", "brown"],
-                 ["brown", "brown"]];
-for (var i = 0; i < colorSets.length; ++i) {
-  entities[1].push(new Background().setColors(colorSets[i][0], colorSets[i][1]).setX(1000 * i));
-}
-
+entities[1].push(new Background().setColors("brown", "brown").setX(0));
+entities[1].push(new Background().setColors("white", "brown").setX(1000).setWidth(500));
+entities[1].push(new Background().setColors("brown", "brown").setX(1500).setWidth(1000));
 entities[1].push(new Door().setZone(0).setXLimits(1000, 6000));
 
 function Draw() {
@@ -298,13 +469,49 @@ function Tick() {
     entities[area][i].tick();
   }
   player.tick();
+  for (var i = 0; i < toDelete.length; ++i) {
+    for (var j = 0; j < entities[area].length; ++j) {
+      if (toDelete[i] === entities[area][j]) {
+        entities[area].splice(j, 1);
+        break;
+      }
+    }
+  }
   Draw();
+  userstats.innerHTML = "<br/>Weapons:<br/><br/>Bow [" + String(player.damage[0]) + "]";
+  if (selection == 0) {
+    userstats.innerHTML += "; selected";
+  }
+  userstats.innerHTML += "<br/>Trident [" + String(player.damage[1]) + "]";
+  if (selection == 1) {
+    userstats.innerHTML += "; selected";
+  }
+  userstats.innerHTML += "<br/>Sword [" + String(player.damage[2]) + "]";
+  if (selection == 2) {
+    userstats.innerHTML += "; selected";
+  }
 }
 
-setInterval(Tick, 50);
+setInterval(Tick, 20);
+
+screen.onmousemove = function(e) {
+  mouseX = e.clientX + player.x - screen.width / 2 - rect.x;
+  mouseY = e.clientY - rect.y;
+};
+
+screen.onmousedown = function(e) {
+  mouseDown = true;
+};
+
+screen.onmouseup = function(e) {
+  mouseDown = false;
+};
 
 window.onkeydown = function(e) {
   keySet[e.key] = true;
+  if (e.key == "1" || e.key == "2" || e.key == "3") {
+    selection = parseInt(e.key) - 1;
+  }
 };
 
 window.onkeyup = function(e) {
