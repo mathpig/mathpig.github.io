@@ -1,12 +1,11 @@
-// TODO: Just keep a reference to which entity set is being used; have an entitiesList and entities will just have the ones in the current area. Change everything to incorporate this.
-
 "use strict";
 
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-var entities = [[], []];
+var entitiesList = [[], []];
 var area = 0;
+var entities = entitiesList[area];
 
 var keySet = {};
 
@@ -305,11 +304,12 @@ class Player {
     if (keySet["e"]) {
       if (this.doorCooldown <= 0) {
         this.doorCooldown = this.maxDoorCooldown;
-        for (var i = 0; i < entities[area].length; ++i) {
-          if (entities[area][i] instanceof Door && this.touches(entities[area][i])) {
-            this.setXLimits(entities[area][i].xLimit1, entities[area][i].xLimit2);
-            this.setPosition(entities[area][i].x2, entities[area][i].y2);
-            area = entities[area][i].zone;
+        for (var i = 0; i < entities.length; ++i) {
+          if (entities[i] instanceof Door && this.touches(entities[i])) {
+            this.setXLimits(entities[i].xLimit1, entities[i].xLimit2);
+            this.setPosition(entities[i].x2, entities[i].y2);
+            area = entities[i].zone;
+            entities = entitiesList[area];
             this.vy = 0;
             return;
           }
@@ -371,7 +371,7 @@ class Player {
           y2 = y1 + (y2 - y1) * dist / val;
         }
 
-        entities[area].push(new Line().setEndpoints(x1, y1, x2, y2));
+        entities.push(new Line().setEndpoints(x1, y1, x2, y2));
 /*
         for (var i = 0; i < entities[area].length; ++i) {
           if (!(entities[area][i] instanceof Enemy)) {
@@ -439,25 +439,25 @@ var colorSets = [["brown", "brown"],
                  ["maroon", "brown"],
                  ["brown", "brown"]];
 for (var i = 0; i < colorSets.length; ++i) {
-  entities[0].push(new Background().setColors(colorSets[i][0], colorSets[i][1]).setX(1000 * i));
+  entitiesList[0].push(new Background().setColors(colorSets[i][0], colorSets[i][1]).setX(1000 * i));
 }
-entities[0].push(new Door().setZone(1).setXLimits(1000, 1500));
+entitiesList[0].push(new Door().setZone(1).setXLimits(1000, 1500));
 
-entities[1].push(new Background().setColors("brown", "brown").setX(0));
-entities[1].push(new Background().setColors("white", "brown").setX(1000).setWidth(500));
-entities[1].push(new Background().setColors("brown", "brown").setX(1500).setWidth(1000));
-entities[1].push(new Door().setZone(0).setXLimits(1000, 6000));
+entitiesList[1].push(new Background().setColors("brown", "brown").setX(0));
+entitiesList[1].push(new Background().setColors("white", "brown").setX(1000).setWidth(500));
+entitiesList[1].push(new Background().setColors("brown", "brown").setX(1500).setWidth(1000));
+entitiesList[1].push(new Door().setZone(0).setXLimits(1000, 6000));
 
 function Draw() {
   ctx.fillStyle = "cyan";
   ctx.fillRect(0, 0, screen.width, screen.height);
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, 0);
-  for (var i = 0; i < entities[area].length; ++i) {
-    entities[area][i].draw();
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].draw();
   }
-  for (var i = 0; i < entities[area].length; ++i) {
-    entities[area][i].drawhealthbar();
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].drawhealthbar();
   }
   player.draw();
   player.drawhealthbar();
@@ -465,14 +465,14 @@ function Draw() {
 }
 
 function Tick() {
-  for (var i = 0; i < entities[area].length; ++i) {
-    entities[area][i].tick();
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].tick();
   }
   player.tick();
   for (var i = 0; i < toDelete.length; ++i) {
-    for (var j = 0; j < entities[area].length; ++j) {
-      if (toDelete[i] === entities[area][j]) {
-        entities[area].splice(j, 1);
+    for (var j = 0; j < entities.length; ++j) {
+      if (toDelete[i] === entities[j]) {
+        entities.splice(j, 1);
         break;
       }
     }
