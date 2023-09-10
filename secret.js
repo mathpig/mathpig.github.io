@@ -13,6 +13,8 @@ var keySet = {};
 
 var rect = screen.getBoundingClientRect();
 
+var mouseScreenX = -1;
+
 var mouseX = -1;
 var mouseY = -1;
 
@@ -311,7 +313,6 @@ class Player {
             this.setXLimits(entities[i].xLimit1, entities[i].xLimit2);
             this.setPosition(entities[i].x2, entities[i].y2);
             area = entities[i].zone;
-            entities = entitiesList[area];
             this.vy = 0;
             return;
           }
@@ -360,7 +361,7 @@ class Player {
       }
       if (selection == 0) {
         var dist = Math.sqrt((mouseX - this.x) * (mouseX - this.x) + (mouseY - this.y) * (mouseY - this.y));
-        entities.push(new Bullet().setPosition(this.x, this.y).setVelocity((mouseX - this.x) / dist, (mouseY - this.y) / dist).setSource(this));
+        entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(5 * (mouseX - this.x) / dist, 5 * (mouseY - this.y) / dist).setSource(this));
       }
       else {
         var x1 = this.x;
@@ -443,6 +444,12 @@ class Bullet {
   }
 
   tick() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < (player.xLimit1 + this.size / 2) || this.x > (player.xLimit2 - this.size / 2) || this.y < this.size / 2 || this.y > (screen.height * 2 / 3 - this.size / 2)) {
+      toDelete.push(this);
+      return;
+    }
     // TODO
   }
 }
@@ -519,6 +526,8 @@ function Draw() {
 }
 
 function Tick() {
+  mouseX = mouseScreenX + player.x - screen.width / 2;
+  entities = entitiesList[area];
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
@@ -549,7 +558,7 @@ function Tick() {
 setInterval(Tick, 20);
 
 screen.onmousemove = function(e) {
-  mouseX = e.clientX + player.x - screen.width / 2 - rect.x;
+  mouseScreenX = e.clientX - rect.x;
   mouseY = e.clientY - rect.y;
 };
 
