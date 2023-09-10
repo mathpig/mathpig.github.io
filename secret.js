@@ -1,3 +1,5 @@
+// TODO: Add bullet tick function, test, then add enemies.
+
 "use strict";
 
 var screen = document.getElementById("screen");
@@ -357,7 +359,8 @@ class Player {
         var dist = 50;
       }
       if (selection == 0) {
-        // TODO
+        var dist = Math.sqrt((mouseX - this.x) * (mouseX - this.x) + (mouseY - this.y) * (mouseY - this.y));
+        entities.push(new Bullet().setPosition(this.x, this.y).setVelocity((mouseX - this.x) / dist, (mouseY - this.y) / dist).setSource(this));
       }
       else {
         var x1 = this.x;
@@ -392,6 +395,57 @@ class Player {
 }
 
 var player = new Player();
+
+class Bullet {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.vx = 0;
+    this.vy = 0;
+    this.size = 8;
+    this.color = "black";
+    this.source = 0;
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  setVelocity(vx, vy) {
+    this.vx = vx;
+    this.vy = vy;
+    return this;
+  }
+
+  setSize(size) {
+    this.size = size;
+    return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  setSource(source) {
+    this.source = source;
+    return this;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+  }
+
+  drawhealthbar() {
+  }
+
+  tick() {
+    // TODO
+  }
+}
 
 class Background {
   constructor() {
