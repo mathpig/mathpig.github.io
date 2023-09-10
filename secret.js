@@ -1,4 +1,4 @@
-// TODO: Add bullet tick function, test, then add enemies.
+// TODO: Add enemies.
 
 "use strict";
 
@@ -405,6 +405,7 @@ class Bullet {
     this.vy = 0;
     this.size = 8;
     this.color = "black";
+    this.damage = 0;
     this.source = 0;
   }
 
@@ -430,6 +431,11 @@ class Bullet {
     return this;
   }
 
+  setDamage(damage) {
+    this.damage = damage;
+    return this;
+  }
+
   setSource(source) {
     this.source = source;
     return this;
@@ -450,7 +456,16 @@ class Bullet {
       toDelete.push(this);
       return;
     }
-    // TODO
+    for (var i = 0; i < entities.length; ++i) {
+      if ((entities[i] instanceof Enemy || entities[i] instanceof Player) && entities[i].touches(this) && entities[i] !== this.source) {
+        toDelete.push(this);
+        entities[i].health -= this.damage;
+        if (entities[i].health <= 0) {
+          toDelete.push(entities[i]);
+        }
+        return;
+      }
+    }
   }
 }
 
