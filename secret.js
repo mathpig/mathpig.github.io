@@ -232,9 +232,8 @@ class Player {
     return this;
   }
 
-  setVelocity(vx, vy) {
-    this.vx = vx;
-    this.vy = vy;
+  setVelocity(v) {
+    this.vy = v;
     return this;
   }
 
