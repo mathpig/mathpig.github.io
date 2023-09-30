@@ -516,6 +516,7 @@ var colorSets = [["brown", "brown"],
 for (var i = 0; i < colorSets.length; ++i) {
   entitiesList[0].push(new Background().setColors(colorSets[i][0], colorSets[i][1]).setX(1000 * i));
 }
+entitiesList[0].push(new Door().setPosition(5950, screen.height * 2 / 3 - 50).setZone(1).setXLimits(1000, 1500));
 entitiesList[0].push(new Door().setZone(1).setXLimits(1000, 1500));
 
 entitiesList[1].push(new Background().setColors("brown", "brown").setX(0));
