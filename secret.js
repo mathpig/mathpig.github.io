@@ -194,16 +194,16 @@ class Door {
 class Player {
   constructor() {
     this.color = "black";
+    this.size = 20;
     this.speed = 3;
-    this.x = 1010;
-    this.y = screen.height * 2 / 3 - 10;
     this.xLimit1 = 1000;
     this.xLimit2 = 6000;
+    this.x = this.xLimit1 + this.size / 2;
+    this.y = screen.height * 2 / 3 - this.size / 2;
     this.vy = 0;
-    this.health = 10;
+    this.health = 50;
     this.maxHealth = this.health;
     this.damage = [4, 6, 8];
-    this.size = 20;
     this.cooldowns = [0, 0, 0];
     this.maxCooldowns = [50, 50, 50];
     this.doorCooldown = 0;
@@ -215,20 +215,25 @@ class Player {
     return this;
   }
 
-  setSpeed(speed) {
-    this.speed = speed;
+  setSize(size) {
+    this.size = size;
     return this;
   }
 
-  setPosition(x, y) {
-    this.x = x;
-    this.y = y;
+  setSpeed(speed) {
+    this.speed = speed;
     return this;
   }
 
   setXLimits(xLimit1, xLimit2) {
     this.xLimit1 = xLimit1;
     this.xLimit2 = xLimit2;
+    return this;
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
     return this;
   }
 
@@ -239,11 +244,6 @@ class Player {
 
   setAttacks(attacks) {
     this.attacks = attacks;
-    return this;
-  }
-
-  setSize(size) {
-    this.size = size;
     return this;
   }
 
@@ -329,9 +329,17 @@ class Player {
     else if (keySet["ArrowRight"]) {
       xGain = this.speed;
     }
+    var oldX = this.x;
     this.x += xGain;
 
     this.x = Math.min(Math.max(this.x, this.xLimit1 + this.size / 2), this.xLimit2 - this.size / 2);
+
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i] instanceof Enemy && this.touches(entities[i])) {
+        this.x = oldX;
+        break;
+      }
+    }
 
     this.vy += 0.5;
 
@@ -345,6 +353,13 @@ class Player {
     if (this.y >= (screen.height * 2 / 3 - this.size / 2)) {
       this.y = screen.height * 2 / 3 - this.size / 2;
       this.vy = 0;
+    }
+
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i] instanceof Enemy && this.touches(entities[i]) && this.y < (screen.height * 2 / 3 - this.size / 2)) {
+        this.vy = -10;
+        break;
+      }
     }
 
     for (var i = 0; i < this.cooldowns.length; ++i) {
@@ -395,6 +410,112 @@ class Player {
 }
 
 var player = new Player();
+
+class Enemy {
+  constructor() {
+    this.color = "blue";
+    this.size = 20;
+    this.speed = 2;
+    this.x = 0;
+    this.y = screen.height * 2 / 3 - this.size / 2;
+    this.health = 10;
+    this.maxHealth = this.health;
+    this.damage = 5;
+    this.cooldown = 50;
+    this.maxCooldown = 50;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  setSize(size) {
+    this.size = size;
+    return this;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
+    return this;
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  setHealth(health) {
+    this.health = health;
+    return this;
+  }
+
+  setMaxHealth(maxHealth) {
+    this.maxHealth = maxHealth;
+    return this;
+  }
+ 
+  setDamage(damage) {
+    this.damage = damage;
+    return this;
+  }
+
+  setCooldown(cooldown) {
+    this.cooldown = cooldown;
+    return this;
+  }
+
+  setMaxCooldown(maxCooldown) {
+    this.maxCooldown = maxCooldown;
+    return this;
+  }
+
+  touches(other) {
+    return (overlaps(this.x - this.size / 2, this.x + this.size / 2, other.x - other.size / 2, other.x + other.size / 2) &&
+            overlaps(this.y - this.size / 2, this.y + this.size / 2, other.y - other.size / 2, other.y + other.size / 2));
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+  }
+
+  drawhealthbar() {
+    var val = this.health / this.maxHealth * this.size;
+    ctx.fillStyle = "lime";
+    ctx.fillRect(this.x - this.size / 2, this.y - 7 * this.size / 10 - 1, val, this.size / 5);
+    ctx.fillStyle = "darkred";
+    ctx.fillRect(this.x - this.size / 2 + val, this.y - 7 * this.size / 10 - 1, this.size - val, this.size / 5);
+  }
+
+  tick() {
+    this.cooldown -= 1;
+    var oldX = this.x;
+    if (this.x < player.x) {
+      this.x += this.speed;
+    }
+    if (this.x > player.x) {
+      this.x -= this.speed;
+    }
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i] === this) {
+        continue;
+      }
+      if (entities[i] instanceof Enemy && this.touches(entities[i])) {
+        this.x = oldX;
+        break;
+      }
+    }
+    if (this.touches(player)) {
+      this.x = oldX;
+      if (this.cooldown <= 0) {
+        this.cooldown = this.maxCooldown;
+        player.health -= this.damage;
+      }
+    }
+  }
+}
 
 class Bullet {
   constructor() {
@@ -459,7 +580,7 @@ class Bullet {
       if ((entities[i] instanceof Enemy || entities[i] instanceof Player) && entities[i].touches(this) && entities[i] !== this.source) {
         toDelete.push(this);
         entities[i].health -= this.damage;
-        if (entities[i].health <= 0) {
+        if (entities[i].health <= 0 && entities[i] instanceof Enemy) {
           toDelete.push(entities[i]);
         }
         return;
@@ -525,8 +646,16 @@ entitiesList[1].push(new Background().setColors("brown", "brown").setX(1500).set
 entitiesList[1].push(new Door().setZone(0).setXLimits(1000, 6000));
 
 function Draw() {
-  ctx.fillStyle = "cyan";
+  if (player.health <= 0) {
+    ctx.fillStyle = "black";
+  }
+  else {
+    ctx.fillStyle = "cyan";
+  }
   ctx.fillRect(0, 0, screen.width, screen.height);
+  if (player.health <= 0) {
+    return;
+  }
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, 0);
   for (var i = 0; i < entities.length; ++i) {
@@ -543,6 +672,26 @@ function Draw() {
 function Tick() {
   mouseX = mouseScreenX + player.x - screen.width / 2;
   entities = entitiesList[area];
+  if (player.health <= 0) {
+    return;
+  }
+  if (area == 0 && randint(0, 249) == 0 && randint(player.xLimit1, player.xLimit2) < player.x) {
+    if (randint(0, 1) == 0) {
+      var val = randint(player.x - 1000, player.x - 500);
+    }
+    else {
+      var val = randint(player.x + 500, player.x + 1000);
+    }
+    if (val >= (player.xLimit1 + 10) && val <= (player.xLimit2 - 10)) {
+      entities.push(new Enemy().setPosition(val, screen.height * 2 / 3 - 10));
+      for (var i = 0; i < (entities.length - 1); ++i) {
+        if ((entities[i] instanceof Enemy || entities[i] instanceof Player) && entities[i].touches(entities[entities.length - 1])) {
+          entities.pop();
+          break;
+        }
+      }
+    }
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
