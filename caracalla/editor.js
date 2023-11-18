@@ -1,132 +1,12 @@
 'use strict';
 
-const WIDTH = 750;
-const HEIGHT = 750;
-const LEVELS = 2;
-
 const PALETTE_SIZE = 32;
 
-var screen = document.getElementById("screen");
-var ctx = screen.getContext("2d");
-var zoom = 16;
-var level = 0;
 var drawing = false;
-var offsetX = Math.floor(WIDTH / 2);
-var offsetY = Math.floor(HEIGHT / 2);
 var pen = 1;
 var last = [0, 0];
 var lastClick = [0, 0];
 var copied = [];
-var showMap = true;
-
-class Tile {
-  constructor() {
-    this.color = "black";
-    this.image = null;
-    this.angle = 0;
-  }
-
-  setColor(color) {
-    this.color = color;
-    return this;
-  }
-
-  setImage(image) {
-    this.image = image;
-    return this;
-  }
-
-  setRotate(ang) {
-    this.angle = ang * Math.PI / 180;
-    return this;
-  }
-
-  draw(x, y, w, h) {
-    if (this.image) {
-      if (this.angle) {
-        ctx.save();
-        ctx.translate(x + w / 2, y + h / 2);
-        ctx.rotate(this.angle);
-        ctx.drawImage(this.image, -w/2, -h/2, w, h);
-        ctx.restore();
-      } else {
-        ctx.drawImage(this.image, x, y, w, h);
-      }
-    } else {
-      ctx.fillStyle = this.color;
-      ctx.fillRect(x, y, w, h);
-    }
-  }
-}
-
-var tiles = [
-  new Tile().setImage(dirt1),
-  new Tile().setImage(grass),
-  new Tile().setImage(quadtiles1),
-  new Tile().setImage(quadtiles2),
-  new Tile().setImage(quadtiles3),
-  new Tile().setImage(quadtiles4),
-  new Tile().setImage(quadtilec1),
-  new Tile().setImage(quadtilec2),
-  new Tile().setImage(quadtilec3),
-  new Tile().setImage(quadtilec4),
-  new Tile().setImage(stone1),
-  new Tile().setImage(marble1),
-  new Tile().setColor("#777"),  // arch shadow
-  new Tile().setColor("blue"),  // bath
-  new Tile().setImage(pillar1),
-  new Tile().setImage(flowers1),
-  new Tile().setColor("#0ff"),  // fountain
-  new Tile().setImage(door1),
-  new Tile().setImage(stairs1),
-  new Tile().setImage(whitetile1),
-  new Tile().setImage(sand1),
-];
-
-var map = new Uint8Array(WIDTH * HEIGHT * LEVELS);
-
-fetch("map.data").then(function(response) {
-  if (!response.ok) {
-    return;
-  }
-  response.arrayBuffer().then(function(buffer) {
-    var nmap = new Uint8Array(buffer);
-    for (var i = 0; i < WIDTH * HEIGHT * LEVELS; ++i) {
-      map[i] = nmap[i];
-    }
-  });
-});
-
-function DrawMap() {
-  var s = GetSize();
-  var w = s[0];
-  var h = s[1];
-  for (var j = 0; j < h; ++j) {
-    var jj = j + offsetY;
-    if (jj < 0 || j >= HEIGHT) {
-      continue;
-    }
-    for (var i = 0; i < w; ++i) {
-      var ii = i + offsetX;
-      if (ii < 0 || ii >= WIDTH) {
-        continue;
-      }
-      tiles[map[ii + jj * WIDTH + level * WIDTH * HEIGHT]].draw(i * zoom, j * zoom, zoom, zoom);
-    }
-  }
-}
-
-function DrawPlan() {
-  if (!showMap) {
-    return;
-  }
-  ctx.save();
-  ctx.globalAlpha = 0.2;
-  var scale = WIDTH * zoom / plan.width;
-  ctx.drawImage(plan, -offsetX * zoom, -offsetY * zoom,
-                plan.width * scale, plan.height * scale);
-  ctx.restore();
-}
 
 function DrawPalette() {
   for (var i = 0; i < tiles.length; ++i) {
@@ -153,16 +33,6 @@ function Tick() {
 }
 
 setInterval(Tick, 20);
-
-function Save() {
-  const blob = new Blob([map], {type: 'text/plain'});
-  const anchor = window.document.createElement('a');
-  anchor.href = window.URL.createObjectURL(blob);
-  anchor.download = 'map.data';
-  document.body.appendChild(anchor);
-  anchor.click();        
-  document.body.removeChild(anchor);
-}
 
 function Box() {
   var x1 = Math.min(last[0], lastClick[0]);
@@ -290,29 +160,6 @@ window.onkeydown = function(e) {
     showMap = !showMap;
   }
 };
-
-function GetSize() {
-  var w = Math.ceil(screen.width / zoom);
-  var h = Math.ceil(screen.height / zoom);
-  return [w, h];
-}
-
-function GetCenter() {
-  var s = GetSize();
-  var cx = Math.floor(s[0] / 2);
-  var cy = Math.floor(s[1] / 2);
-  return [cx, cy];
-}
-
-function toPosition(e) {
-  var x = Math.floor(e.clientX / zoom) + offsetX;
-  var y = Math.floor(e.clientY / zoom) + offsetY;
-  return [x, y];
-}
-
-function toMap(a) {
-  return a[0] + a[1] * WIDTH + level * WIDTH * HEIGHT;
-}
 
 window.onmousedown = function(e) {
   if (e.clientY >= screen.height - PALETTE_SIZE &&
