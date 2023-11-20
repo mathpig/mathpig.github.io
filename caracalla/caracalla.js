@@ -2,6 +2,23 @@
 
 zoom = 100;
 
+var minX = 209;
+var maxX = 536;
+var minY = 285;
+var maxY = 496;
+/*
+for (var j = 0; j < HEIGHT; j++) {
+  for (var i = 0; i < WIDTH; i++) {
+    if (map[i + j * WIDTH]) {
+      minX = Math.min(minX, i);
+      maxX = Math.max(maxX, i);
+      minY = Math.min(minY, j);
+      maxY = Math.max(maxY, j);
+    }
+  }
+}
+*/
+
 var player = new Player();
 placeRandomly(player);
 
@@ -12,8 +29,8 @@ var entities = [player, alexander];
 
 function placeRandomly(item) {
   do {
-    var x = Math.random() * zoom * WIDTH;
-    var y = Math.random() * zoom * HEIGHT;
+    var x = (Math.random() * (maxX - minX) + minX) * zoom;
+    var y = (Math.random() * (maxY - minY) + minY) * zoom;
   } while (!tileAt(x, y).isPlaceable());
   item.setPosition(x, y);
 }
