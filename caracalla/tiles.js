@@ -73,7 +73,7 @@ var tiles = [
   new Tile().setColor("blue"),  // bath
   new Tile().setImage(pillar1).setSolid(true),
   new Tile().setImage(flowers1).setPlaceable(false),
-  new Tile().setColor("#0ff"),  // fountain
+  new Tile().setColor("#0ff").setPlaceable(false),  // fountain
   new Tile().setImage(door1),
   new Tile().setImage(stairs1),
   new Tile().setImage(whitetile1),
