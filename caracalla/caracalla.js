@@ -6,6 +6,9 @@ var player;
 var alexander;
 var entities = [];
 
+var deathCount = 0;
+var hasWon = false;
+
 function placeRandomly(item) {
   do {
     var x = Math.random() * zoom * WIDTH;
@@ -64,7 +67,22 @@ function Draw() {
 function Tick() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
+  if (hasWon) {
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, screen.width, screen.height);
+    ctx.font = "50px arial";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "yellow";
+    ctx.fillText("You win!", screen.width / 2, screen.height / 2);
+    return;
+  }
   Draw();
+  ctx.fillStyle = "blue";
+  ctx.fillRect(0, 0, 100, 35);
+  ctx.font = "20px arial";
+  ctx.textAlign = "center";
+  ctx.fillStyle = "yellow";
+  ctx.fillText("Deaths: " + String(deathCount), 50, 25);
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }

@@ -97,6 +97,14 @@ class Entity {
     var dy = this.y - other.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
+
+  isGuard() {
+    return false;
+  }
+
+  isGoal() {
+    return false;
+  }
 }
 
 class Player extends Entity {
@@ -128,6 +136,15 @@ class Player extends Entity {
       this.vy += this.speed;
     }
     super.tick();
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i].isGuard() && this.distance(entities[i]) <= 50) {
+        Init();
+        deathCount++;
+      }
+      else if (entities[i].isGoal() && this.distance(entities[i]) <= 50) {
+        hasWon = true;
+      }
+    }
   }
 }
 
@@ -168,14 +185,6 @@ class Bather extends Entity {
   }
 }
 
-class Goal extends Bather {
-  constructor() {
-    super();
-    this.name = ["Marcus", "Aurelius", "Severus", "Alexander"];
-    this.labelColor = "green";
-  }
-}
-
 class Cop extends Entity {
   constructor() {
     super();
@@ -187,6 +196,7 @@ class Cop extends Entity {
     this.goX = 0;
     this.goY = 0;
     this.name = randomName();
+    this.labelColor = "red";
   }
 
   tick() {
@@ -215,5 +225,28 @@ class Cop extends Entity {
       this.direction = -this.goX;
     }
     super.tick();
+  }
+
+  isGuard() {
+    return true;
+  }
+}
+
+class Goal extends Cop {
+  constructor() {
+    super();
+    this.speed = 10;
+    this.setWalking([pig0, pig1, pig2, pig3]);
+    this.setStanding([pig4]);
+    this.name = ["Marcus", "Aurelius", "Antoninus", "(Caracalla)"];
+    this.labelColor = "green";
+  }
+
+  isGuard() {
+    return false;
+  }
+
+  isGoal() {
+    return true;
   }
 }
