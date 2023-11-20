@@ -1,22 +1,42 @@
 'use strict';
 
 zoom = 100;
-var speed = 0.1;
-var targetX = offsetX;
-var targetY = offsetY;
 
-var pigs = [pig0, pig1, pig2, pig3];
-var frame = 0;
+var player = new Player().setPosition(offsetX * zoom, offsetY * zoom);
+var entities = [player];
+
+function Init() {
+  for (var i = 0; i < 10000; i++) {
+    do {
+      var x = Math.random() * zoom * WIDTH;
+      var y = Math.random() * zoom * HEIGHT;
+    } while (tileAt(x, y).solid);
+    entities.push(
+        new Bather()
+        .setPosition(x, y));
+  }
+}
+Init();
 
 var keySet = {};
 
 function Draw() {
+  var targetX = player.x - screen.width / 2;
+  var targetY = player.y - screen.height / 2;
+
   ctx.save();
-  offsetX = Math.floor(targetX);
-  offsetY = Math.floor(targetY);
-  ctx.translate((offsetX - targetX) * zoom, (offsetY - targetY) * zoom);
+  offsetX = Math.floor(targetX / zoom);
+  offsetY = Math.floor(targetY / zoom);
+  ctx.translate((offsetX * zoom - targetX), (offsetY * zoom - targetY));
   DrawMap();
   DrawPlan();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(-targetX, -targetY);
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].draw();
+  }
   ctx.restore();
 }
 
@@ -24,32 +44,16 @@ function Tick() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
   Draw();
-  var oldX = targetX;
-  var oldY = targetY;
-  if (keySet["ArrowLeft"]) {
-    targetX -= speed;
-  }
-  if (keySet["ArrowRight"]) {
-    targetX += speed;
-  }
-  if (keySet["ArrowUp"]) {
-    targetY -= speed;
-  }
-  if (keySet["ArrowDown"]) {
-    targetY += speed;
-  }
-  if (targetX == oldX && targetY == oldY) {
-    frame = 0;
-    ctx.drawImage(pig4, screen.width / 2 - 40, screen.height / 2 - 20, 80, 40);
-  }
-  else {
-    frame++;
-    ctx.drawImage(pigs[Math.floor(frame / 5) % pigs.length], screen.width / 2 - 40, screen.height / 2 - 20, 80, 40);
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].tick();
   }
 }
 
 window.onkeydown = function(e) {
   keySet[e.key] = true;
+  if (keySet["m"]) {
+    showMap = !showMap;
+  }
 };
 
 window.onkeyup = function(e) {

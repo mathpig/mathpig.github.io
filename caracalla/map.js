@@ -26,3 +26,16 @@ function Save() {
   anchor.click();        
   document.body.removeChild(anchor);
 }
+
+function toMap(a) {
+  return Math.floor(a[0]) + Math.floor(a[1]) * WIDTH + level * WIDTH * HEIGHT;
+}
+
+function tileAt(x, y) {
+  var t = map[toMap([x / zoom, y / zoom])];
+  var r = tiles[t];
+  if (r) {
+    return r;
+  }
+  return tiles[0];
+}

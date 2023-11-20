@@ -58,7 +58,3 @@ function toPosition(e) {
   var y = Math.floor(e.clientY / zoom) + offsetY;
   return [x, y];
 }
-
-function toMap(a) {
-  return a[0] + a[1] * WIDTH + level * WIDTH * HEIGHT;
-}
