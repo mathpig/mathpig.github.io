@@ -91,7 +91,7 @@ function Tick() {
       }
       else {
         ctx.font = "20px arial";
-        ctx.fillText("Arrow keys to move.", screen.width / 2, screen.height / 2 + 10);
+        ctx.fillText("Use the arrow keys to move. Avoid the lupine assassins and attempt to locate the emperor.", screen.width / 2, screen.height / 2 + 10);
       }
     }
     else {
@@ -101,11 +101,11 @@ function Tick() {
     return;
   }
   Draw();
-  ctx.fillStyle = "blue";
+  ctx.fillStyle = "black";
   ctx.fillRect(0, 0, 100, 35);
   ctx.font = "20px arial";
   ctx.textAlign = "center";
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "white";
   ctx.fillText("Deaths: " + String(deathCount), 50, 25);
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
