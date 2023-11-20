@@ -11,6 +11,7 @@ class Entity {
     this.width = 80;
     this.height = 40;
     this.direction = 1;
+    this.flip = 1;
     this.name = [];
     this.walking = [];
     this.standing = [];
@@ -65,18 +66,18 @@ class Entity {
     ctx.save();
     ctx.translate(this.x, this.y);
     var f = Math.floor(this.frame) % anim.length;
-    if (this.direction < 0) {
+    if (this.direction * this.flip < 0) {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(anim[f], -this.width / 2, -this.height, this.width, this.height);
     ctx.restore();
   }
 
-  drawLabel() { 
+  drawLabel() {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.font = "20px arial";
-    ctx.textAlign = "center"; 
+    ctx.textAlign = "center";
     var max_width = 0;
     for (var i = 0; i < this.name.length; ++i) {
       max_width = Math.max(max_width, ctx.measureText(this.name[i]).width);
@@ -205,7 +206,7 @@ class Cop extends Entity {
     if (this.timeout <= 0) {
       if (Math.random() > 0.5) {
         if (this.distance(player) < (screen.width * 2)) {
-          var ang = Math.atan2(player.y - this.y, player.x - this.x); 
+          var ang = Math.atan2(player.y - this.y, player.x - this.x);
         }
         else {
           var ang = Math.random() * Math.PI * 2;
@@ -223,7 +224,7 @@ class Cop extends Entity {
     this.vx = this.goX;
     this.vy = this.goY;
     if (this.vx != 0) {
-      this.direction = -this.goX;
+      this.direction = this.goX;
     }
     super.tick();
   }
