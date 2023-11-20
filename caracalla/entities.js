@@ -66,7 +66,7 @@ class Entity {
     ctx.save();
     ctx.translate(this.x, this.y);
     var f = Math.floor(this.frame) % anim.length;
-    if (this.direction * this.flip < 0) {
+    if ((this.direction * this.flip) < 0) {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(anim[f], -this.width / 2, -this.height, this.width, this.height);
@@ -190,6 +190,7 @@ class Bather extends Entity {
 class Cop extends Entity {
   constructor() {
     super();
+    this.flip = -1;
     this.speed = 7;
     this.setWalking([wolf0, wolf1, wolf2, wolf3]);
     this.setStanding([wolf4]);
@@ -237,6 +238,7 @@ class Cop extends Entity {
 class Goal extends Cop {
   constructor() {
     super();
+    this.flip = 1;
     this.speed = 3;
     this.setWalking([pig0, pig1, pig2, pig3]);
     this.setStanding([pig4]);
