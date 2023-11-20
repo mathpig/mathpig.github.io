@@ -3,7 +3,7 @@
 zoom = 100;
 
 var player;
-var alexander;
+var caracalla;
 var entities = [];
 
 var deathCount = 0;
@@ -21,9 +21,9 @@ function placeRandomly(item) {
 function Init() {
   player = new Player();
   placeRandomly(player);
-  alexander = new Goal();
-  placeRandomly(alexander);
-  entities = [player, alexander];
+  caracalla = new Goal();
+  placeRandomly(caracalla);
+  entities = [player, caracalla];
   for (var i = 0; i < 1598; i++) {
     if (Math.random() < 0.95) {
       var entity = new Bather();
