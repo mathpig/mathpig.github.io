@@ -2,40 +2,24 @@
 
 zoom = 100;
 
-var minX = 209;
-var maxX = 536;
-var minY = 285;
-var maxY = 496;
-/*
-for (var j = 0; j < HEIGHT; j++) {
-  for (var i = 0; i < WIDTH; i++) {
-    if (map[i + j * WIDTH]) {
-      minX = Math.min(minX, i);
-      maxX = Math.max(maxX, i);
-      minY = Math.min(minY, j);
-      maxY = Math.max(maxY, j);
-    }
-  }
-}
-*/
-
-var player = new Player();
-placeRandomly(player);
-
-var alexander = new Goal();
-placeRandomly(alexander);
-
-var entities = [player, alexander];
+var player;
+var alexander;
+var entities = [];
 
 function placeRandomly(item) {
   do {
-    var x = (Math.random() * (maxX - minX) + minX) * zoom;
-    var y = (Math.random() * (maxY - minY) + minY) * zoom;
+    var x = Math.random() * zoom * WIDTH;
+    var y = Math.random() * zoom * HEIGHT;
   } while (!tileAt(x, y).isPlaceable());
   item.setPosition(x, y);
 }
 
 function Init() {
+  player = new Player();
+  placeRandomly(player);
+  alexander = new Goal();
+  placeRandomly(alexander);
+  entities = [player, alexander];
   for (var i = 0; i < 1598; i++) {
     if (Math.random() < 0.95) {
       var entity = new Bather();
@@ -46,8 +30,8 @@ function Init() {
     placeRandomly(entity);
     entities.push(entity);
   }
+  setInterval(Tick, 20);
 }
-Init();
 
 var keySet = {};
 
@@ -96,5 +80,3 @@ window.onkeydown = function(e) {
 window.onkeyup = function(e) {
   keySet[e.key] = false;
 };
-
-setInterval(Tick, 20);

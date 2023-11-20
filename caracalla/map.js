@@ -5,17 +5,20 @@ const HEIGHT = 750;
 const LEVELS = 2;
 
 var map = new Uint8Array(WIDTH * HEIGHT * LEVELS);
-fetch("map.data").then(function(response) {
-  if (!response.ok) {
-    return;
-  }
-  response.arrayBuffer().then(function(buffer) {
-    var nmap = new Uint8Array(buffer);
-    for (var i = 0; i < WIDTH * HEIGHT * LEVELS; ++i) {
-      map[i] = nmap[i];
+window.onload = function() {
+  fetch("map.data").then(function(response) {
+    if (!response.ok) {
+      return;
     }
+    response.arrayBuffer().then(function(buffer) {
+      var nmap = new Uint8Array(buffer);
+      for (var i = 0; i < WIDTH * HEIGHT * LEVELS; ++i) {
+        map[i] = nmap[i];
+      }
+      Init();
+    });
   });
-});
+};
 
 function Save() {
   const blob = new Blob([map], {type: 'text/plain'});
