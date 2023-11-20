@@ -6,11 +6,11 @@ var player = new Player().setPosition(offsetX * zoom, offsetY * zoom);
 var entities = [player];
 
 function Init() {
-  for (var i = 0; i < 10000; i++) {
+  for (var i = 0; i < 1600; i++) {
     do {
       var x = Math.random() * zoom * WIDTH;
       var y = Math.random() * zoom * HEIGHT;
-    } while (tileAt(x, y).solid);
+    } while (tileAt(x, y).solid || tileAt(x, y) === tiles[0]);
     entities.push(
         new Bather()
         .setPosition(x, y));
@@ -34,6 +34,9 @@ function Draw() {
 
   ctx.save();
   ctx.translate(-targetX, -targetY);
+  entities.sort(function(a, b) {
+    return a.y - b.y;
+  });
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }

@@ -41,9 +41,11 @@ class Entity {
     var oldX = this.x;
     var oldY = this.y;
     this.x += this.vx;
-    this.y += this.vy;
     if (tileAt(this.x, this.y).solid) {
       this.x = oldX;
+    }
+    this.y += this.vy;
+    if (tileAt(this.x, this.y).solid) {
       this.y = oldY;
     }
     this.frame += 0.2;
@@ -99,6 +101,7 @@ class Player extends Entity {
 class Bather extends Entity {
   constructor() {
     super();
+    this.speed = 5;
     this.setWalking([pig0, pig1, pig2, pig3]);
     this.setStanding([pig4]);
     this.setSize(80, 40);
@@ -108,20 +111,24 @@ class Bather extends Entity {
   }
 
   tick() {
-    this.timeout++;
-    if (this.timeout == 50) {
-      if (Math.random() > 0.9) {
-        this.goX = (Math.random() * 2 - 1) * this.speed;
-        this.goY = (Math.random() * 2 - 1) * this.speed;
+    this.timeout--;
+    if (this.timeout <= 0) {
+      if (Math.random() > 0.8) {
+        var val = Math.random();
+        var speed = this.speed + Math.random() * this.speed / 5;
+        this.goX = Math.cos(val * Math.PI * 2) * speed;
+        this.goY = Math.sin(val * Math.PI * 2) * speed;
       } else {
         this.goX = 0;
         this.goY = 0;
       }
-      this.timeout = 0;
+      this.timeout = Math.random() * 40 + 80;
     }
     this.vx = this.goX;
     this.vy = this.goY;
-    this.direction = this.goX;
+    if (this.vx != 0) {
+      this.direction = this.goX;
+    }
     super.tick();
   }
 }
