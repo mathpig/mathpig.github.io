@@ -7,6 +7,7 @@ var alexander;
 var entities = [];
 
 var deathCount = 0;
+var screenNum = 5;
 var hasWon = false;
 
 function placeRandomly(item) {
@@ -67,13 +68,36 @@ function Draw() {
 function Tick() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
-  if (hasWon) {
+  if (screenNum > 0 || hasWon) {
     ctx.fillStyle = "blue";
     ctx.fillRect(0, 0, screen.width, screen.height);
-    ctx.font = "50px arial";
     ctx.textAlign = "center";
     ctx.fillStyle = "yellow";
-    ctx.fillText("You win!", screen.width / 2, screen.height / 2);
+    if (screenNum > 0) {
+      ctx.font = "30px serif";
+      if (screenNum == 5) {
+        ctx.fillText("One late evening on 16 March 216 in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
+        ctx.font = "20px arial";
+        ctx.fillText("Space to move forward the text.", screen.width / 2, screen.height - 15);
+      }
+      else if (screenNum == 4) {
+        ctx.fillText("All Gaius Porcius Symphoniacus had wanted was a bath...", screen.width / 2, screen.height / 2 + 15);
+      }
+      else if (screenNum == 3) {
+        ctx.fillText("... autem balnea magna non solum habuit, sed etiam a terrible encounter.", screen.width / 2, screen.height / 2 + 15);
+      }
+      else if (screenNum == 2) {
+        ctx.fillText("Only with the help of the great Emperor Caracalla could Porcius escape the labyrinth alive...", screen.width / 2, screen.height / 2 + 15);
+      }
+      else {
+        ctx.font = "20px arial";
+        ctx.fillText("Arrow keys to move.", screen.width / 2, screen.height / 2 + 10);
+      }
+    }
+    else {
+      ctx.font = "50px arial";
+      ctx.fillText("You win!", screen.width / 2, screen.height / 2 + 25);
+    }
     return;
   }
   Draw();
@@ -92,6 +116,9 @@ window.onkeydown = function(e) {
   keySet[e.key] = true;
   if (keySet["m"]) {
     showMap = !showMap;
+  }
+  if (keySet[" "]) {
+    screenNum--;
   }
 };
 
