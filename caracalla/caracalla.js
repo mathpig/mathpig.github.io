@@ -74,11 +74,11 @@ function Tick() {
     ctx.textAlign = "center";
     ctx.fillStyle = "yellow";
     if (screenNum > 0) {
+      ctx.font = "20px arial";
+      ctx.fillText("Press space to continue.", screen.width / 2, screen.height - 15);
       ctx.font = "30px serif";
       if (screenNum == 5) {
         ctx.fillText("One late evening on 16 March 216 in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
-        ctx.font = "20px arial";
-        ctx.fillText("Space to move forward the text.", screen.width / 2, screen.height - 15);
       }
       else if (screenNum == 4) {
         ctx.fillText("All Gaius Porcius Symphoniacus had wanted was a bath...", screen.width / 2, screen.height / 2 + 15);
@@ -105,7 +105,7 @@ function Tick() {
   ctx.fillRect(0, 0, 100, 35);
   ctx.font = "20px arial";
   ctx.textAlign = "center";
-  ctx.fillStyle = "yellow";
+  ctx.fillStyle = "black";
   ctx.fillText("Deaths: " + String(deathCount), 50, 25);
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
