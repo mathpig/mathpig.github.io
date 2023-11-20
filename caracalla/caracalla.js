@@ -128,12 +128,7 @@ window.onkeydown = function(e) {
     showMap = !showMap;
   }
   if (keySet[" "]) {
-    if (screenNum == -1) {
-      screenNum = 0;
-    }
-    else {
-      screenNum--;
-    }
+    screenNum = Math.max(screenNum - 1, 0);
   }
 };
 
