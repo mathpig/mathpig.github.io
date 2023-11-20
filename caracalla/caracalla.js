@@ -34,8 +34,9 @@ function Init() {
     placeRandomly(entity);
     entities.push(entity);
   }
-  setInterval(Tick, 20);
 }
+
+setInterval(Tick, 20);
 
 var keySet = {};
 
@@ -68,6 +69,15 @@ function Draw() {
 function Tick() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
+  if (screenNum == -1) {
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, 0, screen.width, screen.height);
+    ctx.textAlign = "center";
+    ctx.fillStyle = "yellow";
+    ctx.font = "50px arial";
+    ctx.fillText("You died! Space to respawn.", screen.width / 2, screen.height / 2 + 15);
+    return;
+  }
   if (screenNum > 0 || hasWon) {
     ctx.fillStyle = "blue";
     ctx.fillRect(0, 0, screen.width, screen.height);
@@ -78,20 +88,20 @@ function Tick() {
       ctx.fillText("Press space to continue.", screen.width / 2, screen.height - 15);
       ctx.font = "30px serif";
       if (screenNum == 5) {
-        ctx.fillText("One late evening on 16 March 216 in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
+        ctx.fillText("One late evening on 16 March 217 in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
       }
       else if (screenNum == 4) {
         ctx.fillText("All Gaius Porcius Symphoniacus had wanted was a bath...", screen.width / 2, screen.height / 2 + 15);
       }
       else if (screenNum == 3) {
-        ctx.fillText("... autem balnea magna non solum habuit, sed etiam a terrible encounter.", screen.width / 2, screen.height / 2 + 15);
+        ctx.fillText("... autem non solum balnea magna invenit, sed etiam a terrible encounter.", screen.width / 2, screen.height / 2 + 15);
       }
       else if (screenNum == 2) {
         ctx.fillText("Only with the help of the great Emperor Caracalla could Porcius escape the labyrinth alive...", screen.width / 2, screen.height / 2 + 15);
       }
       else {
         ctx.font = "20px arial";
-        ctx.fillText("Use the arrow keys to move. Avoid the lupine assassins and attempt to locate the emperor.", screen.width / 2, screen.height / 2 + 10);
+        ctx.fillText("Arrow keys to move. Avoid the lupine assassins and attempt to locate the emperor.", screen.width / 2, screen.height / 2 + 10);
       }
     }
     else {
@@ -118,7 +128,12 @@ window.onkeydown = function(e) {
     showMap = !showMap;
   }
   if (keySet[" "]) {
-    screenNum--;
+    if (screenNum == -1) {
+      screenNum = 0;
+    }
+    else {
+      screenNum--;
+    }
   }
 };
 

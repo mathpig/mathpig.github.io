@@ -138,6 +138,7 @@ class Player extends Entity {
     super.tick();
     for (var i = 0; i < entities.length; ++i) {
       if (entities[i].isGuard() && this.distance(entities[i]) <= 50) {
+        screenNum = -1;
         Init();
         deathCount++;
       }
@@ -235,7 +236,7 @@ class Cop extends Entity {
 class Goal extends Cop {
   constructor() {
     super();
-    this.speed = 10;
+    this.speed = 3;
     this.setWalking([pig0, pig1, pig2, pig3]);
     this.setStanding([pig4]);
     this.name = ["Marcus", "Aurelius", "Antoninus", "(Caracalla)"];
