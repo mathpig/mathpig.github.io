@@ -6,6 +6,7 @@ class Tile {
     this.image = null;
     this.angle = 0;
     this.solid = false;
+    this.placeable = true;
   }
 
   setColor(color) {
@@ -28,6 +29,15 @@ class Tile {
     return this;
   }
 
+  setPlaceable(f) {
+    this.placeable = f;
+    return this;
+  }
+
+  isPlaceable() {
+    return this.placeable && !this.solid;
+  }
+
   draw(x, y, w, h) {
     if (this.image) {
       if (this.angle) {
@@ -47,7 +57,7 @@ class Tile {
 }
 
 var tiles = [
-  new Tile().setImage(dirt1),
+  new Tile().setImage(dirt1).setPlaceable(false),
   new Tile().setImage(grass),
   new Tile().setImage(quadtiles1),
   new Tile().setImage(quadtiles2),
@@ -62,7 +72,7 @@ var tiles = [
   new Tile().setColor("#777"),  // arch shadow
   new Tile().setColor("blue"),  // bath
   new Tile().setImage(pillar1).setSolid(true),
-  new Tile().setImage(flowers1),
+  new Tile().setImage(flowers1).setPlaceable(false),
   new Tile().setColor("#0ff"),  // fountain
   new Tile().setImage(door1),
   new Tile().setImage(stairs1),

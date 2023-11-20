@@ -2,18 +2,32 @@
 
 zoom = 100;
 
-var player = new Player().setPosition(offsetX * zoom, offsetY * zoom);
-var entities = [player];
+var player = new Player();
+placeRandomly(player);
+
+var alexander = new Goal();
+placeRandomly(alexander);
+
+var entities = [player, alexander];
+
+function placeRandomly(item) {
+  do {
+    var x = Math.random() * zoom * WIDTH;
+    var y = Math.random() * zoom * HEIGHT;
+  } while (!tileAt(x, y).isPlaceable());
+  item.setPosition(x, y);
+}
 
 function Init() {
-  for (var i = 0; i < 1600; i++) {
-    do {
-      var x = Math.random() * zoom * WIDTH;
-      var y = Math.random() * zoom * HEIGHT;
-    } while (tileAt(x, y).solid || tileAt(x, y) === tiles[0]);
-    entities.push(
-        new Bather()
-        .setPosition(x, y));
+  for (var i = 0; i < 1598; i++) {
+    if (Math.random() < 0.95) {
+      var entity = new Bather();
+    }
+    else {
+      var entity = new Cop();
+    }
+    placeRandomly(entity);
+    entities.push(entity);
   }
 }
 Init();
@@ -37,6 +51,9 @@ function Draw() {
   entities.sort(function(a, b) {
     return a.y - b.y;
   });
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].drawLabel();
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
