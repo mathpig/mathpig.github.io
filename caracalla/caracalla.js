@@ -64,6 +64,13 @@ function Draw() {
     entities[i].draw();
   }
   ctx.restore();
+
+  ctx.save();
+  offsetX = Math.floor(targetX / zoom);
+  offsetY = Math.floor(targetY / zoom);
+  ctx.translate((offsetX * zoom - targetX), (offsetY * zoom - targetY));
+  DrawMapOver();
+  ctx.restore();
 }
 
 function Tick() {

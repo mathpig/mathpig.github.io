@@ -54,6 +54,19 @@ class Tile {
       ctx.fillRect(x, y, w, h);
     }
   }
+
+  drawOver(x, y, w, h) {
+  }
+}
+
+class Water extends Tile {
+  drawOver(x, y, w, h) {
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = this.color;
+    ctx.fillRect(x, y, w, h);
+    ctx.restore();
+  }
 }
 
 var tiles = [
@@ -70,10 +83,10 @@ var tiles = [
   new Tile().setImage(stone1).setSolid(true),
   new Tile().setImage(marble1),
   new Tile().setColor("#777"),  // arch shadow
-  new Tile().setColor("blue"),  // bath
+  new Water().setColor("blue"),  // bath
   new Tile().setImage(pillar1).setSolid(true),
   new Tile().setImage(flowers1).setPlaceable(false),
-  new Tile().setColor("#0ff").setPlaceable(false),  // fountain
+  new Water().setColor("#0ff").setPlaceable(false),  // fountain
   new Tile().setImage(door1),
   new Tile().setImage(stairs1),
   new Tile().setImage(whitetile1),
