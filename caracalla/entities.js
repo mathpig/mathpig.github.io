@@ -94,8 +94,12 @@ class Entity {
   }
 
   distance(other) {
-    var dx = this.x - other.x;
-    var dy = this.y - other.y;
+    return this.distanceTo(other.x, other.y);
+  }
+
+  distanceTo(x, y) {
+    var dx = x - this.x;
+    var dy = y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
