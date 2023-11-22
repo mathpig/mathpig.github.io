@@ -82,4 +82,5 @@ var tiles = [
   new Tile().setImage(circle2),
   new Tile().setImage(circle3),
   new Tile().setImage(circle4),
+  new Tile().setImage(bw1),
 ];
