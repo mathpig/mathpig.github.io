@@ -71,12 +71,22 @@ function Copy() {
   }
 }
  
-function Paste() {
+function ReflectPaste() {
   var x = last[0];
   var y = last[1];
   for (var j = 0; j < copied[0].length; ++j) {
     for (var i = 0; i < copied.length; ++i) {
       map[(x + j) + (y + i) * WIDTH + level * WIDTH * HEIGHT] = copied[i][copied[0].length - j - 1];
+    }
+  }
+}
+
+function Paste() {
+  var x = last[0];
+  var y = last[1];
+  for (var j = 0; j < copied[0].length; ++j) {
+    for (var i = 0; i < copied.length; ++i) {
+      map[(x + j) + (y + i) * WIDTH + level * WIDTH * HEIGHT] = copied[i][j];
     }
   }
 }
@@ -148,6 +158,9 @@ window.onkeydown = function(e) {
   }
   else if (e.key == "P") {
     Paste();
+  }
+  else if (e.key == "R") {
+    ReflectPaste();
   }
   else if (e.key == "F") {
     Flood();

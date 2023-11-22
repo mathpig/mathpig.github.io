@@ -78,4 +78,8 @@ var tiles = [
   new Tile().setImage(stairs1),
   new Tile().setImage(whitetile1),
   new Tile().setImage(sand1),
+  new Tile().setImage(circle1),
+  new Tile().setImage(circle2),
+  new Tile().setImage(circle3),
+  new Tile().setImage(circle4),
 ];
