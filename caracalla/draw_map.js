@@ -28,7 +28,7 @@ function DrawMap() {
   }
 }
 
-function DrawMapOver() {
+function DrawMapCorners() {
   var s = GetSize();
   var w = s[0] + 1;
   var h = s[1] + 1;
@@ -42,7 +42,8 @@ function DrawMapOver() {
       if (ii < 0 || ii >= WIDTH) {
         continue;
       }
-      tiles[map[ii + jj * WIDTH + level * WIDTH * HEIGHT]].drawOver(i * zoom, j * zoom, zoom, zoom);
+      var offset = ii + jj * WIDTH + level * WIDTH * HEIGHT;
+      tiles[map[offset]].drawCorner(offset, i * zoom, j * zoom, zoom, zoom);
     }
   }
 }

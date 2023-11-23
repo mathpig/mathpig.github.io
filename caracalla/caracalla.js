@@ -49,6 +49,7 @@ function Draw() {
   offsetY = Math.floor(targetY / zoom);
   ctx.translate((offsetX * zoom - targetX), (offsetY * zoom - targetY));
   DrawMap();
+  DrawMapCorners();
   DrawPlan();
   ctx.restore();
 
@@ -63,13 +64,6 @@ function Draw() {
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
-  ctx.restore();
-
-  ctx.save();
-  offsetX = Math.floor(targetX / zoom);
-  offsetY = Math.floor(targetY / zoom);
-  ctx.translate((offsetX * zoom - targetX), (offsetY * zoom - targetY));
-  DrawMapOver();
   ctx.restore();
 
   ctx.save();
