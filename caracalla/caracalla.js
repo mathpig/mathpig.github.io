@@ -68,7 +68,7 @@ function Draw() {
 
   ctx.save();
   var d = Math.max(0, 1 - player.distanceTo(372 * zoom, 323 * zoom) / 100 / zoom);
-  ctx.globalAlpha = d * 0.5;
+  ctx.globalAlpha = d * 0.8;
   ctx.drawImage(mist1, 0, 0, screen.width, screen.height);
   ctx.restore();
 }
