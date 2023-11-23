@@ -95,7 +95,7 @@ function Tick() {
       ctx.fillText("Press space to continue.", screen.width / 2, screen.height - 15);
       ctx.font = "30px serif";
       if (screenNum == 5) {
-        ctx.fillText("One late evening on 16 March 217 in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
+        ctx.fillText("One late evening on 16 March 216 A.D. in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
       }
       else if (screenNum == 4) {
         ctx.fillText("All Gaius Porcius Symphoniacus had wanted was a bath...", screen.width / 2, screen.height / 2 + 15);
