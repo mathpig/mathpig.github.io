@@ -106,7 +106,7 @@ var tiles = [
   new Tile().setImage(quadtilec4),
   new Tile().setImage(stone1).setSolid(true).setRounded(true),
   new Tile().setImage(marble1),
-  new Tile().setColor("#777"),  // arch shadow
+  new Tile().setColor("#f00"),
   new Tile().setColor("blue").setWater(true).setRounded(true),  // bath
   new Tile().setImage(pillar1).setSolid(true),
   new Tile().setImage(flowers1).setPlaceable(false),
@@ -120,4 +120,5 @@ var tiles = [
   new Tile().setImage(circle3),
   new Tile().setImage(circle4),
   new Tile().setImage(bw1),
+  new Tile().setImage(graytile1),
 ];
