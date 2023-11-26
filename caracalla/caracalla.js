@@ -2,6 +2,8 @@
 
 zoom = 100;
 
+var showCompass = false;
+
 var player;
 var caracalla;
 var entities = [];
@@ -47,7 +49,8 @@ function Draw() {
   ctx.save();
   offsetX = Math.floor(targetX / zoom);
   offsetY = Math.floor(targetY / zoom);
-  ctx.translate((offsetX * zoom - targetX), (offsetY * zoom - targetY));
+  ctx.translate(Math.floor(offsetX * zoom - targetX),
+	        Math.floor(offsetY * zoom - targetY));
   DrawMap();
   DrawMapCorners();
   DrawPlan();
@@ -64,6 +67,15 @@ function Draw() {
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
+  if (showCompass) {
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = "green";
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(caracalla.x, caracalla.y);
+    ctx.stroke();
+  }
+
   ctx.restore();
 
   ctx.save();
@@ -136,6 +148,9 @@ window.onkeydown = function(e) {
   }
   if (keySet[" "]) {
     screenNum = Math.max(screenNum - 1, 0);
+  }
+  if (keySet["c"]) {
+    showCompass = !showCompass;
   }
 };
 

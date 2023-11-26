@@ -65,10 +65,10 @@ class Tile {
       map[offset + WIDTH],
     ];
     var corners = [
-      [x + w + 1, y - 1],
-      [x + w + 1, y + h + 1],
-      [x - 1, y + h + 1],
-      [x - 1, y - 1],
+      [x + w, y],
+      [x + w, y + h],
+      [x, y + h],
+      [x, y],
     ];
     for (var i = 0; i < 4; i++) {
       if (kind == neighbors[i] && kind == neighbors[(i + 1) % 4] &&
