@@ -50,10 +50,10 @@ function Circle() {
   var dx = last[0] - lastClick[0];
   var dy = last[1] - lastClick[1];
   var r = Math.floor(Math.sqrt(dx * dx + dy * dy));
-  for (var i = 0; i < 360; ++i) {
-    var x = Math.round(r * Math.cos(i * Math.PI / 180)) + lastClick[0];
-    var y = Math.round(r * Math.sin(i * Math.PI / 180)) + lastClick[1];
-    copied.push(map[x + y * WIDTH + level * WIDTH * HEIGHT]);
+  for (var i = 0; i < 1000000; ++i) {
+    var x = Math.round(r * Math.cos(i * Math.PI / 500000)) + lastClick[0];
+    var y = Math.round(r * Math.sin(i * Math.PI / 500000)) + lastClick[1];
+    map[x + y * WIDTH + level * WIDTH * HEIGHT] = pen;
   }
 }
 
