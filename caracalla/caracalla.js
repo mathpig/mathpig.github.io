@@ -2,6 +2,8 @@
 
 zoom = 100;
 
+var showCompass = false;
+
 var player;
 var caracalla;
 var entities = [];
@@ -47,8 +49,10 @@ function Draw() {
   ctx.save();
   offsetX = Math.floor(targetX / zoom);
   offsetY = Math.floor(targetY / zoom);
-  ctx.translate((offsetX * zoom - targetX), (offsetY * zoom - targetY));
+  ctx.translate(Math.floor(offsetX * zoom - targetX),
+	        Math.floor(offsetY * zoom - targetY));
   DrawMap();
+  DrawMapCorners();
   DrawPlan();
   ctx.restore();
 
@@ -63,6 +67,21 @@ function Draw() {
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
+  if (showCompass) {
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = "green";
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y);
+    ctx.lineTo(caracalla.x, caracalla.y);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  ctx.save();
+  var d = Math.max(0, 1 - player.distanceTo(372 * zoom, 323 * zoom) / 100 / zoom);
+  ctx.globalAlpha = d * 0.8;
+  ctx.drawImage(mist1, 0, 0, screen.width, screen.height);
   ctx.restore();
 }
 
@@ -88,7 +107,7 @@ function Tick() {
       ctx.fillText("Press space to continue.", screen.width / 2, screen.height - 15);
       ctx.font = "30px serif";
       if (screenNum == 5) {
-        ctx.fillText("One late evening on 16 March 217 in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
+        ctx.fillText("One late evening on 16 March 216 A.D. in the vast Baths of Caracalla...", screen.width / 2, screen.height / 2 + 15);
       }
       else if (screenNum == 4) {
         ctx.fillText("All Gaius Porcius Symphoniacus had wanted was a bath...", screen.width / 2, screen.height / 2 + 15);
@@ -129,6 +148,9 @@ window.onkeydown = function(e) {
   }
   if (keySet[" "]) {
     screenNum = Math.max(screenNum - 1, 0);
+  }
+  if (keySet["c"]) {
+    showCompass = !showCompass;
   }
 };
 

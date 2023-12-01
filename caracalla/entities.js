@@ -70,6 +70,15 @@ class Entity {
       ctx.scale(-1, 1);
     }
     ctx.drawImage(anim[f], -this.width / 2, -this.height, this.width, this.height);
+    // Draw water on top.
+    var under = tileAt(this.x, this.y);
+    if (under.water) {
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = under.color;
+      ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height / 2);
+      ctx.restore();
+    }
     ctx.restore();
   }
 
@@ -94,8 +103,12 @@ class Entity {
   }
 
   distance(other) {
-    var dx = this.x - other.x;
-    var dy = this.y - other.y;
+    return this.distanceTo(other.x, other.y);
+  }
+
+  distanceTo(x, y) {
+    var dx = x - this.x;
+    var dy = y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
 

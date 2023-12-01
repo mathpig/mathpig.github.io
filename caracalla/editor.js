@@ -50,10 +50,10 @@ function Circle() {
   var dx = last[0] - lastClick[0];
   var dy = last[1] - lastClick[1];
   var r = Math.floor(Math.sqrt(dx * dx + dy * dy));
-  for (var i = 0; i < 360; ++i) {
-    var x = Math.round(r * Math.cos(i * Math.PI / 180)) + lastClick[0];
-    var y = Math.round(r * Math.sin(i * Math.PI / 180)) + lastClick[1];
-    copied.push(map[x + y * WIDTH + level * WIDTH * HEIGHT]);
+  for (var i = 0; i < 1000000; ++i) {
+    var x = Math.round(r * Math.cos(i * Math.PI / 500000)) + lastClick[0];
+    var y = Math.round(r * Math.sin(i * Math.PI / 500000)) + lastClick[1];
+    map[x + y * WIDTH + level * WIDTH * HEIGHT] = pen;
   }
 }
 
@@ -71,12 +71,22 @@ function Copy() {
   }
 }
  
-function Paste() {
+function ReflectPaste() {
   var x = last[0];
   var y = last[1];
   for (var j = 0; j < copied[0].length; ++j) {
     for (var i = 0; i < copied.length; ++i) {
       map[(x + j) + (y + i) * WIDTH + level * WIDTH * HEIGHT] = copied[i][copied[0].length - j - 1];
+    }
+  }
+}
+
+function Paste() {
+  var x = last[0];
+  var y = last[1];
+  for (var j = 0; j < copied[0].length; ++j) {
+    for (var i = 0; i < copied.length; ++i) {
+      map[(x + j) + (y + i) * WIDTH + level * WIDTH * HEIGHT] = copied[i][j];
     }
   }
 }
@@ -148,6 +158,9 @@ window.onkeydown = function(e) {
   }
   else if (e.key == "P") {
     Paste();
+  }
+  else if (e.key == "R") {
+    ReflectPaste();
   }
   else if (e.key == "F") {
     Flood();

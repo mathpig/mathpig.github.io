@@ -28,6 +28,26 @@ function DrawMap() {
   }
 }
 
+function DrawMapCorners() {
+  var s = GetSize();
+  var w = s[0] + 1;
+  var h = s[1] + 1;
+  for (var j = 0; j < h; ++j) {
+    var jj = j + offsetY;
+    if (jj < 0 || jj >= HEIGHT) {
+      continue;
+    }
+    for (var i = 0; i < w; ++i) {
+      var ii = i + offsetX;
+      if (ii < 0 || ii >= WIDTH) {
+        continue;
+      }
+      var offset = ii + jj * WIDTH + level * WIDTH * HEIGHT;
+      tiles[map[offset]].drawCorner(offset, i * zoom, j * zoom, zoom, zoom);
+    }
+  }
+}
+
 function DrawPlan() {
   if (!showMap) {
     return;
