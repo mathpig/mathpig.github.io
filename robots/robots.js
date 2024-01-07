@@ -115,12 +115,15 @@ class Block {
   }
 }
 
+// TODO: Add Player class and add one to the entities
+
 class Robot {
   constructor() {
     this.x = 0;
     this.y = 0;
     this.size = defaultRobotSize;
     this.color = "gray";
+    this.speed = 1;
     this.angle = Math.random() * 360;
     this.grid = [];
     for (var i = 0; i < 10; ++i) {
@@ -150,6 +153,11 @@ class Robot {
 
   setColor(color) {
     this.color = color;
+    return this;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
     return this;
   }
 
@@ -191,6 +199,7 @@ class Robot {
   }
 
   draw() {
+// TODO: Draw my field of vision so player can see what angle I am at
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
@@ -200,18 +209,25 @@ class Robot {
       this.changeActionCooldown = randint(50, 150);
       var val = randint(0, 1);
       var other = nearestRobot(this);
-      if (other[0] !== e && other[1] < 1000) {
-        val = randint(0, 2);
-      }
+// TODO: Change nearest robot function to include a check if I can see them
+//      if (other[0] !== e && other[1] < 1000) {
+//        val = 0;
+//        if (randint(0, 1) == 0) {
+//          val = 2;
+//        }
+//      }
       if (val == 0) {
         this.actionType = "move";
-        var moves = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-        this.actionDetails = moves[randint(0, moves.length - 1)];
+        this.actionDetails = "";
       }
       else if (val == 1) {
         this.actionType = "turn";
-        var turns = ["CW", "CCW"];
-        this.actionDetails = turns[randint(0, turns.length - 1)];
+        if (randint(0, 1) == 0) {
+          this.actionDetails = "CW";
+        }
+        else {
+          this.actionDetails = "CCW";
+        }
       }
       else {
         this.actionType = "shoot";
@@ -220,6 +236,32 @@ class Robot {
       }
     }
     this.changeActionCooldown--;
+    if (this.actionType == "move") {
+      val = this.angle * Math.PI / 180;
+      var oldX = this.x;
+      var oldY = this.y;
+      this.x += this.speed * Math.cos(val);
+      this.y += this.speed * Math.sin(val);
+      for (var i = 0; i < entities.length; ++i) {
+        if (entities[i] !== this && touches(this, entities[i])) {
+          this.x = oldX;
+          this.y = oldY;
+          this.changeActionCooldown = 0;
+          break;
+        }
+      }
+    }
+    else if (this.actionType == "turn") {
+      if (this.actionDetails == "CW") {
+        this.angle += this.speed;
+      }
+      else {
+        this.angle -= this.speed;
+      }
+   }
+   else {
+     // TODO: Create bullet class and fire one at nearest enemy
+   }
   }
 }
 
@@ -235,7 +277,7 @@ function Draw() {
 }
 
 function Tick() {
-  time++;
+// TODO: Add checks for has won and has lost to not tick if there are no enemies or the player is dead
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
