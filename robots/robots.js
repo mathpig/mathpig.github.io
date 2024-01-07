@@ -3,12 +3,18 @@
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-const defaultBlockSize = 6; // 120
-const defaultRobotSize = 2;
+const defaultBlockSize = 120;
+const defaultRobotSize = 20;
+
 const mapSize = 60;
 
 var entities = [];
 var time = 0;
+
+var focusX = defaultBlockSize * mapSize / 2;
+var focusY = focusX;
+
+var keySet = {};
 
 function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
@@ -206,22 +212,19 @@ class Robot {
 
   tick() {
     if (this.changeActionCooldown == 0) {
-      this.changeActionCooldown = randint(50, 150);
-      var val = randint(0, 1);
+      this.changeActionCooldown = randint(20, 60);
+      var possibilities = [0, 1];
       var other = nearestRobot(this);
 // TODO: Change nearest robot function to include a check if I can see them
 //      if (other[0] !== e && other[1] < 1000) {
-//        val = 0;
-//        if (randint(0, 1) == 0) {
-//          val = 2;
-//        }
+//        possibilities = [0, 2];
 //      }
-      if (val == 0) {
-        this.actionType = "move";
-        this.actionDetails = "";
+      var actionType = possibilities[randint(0, possibilities.length - 1)];
+      while (actionType == this.actionType) {
+        actionType = possibilities[randint(0, possibilities.length - 1)];
       }
-      else if (val == 1) {
-        this.actionType = "turn";
+      this.actionType = actionType;
+      if (actionType == 1) {
         if (randint(0, 1) == 0) {
           this.actionDetails = "CW";
         }
@@ -229,15 +232,14 @@ class Robot {
           this.actionDetails = "CCW";
         }
       }
-      else {
-        this.actionType = "shoot";
+      else if (actionType == 2) {
         this.actionDetails = other[0];
         this.changeActionCooldown = 1;
       }
     }
     this.changeActionCooldown--;
-    if (this.actionType == "move") {
-      val = this.angle * Math.PI / 180;
+    if (this.actionType == 0) {
+      var val = this.angle * Math.PI / 180;
       var oldX = this.x;
       var oldY = this.y;
       this.x += this.speed * Math.cos(val);
@@ -251,33 +253,48 @@ class Robot {
         }
       }
     }
-    else if (this.actionType == "turn") {
+    else if (this.actionType == 1) {
       if (this.actionDetails == "CW") {
-        this.angle += this.speed;
+        this.angle += 9 * this.speed;
       }
       else {
-        this.angle -= this.speed;
+        this.angle -= 9 * this.speed;
       }
-   }
-   else {
-     // TODO: Create bullet class and fire one at nearest enemy
-   }
+    }
+// TODO: Create bullet class and fire one at nearest enemy
+//    else {
+//    }
   }
 }
 
 function Draw() {
   ctx.fillStyle = "blue";
   ctx.fillRect(0, 0, screen.width, screen.height);
+  ctx.save();
+  ctx.translate(-focusX, -focusY);
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].drawEnergyBar();
   }
+  ctx.restore();
 }
 
 function Tick() {
 // TODO: Add checks for has won and has lost to not tick if there are no enemies or the player is dead
+  if (keySet["ArrowUp"]) {
+    focusY -= 5;
+  }
+  if (keySet["ArrowRight"]) {
+    focusX += 5;
+  }
+  if (keySet["ArrowDown"]) {
+    focusY += 5;
+  }
+  if (keySet["ArrowLeft"]) {
+    focusX -= 5;
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
@@ -315,7 +332,7 @@ for (var i = 0; i < (mapSize * mapSize / 10); ++i) {
   entities.push(new Block().setPosition(x, y).setSize(size).setColor("green"));
 }
 
-for (var i = 0; i < 19; ++i) {
+for (var i = 0; i < 65; ++i) {
   while (true) {
     var x = generateCoordinate();
     var y = generateCoordinate();
@@ -336,3 +353,11 @@ for (var i = 0; i < 19; ++i) {
 }
 
 setInterval(Tick, 25);
+
+window.onkeydown = function(e) {
+  keySet[e.key] = true;
+};
+
+window.onkeyup = function(e) {
+  keySet[e.key] = false;
+};
