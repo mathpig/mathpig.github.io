@@ -11,7 +11,7 @@ const mapSize = 60;
 var entities = [];
 var time = 0;
 
-var focusX = defaultBlockSize * mapSize / 2;
+var focusX = Math.round(defaultBlockSize * mapSize / 2);
 var focusY = focusX;
 
 var keySet = {};
