@@ -328,7 +328,7 @@ function generateCoordinate() {
 for (var i = 0; i < (mapSize * mapSize / 10); ++i) {
   var x = generateCoordinate();
   var y = generateCoordinate();
-  var size = defaultBlockSize / 2 + defaultBlockSize * Math.random();
+  var size = Math.round(defaultBlockSize / 2 + defaultBlockSize * Math.random());
   entities.push(new Block().setPosition(x, y).setSize(size).setColor("green"));
 }
 
