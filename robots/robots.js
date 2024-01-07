@@ -4,9 +4,35 @@ var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
 const defaultBlockSize = 6; // 120
+const defaultRobotSize = 2;
 const mapSize = 60;
 
 var entities = [];
+var time = 0;
+
+function randint(a, b) {
+  return a + Math.floor(Math.random() * (b - a + 1));
+}
+
+function distance(e1, e2) {
+  return Math.sqrt((e1.x - e2.x) * (e1.x - e2.x) + (e1.y - e2.y) * (e1.y - e2.y));
+}
+
+function nearestRobot(e) {
+  var best = 10000;
+  var bestEntity = e;
+  for (var i = 0; i < entities.length; ++i) {
+    if (!(entities[i] instanceof Robot) || entities[i] === e) {
+      continue;
+    }
+    var dist = distance(e, entities[i]);
+    if (dist < best) {
+      best = dist;
+      bestEntity = entities[i];
+    }
+  }
+  return [bestEntity, best];
+}
 
 function spreadVirusesWith(grid, size, ch) {
   for (var i = 0; i < size; ++i) {
@@ -30,6 +56,18 @@ function spreadVirusesWith(grid, size, ch) {
     }
   }
   return grid;
+}
+
+function countCells(grid, size, ch) {
+  var count = 0
+  for (var i = 0; i < size; ++i) {
+    for (var j = 0; j < size; ++j) {
+      if (grid[i][j] == ch) {
+        count++;
+      }
+    }
+  }
+  return count;
 }
 
 function intervalTouches(a, b, c, d) {
@@ -81,8 +119,9 @@ class Robot {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.size = 2;
+    this.size = defaultRobotSize;
     this.color = "gray";
+    this.angle = Math.random() * 360;
     this.grid = [];
     for (var i = 0; i < 10; ++i) {
       this.grid.push([]);
@@ -93,6 +132,9 @@ class Robot {
     this.energy = 5000;
     this.maxEnergy = 5000;
     this.energyColor = "cyan";
+    this.actionType = "";
+    this.actionDetails = "";
+    this.changeActionCooldown = 0;
   }
 
   setPosition(x, y) {
@@ -108,6 +150,11 @@ class Robot {
 
   setColor(color) {
     this.color = color;
+    return this;
+  }
+
+  setAngle(angle) {
+    this.angle = angle;
     return this;
   }
 
@@ -131,6 +178,13 @@ class Robot {
     return this;
   }
 
+  setAction(actionType, actionDetails, changeActionCooldown) {
+    this.actionType = actionType;
+    this.actionDetails = actionDetails;
+    this.changeActionCooldown = changeActionCooldown;
+    return this;
+  }
+
   drawEnergyBar() {
     ctx.fillStyle = this.energyColor;
     ctx.fillRect(this.x - this.size / 2, this.y - this.size * 4 / 5, this.size, this.size / 5);
@@ -142,6 +196,30 @@ class Robot {
   }
 
   tick() {
+    if (this.changeActionCooldown == 0) {
+      this.changeActionCooldown = randint(50, 150);
+      var val = randint(0, 1);
+      var other = nearestRobot(this);
+      if (other[0] !== e && other[1] < 1000) {
+        val = randint(0, 2);
+      }
+      if (val == 0) {
+        this.actionType = "move";
+        var moves = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+        this.actionDetails = moves[randint(0, moves.length - 1)];
+      }
+      else if (val == 1) {
+        this.actionType = "turn";
+        var turns = ["CW", "CCW"];
+        this.actionDetails = turns[randint(0, turns.length - 1)];
+      }
+      else {
+        this.actionType = "shoot";
+        this.actionDetails = other[0];
+        this.changeActionCooldown = 1;
+      }
+    }
+    this.changeActionCooldown--;
   }
 }
 
@@ -157,6 +235,7 @@ function Draw() {
 }
 
 function Tick() {
+  time++;
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
