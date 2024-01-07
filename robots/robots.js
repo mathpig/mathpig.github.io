@@ -322,7 +322,7 @@ for (var i = 0; i < 4; ++i) {
 }
 
 function generateCoordinate() {
-  return defaultBlockSize * 10 + defaultBlockSize * Math.random() * (mapSize - 20);
+  return Math.round(defaultBlockSize * 10 + defaultBlockSize * Math.random() * (mapSize - 20));
 }
 
 for (var i = 0; i < (mapSize * mapSize / 10); ++i) {
