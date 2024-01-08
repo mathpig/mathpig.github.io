@@ -212,7 +212,7 @@ class Robot {
 
   tick() {
     if (this.changeActionCooldown == 0) {
-      this.changeActionCooldown = randint(20, 60);
+      this.changeActionCooldown = randint(50, 150);
       var possibilities = [0, 1];
       var other = nearestRobot(this);
 // TODO: Change nearest robot function to include a check if I can see them
@@ -255,10 +255,10 @@ class Robot {
     }
     else if (this.actionType == 1) {
       if (this.actionDetails == "CW") {
-        this.angle += 9 * this.speed;
+        this.angle += this.speed * 9 / 2;
       }
       else {
-        this.angle -= 9 * this.speed;
+        this.angle -= this.speed * 9 / 2;
       }
     }
 // TODO: Create bullet class and fire one at nearest enemy
