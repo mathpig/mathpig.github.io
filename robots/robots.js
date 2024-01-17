@@ -9,6 +9,8 @@ const defaultRobotSize = 20;
 const mapSize = 60;
 
 var entities = [];
+var toRemove = [];
+
 var time = 0;
 
 var focusX = Math.round(defaultBlockSize * mapSize / 2);
@@ -201,7 +203,7 @@ class Robot {
 
   drawEnergyBar() {
     ctx.fillStyle = this.energyColor;
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size * 4 / 5, this.size, this.size / 5);
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size * 4 / 5, this.size * this.energy / this.maxEnergy, this.size / 5);
   }
 
   draw() {
@@ -211,19 +213,29 @@ class Robot {
   }
 
   tick() {
+    var val = countCells(this.grid, this.grid.length, "-") - countCells(this.grid, this.grid.length, "V");
+    this.energy = Math.min(this.energy + val, this.maxEnergy);
+    if (this.energy <= 0) {
+      toRemove.push(this);
+      return;
+    }
+    if (time % 40 == 0) {
+      this.grid = spreadVirusesWith(this.grid, this.grid.length, "V");
+    }
+    var energyCost = [500, 25, 250, 1000];
     if (this.changeActionCooldown == 0) {
-      this.changeActionCooldown = randint(50, 150);
-      var possibilities = [0, 1];
+      var possibilities = [0, 1, 2];
       var other = nearestRobot(this);
 // TODO: Change nearest robot function to include a check if I can see them
 //      if (other[0] !== e && other[1] < 1000) {
-//        possibilities = [0, 2];
+//        possibilities = [0, 2, 3];
 //      }
       var actionType = possibilities[randint(0, possibilities.length - 1)];
       while (actionType == this.actionType) {
         actionType = possibilities[randint(0, possibilities.length - 1)];
       }
       this.actionType = actionType;
+      this.changeActionCooldown = randint(50, 150);
       if (actionType == 1) {
         if (randint(0, 1) == 0) {
           this.actionDetails = "CW";
@@ -238,6 +250,9 @@ class Robot {
       }
     }
     this.changeActionCooldown--;
+    if (energyCost[actionType] >= this.energy) {
+      return;
+    }
     if (this.actionType == 0) {
       var val = this.angle * Math.PI / 180;
       var oldX = this.x;
@@ -261,9 +276,17 @@ class Robot {
         this.angle -= this.speed * 9 / 2;
       }
     }
+// TODO: Do virus scan, remove a random amount of viruses that is possible with current energy, and contain the rest
+//    else if (this.actionType == 2) {
+//    }
 // TODO: Create bullet class and fire one at nearest enemy
 //    else {
 //    }
+    this.energy -= energyCost[this.actionType];
+    if (this.energy <= 0) {
+      console.log("here");
+      toRemove.push(this);
+    }
   }
 }
 
@@ -283,6 +306,15 @@ function Draw() {
 
 function Tick() {
 // TODO: Add checks for has won and has lost to not tick if there are no enemies or the player is dead
+  time++;
+  for (var i = 0; i < toRemove.length; ++i) {
+    for (var j = 0; j < entities.length; ++j) {
+      if (toRemove[i] === entities[j]) {
+        entities.pop(j);
+        break;
+      }
+    }
+  }
   if (keySet["ArrowUp"]) {
     focusY -= 5;
   }
