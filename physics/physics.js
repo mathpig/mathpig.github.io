@@ -7,10 +7,6 @@ var entities = [];
 
 var keySet = {};
 
-function randint(a, b) {
-  return a + Math.floor(Math.random() * (b - a + 1));
-}
-
 function intervalTouches(a, b, c, d) {
   return !((b < c) || (d < a));
 }
@@ -153,8 +149,8 @@ entities.push(new Entity().setPosition(0, 250).setSize(100, 300).setIsWall(true)
 
 for (var i = 0; i < 100; ++i) {
   while (true) {
-    var x = randint(100, 400);
-    var y = randint(100, 400);
+    var x = 100 + Math.random() * 300;
+    var y = 100 + Math.random() * 300;
     var entity = new Entity().setPosition(x, y);
     var failed = false;
     for (var j = 0; j < entities.length; ++j) {
