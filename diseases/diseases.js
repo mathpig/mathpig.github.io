@@ -67,6 +67,9 @@ class Blob {
     if (this.state == "s") {
       ctx.fillStyle = "green";
     }
+    else if (this.state == "e") {
+      ctx.fillStyle = "orange";
+    }
     else if (this.state == "i") {
       ctx.fillStyle = "red";
       ctx.beginPath();
@@ -80,17 +83,24 @@ class Blob {
   }
 
   tick() {
-    if (this.state == "i") {
+    if (this.state == "e") {
+      this.stateCountdown -= 1;
+      if (this.stateCountdown <= 0) {
+        this.state = "i";
+        this.stateCountdown = (200 + Math.random() * 400);
+      }
+    }
+    else if (this.state == "i") {
       for (var i = 0; i < blobs.length; ++i) {
         if (distance(this, blobs[i]) <= this.spreadDist && blobs[i].state == "s") {
-          blobs[i].state = "i";
+          blobs[i].state = "e";
           blobs[i].stateCountdown = (100 + Math.random() * 200);
         }
       }
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
         this.state = "r";
-        this.stateCountdown = (100 + Math.random() * 200);
+        this.stateCountdown = (300 + Math.random() * 600);
       }
     }
     else if (this.state == "r") {
@@ -143,7 +153,7 @@ for (var i = 0; i < 1; ++i) {
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   var sicknessCooldown = (100 + Math.random() * 200);
-  blobs.push(new Blob().setPosition(x, y).setAngle(angle).setState("i").setStateCountdown(sicknessCooldown));
+  blobs.push(new Blob().setPosition(x, y).setAngle(angle).setState("e").setStateCountdown(sicknessCooldown));
 }
 
 setInterval(Tick, 25);
