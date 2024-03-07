@@ -184,7 +184,7 @@ class Blob {
       speed *= 1.5;
     }
     this.x += (speed * Math.cos(angle));
-    if (this.x < 100 || this.x > (screen.width - 100)) {
+    if (this.x < 100 || this.x > (screen.width - 300)) {
       this.angle = (180 - this.angle);
       this.x = oldX;
     }
@@ -196,37 +196,58 @@ class Blob {
   }
 }
 
-function Draw() {
+function Draw(data) {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, screen.width, screen.height);
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].draw();
   }
+  var findColor = {"s": "green", "e": "orange", "i": "red", "r": "gray"};
+  var length = Math.min(data.length, 1000);
+  for (var i = 0; i < length; ++i) {
+    var val = 0;
+    for (var j in data[i]) {
+      ctx.fillStyle = findColor[j];
+      ctx.fillRect(screen.width + i * (100 / length) - 200, 200 - val - data[i][j], (100 / length), data[i][j]);
+      val += data[i][j];
+    }
+  }
 }
+
+var data = [];
+var time = 0;
 
 function Tick() {
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].tick();
   }
-  Draw();
+  time++;
+  if ((time % 10) == 0) {
+    var counts = {"s": 0, "e": 0, "i": 0, "r": 0};
+    for (var i = 0; i < blobs.length; ++i) {
+      counts[blobs[i].state]++;
+    }
+    data.push(counts);
+  }
+  Draw(data);
 }
 
-for (var i = 0; i < 0; ++i) {
-  var x = (100 + Math.random() * (screen.width - 200));
+for (var i = 0; i < 49; ++i) {
+  var x = (100 + Math.random() * (screen.width - 400));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   blobs.push(new Blob().setPosition(x, y).setAngle(angle));
 }
 
-for (var i = 0; i < 100; ++i) {
-  var x = (100 + Math.random() * (screen.width - 200));
+for (var i = 0; i < 50; ++i) {
+  var x = (100 + Math.random() * (screen.width - 400));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(true));
 }
 
 for (var i = 0; i < 1; ++i) {
-  var x = (100 + Math.random() * (screen.width - 200));
+  var x = (100 + Math.random() * (screen.width - 400));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   var sicknessCooldown = (100 + Math.random() * 200);
