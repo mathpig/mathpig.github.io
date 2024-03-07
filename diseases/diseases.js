@@ -9,6 +9,22 @@ function distance(blob1, blob2) {
   return Math.sqrt((blob1.x - blob2.x) * (blob1.x - blob2.x) + (blob1.y - blob2.y) * (blob1.y - blob2.y));
 }
 
+function findNearestSickBlob(blob) {
+  var sickBlob = blob;
+  var bestDist = blob.detectionRange;
+  for (var i = 0; i < blobs.length; ++i) {
+    if (blobs[i].state != "i") {
+      continue;
+    }
+    var val = distance(blobs[i], blob);
+    if (blobs[i] !== blob && val < bestDist) {
+      sickBlob = blobs[i];
+      bestDist = val;
+    }
+  }
+  return sickBlob;
+}
+
 class Blob {
   constructor() {
     this.speed = 1;
@@ -20,6 +36,9 @@ class Blob {
     this.state = "s";
     this.stateCountdown = 0;
     this.spreadDist = 50;
+    this.caresAboutSick = false;
+    this.scared = false;
+    this.detectionRange = 100;
   }
 
   setSpeed(speed) {
@@ -63,6 +82,16 @@ class Blob {
     return this;
   }
 
+  setCaresAboutSick(caresAboutSick) {
+    this.caresAboutSick = caresAboutSick;
+    return this;
+  }
+
+  setDetectionRange(detectionRange) {
+    this.detectionRange = detectionRange;
+    return this;
+  }
+
   draw() {
     if (this.state == "s") {
       ctx.fillStyle = "green";
@@ -72,12 +101,21 @@ class Blob {
     }
     else if (this.state == "i") {
       ctx.fillStyle = "red";
+    }
+    else {
+      ctx.fillStyle = "gray";
+    }
+    if (this.state == "i") {
+      ctx.strokeStyle = "red";
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.spreadDist, 0, 2 * Math.PI);
       ctx.stroke();
     }
-    else {
-      ctx.fillStyle = "gray";
+    else if (this.caresAboutSick) {
+      ctx.strokeStyle = "gray";
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.detectionRange, 0, 2 * Math.PI);
+      ctx.stroke();
     }
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
@@ -109,16 +147,48 @@ class Blob {
         this.state = "s";
       }
     }
-    this.angle += (this.angleSpeed * Math.random());
+    this.scared = false;
+    if (this.state != "i" && this.caresAboutSick) {
+      var sickBlob = findNearestSickBlob(this);
+      if (sickBlob !== this) {
+        this.scared = true;
+        var xDiff = (sickBlob.x - this.x);
+        var yDiff = (sickBlob.y - this.y);
+        if (xDiff > 0) {
+          this.angle = (Math.atan(yDiff / xDiff) * 180 / Math.PI + 180);
+        }
+        else if (xDiff == 0) {
+          if (yDiff > 0) {
+            this.angle = 90;
+          }
+          else if (yDiff == 0) {
+            this.angle = (sickBlob.angle + 180);
+          }
+          else {
+            this.angle = 270;
+          }
+        }
+        else {
+          this.angle = (Math.atan(yDiff / xDiff) * 180 / Math.PI);
+        }
+      }
+    }
+    if (!this.scared) {
+      this.angle += (this.angleSpeed * Math.random());
+    }
     var angle = (this.angle * Math.PI / 180);
     var oldX = this.x;
     var oldY = this.y;
-    this.x += (this.speed * Math.cos(angle));
+    var speed = this.speed;
+    if (this.scared) {
+      speed *= 1.5;
+    }
+    this.x += (speed * Math.cos(angle));
     if (this.x < 100 || this.x > (screen.width - 100)) {
       this.angle = (180 - this.angle);
       this.x = oldX;
     }
-    this.y += (this.speed * Math.sin(angle));
+    this.y += (speed * Math.sin(angle));
     if (this.y < 100 || this.y > (screen.height - 100)) {
       this.angle = -this.angle;
       this.y = oldY;
@@ -141,11 +211,18 @@ function Tick() {
   Draw();
 }
 
-for (var i = 0; i < 99; ++i) {
+for (var i = 0; i < 0; ++i) {
   var x = (100 + Math.random() * (screen.width - 200));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   blobs.push(new Blob().setPosition(x, y).setAngle(angle));
+}
+
+for (var i = 0; i < 100; ++i) {
+  var x = (100 + Math.random() * (screen.width - 200));
+  var y = (100 + Math.random() * (screen.height - 200));
+  var angle = (Math.random() * 360);
+  blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(true));
 }
 
 for (var i = 0; i < 1; ++i) {
