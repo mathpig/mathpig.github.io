@@ -4,6 +4,7 @@ var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
 var blobs = [];
+var graphSize = 250;
 
 function distance(blob1, blob2) {
   return Math.sqrt((blob1.x - blob2.x) * (blob1.x - blob2.x) + (blob1.y - blob2.y) * (blob1.y - blob2.y));
@@ -184,7 +185,7 @@ class Blob {
       speed *= 1.5;
     }
     this.x += (speed * Math.cos(angle));
-    if (this.x < 100 || this.x > (screen.width - 300)) {
+    if (this.x < 100 || this.x > (screen.width - graphSize - 200)) {
       this.angle = (180 - this.angle);
       this.x = oldX;
     }
@@ -208,8 +209,8 @@ function Draw(data) {
     var val = 0;
     for (var j in data[i]) {
       ctx.fillStyle = findColor[j];
-      ctx.fillRect(screen.width + i * (100 / length) - 200, 200 - val - data[i][j], (100 / length), data[i][j]);
-      val += data[i][j];
+      ctx.fillRect(screen.width + i * (graphSize / length) - graphSize - 100, graphSize + 100 - val - data[i][j] * graphSize / blobs.length, (graphSize / length), data[i][j] * graphSize / blobs.length);
+      val += data[i][j] * graphSize / blobs.length;
     }
   }
 }
@@ -233,21 +234,21 @@ function Tick() {
 }
 
 for (var i = 0; i < 49; ++i) {
-  var x = (100 + Math.random() * (screen.width - 400));
+  var x = (100 + Math.random() * (screen.width - graphSize - 300));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   blobs.push(new Blob().setPosition(x, y).setAngle(angle));
 }
 
 for (var i = 0; i < 50; ++i) {
-  var x = (100 + Math.random() * (screen.width - 400));
+  var x = (100 + Math.random() * (screen.width - graphSize - 300));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(true));
 }
 
 for (var i = 0; i < 1; ++i) {
-  var x = (100 + Math.random() * (screen.width - 400));
+  var x = (100 + Math.random() * (screen.width - graphSize - 300));
   var y = (100 + Math.random() * (screen.height - 200));
   var angle = (Math.random() * 360);
   var sicknessCooldown = (100 + Math.random() * 200);
