@@ -204,13 +204,13 @@ function Draw(data) {
     blobs[i].draw();
   }
   var findColor = {"s": "green", "e": "orange", "i": "red", "r": "gray"};
-  var length = Math.min(data.length, 1000);
+  var length = data.length;
   for (var i = 0; i < length; ++i) {
     var val = 0;
     for (var j in data[i]) {
       ctx.fillStyle = findColor[j];
       ctx.fillRect(screen.width + i * (graphSize / length) - graphSize - 100, graphSize + 100 - val - data[i][j] * graphSize / blobs.length, (graphSize / length), data[i][j] * graphSize / blobs.length);
-      val += data[i][j] * graphSize / blobs.length;
+      val += (data[i][j] * graphSize / blobs.length);
     }
   }
 }
@@ -229,6 +229,9 @@ function Tick() {
       counts[blobs[i].state]++;
     }
     data.push(counts);
+    if (data.length > 500) {
+      data.shift();
+    }
   }
   Draw(data);
 }
