@@ -12,11 +12,11 @@ function distance(blob1, blob2) {
   return Math.sqrt((blob1.x - blob2.x) * (blob1.x - blob2.x) + (blob1.y - blob2.y) * (blob1.y - blob2.y));
 }
 
-function findNearestBlob(blob, isSick) {
+function findNearestBlob(blob, socialDist) {
   var sickBlob = blob;
   var bestDist = blob.detectionRange;
   for (var i = 0; i < blobs.length; ++i) {
-    if (isSick && blobs[i].state != "i") {
+    if (!socialDist && blobs[i].state != "i") {
       continue;
     }
     var val = distance(blobs[i], blob);
@@ -30,6 +30,8 @@ function findNearestBlob(blob, isSick) {
 
 var spreadDist = 50;
 var detectionRange = 100;
+
+var socialDist = true;
 
 class Blob {
   constructor() {
@@ -161,7 +163,7 @@ class Blob {
     }
     this.scared = false;
     if (this.state != "i" && this.caresAboutSick) {
-      var sickBlob = findNearestBlob(this, false);
+      var sickBlob = findNearestBlob(this, socialDist);
       if (sickBlob !== this) {
         this.scared = true;
         var xDiff = (sickBlob.x - this.x);
@@ -293,3 +295,18 @@ for (var i = 0; i < 1; ++i) {
 }
 
 setInterval(Tick, 25);
+
+function toggleSocialDist() {
+  socialDist = !socialDist;
+  if (socialDist) {
+    socialDistStatus.innerHTML = "[currently on]";
+  }
+  else {
+    socialDistStatus.innerHTML = "[currently off]";
+  }
+}
+
+var socialDistButton = document.getElementById("socialDist");
+var socialDistStatus = document.getElementById("socialDistStatus");
+
+socialDistButton.onclick = toggleSocialDist;
