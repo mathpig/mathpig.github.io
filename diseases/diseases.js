@@ -4,17 +4,19 @@ var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
 var blobs = [];
+var toRemove = [];
+
 var graphSize = 250;
 
 function distance(blob1, blob2) {
   return Math.sqrt((blob1.x - blob2.x) * (blob1.x - blob2.x) + (blob1.y - blob2.y) * (blob1.y - blob2.y));
 }
 
-function findNearestSickBlob(blob) {
+function findNearestBlob(blob, isSick) {
   var sickBlob = blob;
   var bestDist = blob.detectionRange;
   for (var i = 0; i < blobs.length; ++i) {
-    if (blobs[i].state != "i") {
+    if (isSick && blobs[i].state != "i") {
       continue;
     }
     var val = distance(blobs[i], blob);
@@ -26,6 +28,9 @@ function findNearestSickBlob(blob) {
   return sickBlob;
 }
 
+var spreadDist = 50;
+var detectionRange = 100;
+
 class Blob {
   constructor() {
     this.speed = 1;
@@ -36,10 +41,10 @@ class Blob {
     this.size = 20;
     this.state = "s";
     this.stateCountdown = 0;
-    this.spreadDist = 50;
+    this.spreadDist = spreadDist;
     this.caresAboutSick = false;
     this.scared = false;
-    this.detectionRange = 100;
+    this.detectionRange = detectionRange;
   }
 
   setSpeed(speed) {
@@ -138,8 +143,14 @@ class Blob {
       }
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
-        this.state = "r";
-        this.stateCountdown = (300 + Math.random() * 600);
+        if (Math.random() < 0.9) {
+          this.state = "r";
+          this.stateCountdown = (300 + Math.random() * 600);
+        }
+        else {
+          toRemove.push(this);
+          return;
+        }
       }
     }
     else if (this.state == "r") {
@@ -150,7 +161,7 @@ class Blob {
     }
     this.scared = false;
     if (this.state != "i" && this.caresAboutSick) {
-      var sickBlob = findNearestSickBlob(this);
+      var sickBlob = findNearestBlob(this, false);
       if (sickBlob !== this) {
         this.scared = true;
         var xDiff = (sickBlob.x - this.x);
@@ -173,6 +184,9 @@ class Blob {
           this.angle = (Math.atan(yDiff / xDiff) * 180 / Math.PI);
         }
       }
+    }
+    else if (this.caresAboutSick) {
+      return;
     }
     if (!this.scared) {
       this.angle += (this.angleSpeed * Math.random());
@@ -219,8 +233,28 @@ var data = [];
 var time = 0;
 
 function Tick() {
+  spreadDist = parseFloat(document.getElementById("spreadDist").value);
+  detectionRange = parseFloat(document.getElementById("detectionRange").value);
+  for (var i = 0; i < blobs.length; ++i) {
+    blobs[i].spreadDist = spreadDist;
+    blobs[i].detectionRange = detectionRange;
+  }
+  toRemove = [];
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].tick();
+  }
+  for (var i = 0; i < toRemove.length; ++i) {
+    for (var j = 0; j < blobs.length; ++j) {
+      if (blobs[j] === toRemove[i]) {
+        blobs.splice(j, 1);
+        break;
+      }
+    }
+    var x = (100 + Math.random() * (screen.width - graphSize - 300));
+    var y = (100 + Math.random() * (screen.height - 200));
+    var angle = (Math.random() * 360);
+    var caresAboutSick = blobs[Math.floor(Math.random() * blobs.length)].caresAboutSick;
+    blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(caresAboutSick));
   }
   time++;
   if ((time % 10) == 0) {
