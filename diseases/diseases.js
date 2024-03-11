@@ -31,6 +31,9 @@ function findNearestBlob(blob, socialDist) {
 var spreadDist = 50;
 var detectionRange = 100;
 
+var deathChance = 10;
+
+var quarantine = true;
 var socialDist = true;
 
 class Blob {
@@ -145,7 +148,7 @@ class Blob {
       }
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
-        if (Math.random() < 0.9) {
+        if (Math.random() < (1 - deathChance / 100)) {
           this.state = "r";
           this.stateCountdown = (300 + Math.random() * 600);
         }
@@ -187,7 +190,7 @@ class Blob {
         }
       }
     }
-    else if (this.caresAboutSick) {
+    else if (this.caresAboutSick && quarantine) {
       return;
     }
     if (!this.scared) {
@@ -237,6 +240,7 @@ var time = 0;
 function Tick() {
   spreadDist = parseFloat(document.getElementById("spreadDist").value);
   detectionRange = parseFloat(document.getElementById("detectionRange").value);
+  deathChance = parseFloat(document.getElementById("deathChance").value);
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].spreadDist = spreadDist;
     blobs[i].detectionRange = detectionRange;
@@ -310,3 +314,18 @@ var socialDistButton = document.getElementById("socialDist");
 var socialDistStatus = document.getElementById("socialDistStatus");
 
 socialDistButton.onclick = toggleSocialDist;
+
+function toggleQuarantine() {
+  quarantine = !quarantine;
+  if (quarantine) {
+    quarantineStatus.innerHTML = "[currently on]";
+  }
+  else {
+    quarantineStatus.innerHTML = "[currently off]";
+  }
+}
+
+var quarantineButton = document.getElementById("quarantine");
+var quarantineStatus = document.getElementById("quarantineStatus");
+
+quarantineButton.onclick = toggleQuarantine;
