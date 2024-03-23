@@ -264,7 +264,7 @@ function Draw() {
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < (blockSize * 8)) {
+    if (distance(player, entities[i]) < (blockSize * 12)) {
       entities[i].draw();
     }
   }
