@@ -227,29 +227,43 @@ class Knight {
 
   tick() {
     var oldX = this.x;
+    var val = 0;
     if (keySet["ArrowLeft"]) {
-      this.x -= this.speed;
+      val--;
     }
     if (keySet["ArrowRight"]) {
-      this.x += this.speed;
+      val++;
     }
-    for (var i = 0; i < entities.length; ++i) {
-      if (entities[i] instanceof Block && entities[i].isCollidable && touches(this, entities[i])) {
-        this.x = oldX;
+    var shouldStop = false;
+    for (var i = 0; i < this.speed; ++i) {
+      this.x += val;
+      for (var j = 0; j < entities.length; ++j) {
+        if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
+          this.x -= val;
+          shouldStop = true;
+          break;
+        }
+      }
+      if (shouldStop) {
         break;
       }
     }
     this.vy += (blockSize / 100);
     this.vy *= 0.95;
-    var oldY = this.y;
-    this.y += this.vy;
-    for (var i = 0; i < entities.length; ++i) {
-      if (entities[i] instanceof Block && entities[i].isCollidable && touches(this, entities[i])) {
-        this.y = oldY;
-        if (this.vy > 0 && keySet["ArrowUp"]) {
-          this.vy -= (blockSize / 2);
+    var val = Math.sign(this.vy);
+    var vy = Math.abs(this.vy);
+    var shouldStop = false;
+    for (var i = 0; i < vy; ++i) {
+      this.y += val;
+      for (var j = 0; j < entities.length; ++j) {
+        if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
+          this.y -= val;
+          if (this.vy > 0 && keySet["ArrowUp"]) {
+            this.vy -= (blockSize / 2);
+          }
+          shouldStop = true;
+          break;
         }
-        break;
       }
     }
   }
