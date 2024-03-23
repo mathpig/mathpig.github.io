@@ -3,7 +3,7 @@
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-const blockSize = 25;
+const blockSize = 50;
 
 var entities = [];
 
@@ -43,6 +43,8 @@ var map = ["",
            "B       HHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH               B",
            "GGGGGGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGGGGLLLLLLLLGGGG",
            "DDDDDDDDBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBDDDDLLLLLLLLDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
 
@@ -184,11 +186,11 @@ class Spawner extends Block {
 
 class Knight {
   constructor() {
-    this.speed = 2;
+    this.speed = blockSize / 10;
     this.x = 0;
     this.y = 0;
     this.vy = 0;
-    this.size = 20;
+    this.size = blockSize * 0.8;
     this.color = "blue";
   }
 
@@ -237,7 +239,7 @@ class Knight {
         break;
       }
     }
-    this.vy += 0.3;
+    this.vy += (blockSize / 100);
     this.vy *= 0.95;
     var oldY = this.y;
     this.y += this.vy;
@@ -245,7 +247,7 @@ class Knight {
       if (entities[i] instanceof Block && entities[i].isCollidable && touches(this, entities[i])) {
         this.y = oldY;
         if (this.vy > 0 && keySet["ArrowUp"]) {
-          this.vy -= 12;
+          this.vy -= (blockSize / 2);
         }
         break;
       }
@@ -253,23 +255,20 @@ class Knight {
   }
 }
 
-var l1 = 0;
-for (var i = 0; i < map.length; ++i) {
-  l1 = Math.max(l1, map[i].length);
-}
-var l2 = map.length;
-
-screen.width = l1 * blockSize;
-screen.height = l2 * blockSize;
+screen.width = 30 * blockSize;
+screen.height = 15 * blockSize;
 
 function Draw() {
   ctx.fillStyle = "cyan";
   ctx.fillRect(0, 0, screen.width, screen.height);
+  ctx.save();
+  ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < 250) {
+    if (distance(player, entities[i]) < 500) {
       entities[i].draw();
     }
   }
+  ctx.restore();
 }
 
 function Tick() {
@@ -279,7 +278,7 @@ function Tick() {
   Draw();
 }
 
-var player = new Knight().setPosition(420, 200);
+var player = new Knight().setPosition(1030, 480);
 
 Init();
 setInterval(Tick, 25);
