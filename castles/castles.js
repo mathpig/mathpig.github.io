@@ -255,8 +255,8 @@ class Knight {
   }
 }
 
-screen.width = 30 * blockSize;
-screen.height = 15 * blockSize;
+screen.width = 20 * blockSize;
+screen.height = 10 * blockSize;
 
 function Draw() {
   ctx.fillStyle = "cyan";
@@ -264,7 +264,7 @@ function Draw() {
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < 500) {
+    if (distance(player, entities[i]) < (blockSize * 8)) {
       entities[i].draw();
     }
   }
