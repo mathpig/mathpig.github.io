@@ -55,8 +55,8 @@ function Init() {
       if (block == " ") {
         continue;
       }
-      var x = (10 + blockSize * j);
-      var y = (10 + blockSize * i);
+      var x = (blockSize * j);
+      var y = (blockSize * i);
       if (block == "B") {
         entities.push(new Brick().setPosition(x, y));
       }
@@ -276,7 +276,7 @@ function Draw() {
   ctx.fillStyle = "cyan";
   ctx.fillRect(0, 0, screen.width, screen.height);
   ctx.save();
-  ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
+  ctx.translate(screen.width / 2 + player.size / 2 - player.x, screen.height / 2 + player.size / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
     if (distance(player, entities[i]) < (blockSize * 12)) {
       entities[i].draw();
@@ -292,7 +292,7 @@ function Tick() {
   Draw();
 }
 
-var player = new Knight().setPosition(1030, 480);
+var player = new Knight().setPosition(1025, 475);
 
 Init();
 setInterval(Tick, 25);
