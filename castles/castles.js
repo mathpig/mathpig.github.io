@@ -89,6 +89,7 @@ class Block {
     this.y = 0;
     this.size = blockSize;
     this.isCollidable = true;
+    this.damageVal = 0;
     this.color = "black";
   }
 
@@ -120,7 +121,7 @@ class Block {
 class Brick extends Block {
   constructor() {
     super();
-    this.color1 = "rgb(128, 128, 128)";
+    this.color1 = "rgb(" + String(Math.random() * 32 + 116) + ", " + String(Math.random() * 32 + 116) + ", " + String(Math.random() * 32 + 116) + ")";
     this.color2 = "rgb(0, 0, 0)";
   }
 
@@ -149,8 +150,7 @@ class BackgroundBrick extends Brick {
   constructor() {
     super();
     this.isCollidable = false;
-    this.color1 = "rgb(64, 64, 64)";
-    this.color2 = "rgb(0, 0, 0)";
+    this.color1 = "rgb(" + String(Math.random() * 16 + 56) + ", " + String(Math.random() * 16 + 56) + ", " + String(Math.random() * 16 + 56) + ")";
   }
 }
 
@@ -172,6 +172,7 @@ class Lava extends Block {
   constructor() {
     super();
     this.color = "red";
+    this.damageVal = 5;
   }
 }
 
@@ -191,6 +192,12 @@ class Knight {
     this.vy = 0;
     this.size = blockSize * 0.8;
     this.color = "blue";
+    this.health = 100;
+    this.maxHealth = this.health;
+    this.stunCountdown = 0;
+    this.stunCount = 0;
+    this.jumpCountdown = 0;
+    this.maxJumpCountdown = 10;
   }
 
   setSpeed(speed) {
@@ -219,31 +226,90 @@ class Knight {
     return this;
   }
 
+  setHealth(health) {
+    this.health = health;
+    return this;
+  }
+
+  setMaxHealth(maxHealth) {
+    this.maxHealth = maxHealth;
+    return this;
+  }
+
+  setStunCountdown(stunCountdown) {
+    this.stunCountdown = stunCountdown;
+    return this;
+  }
+
+  setStunCount(stunCount) {
+    this.stunCount = stunCount;
+    return this;
+  }
+
+  setJumpCountdown(jumpCountdown) {
+    this.jumpCountdown = jumpCountdown;
+    return this;
+  }
+
+  setMaxJumpCountdown(maxJumpCountdown) {
+    this.maxJumpCountdown = maxJumpCountdown;
+    return this;
+  }
+
   draw() {
     ctx.fillStyle = this.color;
+    if (this.stunCountdown > 0) {
+      ctx.fillStyle = "gray";
+    }
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    this.drawhealthbar()
+  }
+
+  drawhealthbar() {
+    var val = this.health / this.maxHealth * this.size;
+    ctx.fillStyle = "lime";
+    ctx.fillRect(this.x - this.size / 2, this.y - 4 * this.size / 5, val, this.size / 5);
+    ctx.fillStyle = "darkred";
+    ctx.fillRect(this.x - this.size / 2 + val, this.y - 4 * this.size / 5, this.size - val, this.size / 5);
   }
 
   tick() {
+    if (this.stunCountdown > 0) {
+      this.stunCountdown--;
+      this.health++;
+    }
     var oldX = this.x;
     var val = 0;
-    if (keySet["ArrowLeft"]) {
-      val--;
+    if (this.stunCountdown == 0) {
+      if (keySet["ArrowLeft"]) {
+        val--;
+      }
+      if (keySet["ArrowRight"]) {
+        val++;
+      }
     }
-    if (keySet["ArrowRight"]) {
-      val++;
-    }
-    var shouldStop = false;
     for (var i = 0; i < this.speed; ++i) {
       this.x += val;
+      var touchedEntities = [];
       for (var j = 0; j < entities.length; ++j) {
         if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
-          this.x -= val;
-          shouldStop = true;
-          break;
+          touchedEntities.push(entities[j]);
         }
       }
-      if (shouldStop) {
+      if (touchedEntities.length > 0) {
+        if (this.stunCountdown == 0) {
+          var worstLoss = 1000;
+          for (var j = 0; j < touchedEntities.length; ++j) {
+            worstLoss = Math.min(worstLoss, touchedEntities[j].damageVal);
+          }
+          this.health -= worstLoss;
+          if (this.health <= 0) {
+            this.health = 0;
+            this.stunCountdown = this.maxHealth;
+            this.stunCount++;
+          }
+        }
+        this.x -= val;
         break;
       }
     }
@@ -251,18 +317,41 @@ class Knight {
     this.vy *= 0.95;
     var val = Math.sign(this.vy);
     var vy = Math.abs(this.vy);
-    var shouldStop = false;
     for (var i = 0; i < vy; ++i) {
       this.y += val;
+      var touchedEntities = [];
       for (var j = 0; j < entities.length; ++j) {
         if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
-          this.y -= val;
-          if (this.vy > 0 && keySet["ArrowUp"]) {
-            this.vy -= (blockSize / 2);
-          }
-          shouldStop = true;
-          break;
+          touchedEntities.push(entities[j]);
         }
+      }
+      if (touchedEntities.length == 0) {
+        this.jumpCountdown = this.maxJumpCountdown;
+      }
+      if (touchedEntities.length > 0) {
+        if (this.vy > 0 && this.stunCountdown == 0) {
+          this.jumpCountdown--;
+        }
+        else {
+          this.jumpCountdown = this.maxJumpCountdown;
+        }
+        if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
+          this.vy -= (blockSize / 2);
+        }
+        if (this.stunCountdown == 0) {
+          var worstLoss = 1000;
+          for (var j = 0; j < touchedEntities.length; ++j) {
+            worstLoss = Math.min(worstLoss, touchedEntities[j].damageVal);
+          }
+          this.health -= worstLoss;
+          if (this.health <= 0) {
+            this.health = 0;
+            this.stunCountdown = this.maxHealth;
+            this.stunCount++;
+          }
+        }
+        this.y -= val;
+        break;
       }
     }
   }
@@ -270,6 +359,8 @@ class Knight {
 
 screen.width = 20 * blockSize;
 screen.height = 10 * blockSize;
+
+var achievementCountdown = 400;
 
 function Draw() {
   ctx.fillStyle = "cyan";
@@ -282,6 +373,18 @@ function Draw() {
     }
   }
   ctx.restore();
+  if (player.stunCount >= 5 && achievementCountdown > 0) {
+    ctx.fillStyle = "orange";
+    ctx.fillRect(screen.width / 4, 10, screen.width / 2, screen.height / 4 + 10);
+    ctx.fillStyle = "blue";
+    ctx.font = "bold 48px serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Achievement Get!", screen.width / 2, screen.height / 12 + 10 + 24);
+    ctx.font = "bold 24px serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Shouldn't you be dead by now?", screen.width / 2, screen.height / 6 + 10 + 12);
+    achievementCountdown--;
+  }
 }
 
 function Tick() {
