@@ -259,9 +259,12 @@ for (var i = 0; i < map.length; ++i) {
 }
 var l2 = map.length;
 
+screen.width = l1 * blockSize;
+screen.height = l2 * blockSize;
+
 function Draw() {
   ctx.fillStyle = "cyan";
-  ctx.fillRect(0, 0, l1 * blockSize, l2 * blockSize);
+  ctx.fillRect(0, 0, screen.width, screen.height);
   for (var i = 0; i < entities.length; ++i) {
     if (distance(player, entities[i]) < 250) {
       entities[i].draw();
