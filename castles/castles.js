@@ -412,7 +412,7 @@ var achievementMessages = ["You wanted some, so you got some. - Die. Just die.",
 
 for (var i = 0; i < 7; ++i) {
   hasUnlocked.push(false);
-  achievementCountdowns.push(400);
+  achievementCountdowns.push(200);
 }
 
 function Draw() {
