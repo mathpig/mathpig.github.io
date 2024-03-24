@@ -18,34 +18,33 @@ function touches(e1, e2) {
 
 var keySet = {};
 
-var map = ["",
-           "B              BHHB    BHHB    BHHB    BHHB                B",
-           "B       BBBBBHHBHHB    BHHB    BHHB    BHHB                B",
-           "B       BHHHHHBBBBBB  BBBBBB  BBBBBB  BBBBBB               B",
-           "B       BHHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB               B",
-           "B       BHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB               B",
-           "B       BHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BHHHHHHHHHHHSSHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BHHBHHHHHHHHSSHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHHHB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBHHB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBHHB               B",
-           "B       BHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB               B",
-           "B       BHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB               B",
-           "B       BBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH               B",
-           "B       HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH               B",
-           "B       HHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH               B",
-           "GGHHHHGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGGGGLLLLLLLLGGGG",
-           "DDHHHHDDBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBDDDDLLLLLLLLDDDD",
-           "DDGGGGDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
+var map = ["B              BHHB    BHHB    BHHB    BHHB                                B",
+           "B       BBBBBHHBHHB    BHHB    BHHB    BHHB                                B",
+           "B       BHHHHHBBBBBB  BBBBBB  BBBBBB  BBBBBB BB BB BB                      B",
+           "B       BHHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB                               B",
+           "B       BHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB          B                    B",
+           "B       BHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB                               B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB            B                  B",
+           "B       BBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB                               B",
+           "B       BHHHHHHHHHHHSSHHHHHHHHHHHHHHHHHHHHHB              B                B",
+           "B       BHHBHHHHHHHHSSHHHHHHHHHHHHHHHHHHHHHB                               B",
+           "B       BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHHHB                BBBHHBBB       B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBHHB                BHHHHHHB       B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB                BHHBBHHB       B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBB                BBHHHHBB       B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB                BHHHHHHB       B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBHHB                BHHBBHHB       B",
+           "B       BHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB                BBBBBBBB       B",
+           "B       BHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB                BHHHHHHB       B",
+           "B       BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB                BBHHHHBB       B",
+           "B       BBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                BHHBBHHB       B",
+           "B       HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                HHHHHHHH       B",
+           "B       HHHBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                HHBHHBHH       B",
+           "GGHHHHGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGGGGLLLLLLLLGGGGBBBBBBBBGGGGGGGG",
+           "DDHHHHDDBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBDDDDLLLLLLLLDDDDBBBBBBBBDDDDDDDD",
+           "DDGGGGDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
 
 function Init() {
   for (var i = 0; i < map.length; ++i) {
@@ -360,7 +359,61 @@ class Knight {
 screen.width = 20 * blockSize;
 screen.height = 10 * blockSize;
 
-var achievementCountdown = 400;
+function drawAchievement(message) {
+  ctx.fillStyle = "orange";
+  ctx.fillRect(screen.width / 4, 10, screen.width / 2, screen.height / 4 + 10);
+  ctx.fillStyle = "blue";
+  ctx.font = "bold 48px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Achievement Get!", screen.width / 2, screen.height / 12 + 10 + 24);
+  ctx.font = "bold 20px serif";
+  ctx.textAlign = "center";
+  ctx.fillText(message, screen.width / 2, screen.height / 6 + 10 + 10);
+}
+
+function hasAchievement(n) {
+  if (n == 0 && player.stunCount >= 1) {
+    return true;
+  }
+  if (n == 1 && player.stunCount >= 5) {
+    return true;
+  }
+  if (n == 2 && player.y == 1155) {
+    return true;
+  }
+  if (n == 3 && player.y < -50) {
+    return true;
+  }
+  if (n == 4 && player.x == 45) {
+    return true;
+  }
+  if (n == 5 && player.x == 3705) {
+    return true;
+  }
+  if (n == 6) {
+    for (var i = 0; i < 6; ++i) {
+      if (!hasUnlocked[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+var hasUnlocked = [];
+var achievementCountdowns = [];
+var achievementMessages = ["You wanted some, so you got some. - Die. Just die.",
+                           "Shouldn't you be dead by now? - Die 5 times",
+                           "Now we've hit rock bottom! - Touch grass",
+                           "On top of the world - Do jumping jacks on the roof",
+                           "Yeah, there's a wall. Got a problem? - Touch the left wall",
+                           "THE END OF THE WORLD - Touch the right wall",
+                           "Just that awesome - Unlock all other achievements"];
+
+for (var i = 0; i < 7; ++i) {
+  hasUnlocked.push(false);
+  achievementCountdowns.push(400);
+}
 
 function Draw() {
   ctx.fillStyle = "cyan";
@@ -373,17 +426,16 @@ function Draw() {
     }
   }
   ctx.restore();
-  if (player.stunCount >= 5 && achievementCountdown > 0) {
-    ctx.fillStyle = "orange";
-    ctx.fillRect(screen.width / 4, 10, screen.width / 2, screen.height / 4 + 10);
-    ctx.fillStyle = "blue";
-    ctx.font = "bold 48px serif";
-    ctx.textAlign = "center";
-    ctx.fillText("Achievement Get!", screen.width / 2, screen.height / 12 + 10 + 24);
-    ctx.font = "bold 24px serif";
-    ctx.textAlign = "center";
-    ctx.fillText("Shouldn't you be dead by now?", screen.width / 2, screen.height / 6 + 10 + 12);
-    achievementCountdown--;
+  var showingAchievement = false;
+  for (var i = 0; i < hasUnlocked.length; ++i) {
+    if (!hasUnlocked[i] && hasAchievement(i)) {
+      hasUnlocked[i] = true;
+    }
+    if (hasUnlocked[i] && achievementCountdowns[i] > 0 && !showingAchievement) {
+      drawAchievement(achievementMessages[i]);
+      achievementCountdowns[i]--;
+      showingAchievement = true;
+    }
   }
 }
 
@@ -394,7 +446,7 @@ function Tick() {
   Draw();
 }
 
-var player = new Knight().setPosition(1025, 475);
+var player = new Knight().setPosition(1025, 425);
 
 Init();
 setInterval(Tick, 25);
