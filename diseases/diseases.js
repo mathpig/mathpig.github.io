@@ -276,28 +276,37 @@ function Tick() {
   Draw(data);
 }
 
-for (var i = 0; i < 49; ++i) {
-  var x = (100 + Math.random() * (screen.width - graphSize - 300));
-  var y = (100 + Math.random() * (screen.height - 200));
-  var angle = (Math.random() * 360);
-  blobs.push(new Blob().setPosition(x, y).setAngle(angle));
+function Init() {
+  data = [];
+  time = 0;
+  blobs = [];
+  toRemove = [];
+  var population = parseFloat(document.getElementById("population").value);
+  var sickPercent = parseFloat(document.getElementById("sickPercent").value);
+  var careSickPercent = parseFloat(document.getElementById("careSickPercent").value);
+  for (var i = 0; i < (population * (1 - careSickPercent / 100)); ++i) {
+    var x = (100 + Math.random() * (screen.width - graphSize - 300));
+    var y = (100 + Math.random() * (screen.height - 200));
+    var angle = (Math.random() * 360);
+    blobs.push(new Blob().setPosition(x, y).setAngle(angle));
+  }
+  for (var i = 0; i < (population * careSickPercent / 100); ++i) {
+    var x = (100 + Math.random() * (screen.width - graphSize - 300));
+    var y = (100 + Math.random() * (screen.height - 200));
+    var angle = (Math.random() * 360);
+    blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(true));
+  }
+  for (var i = 0; i < (population * sickPercent / 100); ++i) {
+    var blob = blobs[Math.floor(Math.random() * blobs.length)];
+    while (blob.state != "s") {
+      var blob = blobs[Math.floor(Math.random() * blobs.length)];
+    }
+    blob.state = "e";
+    blob.stateCountdown = (100 + Math.random() * 200);
+  }
 }
 
-for (var i = 0; i < 50; ++i) {
-  var x = (100 + Math.random() * (screen.width - graphSize - 300));
-  var y = (100 + Math.random() * (screen.height - 200));
-  var angle = (Math.random() * 360);
-  blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(true));
-}
-
-for (var i = 0; i < 1; ++i) {
-  var x = (100 + Math.random() * (screen.width - graphSize - 300));
-  var y = (100 + Math.random() * (screen.height - 200));
-  var angle = (Math.random() * 360);
-  var sicknessCooldown = (100 + Math.random() * 200);
-  blobs.push(new Blob().setPosition(x, y).setAngle(angle).setState("e").setStateCountdown(sicknessCooldown));
-}
-
+Init();
 setInterval(Tick, 25);
 
 function toggleSocialDist() {
@@ -329,3 +338,6 @@ var quarantineButton = document.getElementById("quarantine");
 var quarantineStatus = document.getElementById("quarantineStatus");
 
 quarantineButton.onclick = toggleQuarantine;
+
+var restartButton = document.getElementById("restart");
+restartButton.onclick = Init;
