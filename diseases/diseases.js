@@ -225,25 +225,42 @@ class Blob {
   }
 }
 
-function Draw(data) {
+function findValue(data, index, count) {
+  var total = 0;
+  var val = 0;
+  for (var i = (index - count); i <= (index + count); ++i) {
+    if (i >= 0 && i < data.length) {
+      total += data[i];
+      val++;
+    }
+  }
+  return (total / val);
+}
+
+function Draw(data, derivativeData) {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, screen.width, screen.height);
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].draw();
   }
   var findColor = {"s": "green", "e": "orange", "i": "red", "r": "gray"};
-  var length = data.length;
-  for (var i = 0; i < length; ++i) {
+  for (var i = 0; i < data.length; ++i) {
     var val = 0;
     for (var j in data[i]) {
       ctx.fillStyle = findColor[j];
-      ctx.fillRect(screen.width + i * (graphSize / length) - graphSize - 100, graphSize + 100 - val - data[i][j] * graphSize / blobs.length, (graphSize / length), data[i][j] * graphSize / blobs.length);
+      ctx.fillRect(screen.width + i * (graphSize / data.length) - graphSize - 100, graphSize + 100 - val - data[i][j] * (graphSize / blobs.length), (graphSize / data.length), data[i][j] * (graphSize / blobs.length));
       val += (data[i][j] * graphSize / blobs.length);
     }
+  }
+  for (var i = 0; i < derivativeData.length; ++i) {
+    var val = findValue(derivativeData, i, 25);
+    ctx.fillStyle = "black";
+    ctx.fillRect(screen.width + i * (graphSize / derivativeData.length / 2) - graphSize / 2 - 100, graphSize + 400 - 50 * val * (graphSize / blobs.length), (graphSize / derivativeData.length / 2), 50 * val * (graphSize / blobs.length));
   }
 }
 
 var data = [];
+var derivativeData = [];
 var time = 0;
 
 function Tick() {
@@ -288,12 +305,19 @@ function Tick() {
     if (data.length > 500) {
       data.shift();
     }
+    if (data.length >= 2) {
+      derivativeData.push(data[data.length - 1]["i"] + data[data.length - 1]["e"] - data[data.length - 2]["i"] - data[data.length - 2]["e"]);
+    }
+    if (derivativeData.length > 250) {
+      derivativeData.shift();
+    }
   }
-  Draw(data);
+  Draw(data, derivativeData);
 }
 
 function Init() {
   data = [];
+  derivativeData = [];
   time = 0;
   blobs = [];
   toRemove = [];
