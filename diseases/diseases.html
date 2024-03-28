@@ -2,20 +2,32 @@
 
 <body>
   <div>
-  Spread Distance: <input type="range" min="0" max="100" value="50" id="spreadDist"><br/>
-  Detection Range: <input type="range" min="0" max="100" value="100" id="detectionRange"><br/>
-  Death Chance: <input type="range" min="0" max="100" value="10" id="deathChance"><br/>
+  Live changes:<br/>
   <br/>
-  Population: <input type="range" min="0" max="250" value="100" id="population"><br/>
-  Starting sickness percentage: <input type="range" min="0" max="100" value="1" id="sickPercent"><br/>
-  Starting percentage of people who care about the diseases: <input type="range" min="0" max="100" value="50" id="careSickPercent"><br/>
+  Spread distance: <input type="range" min="0" max="100" value="50" id="spreadDist"><br/>
+  Detection range: <input type="range" min="0" max="100" value="100" id="detectionRange"><br/>
+  Death chance: <input type="range" min="0" max="100" value="10" id="deathChance"><br/>
+  Movement speed: <input type="range" min="0" max="5" value="1" id="moveSpeed"><br/>
+  Turning speed: <input type="range" min="0" max="5" value="1" id="turnSpeed"><br/>
   <br/>
   <button id="socialDist">Toggle Social Distancing</button>
   <span id="socialDistStatus">[currently on]</span><br/>
   <button id="quarantine">Toggle Quarantine</button>
   <span id="quarantineStatus">[currently on]</span><br/>
   <br/>
-  <button id="restart">Restart</button>
+  Semi-live changes [don't take affect immediately]:<br/>
+  <br/>
+  Average exposure to infected time: <input type="range" min="0" max="400" value="200" id="exposedTime"><br/>
+  Average recovery / death time once sick: <input type="range" min="0" max="800" value="400" id="infectedTime"><br/>
+  Average immunity duration once recovered: <input type="range" min="0" max="1200" value="600" id="recoveredTime"><br/>
+  <br/>
+  Permanent changes [require restart]:<br/>
+  <br/>
+  Population: <input type="range" min="0" max="250" value="100" id="population"><br/>
+  Starting sickness percentage: <input type="range" min="0" max="100" value="1" id="sickPercent"><br/>
+  Starting percentage of people who care about the disease: <input type="range" min="0" max="100" value="50" id="careSickPercent"><br/>
+  <br/>
+  <button id="restart">RESTART [applies all semi-live / permanent changes]</button>
   <br/>
   </span>
   </div>

@@ -36,10 +36,17 @@ var deathChance = 10;
 var quarantine = true;
 var socialDist = true;
 
+var speed = 1;
+var angleSpeed = 1;
+
+var exposedTime = 200;
+var infectedTime = 400;
+var recoveredTime = 600;
+
 class Blob {
   constructor() {
-    this.speed = 1;
-    this.angleSpeed = 1;
+    this.speed = speed;
+    this.angleSpeed = angleSpeed;
     this.x = 0;
     this.y = 0;
     this.angle = 0;
@@ -136,21 +143,21 @@ class Blob {
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
         this.state = "i";
-        this.stateCountdown = (200 + Math.random() * 400);
+        this.stateCountdown = infectedTime / 2 + infectedTime * Math.random();
       }
     }
     else if (this.state == "i") {
       for (var i = 0; i < blobs.length; ++i) {
         if (distance(this, blobs[i]) <= this.spreadDist && blobs[i].state == "s") {
           blobs[i].state = "e";
-          blobs[i].stateCountdown = (100 + Math.random() * 200);
+          blobs[i].stateCountdown = exposedTime / 2 + exposedTime * Math.random();
         }
       }
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
         if (Math.random() < (1 - deathChance / 100)) {
           this.state = "r";
-          this.stateCountdown = (300 + Math.random() * 600);
+          this.stateCountdown = recoveredTime / 2 + recoveredTime * Math.random();
         }
         else {
           toRemove.push(this);
@@ -241,9 +248,16 @@ function Tick() {
   spreadDist = parseFloat(document.getElementById("spreadDist").value);
   detectionRange = parseFloat(document.getElementById("detectionRange").value);
   deathChance = parseFloat(document.getElementById("deathChance").value);
+  speed = parseFloat(document.getElementById("moveSpeed").value);
+  angleSpeed = parseFloat(document.getElementById("turnSpeed").value);
+  exposedTime = parseFloat(document.getElementById("exposedTime").value);
+  infectedTime = parseFloat(document.getElementById("infectedTime").value);
+  recoveredTime = parseFloat(document.getElementById("recoveredTime").value);
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].spreadDist = spreadDist;
     blobs[i].detectionRange = detectionRange;
+    blobs[i].speed = speed;
+    blobs[i].angleSpeed = angleSpeed;
   }
   toRemove = [];
   for (var i = 0; i < blobs.length; ++i) {
