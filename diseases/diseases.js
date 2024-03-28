@@ -35,7 +35,8 @@ class Block {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.size = 20;
+    this.sizeX = 20;
+    this.sizeY = 30;
     this.color = "black";
   }
  
@@ -45,8 +46,9 @@ class Block {
     return this;
   }
 
-  setSize(size) {
-    this.size = size;
+  setSize(sizeX, sizeY) {
+    this.sizeX = sizeX;
+    this.sizeY = sizeY;
     return this;
   }
 
@@ -57,14 +59,19 @@ class Block {
  
   draw() {
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.fillRect(this.x - this.sizeX / 2, this.y - this.sizeY / 2, this.sizeX, this.sizeY);
   }
 }
 
 class Player extends Block {
+  constructor() {
+    super();
+    this.sizeX = 30;
+  }
+
   drawhealthbar() {
     ctx.fillStyle = "lime";
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size * 3 / 5 - 1, this.size, this.size / 5);
+    ctx.fillRect(this.x - this.sizeX / 2, this.y - this.sizeY * 3 / 5 - 1, this.sizeX, this.sizeY / 5);
   }
 
   draw() {
@@ -78,10 +85,10 @@ var entities = [];
 for (var i = 0; i < logo.length; ++i) {
   for (var j = 0; j < logo[i].length; ++j) {
     if (logo[i][j] == "#") {
-      entities.push(new Block().setPosition(20 * j, 20 * i));
+      entities.push(new Block().setPosition(20 * j, 30 * i));
     }
     else if (logo[i][j] == "P") {
-      entities.push(new Player().setPosition(20 * j, 20 * i));
+      entities.push(new Player().setPosition(20 * j, 30 * i));
     }
   }
 }
@@ -351,7 +358,7 @@ var time = 0;
 
 function Tick() {
   time++;
-  if (time < 400) {
+  if (time < 200) {
     drawLogo();
     return;
   }
