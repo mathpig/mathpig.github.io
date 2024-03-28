@@ -28,6 +28,8 @@ function findNearestBlob(blob, socialDist) {
   return sickBlob;
 }
 
+var tickSpeed = 25;
+
 var spreadDist = 50;
 var detectionRange = 100;
 
@@ -43,7 +45,13 @@ var exposedTime = 200;
 var infectedTime = 400;
 var recoveredTime = 600;
 
+var replicationTime = 100;
+
 var permanentRecovery = false;
+
+var doReplication = true;
+var respawnProgress = 0;
+var maxPopulation = 250;
 
 class Blob {
   constructor() {
@@ -248,20 +256,29 @@ function Draw(data, derivativeData) {
     var val = 0;
     for (var j in data[i]) {
       ctx.fillStyle = findColor[j];
-      ctx.fillRect(screen.width + i * (graphSize / data.length) - graphSize - 100, graphSize + 100 - val - data[i][j] * (graphSize / blobs.length), (graphSize / data.length), data[i][j] * (graphSize / blobs.length));
-      val += (data[i][j] * graphSize / blobs.length);
+      ctx.fillRect(screen.width + i * (graphSize / data.length) - graphSize - 100, graphSize + 100 - val - data[i][j] * (graphSize / maxPopulation), (graphSize / data.length), data[i][j] * (graphSize / maxPopulation));
+      val += (data[i][j] * graphSize / maxPopulation);
     }
   }
   for (var i = 0; i < derivativeData.length; ++i) {
     var val = findValue(derivativeData, i, 25);
+    val = Math.max(-graphSize / 100, Math.min(graphSize / 100, val));
     ctx.fillStyle = "black";
-    ctx.fillRect(screen.width + i * (graphSize / derivativeData.length / 2) - graphSize / 2 - 100, graphSize + 400 - 50 * val * (graphSize / blobs.length), (graphSize / derivativeData.length / 2), 50 * val * (graphSize / blobs.length));
+    ctx.fillRect(screen.width + i * (graphSize / derivativeData.length) - graphSize - 100, graphSize + 400 - 100 * val, (graphSize / derivativeData.length), 100 * val);
   }
 }
 
 var data = [];
 var derivativeData = [];
 var time = 0;
+
+function addNewBlob() {
+  var x = (100 + Math.random() * (screen.width - graphSize - 300));
+  var y = (100 + Math.random() * (screen.height - 200));
+  var angle = (Math.random() * 360);
+  var caresAboutSick = blobs[Math.floor(Math.random() * blobs.length)].caresAboutSick;
+  blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(caresAboutSick));
+}
 
 function Tick() {
   spreadDist = parseFloat(document.getElementById("spreadDist").value);
@@ -272,6 +289,7 @@ function Tick() {
   exposedTime = parseFloat(document.getElementById("exposedTime").value);
   infectedTime = parseFloat(document.getElementById("infectedTime").value);
   recoveredTime = parseFloat(document.getElementById("recoveredTime").value);
+  replicationTime = parseFloat(document.getElementById("replicationTime").value);
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].spreadDist = spreadDist;
     blobs[i].detectionRange = detectionRange;
@@ -282,6 +300,21 @@ function Tick() {
   for (var i = 0; i < blobs.length; ++i) {
     blobs[i].tick();
   }
+  if (doReplication) {
+    if (replicationTime > 0) {
+      respawnProgress += (blobs.length / replicationTime / tickSpeed);
+    }
+    else if (blobs.length > 0) {
+      respawnProgress = maxPopulation;
+    }
+    while (respawnProgress >= 1 && blobs.length < maxPopulation) {
+      addNewBlob();
+      respawnProgress--;
+    }
+    if (blobs.length == 0 || blobs.length == maxPopulation) {
+      respawnProgress = 0;
+    }
+  }
   for (var i = 0; i < toRemove.length; ++i) {
     for (var j = 0; j < blobs.length; ++j) {
       if (blobs[j] === toRemove[i]) {
@@ -289,11 +322,6 @@ function Tick() {
         break;
       }
     }
-    var x = (100 + Math.random() * (screen.width - graphSize - 300));
-    var y = (100 + Math.random() * (screen.height - 200));
-    var angle = (Math.random() * 360);
-    var caresAboutSick = blobs[Math.floor(Math.random() * blobs.length)].caresAboutSick;
-    blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(caresAboutSick));
   }
   time++;
   if ((time % 10) == 0) {
@@ -316,14 +344,19 @@ function Tick() {
 }
 
 function Init() {
+  var population = parseFloat(document.getElementById("population").value);
+  maxPopulation = parseFloat(document.getElementById("maxPopulation").value);
+  if (population > maxPopulation) {
+    return;
+  }
+  var sickPercent = parseFloat(document.getElementById("sickPercent").value);
+  var careSickPercent = parseFloat(document.getElementById("careSickPercent").value);
   data = [];
   derivativeData = [];
   time = 0;
   blobs = [];
   toRemove = [];
-  var population = parseFloat(document.getElementById("population").value);
-  var sickPercent = parseFloat(document.getElementById("sickPercent").value);
-  var careSickPercent = parseFloat(document.getElementById("careSickPercent").value);
+  respawnProgress = 0;
   for (var i = 0; i < (population * (1 - careSickPercent / 100)); ++i) {
     var x = (100 + Math.random() * (screen.width - graphSize - 300));
     var y = (100 + Math.random() * (screen.height - 200));
@@ -342,12 +375,12 @@ function Init() {
       var blob = blobs[Math.floor(Math.random() * blobs.length)];
     }
     blob.state = "e";
-    blob.stateCountdown = (100 + Math.random() * 200);
+    blob.stateCountdown = exposedTime / 2 + exposedTime * Math.random();
   }
 }
 
 Init();
-setInterval(Tick, 25);
+setInterval(Tick, tickSpeed);
 
 function toggleSocialDist() {
   socialDist = !socialDist;
@@ -379,9 +412,6 @@ var quarantineStatus = document.getElementById("quarantineStatus");
 
 quarantineButton.onclick = toggleQuarantine;
 
-var restartButton = document.getElementById("restart");
-restartButton.onclick = Init;
-
 function togglePermanentRecovery() {
   permanentRecovery = !permanentRecovery;
   if (permanentRecovery) {
@@ -396,3 +426,21 @@ var permanentRecoveryButton = document.getElementById("permanentRecovery");
 var permanentRecoveryStatus = document.getElementById("permanentRecoveryStatus");
 
 permanentRecoveryButton.onclick = togglePermanentRecovery;
+
+function toggleReplication() {
+  doReplication = !doReplication;
+  if (doReplication) {
+    doReplicationStatus.innerHTML = "[currently on]";
+  }
+  else {
+    doReplicationStatus.innerHTML = "[currently off]";
+  }
+}
+
+var replicationButton = document.getElementById("doReplication");
+var replicationStatus = document.getElementById("doReplicationStatus");
+
+replicationButton.onclick = toggleReplication;
+
+var restartButton = document.getElementById("restart");
+restartButton.onclick = Init;

@@ -14,20 +14,23 @@
   <span id="socialDistStatus">[currently on]</span><br/>
   <button id="quarantine">Toggle Quarantine</button>
   <span id="quarantineStatus">[currently on]</span><br/>
+  <button id="permanentRecovery">Toggle Permanent Immunity [for SIR / SEIR instead of SIRS / SEIRS model]</button>
+  <span id="permanentRecoveryStatus">[currently off]</span><br/>
   <br/>
   Semi-live changes [don't take affect immediately]:<br/>
   <br/>
   Average exposure to infected time [set to 0 for SIR / SIRS instead of SEIR / SEIRS model]: <input type="range" min="0" max="1200" value="200" id="exposedTime"><br/>
   Average recovery / death time once sick: <input type="range" min="0" max="1200" value="400" id="infectedTime"><br/>
   Average immunity duration once recovered: <input type="range" min="0" max="1200" value="600" id="recoveredTime"><br/>
-  Each person replicates every n seconds: <input type="range" min="0" max = "600" value="100" id="replicationTime"><br/>
+  Each person replicates every n seconds: <input type="range" min="0" max="1800" value="300" id="replicationTime"><br/>
   <br/>
-  <button id="permanentRecovery">Toggle Permanent Immunity [for SIR / SEIR instead of SIRS / SEIRS model]</button>
-  <span id="permanentRecoveryStatus">[currently off]</span><br/>
+  <button id="doReplication">Toggle replication [turn replication off to avoid adding confusion to the standard modles]</button>
+  <span id="doReplicationStatus">[currently on]</span><br/>
   <br/>
   Permanent changes [require restart]:<br/>
   <br/>
-  Population: <input type="range" min="0" max="250" value="100" id="population"><br/>
+  Starting population: <input type="range" min="0" max="250" value="100" id="population"><br/>
+  Maximum pouplation: <input type="range" min="0" max="1000" value="250" id="maxPopulation"><br/>
   Starting sickness percentage: <input type="range" min="0" max="100" value="1" id="sickPercent"><br/>
   Starting percentage of people who care about the disease: <input type="range" min="0" max="100" value="50" id="careSickPercent"><br/>
   <br/>
