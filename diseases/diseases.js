@@ -78,10 +78,10 @@ var entities = [];
 for (var i = 0; i < logo.length; ++i) {
   for (var j = 0; j < logo[i].length; ++j) {
     if (logo[i][j] == "#") {
-      entities.push(new Block().setPosition(20 * i, 20 * j));
+      entities.push(new Block().setPosition(20 * j, 20 * i));
     }
     else if (logo[i][j] == "P") {
-      entities.push(new Player().setPosition(20 * i, 20 * j));
+      entities.push(new Player().setPosition(20 * j, 20 * i));
     }
   }
 }
