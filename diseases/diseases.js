@@ -7,6 +7,92 @@ var blobs = [];
 var toRemove = [];
 
 var graphSize = 250;
+var logo = ["",
+            " #     #       #       ####    #####",
+            " ##   ##      # #      #   #   #",
+            " # # # #     #   #     #    #  #####",
+            " #  #  #    #######    #    #  #####",
+            " #     #   #       #   #   #   #",
+            " #     #  #         #  ####    #####",
+            "",
+            "",
+            " ####   #     #",
+            " #   #   #   # ",
+            " ####     # #  ",
+            " ####      #   ",
+            " #   #     #   ",
+            " ####      #   ",
+            "",
+            "                          P",
+            " #     #       #       #######  #    #  #####   #######   ####",
+            " ##   ##      # #         #     #    #  #    #     #     #    #",
+            " # # # #     #   #        #     ######  #####      #     #",
+            " #  #  #    #######       #     ######  #          #     #  ###",
+            " #     #   #       #      #     #    #  #          #     #    #",
+            " #     #  #         #     #     #    #  #       #######   ####"];
+
+class Block {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.size = 20;
+    this.color = "black";
+  }
+ 
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  setSize(size) {
+    this.size = size;
+    return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+ 
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+  }
+}
+
+class Player extends Block {
+  drawhealthbar() {
+    ctx.fillStyle = "lime";
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size * 3 / 5 - 1, this.size, this.size / 5);
+  }
+
+  draw() {
+    super.draw();
+    this.drawhealthbar();
+  }
+}
+
+var entities = [];
+
+for (var i = 0; i < logo.length; ++i) {
+  for (var j = 0; j < logo[i].length; ++j) {
+    if (logo[i][j] == "#") {
+      entities.push(new Block().setPosition(20 * i, 20 * j));
+    }
+    else if (logo[i][j] == "P") {
+      entities.push(new Player().setPosition(20 * i, 20 * j));
+    }
+  }
+}
+
+function drawLogo() {
+  ctx.fillStyle = "blue";
+  ctx.fillRect(0, 0, screen.width, screen.height);
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].draw();
+  }
+}
 
 function distance(blob1, blob2) {
   return Math.sqrt((blob1.x - blob2.x) * (blob1.x - blob2.x) + (blob1.y - blob2.y) * (blob1.y - blob2.y));
@@ -264,6 +350,11 @@ var derivativeData = [];
 var time = 0;
 
 function Tick() {
+  time++;
+  if (time < 400) {
+    drawLogo();
+    return;
+  }
   spreadDist = parseFloat(document.getElementById("spreadDist").value);
   detectionRange = parseFloat(document.getElementById("detectionRange").value);
   deathChance = parseFloat(document.getElementById("deathChance").value);
@@ -295,7 +386,6 @@ function Tick() {
     var caresAboutSick = blobs[Math.floor(Math.random() * blobs.length)].caresAboutSick;
     blobs.push(new Blob().setPosition(x, y).setAngle(angle).setCaresAboutSick(caresAboutSick));
   }
-  time++;
   if ((time % 10) == 0) {
     var counts = {"s": 0, "e": 0, "i": 0, "r": 0};
     for (var i = 0; i < blobs.length; ++i) {
