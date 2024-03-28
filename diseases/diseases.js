@@ -45,7 +45,7 @@ var exposedTime = 200;
 var infectedTime = 400;
 var recoveredTime = 600;
 
-var replicationTime = 100;
+var replicationTime = 300;
 
 var permanentRecovery = false;
 
