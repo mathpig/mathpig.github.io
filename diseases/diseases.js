@@ -1,4 +1,4 @@
-// "use strict";
+"use strict";
 
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
