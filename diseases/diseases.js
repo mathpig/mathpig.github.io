@@ -43,6 +43,8 @@ var exposedTime = 200;
 var infectedTime = 400;
 var recoveredTime = 600;
 
+var permanentRecovery = false;
+
 class Blob {
   constructor() {
     this.speed = speed;
@@ -165,7 +167,7 @@ class Blob {
         }
       }
     }
-    else if (this.state == "r") {
+    else if (this.state == "r" && !permanentRecovery) {
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
         this.state = "s";
@@ -355,3 +357,18 @@ quarantineButton.onclick = toggleQuarantine;
 
 var restartButton = document.getElementById("restart");
 restartButton.onclick = Init;
+
+function togglePermanentRecovery() {
+  permanentRecovery = !permanentRecovery;
+  if (permanentRecovery) {
+    permanentRecoveryStatus.innerHTML = "[currently on]";
+  }
+  else {
+    permanentRecoveryStatus.innerHTML = "[currently off]";
+  }
+}
+
+var permanentRecoveryButton = document.getElementById("permanentRecovery");
+var permanentRecoveryStatus = document.getElementById("permanentRecoveryStatus");
+
+permanentRecoveryButton.onclick = togglePermanentRecovery;
