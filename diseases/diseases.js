@@ -343,6 +343,13 @@ function Tick() {
   Draw(data, derivativeData);
 }
 
+function tickSet() {
+  var tickRate = parseFloat(document.getElementById("tickRate").value);
+  for (var i = 0; i < tickRate; ++i) {
+    Tick();
+  }
+}
+
 function Init() {
   var population = parseFloat(document.getElementById("population").value);
   maxPopulation = parseFloat(document.getElementById("maxPopulation").value);
@@ -380,7 +387,7 @@ function Init() {
 }
 
 Init();
-setInterval(Tick, tickSpeed);
+setInterval(tickSet, tickSpeed);
 
 function toggleSocialDist() {
   socialDist = !socialDist;
