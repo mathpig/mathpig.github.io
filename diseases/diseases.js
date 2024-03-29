@@ -352,10 +352,11 @@ function tickSet() {
 
 function Init() {
   var population = parseFloat(document.getElementById("population").value);
-  maxPopulation = parseFloat(document.getElementById("maxPopulation").value);
-  if (population > maxPopulation) {
+  var maxPop = parseFloat(document.getElementById("maxPopulation").value);
+  if (population > maxPop) {
     return;
   }
+  maxPopulation = maxPop;
   var sickPercent = parseFloat(document.getElementById("sickPercent").value);
   var careSickPercent = parseFloat(document.getElementById("careSickPercent").value);
   data = [];
