@@ -261,11 +261,11 @@ class Knight {
       ctx.fillStyle = "gray";
     }
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-    this.drawhealthbar()
+    this.drawhealthbar();
   }
 
   drawhealthbar() {
-    var val = this.health / this.maxHealth * this.size;
+    var val = (this.health / this.maxHealth) * this.size;
     ctx.fillStyle = "lime";
     ctx.fillRect(this.x - this.size / 2, this.y - 4 * this.size / 5, val, this.size / 5);
     ctx.fillStyle = "darkred";
