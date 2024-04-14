@@ -47,6 +47,7 @@ var recoveredTime = 600;
 
 var replicationTime = 300;
 
+var permanentInfection = false;
 var permanentRecovery = false;
 
 var doReplication = true;
@@ -166,8 +167,10 @@ class Blob {
       this.stateCountdown -= 1;
       if (this.stateCountdown <= 0) {
         if (Math.random() < (1 - deathChance / 100)) {
-          this.state = "r";
-          this.stateCountdown = recoveredTime / 2 + recoveredTime * Math.random();
+          if (!permanentInfection) {
+            this.state = "r";
+            this.stateCountdown = recoveredTime / 2 + recoveredTime * Math.random();
+          }
         }
         else {
           toRemove.push(this);
@@ -419,6 +422,21 @@ var quarantineButton = document.getElementById("quarantine");
 var quarantineStatus = document.getElementById("quarantineStatus");
 
 quarantineButton.onclick = toggleQuarantine;
+
+function togglePermanentInfection() {
+  permanentInfection = !permanentInfection;
+  if (permanentInfection) {
+    permanentInfectionStatus.innerHTML = "[currently on]";
+  }
+  else {
+    permanentInfectionStatus.innerHTML = "[currently off]";
+  }
+}
+
+var permanentInfectionButton = document.getElementById("permanentInfection");
+var permanentInfectionStatus = document.getElementById("permanentInfectionStatus");
+
+permanentInfectionButton.onclick = togglePermanentInfection;
 
 function togglePermanentRecovery() {
   permanentRecovery = !permanentRecovery;
