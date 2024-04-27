@@ -83,6 +83,9 @@ function Init() {
       else if (block == "W") {
         entities.push(new Wall().setPosition(x, y));
       }
+      else if (block == "E") {
+        entities.push(new EnemyKnight().setPosition(x, y));
+      }
       else if (block == "P") {
         entities.push(new Palladium().setPosition(x, y));
       }
@@ -489,7 +492,7 @@ class Knight {
       this.y += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
-        if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
+        if (entities[j] !== this && touches(this, entities[j]) && (!(entities[j] instanceof Block) || entities[j].isCollidable)) {
           failed = true;
           break;
         }
@@ -514,139 +517,13 @@ class Knight {
   }
 }
 
-class EnemyKnight {
+class EnemyKnight extends Knight {
   constructor() {
-    this.speed = (blockSize / 10);
-    this.x = 0;
-    this.y = 0;
-    this.vy = 0;
-    this.size = (blockSize * 4 / 5);
-    this.color = "blue";
-    this.health = 100;
-    this.maxHealth = this.health;
-    this.attack = 10;
-    this.attackCooldown = 0;
-    this.maxAttackCooldown = 20;
-  }
-
-  setSpeed(speed) {
-    this.speed = speed;
-    return this;
-  }
-
-  setPosition(x, y) {
-    this.x = x;
-    this.y = y;
-    return this;
-  }
-
-  setVelocity(vy) {
-    this.vy = vy;
-    return this;
-  }
-
-  setSize(size) {
-    this.size = size;
-    return this;
-  }
-
-  setColor(color) {
-    this.color = color;
-    return this;
-  }
-
-  setHealth(health) {
-    this.health = health;
-    return this;
-  }
-
-  setMaxHealth(maxHealth) {
-    this.maxHealth = maxHealth;
-    return this;
-  }
-
-  setAttack(attack) {
-    this.attack = attack;
-    return this;
-  }
-
-  setAttackCooldown(attackCooldown) {
-    this.attackCooldown = attackCooldown;
-    return this;
-  }
-
-  setMaxAttackCooldown(maxAttackCooldown) {
-    this.maxAttackCooldown = maxAttackCooldown;
-    return this;
-  }
-
-  draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-    this.drawhealthbar();
-  }
-
-  drawhealthbar() {
-    var val = (this.health / this.maxHealth) * this.size;
-    ctx.fillStyle = "lime";
-    ctx.fillRect(this.x - this.size / 2, this.y - 4 * this.size / 5, val, this.size / 5);
-    ctx.fillStyle = "darkred";
-    ctx.fillRect(this.x - this.size / 2 + val, this.y - 4 * this.size / 5, this.size - val, this.size / 5);
+    super();
+    this.color = "red";
   }
 
   tick() {
-    var oldX = this.x;
-    var val = 0;
-    if ((this.x + 500) < player.x) {
-      val++;
-    }
-    if ((player.x + 500) < this.x) {
-      val--;
-    }
-    for (var i = 0; i < this.speed; ++i) {
-      this.x += val;
-      var failed = false;
-      for (var j = 0; j < entities.length; ++j) {
-        if (touches(this, entities[j])) {
-          if (entities[j] === this) {
-            continue;
-          }
-          if (entities[j] instanceof Block && !entities[j].isCollidable) {
-            continue;
-          }
-          if (this.attackCooldown < 0 && entities[i] instanceof Knight) {
-            this.attackCooldown = this.maxAttackCooldown;
-            entities[j].health -= this.attack;
-            if (entities[j].health <= 0) {
-              toRemove.push(entities[j]);
-            }
-          }
-          failed = true;
-          break;
-        }
-      }
-      if (failed) {
-        this.x -= val;
-        break;
-      }
-    }
-    this.vy += (blockSize / 100);
-    this.vy *= 0.95;
-    var val = Math.sign(this.vy);
-    var vy = Math.abs(this.vy);
-    for (var i = 0; i < vy; ++i) {
-      this.y += val;
-      var failed = false;
-      for (var j = 0; j < entities.length; ++j) {
-        if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
-          failed = true;
-          break;
-        }
-      }
-      if (failed) {
-        break;
-      }
-    }
   }
 }
 
