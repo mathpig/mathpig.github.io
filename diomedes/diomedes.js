@@ -23,6 +23,12 @@ var keySet = {};
 
 var map = ["B                                                    B",
            "B                                                    B",
+           "B                                                    B",
+           "B                                                    B",
+           "B                                                    B",
+           "B                                                    B",
+           "B                                                    B",
+           "B                                                    B",
            "B                                A           A       B",
            "B                                BBBBbbbbbBBBB       B",
            "B                                BbbbBbbbBbbbB       B",
@@ -53,6 +59,9 @@ var map = ["B                                                    B",
            "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
 
 function Init() {
@@ -60,12 +69,12 @@ function Init() {
   for (var i = 0; i < map.length; ++i) {
     for (var j = 0; j < map[i].length; ++j) {
       var block = map[i][j];
-      if (block == " ") {
-        continue;
-      }
       var x = (blockSize * j);
       var y = (blockSize * i);
-      if (block == "B") {
+      if (block == " ") {
+        entities.push(new Air().setPosition(x, y));
+      }
+      else if (block == "B") {
         entities.push(new Brick().setPosition(x, y));
       }
       else if (block == "b") {
@@ -90,7 +99,11 @@ function Init() {
         entities.push(new Palladium().setPosition(x, y));
       }
       else if (block == "E") {
+        entities.push(new Air().setPosition(x, y));
         enemies.push(new EnemyKnight().setPosition(x, y));
+      }
+      else {
+        entities.push(new Air().setPosition(x, y));
       }
     }
   }
@@ -136,6 +149,14 @@ class Block {
   }
 
   tick() {
+  }
+}
+
+class Air extends Block {
+  constructor() {
+    super();
+    this.color = "cyan";
+    this.isCollidable = false;
   }
 }
 
@@ -702,16 +723,15 @@ class EnemyKnight extends Knight {
 class EnemyArcher {
 }
 
-screen.width = 20 * blockSize;
-screen.height = 10 * blockSize;
-
 function Draw() {
-  ctx.fillStyle = "cyan";
+  screen.width = window.innerWidth;
+  screen.height = window.innerHeight;
+  ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < (blockSize * 12)) {
+    if (distance(player, entities[i]) < (blockSize * 5)) {
       entities[i].draw();
     }
   }
