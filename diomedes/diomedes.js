@@ -5,6 +5,8 @@ var ctx = screen.getContext("2d");
 
 const blockSize = 50;
 
+var time = 0;
+
 var entities = [];
 var toRemove = [];
 
@@ -327,8 +329,7 @@ class Palladium extends Block {
 
 class Knight {
   constructor() {
-    this.speed = (blockSize / 10);
-    this.maxSpeed = this.speed;
+    this.maxSpeed = (blockSize / 10);
     this.x = 0;
     this.y = 0;
     this.vy = 0;
@@ -381,11 +382,6 @@ class Knight {
                        "   ###   ",
                        "  #   #  "]];
     this.direction = 1;
-  }
-
-  setSpeed(speed) {
-    this.speed = speed;
-    return this;
   }
 
   setMaxSpeed(maxSpeed) {
@@ -507,18 +503,7 @@ class Knight {
       this.mode = 3;
       this.modeCooldown = 20;
     }
-    if (this.mode == 0) {
-      this.speed = this.maxSpeed;
-    }
-    else if (this.mode == 1) {
-      this.speed = (this.maxSpeed * 3 / 4);
-    }
-    else if (this.mode == 2) {
-      this.speed = (this.maxSpeed / 2);
-    }
-    else {
-      this.speed = (this.maxSpeed / 4);
-    }
+    var speed = (this.maxSpeed * (1 - (this.mode / 4)));
     var oldX = this.x;
     var val = 0;
     if (keySet["ArrowLeft"]) {
@@ -529,7 +514,7 @@ class Knight {
       this.direction = 1;
       val++;
     }
-    for (var i = 0; i < this.speed; ++i) {
+    for (var i = 0; i < speed; ++i) {
       this.x += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
@@ -540,11 +525,13 @@ class Knight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if (this.attackCooldown <= 0 && (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher)) {
-            this.attackCooldown = this.maxAttackCooldown;
-            entities[j].health -= this.attack;
-            if (entities[j].health <= 0) {
-              toRemove.push(entities[j]);
+          if (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher) {
+            if (this.attackCooldown <= 0 && this.mode == 2 && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
+              this.attackCooldown = this.maxAttackCooldown;
+              entities[j].health -= this.attack;
+              if (entities[j].health <= 0) {
+                toRemove.push(entities[j]);
+              }
             }
           }
           failed = true;
@@ -601,6 +588,50 @@ class EnemyKnight extends Knight {
   }
 
   tick() {
+    if ((time % 20) == 0) {
+      if (player.mode == 0) {
+        if (Math.random() < 0.8) {
+          this.goalMode = 2;
+        }
+        else {
+          this.goalMode = Math.floor(Math.random() * 2);
+        }
+      }
+      else if (player.mode == 1) {
+        if (Math.random() < 0.5) {
+          this.goalMode = 2;
+        }
+        else {
+          this.goalMode = Math.floor(Math.random() * 2);
+        }
+      }
+      else if (player.mode == 2) {
+        var val = Math.random();
+        if (val < 0.3) {
+          this.goalMode = 2;
+        }
+        else if (val < 0.9) {
+          this.goalMode = 1;
+        }
+        else {
+          this.goalMode = 0;
+        }
+      }
+      else {
+        this.goalMode = 2;
+      }
+    }
+    if (this.mode == 3) {
+      this.modeCooldown--;
+      if (this.modeCooldown <= 0) {
+        this.mode = this.goalMode;
+      }
+    }
+    else if (this.mode != this.goalMode) {
+      this.mode = 3;
+      this.modeCooldown = 20;
+    }
+    var speed = (this.maxSpeed * (1 - (this.mode / 4)));
     var oldX = this.x;
     var val = 0;
     if (this.x > player.x) {
@@ -611,7 +642,7 @@ class EnemyKnight extends Knight {
       this.direction = 1;
       val++;
     }
-    for (var i = 0; i < this.speed; ++i) {
+    for (var i = 0; i < speed; ++i) {
       this.x += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
@@ -622,11 +653,13 @@ class EnemyKnight extends Knight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if (this.attackCooldown <= 0 && entities[j] === player) {
-            this.attackCooldown = this.maxAttackCooldown;
-            entities[j].health -= this.attack;
-            if (entities[j].health <= 0) {
-              toRemove.push(entities[j]);
+          if (entities[j] === player) {
+            if (this.attackCooldown <= 0 && this.mode == 2 && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
+              this.attackCooldown = this.maxAttackCooldown;
+              entities[j].health -= this.attack;
+              if (entities[j].health <= 0) {
+                toRemove.push(entities[j]);
+              }
             }
           }
           failed = true;
@@ -686,16 +719,13 @@ function Draw() {
 }
 
 function Tick() {
+  time++;
+  toRemove = [];
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
   for (var i = 0; i < toRemove.length; ++i) {
-    for (var j = 0; j < entities.length; ++j) {
-      if (toRemove[i] === entities[j]) {
-        entities.splice(j, 1);
-        break;
-      }
-    }
+    entities.splice(entities.indexOf(toRemove[i]), 1);
   }
   Draw();
 }
