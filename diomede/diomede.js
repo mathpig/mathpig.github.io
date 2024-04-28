@@ -54,6 +54,7 @@ var map = ["B                                                    B",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
 
 function Init() {
+  var enemies = [];
   for (var i = 0; i < map.length; ++i) {
     for (var j = 0; j < map[i].length; ++j) {
       var block = map[i][j];
@@ -83,13 +84,16 @@ function Init() {
       else if (block == "W") {
         entities.push(new Wall().setPosition(x, y));
       }
-      else if (block == "E") {
-        entities.push(new EnemyKnight().setPosition(x, y));
-      }
       else if (block == "P") {
         entities.push(new Palladium().setPosition(x, y));
       }
+      else if (block == "E") {
+        enemies.push(new EnemyKnight().setPosition(x, y));
+      }
     }
+  }
+  for (var i = 0; i < enemies.length; ++i) {
+    entities.push(enemies[i]);
   }
   entities.push(player);
 }
@@ -331,20 +335,50 @@ class Knight {
     this.color = "blue";
     this.health = 100;
     this.maxHealth = this.health;
-    this.attack = 10;
-    this.attackCooldown = 0;
-    this.maxAttackCooldown = 20;
     this.jumpCountdown = 0;
     this.maxJumpCountdown = 10;
-    this.colorMap = ["S  ###   ",
-                     "S  ###   ",
-                     "S  ###   ",
-                     "S   #    ",
-                     "S## # #DD",
-                     "S #####  ",
-                     "S   #    ",
-                     "S  ###   ",
-                     "S #   #  "];
+    this.attack = 20;
+    this.attackCooldown = 0;
+    this.maxAttackCooldown = 10;
+    this.mode = 0;
+    this.goalMode = 0;
+    this.modeCooldown = 0;
+    this.colorMaps = [["S  ###   ",
+                       "S  ###   ",
+                       "S  ###   ",
+                       "S   #    ",
+                       "S## # ###",
+                       "S #####  ",
+                       "S   #    ",
+                       "S  ###   ",
+                       "S #   #  "],
+                      ["   ###  S",
+                       "   ###  S",
+                       "   ###  S",
+                       "    #   S",
+                       "### # ##S",
+                       "  ##### S",
+                       "    #   S",
+                       "   ###  S",
+                       "  #   # S"],
+                      ["S  ###   ",
+                       "S  ###   ",
+                       "S  ###   ",
+                       "S   #    ",
+                       "S## # #DD",
+                       "S #####  ",
+                       "S   #    ",
+                       "S  ###   ",
+                       "S #   #  "],
+                      ["   ###   ",
+                       "   ###   ",
+                       "   ###   ",
+                       "    #    ",
+                       "### # ###",
+                       "  #####  ",
+                       "    #    ",
+                       "   ###   ",
+                       "  #   #  "]];
     this.direction = 1;
   }
 
@@ -415,24 +449,25 @@ class Knight {
   }
 
   draw() {
-    for (var i = 0; i < this.colorMap.length; ++i) {
-      for (var j = 0; j < this.colorMap[0].length; ++j) {
-        if (this.colorMap[i][j] == " ") {
+    var colorMap = this.colorMaps[this.mode];
+    for (var i = 0; i < colorMap.length; ++i) {
+      for (var j = 0; j < colorMap[0].length; ++j) {
+        if (colorMap[i][j] == " ") {
           continue;
         }
-        if (this.colorMap[i][j] == "#") {
+        if (colorMap[i][j] == "#") {
           ctx.fillStyle = this.color;
         }
         else {
           ctx.fillStyle = "silver";
         }
         if (this.direction == 1) {
-          var x = (this.x - this.size / 2 + j * this.size / this.colorMap[0].length);
+          var x = (this.x - this.size / 2 + j * this.size / colorMap[0].length);
         }
         else {
-          var x = (this.x + this.size / 2 - (j + 1) * this.size / this.colorMap[0].length);
+          var x = (this.x + this.size / 2 - (j + 1) * this.size / colorMap[0].length);
         }
-        ctx.fillRect(x, this.y - this.size / 2 + i * this.size / this.colorMap.length, this.size / this.colorMap[0].length, this.size / this.colorMap.length);
+        ctx.fillRect(x, this.y - this.size / 2 + i * this.size / colorMap.length, this.size / colorMap[0].length, this.size / colorMap.length);
       }
     }
     this.drawhealthbar();
@@ -447,6 +482,25 @@ class Knight {
   }
 
   tick() {
+    if (keySet["d"]) {
+      this.goalMode = 0;
+    }
+    if (keySet["s"]) {
+      this.goalMode = 1;
+    }
+    if (keySet["a"]) {
+      this.goalMode = 2;
+    }
+    if (this.mode == 3) {
+      this.modeCooldown--;
+      if (this.modeCooldown <= 0) {
+        this.mode = this.goalMode;
+      }
+    }
+    else if (this.mode != this.goalMode) {
+      this.mode = 3;
+      this.modeCooldown = 20;
+    }
     var oldX = this.x;
     var val = 0;
     if (keySet["ArrowLeft"]) {
@@ -468,7 +522,7 @@ class Knight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if (this.attackCooldown < 0 && (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher)) {
+          if (this.attackCooldown <= 0 && (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher)) {
             this.attackCooldown = this.maxAttackCooldown;
             entities[j].health -= this.attack;
             if (entities[j].health <= 0) {
@@ -476,7 +530,6 @@ class Knight {
             }
           }
           failed = true;
-          break;
         }
       }
       if (failed) {
@@ -494,14 +547,15 @@ class Knight {
       for (var j = 0; j < entities.length; ++j) {
         if (entities[j] !== this && touches(this, entities[j]) && (!(entities[j] instanceof Block) || entities[j].isCollidable)) {
           failed = true;
-          break;
         }
       }
       if (failed) {
         if (this.vy > 0) {
+          this.attackCooldown--;
           this.jumpCountdown--;
         }
         else {
+          this.attackCooldown = this.maxAttackCooldown;
           this.jumpCountdown = this.maxJumpCountdown;
         }
         if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
@@ -511,6 +565,7 @@ class Knight {
         break;
       }
       else {
+        this.attackCooldown = this.maxAttackCooldown;
         this.jumpCountdown = this.maxJumpCountdown;
       }
     }
@@ -520,11 +575,79 @@ class Knight {
 class EnemyKnight extends Knight {
   constructor() {
     super();
+    this.speed = (blockSize / 20);
     this.color = "red";
+    this.attack = 10;
+    this.maxAttackCooldown = 20;
   }
 
   tick() {
+    var oldX = this.x;
+    var val = 0;
+    if (this.x > player.x) {
+      this.direction = -1;
+      val--;
+    }
+    else {
+      this.direction = 1;
+      val++;
+    }
+    for (var i = 0; i < this.speed; ++i) {
+      this.x += val;
+      var failed = false;
+      for (var j = 0; j < entities.length; ++j) {
+        if (touches(this, entities[j])) {
+          if (entities[j] === this) {
+            continue;
+          }
+          if (entities[j] instanceof Block && !entities[j].isCollidable) {
+            continue;
+          }
+          if (this.attackCooldown <= 0 && entities[j] === player) {
+            this.attackCooldown = this.maxAttackCooldown;
+            entities[j].health -= this.attack;
+            if (entities[j].health <= 0) {
+              toRemove.push(entities[j]);
+            }
+          }
+          failed = true;
+        }
+      }
+      if (failed) {
+        this.x -= val;
+        break;
+      }
+    }
+    this.vy += (blockSize / 100);
+    this.vy *= 0.95;
+    var val = Math.sign(this.vy);
+    var vy = Math.abs(this.vy);
+    for (var i = 0; i < vy; ++i) {
+      this.y += val;
+      var failed = false;
+      for (var j = 0; j < entities.length; ++j) {
+        if (entities[j] !== this && touches(this, entities[j]) && (!(entities[j] instanceof Block) || entities[j].isCollidable)) {
+          failed = true;
+        }
+      }
+      if (failed) {
+        if (this.vy > 0) {
+          this.attackCooldown--;
+        }
+        else {
+          this.attackCooldown = this.maxAttackCooldown;
+        }
+        this.y -= val;
+        break;
+      }
+      else {
+        this.attackCooldown = this.maxAttackCooldown;
+      }
+    }
   }
+}
+
+class EnemyArcher {
 }
 
 screen.width = 20 * blockSize;
