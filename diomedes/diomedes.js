@@ -155,7 +155,7 @@ class Block {
 class Air extends Block {
   constructor() {
     super();
-    this.color = "cyan";
+    this.color = "rgb(0, 64, 64)";
     this.isCollidable = false;
   }
 }
@@ -366,6 +366,7 @@ class Knight {
     this.mode = 0;
     this.goalMode = 0;
     this.modeCooldown = 0;
+    this.maxModeCooldown = 20;
     this.colorMaps = [["S  ###   ",
                        "S  ###   ",
                        "S  ###   ",
@@ -466,6 +467,26 @@ class Knight {
     return this;
   }
 
+  setMode(mode) {
+    this.mode = mode;
+    return this;
+  }
+
+  setGoalMode(goalMode) {
+    this.goalMode = goalMode;
+    return this;
+  }
+
+  setModeCooldown(modeCooldown) {
+    this.modeCooldown = modeCooldown;
+    return this;
+  }
+
+  setMaxModeCooldown(maxModeCooldown) {
+    this.maxModeCooldown = maxModeCooldown;
+    return this;
+  }
+
   setDirection(direction) {
     this.direction = direction;
     return this;
@@ -522,7 +543,7 @@ class Knight {
     }
     else if (this.mode != this.goalMode) {
       this.mode = 3;
-      this.modeCooldown = 20;
+      this.modeCooldown = this.maxModeCooldown;
     }
     var speed = (this.maxSpeed * (1 - (this.mode / 4)));
     var oldX = this.x;
@@ -606,6 +627,7 @@ class EnemyKnight extends Knight {
     this.color = "red";
     this.attack = 10;
     this.maxAttackCooldown = 20;
+    this.maxModeCooldown = 40;
   }
 
   tick() {
