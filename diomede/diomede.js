@@ -328,6 +328,7 @@ class Palladium extends Block {
 class Knight {
   constructor() {
     this.speed = (blockSize / 10);
+    this.maxSpeed = this.speed;
     this.x = 0;
     this.y = 0;
     this.vy = 0;
@@ -384,6 +385,11 @@ class Knight {
 
   setSpeed(speed) {
     this.speed = speed;
+    return this;
+  }
+
+  setMaxSpeed(maxSpeed) {
+    this.maxSpeed = maxSpeed;
     return this;
   }
 
@@ -501,6 +507,18 @@ class Knight {
       this.mode = 3;
       this.modeCooldown = 20;
     }
+    if (this.mode == 0) {
+      this.speed = this.maxSpeed;
+    }
+    else if (this.mode == 1) {
+      this.speed = (this.maxSpeed * 3 / 4);
+    }
+    else if (this.mode == 2) {
+      this.speed = (this.maxSpeed / 2);
+    }
+    else {
+      this.speed = (this.maxSpeed / 4);
+    }
     var oldX = this.x;
     var val = 0;
     if (keySet["ArrowLeft"]) {
@@ -558,8 +576,9 @@ class Knight {
           this.attackCooldown = this.maxAttackCooldown;
           this.jumpCountdown = this.maxJumpCountdown;
         }
+        this.vy = 0;
         if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
-          this.vy -= (blockSize / 2);
+          this.vy -= (blockSize / 3);
         }
         this.y -= val;
         break;
