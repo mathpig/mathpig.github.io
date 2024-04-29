@@ -40,11 +40,23 @@ var levels = [
     "BB                                                            B",
     "BB                                                            B",
     "BB                                                            B",
-    "BX           E B  A       E B       B    E    M E           S B",
+    "BX           E B  A       E B       B    E    M E           S g",
     "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
   [
+    "wwwwwwwwwwww",
+    "ww        ww",
+    "ww        ww",
+    "ww S  O   ww",
+    "wwwwwwwwwXww",
+  ],
+  [
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
     "BB                                                            B",
     "BB                        w w                                 B",
     "BB                     m  wwwww                               B",
@@ -53,10 +65,10 @@ var levels = [
     "BB                     R www wwwwwwwwwwwwwwwww                B",
     "BB                     R ww    wwwwwwwwwwwwwww                B",
     "BB                     R        wwwwwwwwwwwwww                B",
-    "BB                     R         wwwww   wwwww                B",
-    "BB                     R         ww         ww                B",
-    "BB                     R         ww         ww               BB",
-    "BB  S                  R         ww         ww               XB",
+    "BB                     R         wwwww S wwwww                B",
+    "BB                     R         ww    R    ww                B",
+    "BB                     R         ww    R    ww               BB",
+    "Bg                     R         mm    R    ww               XB",
     "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
@@ -93,8 +105,8 @@ var levels = [
   "B                    MMMmmmmmmmmmmmmmmmMmmmmmMR              B",
   "B                  MMMmmmmmmmmmmmmmamMMMMMmamMR              B",
   "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
-  "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
-  "B           E B WWmemememaamemememMmmHmPmHmmMMRO     M     S B",
+  "BB              WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR             BB",
+  "Bg          E B WWmemememaamemememMmmHmPmHmmMMRO     M    S gB",
   "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
   "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
@@ -103,6 +115,43 @@ var levels = [
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
+];
+
+var basicInstructions = [
+  "\u2190 = left",
+  "\u2192 = right",
+  "\u2191 = jump/climb",
+  "\u2193 = descend",
+  "A = attack",
+];
+
+var levelInstructions = [
+  basicInstructions,
+  basicInstructions,
+  basicInstructions,
+  basicInstructions,
+  basicInstructions,
+];
+
+var levelGoals = [
+  [
+    "You are Diomedes!",
+    "Use your god-like cunning",
+    "to steal Rhesus' prized",
+    "white horses.",
+  ],
+  [
+    "Inside the Trojan Horse",
+    "Odysseus doesn't",
+    "smell nice.",
+    "Go sack Troy!",
+  ],
+  [
+    "Kill the Trojans!",
+  ],
+  [
+    "Stuff",
   ],
 ];
 
@@ -144,6 +193,9 @@ function Init() {
       }
       else if (block == "P") {
         entities.push(new Palladium().setPosition(x, y));
+      }
+      else if (block == "g") {
+        entities.push(new Gate().setPosition(x, y));
       }
       else if (block == "X") {
         entities.push(new Exit().setPosition(x, y));
@@ -370,7 +422,17 @@ class Wall extends Block {
   }
 }
 
-class DeadBody extends Block {
+class PixelBlock extends Block {
+  constructor() {
+    super();
+  }
+
+  draw() {
+    DrawPixels(this.x, this.y, this.size, this.colorMap, this.colors, this.direction);
+  }
+}
+
+class DeadBody extends PixelBlock {
   constructor() {
     super();
     this.isCollidable = false;
@@ -390,9 +452,25 @@ class DeadBody extends Block {
                      "   b###    ",
                      "bbb#bbb####"];
   }
+}
 
-  draw() {
-    DrawPixels(this.x, this.y, this.size, this.colorMap, this.colors, this.direction);
+class Gate extends PixelBlock {
+  constructor() {
+    super();
+    this.colors = {
+      "#": "#337777",
+      " ": "#000000",
+    };
+    this.colorMap = ["  #  #  #  ",
+                     "  #  #  #  ",
+                     "  #  #  #  ",
+                     "###########",
+                     "  #  #  #  ",
+                     "  #  #  #  ",
+                     "###########",
+                     "  #  #  #  ",
+                     "  #  #  #  ",
+                     "  #  #  #  "];
   }
 }
 
@@ -1191,21 +1269,25 @@ function Draw() {
 }
 
 function DrawInstructions() {
-  var instructions = [
-    "\u2190 = left",
-    "\u2192 = right",
-    "\u2191 = jump/climb",
-    "\u2193 = descend",
-    "A = attack",
-  ];
   ctx.font = "bold 20px monospace";
   ctx.textAlign = "left";
+  var instructions = levelInstructions[level];
   var y = screen.height - instructions.length * 20 - 20;
   for (var i = 0; i < instructions.length; ++i) {
     ctx.fillStyle = "black";
     ctx.fillText(instructions[i], 42, y + i * 20 + 2);
     ctx.fillStyle = "yellow";
     ctx.fillText(instructions[i], 40, y + i * 20);
+  }
+  ctx.font = "bold 20px monospace";
+  ctx.textAlign = "right";
+  var goal = levelGoals[level];
+  var y = screen.height - goal.length * 20 - 20;
+  for (var i = 0; i < goal.length; ++i) {
+    ctx.fillStyle = "black";
+    ctx.fillText(goal[i], screen.width - 40, y + i * 20 + 2);
+    ctx.fillStyle = "white";
+    ctx.fillText(goal[i], screen.width - 42, y + i * 20);
   }
 }
 
