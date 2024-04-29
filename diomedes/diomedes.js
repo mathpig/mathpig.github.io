@@ -156,6 +156,7 @@ class Block {
     this.isCollidable = true;
     this.damageVal = 0;
     this.color = "black";
+    this.direction = 1;
   }
 
   setPosition(x, y) {
@@ -166,6 +167,11 @@ class Block {
 
   setSize(size) {
     this.size = size;
+    return this;
+  }
+
+  setDirection(direction) {
+    this.direction = direction;
     return this;
   }
 
@@ -338,16 +344,16 @@ class DeadBody extends Block {
                      "           ",
                      "           ",
                      "    ####   ",
-                     "     b##   ",
-                     "     #b    ",
+                     "    ##b    ",
+                     "     b#    ",
                      "   #####   ",
-                     "  ## ####  ",
-                     "    ###b   ",
-                     "####bbb#bbb"];
+                     "  #### ##  ",
+                     "   b###    ",
+                     "bbb#bbb####"];
   }
 
   draw() {
-    DrawPixels(this.x, this.y, this.size, this.colorMap, this.colors);
+    DrawPixels(this.x, this.y, this.size, this.colorMap, this.colors, this.direction);
   }
 }
 
@@ -671,7 +677,7 @@ class Knight {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
-                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y));
+                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction));
               }
               entities[j].vx += (this.direction * blockSize);
             }
@@ -824,7 +830,7 @@ class EnemyKnight extends Knight {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
-                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y));
+                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction));
               }
               entities[j].vx += (this.direction * blockSize);
             }
@@ -1036,7 +1042,7 @@ class Bullet {
             entities[i].health -= this.attack;
             if (entities[i].health <= 0) {
               toRemove.push(entities[i]);
-              entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y));
+              entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y).setDirection(entities[i].direction));
             }
             entities[i].vx += (this.vx * blockSize / 20);
             entities[i].vy += (this.vy * blockSize / 20);
