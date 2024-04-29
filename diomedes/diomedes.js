@@ -50,13 +50,13 @@ var map = ["B                                                            B",
            "B                         EBBbbbbbbbbbBBBbbbbBR              B",
            "B                        ABBbbbbbbbbbbbbbbbbbBR              B",
            "B                        MMmmmmmmmmmMmmmmmMmmMR              B",
-           "B                       MMmmmmmmmmmmmmmmmmmmmMR              B",
+           "B                       MMmmmmmmmmmmmmamammmmMR              B",
            "B                    E MMmmmmmmmmmmmmmMMMmmmmMR              B",
            "B                    MMMmmmmmmmmmmmmmmmMmmmmmMR              B",
-           "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
+           "B                  MMMmmmmmmmmmmmmmamMMMMMmamMR              B",
            "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
            "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
-           "B           E B WWmmmmmmmmmmmmmmmmMmmHmPmHmmMMRO           S B",
+           "B           E B WWmemememaamemememMmmHmPmHmmMMRO           S B",
            "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
            "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
@@ -118,6 +118,14 @@ function Init() {
       }
       else if (block == "A") {
         entities.push(new Air().setPosition(x, y));
+        enemies.push(new EnemyArcher().setPosition(x, y));
+      }
+      else if (block == "e") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
+        enemies.push(new EnemyKnight().setPosition(x, y));
+      }
+      else if (block == "a") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
       else if (block == "O") {
@@ -886,7 +894,7 @@ class EnemyArcher extends EnemyKnight {
     this.bulletColor = "black";
     this.bulletSize = 8;
     this.range = 15;
-    this.accuracy = 10;
+    this.accuracy = 2;
   }
 
   tick() {
@@ -964,7 +972,7 @@ class Odysseus extends EnemyArcher {
     this.color = "purple";
     this.bulletSpeed = 5;
     this.range = 10;
-    this.accuracy = 2;
+    this.accuracy = 1;
   }
 }
 
@@ -1024,7 +1032,7 @@ class Bullet {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source && (!(entities[i] instanceof Block) || entities[i].isCollidable)) {
         toRemove.push(this);
         if (!(entities[i] instanceof Block)) {
-          if (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3)) {
+          if (entities[i] instanceof EnemyArcher || (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3))) {
             entities[i].health -= this.attack;
             if (entities[i].health <= 0) {
               toRemove.push(entities[i]);
