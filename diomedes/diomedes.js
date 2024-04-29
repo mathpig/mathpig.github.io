@@ -56,7 +56,7 @@ var map = ["B                                                            B",
            "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
            "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
            "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
-           "B           E B WWmmmmmmmmmmmmmmmmMmmHmPmmHmMMRO           S B",
+           "B           E B WWmmmmmmmmmmmmmmmmMmmHmPmHmmMMRO           S B",
            "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
            "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
@@ -827,6 +827,7 @@ class EnemyKnight extends Knight {
         else {
           this.attackCooldown = this.maxAttackCooldown;
         }
+        this.vy = 0;
         this.y -= val;
         break;
       }
@@ -851,10 +852,26 @@ class EnemyArcher extends EnemyKnight {
                        "  #   #   B",
                        "  #   #    ",
                        "  #   #    "]];
+    this.health = 50;
+    this.maxHealth = 50;
+    this.attack = 10;
+    this.maxAttackCooldown = 120;
+    this.bulletSpeed = 10;
+    this.bulletColor = "black";
+    this.bulletSize = 8;
+    this.range = 15;
+    this.accuracy = 10;
   }
 
   tick() {
     this.mode = 0;
+    this.direction = Math.sign(player.x - this.x);
+    if (this.attackCooldown <= 0 && distance(this, player) <= (blockSize * this.range)) {
+      var bvx = this.bulletSpeed * (player.x - this.x) / distance(this, player) + (Math.random() - 0.5) * this.accuracy;
+      var bvy = this.bulletSpeed * (player.y - this.y) / distance(this, player) + (Math.random() - 0.5) * this.accuracy;
+      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(this.attack).setSize(this.bulletSize).setColor(this.bulletColor).setSource(this));
+      this.attackCooldown = this.maxAttackCooldown;
+    }
     this.vx *= (9 / 10);
     if (Math.abs(this.vx) < 1) {
       this.vx = 0;
@@ -872,11 +889,8 @@ class EnemyArcher extends EnemyKnight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if (entities[j] === player && this.attackCooldown <= 0) {
-            // Shoot at player
-            this.attackCooldown = this.maxAttackCooldown;
-          }
           failed = true;
+          break;
         }
       }
       if (failed) {
@@ -903,6 +917,7 @@ class EnemyArcher extends EnemyKnight {
         else {
           this.attackCooldown = this.maxAttackCooldown;
         }
+        this.vy = 0;
         this.y -= val;
         break;
       }
@@ -916,10 +931,89 @@ class EnemyArcher extends EnemyKnight {
 class Odysseus extends EnemyArcher {
   constructor() {
     super();
-    this.health = 500;
-    this.maxHealth = 500;
-    this.maxAttackCooldown = 20;
+    this.health = 250;
+    this.maxHealth = 250;
+    this.attack = 20;
+    this.maxAttackCooldown = 60;
     this.color = "purple";
+    this.bulletSpeed = 5;
+    this.range = 10;
+    this.accuracy = 2;
+  }
+}
+
+class Bullet {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.vx = 0;
+    this.vy = 0;
+    this.attack = 10;
+    this.color = "black";
+    this.size = 8;
+    this.source = 0;
+  }
+
+  setPosition(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  setVelocity(vx, vy) {
+    this.vx = vx;
+    this.vy = vy;
+    return this;
+  }
+
+  setAttack(attack) {
+    this.attack = attack;
+    return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  setSize(size) {
+    this.size = size;
+    return this;
+  }
+
+  setSource(source) {
+    this.source = source;
+    return this;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+  }
+
+  tick() {
+    this.x += this.vx;
+    this.y += this.vy;
+    for (var i = 0; i < entities.length; ++i) {
+      if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source && (!(entities[i] instanceof Block) || entities[i].isCollidable)) {
+        toRemove.push(this);
+        if (!(entities[i] instanceof Block)) {
+          if (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3)) {
+            entities[i].health -= this.attack;
+            if (entities[i].health <= 0) {
+              toRemove.push(entities[i]);
+            }
+            entities[i].vx += (this.vx * blockSize / 20);
+            entities[i].vy += (this.vy * blockSize / 20);
+          }
+          else {
+            entities[i].vx += (this.vx * blockSize / 40);
+            entities[i].vy += (this.vy * blockSize / 40);
+          }
+        }
+        break;
+      }
+    }
   }
 }
 
@@ -936,7 +1030,7 @@ function findMessage(e) {
 }
 
 function drawLabel(e) {
-  if (e instanceof Block || e.labelCount >= 100) {
+  if ((e instanceof Block) || (e instanceof Bullet) || e.labelCount >= 100) {
     return;
   }
   e.labelCount++;
@@ -964,7 +1058,7 @@ function Draw() {
     }
   }
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < 2.5 * blockSize) {
+    if (distance(player, entities[i]) < (2.5 * blockSize)) {
       drawLabel(entities[i]);
     }
   }
