@@ -10,6 +10,8 @@ var time = 0;
 var entities = [];
 var toRemove = [];
 
+var player;
+
 function intervalTouches(a, b, c, d) {
   return (b > c && d > a);
 }
@@ -21,48 +23,48 @@ function touches(e1, e2) {
 
 var keySet = {};
 
-var map = ["B                                                    B",
-           "B                                                    B",
-           "B                                                    B",
-           "B                                                    B",
-           "B                                                    B",
-           "B                                                    B",
-           "B                                                    B",
-           "B                                                    B",
-           "B                                A           A       B",
-           "B                                BBBBbbbbbBBBB       B",
-           "B                                BbbbBbbbBbbbB       B",
-           "B                                BbbbbbbbbbbbB       B",
-           "B                               EBbbbbBBBbbbbB       B",
-           "B                               BBbbbbbbbbbbbB       B",
-           "B                               BbbbBbbbbbBbbB       B",
-           "B                               BbbbbbbbbbbbbB       B",
-           "B                              ABbbbbbBBBbbbbB       B",
-           "B                              BBbbbbbbbbbbbbB       B",
-           "B                             EBbbbbBbbbbbBbbB       B",
-           "B                             BBbbbbbbbbbbbbbB       B",
-           "B                            ABbbbbbbbBBBbbbbB       B",
-           "B                            BBbbbbbbbbbbbbbbB       B",
-           "B                           EBbbbbbbBbbbbbBbbB       B",
-           "B                          ABBbbbbbbbbbbbbbbbB       B",
-           "B                         ABBbbbbbbbbbBBBbbbbB       B",
-           "B                        ABBbbbbbbbbbbbbbbbbbB       B",
-           "B                        MMmmmmmmmmmMmmmmmMmmM       B",
-           "B                       MMmmmmmmmmmmmmmmmmmmmM       B",
-           "B                    E MMmmmmmmmmmmmmmMMMmmmmM       B",
-           "B                    MMMmmmmmmmmmmmmmmmMmmmmmM       B",
-           "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmM       B",
-           "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmM       B",
-           "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmM       B",
-           "B           E B WWmmmmmmmmmmmmmmmmMmmmmPmmmmMM O     B",
-           "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGG",
-           "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
+var map = ["B                                                            B",
+           "B                                                            B",
+           "B                                                            B",
+           "B                                                            B",
+           "B                                                            B",
+           "B                                                            B",
+           "B                                                            B",
+           "B                                                            B",
+           "B                                A           A               B",
+           "B                                BBBBbbbbbBBBBC              B",
+           "B                                BbbbBbbbBbbbBR              B",
+           "B                                BbbbbbbbbbbbBR              B",
+           "B                               EBbbbbBBBbbbbBR              B",
+           "B                               BBbbbbbbbbbbbBR              B",
+           "B                               BbbbBbbbbbBbbBR              B",
+           "B                               BbbbbbbbbbbbbBR              B",
+           "B                              ABbbbbbBBBbbbbBR              B",
+           "B                              BBbbbbbbbbbbbbBR              B",
+           "B                             EBbbbbBbbbbbBbbBR              B",
+           "B                             BBbbbbbbbbbbbbbBR              B",
+           "B                            ABbbbbbbbBBBbbbbBR              B",
+           "B                            BBbbbbbbbbbbbbbbBR              B",
+           "B                           EBbbbbbbBbbbbbBbbBR              B",
+           "B                          ABBbbbbbbbbbbbbbbbBR              B",
+           "B                         ABBbbbbbbbbbBBBbbbbBR              B",
+           "B                        ABBbbbbbbbbbbbbbbbbbBR              B",
+           "B                        MMmmmmmmmmmMmmmmmMmmMR              B",
+           "B                       MMmmmmmmmmmmmmmmmmmmmMR              B",
+           "B                    E MMmmmmmmmmmmmmmMMMmmmmMR              B",
+           "B                    MMMmmmmmmmmmmmmmmmMmmmmmMR              B",
+           "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
+           "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
+           "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
+           "B           E B WWmmmmmmmmmmmmmmmmMmmmmPmmmmMMRO           S B",
+           "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
+           "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
 
 function Init() {
   var enemies = [];
@@ -92,6 +94,14 @@ function Init() {
       else if (block == "D") {
         entities.push(new Dirt().setPosition(x, y));
       }
+      else if (block == "C") {
+        entities.push(new Air().setPosition(x, y));
+        entities.push(new CornerRope().setPosition(x, y));
+      }
+      else if (block == "R") {
+        entities.push(new Air().setPosition(x, y));
+        entities.push(new Rope().setPosition(x, y));
+      }
       else if (block == "W") {
         entities.push(new Wall().setPosition(x, y));
       }
@@ -101,6 +111,10 @@ function Init() {
       else if (block == "E") {
         entities.push(new Air().setPosition(x, y));
         enemies.push(new EnemyKnight().setPosition(x, y));
+      }
+      else if (block == "S") {
+        entities.push(new Air().setPosition(x, y));
+        player = new Knight().setPosition(x, y);
       }
       else {
         entities.push(new Air().setPosition(x, y));
@@ -348,6 +362,27 @@ class Palladium extends Block {
   }
 }
 
+class Rope extends Block {
+  constructor() {
+    super();
+    this.color = "peru";
+    this.isCollidable = false;
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 8, this.y - this.size / 2 - 2, this.size / 4, this.size + 4);
+  }
+}
+
+class CornerRope extends Rope {
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2 - 2, this.y - this.size / 8, this.size * 5 / 8 + 4, this.size / 4);
+    ctx.fillRect(this.x - this.size / 8, this.y - this.size / 8 - 2, this.size / 4, this.size * 5 / 8 + 4);
+  }
+}
+
 class Knight {
   constructor() {
     this.maxSpeed = (blockSize / 10);
@@ -367,43 +402,52 @@ class Knight {
     this.goalMode = 0;
     this.modeCooldown = 0;
     this.maxModeCooldown = 20;
-    this.colorMaps = [["S  ###   ",
-                       "S  ###   ",
-                       "S  ###   ",
-                       "S   #    ",
-                       "S## # ###",
-                       "S #####  ",
-                       "S   #    ",
-                       "S  ###   ",
-                       "S #   #  "],
-                      ["   ###  S",
-                       "   ###  S",
-                       "   ###  S",
-                       "    #   S",
-                       "### # ##S",
-                       "  ##### S",
-                       "    #   S",
-                       "   ###  S",
-                       "  #   # S"],
-                      ["S  ###   ",
-                       "S  ###   ",
-                       "S  ###   ",
-                       "S   #    ",
-                       "S## # #DD",
-                       "S #####  ",
-                       "S   #    ",
-                       "S  ###   ",
-                       "S #   #  "],
-                      ["   ###   ",
-                       "   ###   ",
-                       "   ###   ",
-                       "    #    ",
-                       "### # ###",
-                       "  #####  ",
-                       "    #    ",
-                       "   ###   ",
-                       "  #   #  "]];
+    this.colorMaps = [[" S  ###    ",
+                       " S  ###    ",
+                       " S  ###    ",
+                       " S   #     ",
+                       " S## # ##  ",
+                       " S #####   ",
+                       " S   #     ",
+                       " S  ###    ",
+                       " S #   #   ",
+                       " S #   #   ",
+                       " S #   #   "],
+                      ["    ###  S ",
+                       "    ###  S ",
+                       "    ###  S ",
+                       "     #   S ",
+                       "  ## # ##S ",
+                       "   ##### S ",
+                       "     #   S ",
+                       "    ###  S ",
+                       "   #   # S ",
+                       "   #   # S ",
+                       "   #   # S "],
+                      ["S  ###     ",
+                       "S  ###     ",
+                       "S  ###     ",
+                       "S   #      ",
+                       "S## # #DDDD",
+                       "S #####    ",
+                       "S   #      ",
+                       "S  ###     ",
+                       "S #   #    ",
+                       "S #   #    ",
+                       "S #   #    "],
+                      ["    ###    ",
+                       "    ###    ",
+                       "    ###    ",
+                       "     #     ",
+                       "  ## # ##  ",
+                       "   #####   ",
+                       "     #     ",
+                       "    ###    ",
+                       "   #   #   ",
+                       "   #   #   ",
+                       "   #   #   "]];
     this.direction = 1;
+    this.labelCount = 0;
   }
 
   setMaxSpeed(maxSpeed) {
@@ -492,6 +536,11 @@ class Knight {
     return this;
   }
 
+  setLabelCount(labelCount) {
+    this.labelCount = labelCount;
+    return this;
+  }
+
   draw() {
     var colorMap = this.colorMaps[this.mode];
     for (var i = 0; i < colorMap.length; ++i) {
@@ -568,7 +617,7 @@ class Knight {
             continue;
           }
           if (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher) {
-            if (this.attackCooldown <= 0 && this.mode == 2 && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
+            if (this.attackCooldown <= 0 && this.mode == 2 && keySet["a"] && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
               this.attackCooldown = this.maxAttackCooldown;
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
@@ -584,16 +633,38 @@ class Knight {
         break;
       }
     }
-    this.vy += (blockSize / 100);
-    this.vy *= 0.95;
+    var touchedRope = false;
+    for (var j = 0; j < entities.length; ++j) {
+      if (entities[j] !== this && touches(this, entities[j]) && entities[j] instanceof Rope) {
+        touchedRope = true;
+        break;
+      }
+    }
+    if (touchedRope) {
+      if (keySet["ArrowUp"]) {
+        this.vy = -(blockSize / 5);
+      }
+      else if (keySet["ArrowDown"]) {
+        this.vy = (blockSize / 5);
+      }
+      else {
+        this.vy = 0;
+      }
+    }
+    else {
+      this.vy += (blockSize / 100);
+      this.vy *= 0.95;
+    }
     var val = Math.sign(this.vy);
     var vy = Math.abs(this.vy);
     for (var i = 0; i < vy; ++i) {
       this.y += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
-        if (entities[j] !== this && touches(this, entities[j]) && (!(entities[j] instanceof Block) || entities[j].isCollidable)) {
-          failed = true;
+        if (entities[j] !== this && touches(this, entities[j])) {
+          if (!(entities[j] instanceof Block) || entities[j].isCollidable) {
+            failed = true;
+          }
         }
       }
       if (failed) {
@@ -672,7 +743,7 @@ class EnemyKnight extends Knight {
     }
     else if (this.mode != this.goalMode) {
       this.mode = 3;
-      this.modeCooldown = 20;
+      this.modeCooldown = this.maxModeCooldown;
     }
     var speed = (this.maxSpeed * (1 - (this.mode / 4)));
     var oldX = this.x;
@@ -745,16 +816,46 @@ class EnemyKnight extends Knight {
 class EnemyArcher {
 }
 
+function findMessage(e) {
+  if (e === player) {
+    return "Diomedes";
+  }
+  else if (e instanceof EnemyKnight) {
+    return "Trojan";
+  }
+}
+
+function drawLabel(e) {
+  if (e instanceof Block || e.labelCount >= 100) {
+    return;
+  }
+  e.labelCount++;
+  ctx.fillStyle = "orange";
+  ctx.fillRect(e.x - e.size, e.y - e.size * 5 / 4, e.size * 2, e.size / 2);
+  ctx.fillStyle = "blue";
+  ctx.font = "bold 16px serif";
+  ctx.textAlign = "center";
+  ctx.fillText(findMessage(e), e.x, e.y - e.size + 5);
+}
+
 function Draw() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
+  if (player.health <= 0) {
+    return;
+  }
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < (blockSize * 5)) {
+    if (distance(player, entities[i]) < (blockSize * 2.5 + blockSize * 7.5 * player.health / player.maxHealth)) {
       entities[i].draw();
+    }
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    if (distance(player, entities[i]) < 2.5 * blockSize) {
+      drawLabel(entities[i]);
     }
   }
   ctx.restore();
@@ -771,8 +872,6 @@ function Tick() {
   }
   Draw();
 }
-
-var player = new Knight().setPosition(1025, 425);
 
 Init();
 setInterval(Tick, 25);
