@@ -23,50 +23,92 @@ function touches(e1, e2) {
 
 var keySet = {};
 
-var map = ["B                                                            B",
-           "B                                                            B",
-           "B                                                            B",
-           "B                                                            B",
-           "B                                                            B",
-           "B                                                            B",
-           "B                                                            B",
-           "B                                                            B",
-           "B                                A           A               B",
-           "B                                BBBBbbbbbBBBBC              B",
-           "B                                BbbbBbbbBbbbBR              B",
-           "B                                BbbbbbbbbbbbBR              B",
-           "B                               EBbbbbBBBbbbbBR              B",
-           "B                               BBbbbbbbbbbbbBR              B",
-           "B                               BbbbBbbbbbBbbBR              B",
-           "B                               BbbbbbbbbbbbbBR              B",
-           "B                              ABbbbbbBBBbbbbBR              B",
-           "B                              BBbbbbbbbbbbbbBR              B",
-           "B                             EBbbbbBbbbbbBbbBR              B",
-           "B                             BBbbbbbbbbbbbbbBR              B",
-           "B                            ABbbbbbbbBBBbbbbBR              B",
-           "B                            BBbbbbbbbbbbbbbbBR              B",
-           "B                           EBbbbbbbBbbbbbBbbBR              B",
-           "B                          ABBbbbbbbbbbbbbbbbBR              B",
-           "B                         EBBbbbbbbbbbBBBbbbbBR              B",
-           "B                        ABBbbbbbbbbbbbbbbbbbBR              B",
-           "B                        MMmmmmmmmmmMmmmmmMmmMR              B",
-           "B                       MMmmmmmmmmmmmmamammmmMR              B",
-           "B                    E MMmmmmmmmmmmmmmMMMmmmmMR              B",
-           "B                    MMMmmmmmmmmmmmmmmmMmmmmmMR              B",
-           "B                  MMMmmmmmmmmmmmmmamMMMMMmamMR              B",
-           "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
-           "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
-           "B           E B WWmemememaamemememMmmHmPmHmmMMRO           S B",
-           "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
-           "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-           "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"];
+var level = 0;
+var levels = [
+  [
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BX           E B  A       E B       B    E    M E           S B",
+    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
+  [
+    "BB                                                            B",
+    "BB                        w w                                 B",
+    "BB                     m  wwwww                               B",
+    "BB                     R wwXwwwww        www                  B",
+    "BB                     R wwwwwwwwwwwwwwwwwwww                 B",
+    "BB                     R www wwwwwwwwwwwwwwwww                B",
+    "BB                     R ww    wwwwwwwwwwwwwww                B",
+    "BB                     R        wwwwwwwwwwwwww                B",
+    "BB                     R         wwwww   wwwww                B",
+    "BB                     R         ww         ww                B",
+    "BB                     R         ww         ww               BB",
+    "BB  S                  R         ww         ww               XB",
+    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
+  [
+    "B                                                            B",
+    "B                                                            B",
+    "B                                                            B",
+    "B                                                            B",
+    "B                                                            B",
+    "B                                                            B",
+    "B                                                            B",
+    "B                                                            B",
+    "B                                A           A               B",
+    "B                                BBBBbbbbbBBBBC              B",
+    "B                                BbbbBbbbBbbbBR              B",
+    "B                                BbbbbbbbbbbbBR              B",
+    "B                               EBbbbbBBBbbbbBR              B",
+    "B                               BBbbbbbbbbbbbBR              B",
+    "B                               BbbbBbbbbbBbbBR              B",
+    "B                               BbbbbbbbbbbbbBR              B",
+    "B                              ABbbbbbBBBbbbbBR              B",
+    "B                              BBbbbbbbbbbbbbBR              B",
+    "B                             EBbbbbBbbbbbBbbBR              B",
+    "B                             BBbbbbbbbbbbbbbBR              B",
+    "B                            ABbbbbbbbBBBbbbbBR              B",
+    "B                            BBbbbbbbbbbbbbbbBR              B",
+    "B                           EBbbbbbbBbbbbbBbbBR              B",
+    "B                          ABBbbbbbbbbbbbbbbbBR              B",
+    "B                         EBBbbbbbbbbbBBBbbbbBR              B",
+    "B                        ABBbbbbbbbbbbbbbbbbbBR              B",
+    "B                        MMmmmmmmmmmMmmmmmMmmMR              B",
+    "B                       MMmmmmmmmmmmmmamammmmMR              B",
+    "B                    E MMmmmmmmmmmmmmmMMMmmmmMR              B",
+    "B                    MMMmmmmmmmmmmmmmmmMmmmmmMR              B",
+    "B                  MMMmmmmmmmmmmmmmamMMMMMmamMR              B",
+    "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
+    "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
+    "B           E B WWmemememaamemememMmmHmPmHmmMMRO           S B",
+    "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+  ],
+];
 
 function Init() {
+  var map = levels[level];
+  entities = [];
   var enemies = [];
   for (var i = 0; i < map.length; ++i) {
     for (var j = 0; j < map[i].length; ++j) {
@@ -108,9 +150,15 @@ function Init() {
       else if (block == "P") {
         entities.push(new Palladium().setPosition(x, y));
       }
+      else if (block == "X") {
+        entities.push(new Exit().setPosition(x, y));
+      }
       else if (block == "H") {
         entities.push(new BackgroundMarble().setPosition(x, y));
         entities.push(new Horse().setPosition(x, y));
+      }
+      else if (block == "w") {
+        entities.push(new Wood().setPosition(x, y));
       }
       else if (block == "E") {
         entities.push(new Air().setPosition(x, y));
@@ -295,6 +343,14 @@ class Grass extends Block {
   }
 }
 
+class Exit extends Block {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.color = "black";
+  }
+}
+
 class Dirt extends Block {
   constructor() {
     super();
@@ -421,17 +477,32 @@ class Palladium extends Block {
   }
 }
 
-class Horse extends Block {
+class ImageBlock extends Block {
   constructor() {
     super();
+    this.image = null;
   }
 
   draw() {
     var sizeX = this.size;
-    var sizeY = this.size * horse.height / horse.width;
+    var sizeY = this.size * this.image.height / this.image.width;
     var x = this.x - sizeX / 2;
     var y = this.y - sizeY / 2;
-    ctx.drawImage(horse, x, y, sizeX, sizeY);
+    ctx.drawImage(this.image, x, y, sizeX, sizeY);
+  }
+}
+
+class Horse extends ImageBlock {
+  constructor() {
+    super();
+    this.image = horse;
+  }
+}
+
+class Wood extends ImageBlock {
+  constructor() {
+    super();
+    this.image = wood;
   }
 }
 
@@ -668,6 +739,10 @@ class Knight {
         if (touches(this, entities[j])) {
           if (entities[j] === this) {
             continue;
+          }
+          if (entities[j] instanceof Exit) {
+            level++;
+            Init();
           }
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
