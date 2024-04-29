@@ -330,7 +330,7 @@ class DeadBody extends Block {
     super();
     this.isCollidable = false;
     this.colors = {
-      "#": "#444444",
+      "#": "#111111",
       "b": "#770000",
     };
     this.colorMap = ["           ",
