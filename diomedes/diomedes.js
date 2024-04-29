@@ -1092,8 +1092,9 @@ function Draw() {
   ctx.fillRect(0, 0, screen.width, screen.height);
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
+  var radius = blockSize * 2.5 + blockSize * 7.5 * player.health / player.maxHealth;
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < (blockSize * 2.5 + blockSize * 7.5 * player.health / player.maxHealth)) {
+    if (distance(player, entities[i]) < radius) {
       entities[i].draw();
     }
   }
@@ -1102,6 +1103,11 @@ function Draw() {
       drawLabel(entities[i]);
     }
   }
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = blockSize * 2;
+  ctx.beginPath();
+  ctx.ellipse(player.x, player.y, radius, radius, 0, 0, Math.PI * 2);
+  ctx.stroke();
   ctx.restore();
   DrawInstructions();
 }
