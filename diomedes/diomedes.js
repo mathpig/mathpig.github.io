@@ -763,7 +763,7 @@ class EnemyKnight extends Knight {
             continue;
           }
           if (entities[j] === player && this.attackCooldown <= 0 && this.mode == 2) {
-            if ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3) {
+            if ((entities[j].mode == 1 && this.direction == entities[j].direction) || (entities[j].mode == 2 && this.direction != entities[j].direction) || entities[j].mode == 3) {
               this.attackCooldown = this.maxAttackCooldown;
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
