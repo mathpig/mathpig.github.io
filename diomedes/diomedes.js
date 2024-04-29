@@ -866,7 +866,7 @@ class EnemyArcher extends EnemyKnight {
     this.bulletColor = "black";
     this.bulletSize = 8;
     this.range = 15;
-    this.accuracy = 10;
+    this.accuracy = 2;
   }
 
   tick() {
@@ -944,7 +944,7 @@ class Odysseus extends EnemyArcher {
     this.color = "purple";
     this.bulletSpeed = 5;
     this.range = 10;
-    this.accuracy = 2;
+    this.accuracy = 1;
   }
 }
 
