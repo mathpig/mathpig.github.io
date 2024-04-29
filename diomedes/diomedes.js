@@ -388,6 +388,7 @@ class Knight {
     this.maxSpeed = (blockSize / 10);
     this.x = 0;
     this.y = 0;
+    this.vx = 0;
     this.vy = 0;
     this.size = (blockSize * 4 / 5);
     this.color = "blue";
@@ -461,7 +462,8 @@ class Knight {
     return this;
   }
 
-  setVelocity(vy) {
+  setVelocity(vx, vy) {
+    this.vx = vx;
     this.vy = vy;
     return this;
   }
@@ -585,16 +587,22 @@ class Knight {
     else {
       this.mode = 1;
     }
-    var val = 0;
+    this.vx *= (9 / 10);
+    if (Math.abs(this.vx) < 1) {
+      this.vx = 0;
+    }
+    var num = this.vx;
     if (keySet["ArrowLeft"]) {
       this.direction = -1;
-      val--;
+      num -= this.maxSpeed;
     }
     if (keySet["ArrowRight"]) {
       this.direction = 1;
-      val++;
+      num += this.maxSpeed;
     }
-    for (var i = 0; i < this.maxSpeed; ++i) {
+    var val = Math.sign(num);
+    var vx = Math.abs(num);
+    for (var i = 0; i < vx; ++i) {
       this.x += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
@@ -605,14 +613,18 @@ class Knight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher) {
-            if (this.attackCooldown <= 0 && this.mode == 2 && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
-              this.attackCooldown = this.maxAttackCooldown;
+          if ((entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher) && this.mode == 2 && this.attackCooldown <= 0) {
+            if ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3) {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
               }
+              entities[j].vx += (this.direction * 10);
             }
+            else {
+              entities[j].vx += (this.direction * 5);
+            }
+            this.attackCooldown = this.maxAttackCooldown;
           }
           failed = true;
         }
@@ -723,17 +735,23 @@ class EnemyKnight extends Knight {
       this.mode = 3;
       this.modeCooldown = this.maxModeCooldown;
     }
+    this.vx *= (9 / 10);
+    if (Math.abs(this.vx) < 1) {
+      this.vx = 0;
+    }
+    var num = this.vx;
     var speed = (this.maxSpeed * (1 - (this.mode / 4)));
-    var val = 0;
     if (this.x > player.x) {
       this.direction = -1;
-      val--;
+      num -= this.speed;
     }
     else {
       this.direction = 1;
-      val++;
+      num += this.speed;
     }
-    for (var i = 0; i < speed; ++i) {
+    var val = Math.sign(num);
+    var vx = Math.abs(num);
+    for (var i = 0; i < vx; ++i) {
       this.x += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
@@ -744,13 +762,17 @@ class EnemyKnight extends Knight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if (entities[j] === player) {
-            if (this.attackCooldown <= 0 && this.mode == 2 && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
+          if (entities[j] === player && this.attackCooldown <= 0 && this.mode == 2) {
+            if ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3) {
               this.attackCooldown = this.maxAttackCooldown;
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
               }
+              entities[j].vx += (10 * this.direction);
+            }
+            else {
+              entities[j].vx += (5 * this.direction);
             }
           }
           failed = true;
