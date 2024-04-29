@@ -50,13 +50,13 @@ var map = ["B                                                            B",
            "B                         EBBbbbbbbbbbBBBbbbbBR              B",
            "B                        ABBbbbbbbbbbbbbbbbbbBR              B",
            "B                        MMmmmmmmmmmMmmmmmMmmMR              B",
-           "B                       MMmmmmmmmmmmmmmmmmmmmMR              B",
+           "B                       MMmmmmmmmmmmmmamammmmMR              B",
            "B                    E MMmmmmmmmmmmmmmMMMmmmmMR              B",
            "B                    MMMmmmmmmmmmmmmmmmMmmmmmMR              B",
-           "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
+           "B                  MMMmmmmmmmmmmmmmamMMMMMmamMR              B",
            "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
            "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
-           "B           E B WWmmmmmmmmmmmmmmmmMmmHmPmHmmMMRO           S B",
+           "B           E B WWmemememaamemememMmmHmPmHmmMMRO           S B",
            "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
            "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
@@ -117,6 +117,14 @@ function Init() {
       }
       else if (block == "A") {
         entities.push(new Air().setPosition(x, y));
+        enemies.push(new EnemyArcher().setPosition(x, y));
+      }
+      else if (block == "e") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
+        enemies.push(new EnemyKnight().setPosition(x, y));
+      }
+      else if (block == "a") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
       else if (block == "O") {
