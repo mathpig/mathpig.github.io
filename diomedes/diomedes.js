@@ -1103,6 +1103,26 @@ function Draw() {
     }
   }
   ctx.restore();
+  DrawInstructions();
+}
+
+function DrawInstructions() {
+  var instructions = [
+    "\u2190 = left",
+    "\u2192 = right",
+    "\u2191 = jump/climb",
+    "\u2193 = descend",
+    "A = attack",
+  ];
+  ctx.font = "bold 20px monospace";
+  ctx.textAlign = "left";
+  var y = screen.height - instructions.length * 20 - 20;
+  for (var i = 0; i < instructions.length; ++i) {
+    ctx.fillStyle = "black";
+    ctx.fillText(instructions[i], 40 + 2, y + i * 20 + 2);
+    ctx.fillStyle = "yellow";
+    ctx.fillText(instructions[i], 40, y + i * 20);
+  }
 }
 
 function Tick() {
