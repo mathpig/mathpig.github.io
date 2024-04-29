@@ -619,10 +619,10 @@ class Knight {
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
               }
-              entities[j].vx += (this.direction * 10);
+              entities[j].vx += (this.direction * blockSize);
             }
             else {
-              entities[j].vx += (this.direction * 5);
+              entities[j].vx += (this.direction * blockSize / 2);
             }
             this.attackCooldown = this.maxAttackCooldown;
           }
@@ -769,10 +769,10 @@ class EnemyKnight extends Knight {
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
               }
-              entities[j].vx += (10 * this.direction);
+              entities[j].vx += (this.direction * blockSize);
             }
             else {
-              entities[j].vx += (5 * this.direction);
+              entities[j].vx += (this.direction * blockSize / 2);
             }
           }
           failed = true;
