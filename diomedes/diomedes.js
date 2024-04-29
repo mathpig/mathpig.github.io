@@ -433,7 +433,7 @@ class Knight {
     this.vy = 0;
     this.size = (blockSize * 4 / 5);
     this.color = "blue";
-    this.health = 100;
+    this.health = 250;
     this.maxHealth = this.health;
     this.jumpCountdown = 0;
     this.maxJumpCountdown = 10;
@@ -720,10 +720,12 @@ class EnemyKnight extends Knight {
   constructor() {
     super();
     this.speed = (blockSize / 20);
-    this.color = "red";
+    this.health = 100;
+    this.maxHealth = 100;
     this.attack = 10;
     this.maxAttackCooldown = 20;
     this.maxModeCooldown = 40;
+    this.color = "red";
   }
 
   tick() {
