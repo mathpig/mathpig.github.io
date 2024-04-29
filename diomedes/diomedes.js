@@ -700,7 +700,7 @@ class EnemyKnight extends Knight {
   }
 
   tick() {
-    if ((time % 20) == 0) {
+    if ((time % 20) == 0 && distance(this, player) <= 500) {
       if (player.mode == 1) {
         if (Math.random() < 0.5) {
           this.goalMode = 2;
@@ -741,13 +741,15 @@ class EnemyKnight extends Knight {
     }
     var num = this.vx;
     var speed = (this.maxSpeed * (1 - (this.mode / 4)));
-    if (this.x > player.x) {
-      this.direction = -1;
-      num -= this.speed;
-    }
-    else {
-      this.direction = 1;
-      num += this.speed;
+    if (distance(this, player) <= (5 * blockSize)) {
+      if (this.x > player.x) {
+        this.direction = -1;
+        num -= this.speed;
+      }
+      else {
+        this.direction = 1;
+        num += this.speed;
+      }
     }
     var val = Math.sign(num);
     var vx = Math.abs(num);
