@@ -60,7 +60,7 @@ var levels = [
     "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
-= [
+  [
   "B                                                            B",
   "B                                                            B",
   "B                                                            B",
