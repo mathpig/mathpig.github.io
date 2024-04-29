@@ -39,8 +39,46 @@ var levels = [
     "BB                                                            B",
     "BB                                                            B",
     "BB                                                            B",
+    "BB                                                           BB",
+    "BX           E B  A       E B       B    E    M E          S gB",
+    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
+  [
     "BB                                                            B",
-    "BX           E B  A       E B       B    E    M E           S g",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                           BB",
+    "BgS          E B  A       E B       B    E    M E            XB",
+    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
+  [
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                           BB",
+    "BgS          E B  A       E B       B    E    M E            XB",
     "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
@@ -132,6 +170,9 @@ var levelInstructions = [
   basicInstructions,
   basicInstructions,
   basicInstructions,
+  basicInstructions,
+  basicInstructions,
+  basicInstructions,
 ];
 
 var levelGoals = [
@@ -140,6 +181,12 @@ var levelGoals = [
     "Use your god-like cunning",
     "to steal Rhesus' prized",
     "white horses.",
+  ],
+  [
+    "Escape with the horses!",
+  ],
+  [
+    "Escape with the Palladium!",
   ],
   [
     "Inside the Trojan Horse",
@@ -156,6 +203,22 @@ var levelGoals = [
 ];
 
 function Init() {
+  var levelHolding = [
+    [],
+    [
+      new Horse().setPosition(0, -blockSize),
+      new Horse().setPosition(0, -blockSize * 1.6),
+    ],
+    [
+      new Palladium().setPosition(0, -blockSize),
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+  ];
+
   var map = levels[level];
   entities = [];
   var enemies = [];
@@ -226,6 +289,7 @@ function Init() {
       }
       else if (block == "S") {
         player = new Knight().setPosition(x, y);
+        player.setHolding(levelHolding[level]);
       }
     }
   }
@@ -608,6 +672,7 @@ class Knight {
     this.goalMode = 0;
     this.modeCooldown = 0;
     this.maxModeCooldown = 10;
+    this.holding = [];
     this.colors = {
       "S": "silver",
       "D": "#ffffcc",
@@ -752,10 +817,22 @@ class Knight {
     return this;
   }
 
+  setHolding(things) {
+    this.holding = things;
+  }
+
   draw() {
     var colorMap = this.colorMaps[this.mode];
     this.colors["#"] = this.color;
     DrawPixels(this.x, this.y, this.size, colorMap, this.colors, this.direction);
+
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    for (var i = 0; i < this.holding.length; ++i) {
+      this.holding[i].draw();
+    }
+    ctx.restore();
+
     this.drawhealthbar();
   }
 
