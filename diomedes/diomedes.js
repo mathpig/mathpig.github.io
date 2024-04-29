@@ -330,8 +330,8 @@ class DeadBody extends Block {
     super();
     this.isCollidable = false;
     this.colors = {
-      "#": "#111111",
-      "b": "#770000",
+      "#": "#101010",
+      "b": "#800000",
     };
     this.colorMap = ["           ",
                      "           ",
@@ -1084,9 +1084,6 @@ function Draw() {
   screen.height = window.innerHeight;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
-  if (player.health <= 0) {
-    return;
-  }
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
