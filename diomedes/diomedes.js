@@ -325,6 +325,32 @@ class Wall extends Block {
   }
 }
 
+class DeadBody extends Block {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.colors = {
+      "#": "#111111",
+      "b": "#770000",
+    };
+    this.colorMap = ["           ",
+                     "           ",
+                     "           ",
+                     "           ",
+                     "    ####   ",
+                     "     b##   ",
+                     "     #b    ",
+                     "   #####   ",
+                     "  ## ####  ",
+                     "    ###b   ",
+                     "####bbb#bbb"];
+  }
+
+  draw() {
+    DrawPixels(this.x, this.y, this.size, this.colorMap, this.colors);
+  }
+}
+
 class Palladium extends Block {
   constructor() {
     super();
@@ -645,6 +671,7 @@ class Knight {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
+                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y));
               }
               entities[j].vx += (this.direction * blockSize);
             }
@@ -799,6 +826,7 @@ class EnemyKnight extends Knight {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
+                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y));
               }
               entities[j].vx += (this.direction * blockSize);
             }
@@ -1010,6 +1038,7 @@ class Bullet {
             entities[i].health -= this.attack;
             if (entities[i].health <= 0) {
               toRemove.push(entities[i]);
+              entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y));
             }
             entities[i].vx += (this.vx * blockSize / 20);
             entities[i].vy += (this.vy * blockSize / 20);
