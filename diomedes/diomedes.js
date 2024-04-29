@@ -1036,6 +1036,9 @@ class Bullet {
   tick() {
     this.x += this.vx;
     this.y += this.vy;
+    if (Math.abs(this.x) >= 10000 || Math.abs(this.y) >= 10000) {
+      toRemove.push(this);
+    }
     for (var i = 0; i < entities.length; ++i) {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source && (!(entities[i] instanceof Block) || entities[i].isCollidable)) {
         toRemove.push(this);
