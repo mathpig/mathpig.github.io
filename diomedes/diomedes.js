@@ -31,7 +31,7 @@ var map = ["B                                                            B",
            "B                                                            B",
            "B                                                            B",
            "B                                                            B",
-           "B                                E           E               B",
+           "B                                A           A               B",
            "B                                BBBBbbbbbBBBBC              B",
            "B                                BbbbBbbbBbbbBR              B",
            "B                                BbbbbbbbbbbbBR              B",
@@ -39,16 +39,16 @@ var map = ["B                                                            B",
            "B                               BBbbbbbbbbbbbBR              B",
            "B                               BbbbBbbbbbBbbBR              B",
            "B                               BbbbbbbbbbbbbBR              B",
-           "B                              EBbbbbbBBBbbbbBR              B",
+           "B                              ABbbbbbBBBbbbbBR              B",
            "B                              BBbbbbbbbbbbbbBR              B",
            "B                             EBbbbbBbbbbbBbbBR              B",
            "B                             BBbbbbbbbbbbbbbBR              B",
-           "B                            EBbbbbbbbBBBbbbbBR              B",
+           "B                            ABbbbbbbbBBBbbbbBR              B",
            "B                            BBbbbbbbbbbbbbbbBR              B",
            "B                           EBbbbbbbBbbbbbBbbBR              B",
-           "B                          EBBbbbbbbbbbbbbbbbBR              B",
+           "B                          ABBbbbbbbbbbbbbbbbBR              B",
            "B                         EBBbbbbbbbbbBBBbbbbBR              B",
-           "B                        EBBbbbbbbbbbbbbbbbbbBR              B",
+           "B                        ABBbbbbbbbbbbbbbbbbbBR              B",
            "B                        MMmmmmmmmmmMmmmmmMmmMR              B",
            "B                       MMmmmmmmmmmmmmmmmmmmmMR              B",
            "B                    E MMmmmmmmmmmmmmmMMMmmmmMR              B",
@@ -112,12 +112,17 @@ function Init() {
         entities.push(new Air().setPosition(x, y));
         enemies.push(new EnemyKnight().setPosition(x, y));
       }
+      else if (block == "A") {
+        entities.push(new Air().setPosition(x, y));
+        enemies.push(new EnemyArcher().setPosition(x, y));
+      }
+      else if (block == "O") {
+        entities.push(new Air().setPosition(x, y));
+        enemies.push(new Odysseus().setPosition(x, y));
+      }
       else if (block == "S") {
         entities.push(new Air().setPosition(x, y));
         player = new Knight().setPosition(x, y);
-      }
-      else {
-        entities.push(new Air().setPosition(x, y));
       }
     }
   }
@@ -406,22 +411,22 @@ class Knight {
     this.colorMaps = [[" S  ###    ",
                        " S  ###    ",
                        " S  ###    ",
-                       " S   #     ",
-                       " S## # ##  ",
-                       " S #####   ",
-                       " S   #     ",
-                       " S  ###    ",
+                       "SS   #     ",
+                       "SS## # ##  ",
+                       "SS #####   ",
+                       "SS   #     ",
+                       "SS  ###    ",
                        " S #   #   ",
                        " S #   #   ",
                        " S #   #   "],
                       ["    ###  S ",
                        "    ###  S ",
                        "    ###  S ",
-                       "     #   S ",
-                       "  ## # ##S ",
-                       "   ##### S ",
-                       "     #   S ",
-                       "    ###  S ",
+                       "     #   SS",
+                       "  ## # ##SS",
+                       "   ##### SS",
+                       "     #   SS",
+                       "    ###  SS",
                        "   #   # S ",
                        "   #   # S ",
                        "   #   # S "],
@@ -613,8 +618,8 @@ class Knight {
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
           }
-          if ((entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher) && this.mode == 2 && this.attackCooldown <= 0) {
-            if ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3) {
+          if (entities[j] instanceof EnemyKnight && this.mode == 2 && this.attackCooldown <= 0) {
+            if (entities[j] instanceof EnemyArcher || ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
@@ -814,14 +819,100 @@ class EnemyKnight extends Knight {
   }
 }
 
-class EnemyArcher {
+class EnemyArcher extends EnemyKnight {
+  constructor() {
+    super();
+    this.colorMaps = [["   ###    B",
+                       "   ###   BS",
+                       "   ###  B S",
+                       "    #   B S",
+                       " ## # ##BAA",
+                       "  ##### B S",
+                       "    #   B S",
+                       "   ###   BS",
+                       "  #   #   B",
+                       "  #   #    ",
+                       "  #   #    "]];
+  }
+
+  tick() {
+    this.mode = 0;
+    this.vx *= (9 / 10);
+    if (Math.abs(this.vx) < 1) {
+      this.vx = 0;
+    }
+    var val = Math.sign(this.vx);
+    var vx = Math.abs(this.vx);
+    for (var i = 0; i < vx; ++i) {
+      this.x += val;
+      var failed = false;
+      for (var j = 0; j < entities.length; ++j) {
+        if (touches(this, entities[j])) {
+          if (entities[j] === this) {
+            continue;
+          }
+          if (entities[j] instanceof Block && !entities[j].isCollidable) {
+            continue;
+          }
+          if (entities[j] === player && this.attackCooldown <= 0) {
+            // Shoot at player
+            this.attackCooldown = this.maxAttackCooldown;
+          }
+          failed = true;
+        }
+      }
+      if (failed) {
+        this.x -= val;
+        break;
+      }
+    }
+    this.vy += (blockSize / 100);
+    this.vy *= 0.95;
+    var val = Math.sign(this.vy);
+    var vy = Math.abs(this.vy);
+    for (var i = 0; i < vy; ++i) {
+      this.y += val;
+      var failed = false;
+      for (var j = 0; j < entities.length; ++j) {
+        if (entities[j] !== this && touches(this, entities[j]) && (!(entities[j] instanceof Block) || entities[j].isCollidable)) {
+          failed = true;
+        }
+      }
+      if (failed) {
+        if (this.vy > 0) {
+          this.attackCooldown--;
+        }
+        else {
+          this.attackCooldown = this.maxAttackCooldown;
+        }
+        this.y -= val;
+        break;
+      }
+      else {
+        this.attackCooldown = this.maxAttackCooldown;
+      }
+    }
+  }
+}
+
+class Odysseus extends EnemyArcher {
+  constructor() {
+    super();
+    this.health = 500;
+    this.maxHealth = 500;
+    this.maxAttackCooldown = 20;
+    this.color = "purple";
+  }
 }
 
 function findMessage(e) {
   if (e === player) {
     return "Diomedes";
   }
-  else if (e instanceof EnemyKnight) {
+  else if (e instanceof Odysseus) {
+    return "Odysseus";
+  }
+  else {
     return "Trojan";
   }
 }
