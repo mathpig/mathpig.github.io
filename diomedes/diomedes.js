@@ -56,7 +56,7 @@ var map = ["B                                                            B",
            "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
            "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
            "B               WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR              B",
-           "B           E B WWmmmmmmmmmmmmmmmmMmmmmPmmmmMMRO           S B",
+           "B           E B WWmmmmmmmmmmmmmmmmMmmHmPmmHmMMRO           S B",
            "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGG",
            "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDDDDDDDDDDDDDDDD",
            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
@@ -107,6 +107,9 @@ function Init() {
       }
       else if (block == "P") {
         entities.push(new Palladium().setPosition(x, y));
+      }
+      else if (block == "H") {
+        entities.push(new Horse().setPosition(x, y));
       }
       else if (block == "E") {
         entities.push(new Air().setPosition(x, y));
@@ -364,6 +367,21 @@ class Palladium extends Block {
         }
       }
     }
+  }
+}
+
+class Horse extends BackgroundMarble {
+  constructor() {
+    super();
+  }
+
+  draw() {
+    super.draw();
+    var sizeX = this.size;
+    var sizeY = this.size * horse.height / horse.width;
+    var x = this.x - sizeX / 2;
+    var y = this.y - sizeY / 2;
+    ctx.drawImage(horse, x, y, sizeX, sizeY);
   }
 }
 
