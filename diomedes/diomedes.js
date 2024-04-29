@@ -397,7 +397,7 @@ class Knight {
     this.maxJumpCountdown = 10;
     this.attack = 20;
     this.attackCooldown = 0;
-    this.maxAttackCooldown = 10;
+    this.maxAttackCooldown = 20;
     this.mode = 0;
     this.goalMode = 0;
     this.modeCooldown = 0;
@@ -575,7 +575,11 @@ class Knight {
   }
 
   tick() {
-    if (keySet["a"] && this.attackCooldown <= 0) {
+    if (this.attackCooldown > 0) {
+      this.mode = 3;
+      this.attackCooldown--;
+    }
+    else if (keySet["a"]) {
       this.mode = 2;
     }
     else {
@@ -654,11 +658,9 @@ class Knight {
       }
       if (failed) {
         if (this.vy > 0) {
-          this.attackCooldown--;
           this.jumpCountdown--;
         }
         else {
-          this.attackCooldown = this.maxAttackCooldown;
           this.jumpCountdown = this.maxJumpCountdown;
         }
         this.vy = 0;
@@ -669,7 +671,6 @@ class Knight {
         break;
       }
       else {
-        this.attackCooldown = this.maxAttackCooldown;
         this.jumpCountdown = this.maxJumpCountdown;
       }
     }
@@ -696,7 +697,7 @@ class EnemyKnight extends Knight {
           this.goalMode = Math.floor(Math.random() * 2);
         }
       }
-      else {
+      else if (player.mode == 2) {
         var val = Math.random();
         if (val < 0.3) {
           this.goalMode = 2;
@@ -707,6 +708,9 @@ class EnemyKnight extends Knight {
         else {
           this.goalMode = 0;
         }
+      }
+      else {
+        this.goalMode = 2;
       }
     }
     if (this.mode == 3) {
