@@ -1004,7 +1004,7 @@ class Bullet {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source && (!(entities[i] instanceof Block) || entities[i].isCollidable)) {
         toRemove.push(this);
         if (!(entities[i] instanceof Block)) {
-          if (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3)) {
+          if (entities[i] instanceof EnemyArcher || (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3))) {
             entities[i].health -= this.attack;
             if (entities[i].health <= 0) {
               toRemove.push(entities[i]);
