@@ -401,7 +401,7 @@ class Knight {
     this.mode = 0;
     this.goalMode = 0;
     this.modeCooldown = 0;
-    this.maxModeCooldown = 20;
+    this.maxModeCooldown = 10;
     this.colorMaps = [[" S  ###    ",
                        " S  ###    ",
                        " S  ###    ",
@@ -575,27 +575,12 @@ class Knight {
   }
 
   tick() {
-    if (keySet["d"]) {
-      this.goalMode = 0;
+    if (keySet["a"] && this.attackCooldown <= 0) {
+      this.mode = 2;
     }
-    if (keySet["s"]) {
-      this.goalMode = 1;
+    else {
+      this.mode = 1;
     }
-    if (keySet["a"]) {
-      this.goalMode = 2;
-    }
-    if (this.mode == 3) {
-      this.modeCooldown--;
-      if (this.modeCooldown <= 0) {
-        this.mode = this.goalMode;
-      }
-    }
-    else if (this.mode != this.goalMode) {
-      this.mode = 3;
-      this.modeCooldown = this.maxModeCooldown;
-    }
-    var speed = (this.maxSpeed * (1 - (this.mode / 4)));
-    var oldX = this.x;
     var val = 0;
     if (keySet["ArrowLeft"]) {
       this.direction = -1;
@@ -605,7 +590,7 @@ class Knight {
       this.direction = 1;
       val++;
     }
-    for (var i = 0; i < speed; ++i) {
+    for (var i = 0; i < this.maxSpeed; ++i) {
       this.x += val;
       var failed = false;
       for (var j = 0; j < entities.length; ++j) {
@@ -617,7 +602,7 @@ class Knight {
             continue;
           }
           if (entities[j] instanceof EnemyKnight || entities[j] instanceof EnemyArcher) {
-            if (this.attackCooldown <= 0 && this.mode == 2 && keySet["a"] && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
+            if (this.attackCooldown <= 0 && this.mode == 2 && ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
               this.attackCooldown = this.maxAttackCooldown;
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
@@ -678,7 +663,7 @@ class Knight {
         }
         this.vy = 0;
         if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
-          this.vy -= (blockSize / 3) * (1 - (this.mode / 4));
+          this.vy -= (blockSize / 3);
         }
         this.y -= val;
         break;
@@ -703,15 +688,7 @@ class EnemyKnight extends Knight {
 
   tick() {
     if ((time % 20) == 0) {
-      if (player.mode == 0) {
-        if (Math.random() < 0.8) {
-          this.goalMode = 2;
-        }
-        else {
-          this.goalMode = Math.floor(Math.random() * 2);
-        }
-      }
-      else if (player.mode == 1) {
+      if (player.mode == 1) {
         if (Math.random() < 0.5) {
           this.goalMode = 2;
         }
@@ -719,7 +696,7 @@ class EnemyKnight extends Knight {
           this.goalMode = Math.floor(Math.random() * 2);
         }
       }
-      else if (player.mode == 2) {
+      else {
         var val = Math.random();
         if (val < 0.3) {
           this.goalMode = 2;
@@ -730,9 +707,6 @@ class EnemyKnight extends Knight {
         else {
           this.goalMode = 0;
         }
-      }
-      else {
-        this.goalMode = 2;
       }
     }
     if (this.mode == 3) {
@@ -746,7 +720,6 @@ class EnemyKnight extends Knight {
       this.modeCooldown = this.maxModeCooldown;
     }
     var speed = (this.maxSpeed * (1 - (this.mode / 4)));
-    var oldX = this.x;
     var val = 0;
     if (this.x > player.x) {
       this.direction = -1;
