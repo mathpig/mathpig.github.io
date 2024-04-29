@@ -1170,14 +1170,14 @@ function Draw() {
   ctx.fillRect(0, 0, screen.width, screen.height);
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
-  var radius = blockSize * 2.5 + blockSize * 7.5 * player.health / player.maxHealth;
+  var radius = (blockSize * 5 + blockSize * 5 * player.health / player.maxHealth);
   for (var i = 0; i < entities.length; ++i) {
     if (distance(player, entities[i]) < radius) {
       entities[i].draw();
     }
   }
   for (var i = 0; i < entities.length; ++i) {
-    if (distance(player, entities[i]) < (2.5 * blockSize)) {
+    if (distance(player, entities[i]) < (5 * blockSize)) {
       drawLabel(entities[i]);
     }
   }
@@ -1203,7 +1203,7 @@ function DrawInstructions() {
   var y = screen.height - instructions.length * 20 - 20;
   for (var i = 0; i < instructions.length; ++i) {
     ctx.fillStyle = "black";
-    ctx.fillText(instructions[i], 40 + 2, y + i * 20 + 2);
+    ctx.fillText(instructions[i], 42, y + i * 20 + 2);
     ctx.fillStyle = "yellow";
     ctx.fillText(instructions[i], 40, y + i * 20);
   }
