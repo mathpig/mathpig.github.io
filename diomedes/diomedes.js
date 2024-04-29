@@ -336,8 +336,8 @@ class DeadBody extends Block {
     super();
     this.isCollidable = false;
     this.colors = {
-      "#": "#111111",
-      "b": "#770000",
+      "#": "#101010",
+      "b": "#800000",
     };
     this.colorMap = ["           ",
                      "           ",
@@ -465,7 +465,7 @@ class Knight {
     this.vy = 0;
     this.size = (blockSize * 4 / 5);
     this.color = "blue";
-    this.health = 100;
+    this.health = 250;
     this.maxHealth = this.health;
     this.jumpCountdown = 0;
     this.maxJumpCountdown = 10;
@@ -753,10 +753,12 @@ class EnemyKnight extends Knight {
   constructor() {
     super();
     this.speed = (blockSize / 20);
-    this.color = "red";
+    this.health = 100;
+    this.maxHealth = 100;
     this.attack = 10;
     this.maxAttackCooldown = 20;
     this.maxModeCooldown = 40;
+    this.color = "red";
   }
 
   tick() {
@@ -1088,9 +1090,6 @@ function Draw() {
   screen.height = window.innerHeight;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
-  if (player.health <= 0) {
-    return;
-  }
   ctx.save();
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
   for (var i = 0; i < entities.length; ++i) {
