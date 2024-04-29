@@ -109,6 +109,7 @@ function Init() {
         entities.push(new Palladium().setPosition(x, y));
       }
       else if (block == "H") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
         entities.push(new Horse().setPosition(x, y));
       }
       else if (block == "E") {
@@ -210,6 +211,29 @@ class Brick extends Block {
   }
 }
 
+function DrawPixels(x, y, size, map, colors, flip) {
+  x -= size / 2;
+  y -= size / 2;
+  var width = map[0].length;
+  var height = map.length;
+  var sw = size / width;
+  var sh = size / height;
+  if (flip === -1) {
+    x += size;
+    sw = -sw;
+  }
+  for (var j = 0; j < height; ++j) {
+    for (var i = 0; i < width; ++i) {
+      var c = colors[map[j][i]];
+      if (!c) {
+        continue;
+      }
+      ctx.fillStyle = c;
+      ctx.fillRect(x + i * sw, y + j * sh, sw, sh);
+    }
+  }
+}
+
 class BackgroundBrick extends Brick {
   constructor() {
     super();
@@ -221,8 +245,10 @@ class BackgroundBrick extends Brick {
 class Marble extends Block {
   constructor() {
     super();
-    this.color1 = "rgb(" + String(Math.random() * 64 + 192) + ", " + String(Math.random() * 32 + 96) + ", " + String(Math.random() * 32 + 96) + ")";
-    this.color2 = "rgb(" + String(Math.random() * 16 + 240) + ", " + String(Math.random() * 16 + 240) + ", " + String(Math.random() * 12 + 180) + ")";
+    this.colors = {
+      "1": "rgb(" + String(Math.random() * 64 + 192) + ", " + String(Math.random() * 32 + 96) + ", " + String(Math.random() * 32 + 96) + ")",
+      "2": "rgb(" + String(Math.random() * 16 + 240) + ", " + String(Math.random() * 16 + 240) + ", " + String(Math.random() * 12 + 180) + ")",
+    };
     this.color3 = "rgb(0, 0, 0)";
     this.colorMap = ["12111211",
                      "21212121",
@@ -235,22 +261,7 @@ class Marble extends Block {
   }
 
   draw() {
-    for (var i = 0; i < this.colorMap.length; ++i) {
-      for (var j = 0; j < this.colorMap[0].length; ++j) {
-        if (this.colorMap[i][j] == "1") {
-          ctx.fillStyle = this.color1;
-        }
-        else {
-          ctx.fillStyle = this.color2;
-        }
-        ctx.fillRect(this.x - this.size / 2 + j * this.size / this.colorMap[0].length - 1,
-                     this.y - this.size / 2 + i * this.size / this.colorMap.length - 1,
-                     this.size / this.colorMap.length + 2,
-                     this.size / this.colorMap[0].length + 2);
-      }
-    }
-    ctx.strokeStyle = this.color3;
-    ctx.lineWidth = (blockSize / 10);
+    DrawPixels(this.x, this.y, this.size, this.colorMap, this.colors);
   }
 }
 
@@ -258,8 +269,8 @@ class BackgroundMarble extends Marble {
   constructor() {
     super();
     this.isCollidable = false;
-    this.color1 = "rgb(" + String(Math.random() * 32 + 96) + ", " + String(Math.random() * 16 + 48) + ", " + String(Math.random() * 16 + 48) + ")";
-    this.color2 = "rgb(" + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 6 + 90) + ")";
+    this.colors["1"] = "rgb(" + String(Math.random() * 32 + 96) + ", " + String(Math.random() * 16 + 48) + ", " + String(Math.random() * 16 + 48) + ")";
+    this.colors["2"] = "rgb(" + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 6 + 90) + ")";
   }
 }
 
@@ -370,13 +381,12 @@ class Palladium extends Block {
   }
 }
 
-class Horse extends BackgroundMarble {
+class Horse extends Block {
   constructor() {
     super();
   }
 
   draw() {
-    super.draw();
     var sizeX = this.size;
     var sizeY = this.size * horse.height / horse.width;
     var x = this.x - sizeX / 2;
@@ -426,6 +436,10 @@ class Knight {
     this.goalMode = 0;
     this.modeCooldown = 0;
     this.maxModeCooldown = 10;
+    this.colors = {
+      "S": "silver",
+      "D": "#ffffcc",
+    };
     this.colorMaps = [[" S  ###    ",
                        " S  ###    ",
                        " S  ###    ",
@@ -568,26 +582,8 @@ class Knight {
 
   draw() {
     var colorMap = this.colorMaps[this.mode];
-    for (var i = 0; i < colorMap.length; ++i) {
-      for (var j = 0; j < colorMap[0].length; ++j) {
-        if (colorMap[i][j] == " ") {
-          continue;
-        }
-        if (colorMap[i][j] == "#") {
-          ctx.fillStyle = this.color;
-        }
-        else {
-          ctx.fillStyle = "silver";
-        }
-        if (this.direction == 1) {
-          var x = (this.x - this.size / 2 + j * this.size / colorMap[0].length);
-        }
-        else {
-          var x = (this.x + this.size / 2 - (j + 1) * this.size / colorMap[0].length);
-        }
-        ctx.fillRect(x, this.y - this.size / 2 + i * this.size / colorMap.length, this.size / colorMap[0].length, this.size / colorMap.length);
-      }
-    }
+    this.colors["#"] = this.color;
+    DrawPixels(this.x, this.y, this.size, colorMap, this.colors, this.direction);
     this.drawhealthbar();
   }
 
@@ -841,6 +837,8 @@ class EnemyKnight extends Knight {
 class EnemyArcher extends EnemyKnight {
   constructor() {
     super();
+    this.colors["B"] = "brown";
+    this.colors["A"] = "black";
     this.colorMaps = [["   ###    B",
                        "   ###   BS",
                        "   ###  B S",
