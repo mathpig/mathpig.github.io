@@ -51,7 +51,7 @@ var levels = [
     "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
     "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
     "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
-    "BBBbbb B      bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
+    "BBBbbb        bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
     "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
     "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
@@ -63,7 +63,7 @@ var levels = [
     "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
     "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
     "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBb0gB",
-    "BBBbbb B  wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
+    "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
     "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
     "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
@@ -1194,7 +1194,7 @@ class Rhesus extends EnemyKnight {
     this.maxAttackCooldown = 40;
     this.attack = 50;
     this.maxModeCooldown = 80;
-    this.size = (blockSize * 6 / 5);
+    this.size = (blockSize * 8 / 5);
     this.range = 10;
   }
 }
@@ -1208,7 +1208,7 @@ class StrongKnight extends EnemyKnight {
     this.maxAttackCooldown = 30;
     this.attack = 25;
     this.maxModeCooldown = 60;
-    this.size = blockSize;
+    this.size = (blockSize * 6 / 5);
     this.range = 10;
   }
 }
@@ -1316,7 +1316,7 @@ class StrongArcher extends EnemyArcher {
     this.maxHealth = 100;
     this.attack = 20;
     this.maxAttackCooldown = 80;
-    this.size = blockSize;
+    this.size = (blockSize * 6 / 5);
     this.bulletSpeed = 15;
     this.range = 20;
     this.accuracy = 0;
