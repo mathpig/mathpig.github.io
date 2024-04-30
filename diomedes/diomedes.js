@@ -26,34 +26,48 @@ var keySet = {};
 var level = 0;
 var levels = [
   [
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-    "BB        bbbbbbbb        mmmmmmmmm                BB",
-    "BB        bbbbbbbb        mmmmmmmmm         B   B  BB",
-    "BB        bbbbbbbb        mmmmmmmmm         B   B  BB",
-    "BB        bbbBbbbb        mmmmmmmmm        BBB BBB BB",
-    "BgS       BbbBbBBbE       ammmmmmmmA   E   BBB BBB XB",
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBMMMMMMMMMBBBBBBBBBBBBBBBBBB",
+    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "BMMMB        bbbbbbbb        mmmmmmmmm                BbbbB",
+    "B3L4B        bbbbbbbb        mmmmmmmmm         B   B  BbbbB",
+    "BBBBB        bbbbbbbb        mmmmmmmmm         B   B  BBBBB",
+    "Bg0bB        bbbBbbbb        mmmmmmmmm        BBB BBB BbbXB",
+    "BBBbb        BbbBbBBbE       ammmmmmmmA   E   BBB BBB bbBBB",
+    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBMMMMMMMMMBBBBBBBBBBBBBBBBBBBBB",
   ],
   [
-    "BB                     BB",
-    "BB                     BB",
-    "BB                     BB",
-    "BB                   B BB",
-    "BgS        1         B XB",
-    "GGGGGGGGGGGGGGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDD",
+    "BBBBB                     BB",
+    "BbbbB                     BB",
+    "Bb3bB                     BB",
+    "BBBBB                     BB",
+    "Bg0bB                   B BB",
+    "BBBbb         1         B XB",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
   [
-    "BB        BBBBBBBB        BBBBBBBB        BBBBBBBB         BB",
-    "BB        BbbbbbbB        BbbbbbbB        BbbbbbbB         BB",
-    "BB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB         BB",
-    "BB        Bbb3bbbB        Bb4wbbbB        BbbwbbbB    2    BB",
-    "BgS       bb33bb3b    E   b4wwbb3b   A  E b34w443b E    AA XB",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBB",
-    "DDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDDLDDDDDDDD",
-    "DDDDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDDDDDDD",
+    "BBBBBB                                                        BBBBBB",
+    "BbbbbB                                                        BwbbwB",
+    "BbbbbB        BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
+    "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
+    "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
+    "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
+    "BBBbbb        bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
+    "DDLDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
+    "DDDDDDDDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
   ],
-  [],
+  [
+    "BBBBBB                                                        BBBBBB",
+    "BbbbbB  6 5 5                                                 BwbbwB",
+    "BbbbbB        BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
+    "BbbbbB  6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
+    "BBBBBB        BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
+    "BXbbBB  wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBb0gB",
+    "BBBbbb  wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
+    "DDLDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
+    "DDDDDDDDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
+  ],
   [],
   [
   "B                                                            B",
@@ -170,14 +184,15 @@ var levelGoals = [
     "Defeat Dolon the Wolf!",
   ],
   [
-    "Now, enter Rhesus' camp",
+    "Now, break into Rhesus' camp",
     "and steal his snow-white horses!",
   ],
   [
-    "Escape with the horses!",
+    "Defeat Rhesus' best men",
+    "and escape with the horses!",
   ],
   [
-    "Celebrate your victory over Rhesus! :P",,
+    "Celebrate your victory over Rhesus! :P",
   ],
   [
     "Now, demobilize Odysseus,",
@@ -298,6 +313,12 @@ function Init() {
         entities.push(new BackgroundBrick().setPosition(x, y));
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
+      else if (block == "5") {
+        enemies.push(new StrongKnight().setPosition(x, y));
+      }
+      else if (block == "6") {
+        enemies.push(new StrongArcher().setPosition(x, y));
+      }
       else if (block == "1") {
         enemies.push(new Dolon().setPosition(x, y));
       }
@@ -308,6 +329,11 @@ function Init() {
         enemies.push(new Odysseus().setPosition(x, y));
       }
       else if (block == "S") {
+        player = new Knight().setPosition(x, y);
+        player.setHolding(levelHolding[level]);
+      }
+      else if (block == "0") {
+        entities.push(new BackgroundBrick().setPosition(x, y));
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding[level]);
       }
@@ -689,8 +715,8 @@ class Knight {
     this.color = "blue";
     this.health = 250;
     this.maxHealth = this.health;
-    this.jumpCountdown = 0;
-    this.maxJumpCountdown = 10;
+    this.jumpCooldown = 0;
+    this.maxJumpCooldown = 10;
     this.attack = 20;
     this.attackCooldown = 0;
     this.maxAttackCooldown = 20;
@@ -698,10 +724,9 @@ class Knight {
     this.goalMode = 0;
     this.modeCooldown = 0;
     this.maxModeCooldown = 10;
-    this.holding = [];
     this.colors = {
       "S": "silver",
-      "D": "#ffffcc",
+      "D": "#ffffB0",
     };
     this.colorMaps = [[" S  ###    ",
                        " S  ###    ",
@@ -748,7 +773,9 @@ class Knight {
                        "   #   #   ",
                        "   #   #   "]];
     this.direction = 1;
+    this.lastAttacked = 0;
     this.labelCount = 0;
+    this.holding = [];
   }
 
   setMaxSpeed(maxSpeed) {
@@ -803,13 +830,13 @@ class Knight {
     return this;
   }
 
-  setJumpCountdown(jumpCountdown) {
-    this.jumpCountdown = jumpCountdown;
+  setJumpCooldown(jumpCooldown) {
+    this.jumpCooldown = jumpCooldown;
     return this;
   }
 
-  setMaxJumpCountdown(maxJumpCountdown) {
-    this.maxJumpCountdown = maxJumpCountdown;
+  setMaxJumpCooldown(maxJumpCooldown) {
+    this.maxJumpCooldown = maxJumpCooldown;
     return this;
   }
 
@@ -838,13 +865,18 @@ class Knight {
     return this;
   }
 
+  setLastAttacked(lastAttacked) {
+    this.lastAttacked = lastAttacked;
+    return this;
+  }
+
   setLabelCount(labelCount) {
     this.labelCount = labelCount;
     return this;
   }
 
-  setHolding(things) {
-    this.holding = things;
+  setHolding(items) {
+    this.holding = items;
   }
 
   draw() {
@@ -871,6 +903,10 @@ class Knight {
   }
 
   tick() {
+    this.lastAttacked++;
+    if (this.jumpCooldown <= 0 && this.lastAttacked >= 200) {
+      this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
+    }
     if (this.attackCooldown > 0) {
       this.mode = 3;
       this.attackCooldown--;
@@ -915,6 +951,7 @@ class Knight {
           if (entities[j] instanceof EnemyKnight && this.mode == 2 && this.attackCooldown <= 0) {
             if (entities[j] instanceof EnemyArcher || ((entities[j].mode == 1 && this.direction == entities[j].direction) || ((entities[j].mode == 0 || entities[j].mode == 2) && this.direction != entities[j].direction) || entities[j].mode == 3)) {
               entities[j].health -= this.attack;
+              entities[j].lastAttacked = 0;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
                 entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
@@ -975,20 +1012,20 @@ class Knight {
       }
       if (failed) {
         if (this.vy > 0) {
-          this.jumpCountdown--;
+          this.jumpCooldown--;
         }
         else {
-          this.jumpCountdown = this.maxJumpCountdown;
+          this.jumpCooldown = this.maxJumpCooldown;
         }
         this.vy = 0;
-        if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
+        if (this.jumpCooldown <= 0 && keySet["ArrowUp"]) {
           this.vy -= (blockSize / 3);
         }
         this.y -= val;
         break;
       }
       else {
-        this.jumpCountdown = this.maxJumpCountdown;
+        this.jumpCooldown = this.maxJumpCooldown;
       }
     }
   }
@@ -1013,6 +1050,10 @@ class EnemyKnight extends Knight {
   }
 
   tick() {
+    this.lastAttacked++;
+    if (this.lastAttacked >= 200) {
+      this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
+    } 
     if ((time % 20) == 0 && distance(this, player) <= (blockSize * 5)) {
       if (player.mode == 1) {
         if (Math.random() < 0.6) {
@@ -1081,6 +1122,7 @@ class EnemyKnight extends Knight {
             if ((entities[j].mode == 1 && this.direction == entities[j].direction) || (entities[j].mode == 2 && this.direction != entities[j].direction) || entities[j].mode == 3) {
               this.attackCooldown = this.maxAttackCooldown;
               entities[j].health -= this.attack;
+              entities[j].lastAttacked = 0;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
                 entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
@@ -1157,6 +1199,20 @@ class Rhesus extends EnemyKnight {
   }
 }
 
+class StrongKnight extends EnemyKnight {
+  constructor() {
+    super();
+    this.speed = (blockSize / 25);
+    this.health = 150;
+    this.maxHealth = 150;
+    this.maxAttackCooldown = 30;
+    this.attack = 25;
+    this.maxModeCooldown = 60;
+    this.size = blockSize;
+    this.range = 10;
+  }
+}
+
 class EnemyArcher extends EnemyKnight {
   constructor() {
     super();
@@ -1185,6 +1241,10 @@ class EnemyArcher extends EnemyKnight {
   }
 
   tick() {
+    this.lastAttacked++;
+    if (this.jumpCooldown <= 0 && this.lastAttacked >= 200) {
+      this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
+    }
     this.mode = 0;
     this.direction = Math.sign(player.x - this.x);
     if (this.attackCooldown <= 0 && distance(this, player) <= (blockSize * this.range)) {
@@ -1249,12 +1309,26 @@ class EnemyArcher extends EnemyKnight {
   }
 }
 
+class StrongArcher extends EnemyArcher {
+  constructor() {
+    super();
+    this.health = 100;
+    this.maxHealth = 100;
+    this.attack = 20;
+    this.maxAttackCooldown = 80;
+    this.size = blockSize;
+    this.bulletSpeed = 15;
+    this.range = 20;
+    this.accuracy = 0;
+  }
+}
+
 class Odysseus extends EnemyArcher {
   constructor() {
     super();
     this.health = 250;
     this.maxHealth = 250;
-    this.attack = 20;
+    this.attack = 25;
     this.maxAttackCooldown = 60;
     this.color = "purple";
     this.bulletSpeed = 5;
@@ -1324,6 +1398,7 @@ class Bullet {
         if (!(entities[i] instanceof Block)) {
           if (entities[i] instanceof EnemyArcher || (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3))) {
             entities[i].health -= this.attack;
+            entities[i].lastAttacked = 0;
             if (entities[i].health <= 0) {
               toRemove.push(entities[i]);
               entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y).setDirection(entities[i].direction).setSize(entities[i].size));
@@ -1355,13 +1430,16 @@ function findMessage(e) {
   else if (e instanceof Rhesus) {
     return "Rhesus";
   }
+  else if (e instanceof StrongKnight || e instanceof StrongArcher) {
+    return "S. Trojan";
+  }
   else {
     return "Trojan";
   }
 }
 
 function drawLabel(e) {
-  if ((e instanceof Block) || (e instanceof Bullet) || e.labelCount >= 100) {
+  if ((e instanceof Block) || (e instanceof Bullet) || e.labelCount >= 200) {
     return;
   }
   e.labelCount++;
