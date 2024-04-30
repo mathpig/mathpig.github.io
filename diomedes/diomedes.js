@@ -51,7 +51,7 @@ var levels = [
     "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
     "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
     "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
-    "BBBbbb        bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
+    "BBBbbb B      bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
     "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
     "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
