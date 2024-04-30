@@ -26,90 +26,35 @@ var keySet = {};
 var level = 0;
 var levels = [
   [
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                           BB",
-    "BX           E B  A       E B       B    E    M E          S gB",
-    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "BB        bbbbbbbb        mmmmmmmmm                BB",
+    "BB        bbbbbbbb        mmmmmmmmm         B   B  BB",
+    "BB        bbbbbbbb        mmmmmmmmm         B   B  BB",
+    "BB        bbbBbbbb        mmmmmmmmm        BBB BBB BB",
+    "BgS       BbbBbBBbE       ammmmmmmmA   E   BBB BBB XB",
+    "BBBBBBBBBBBBBBBBBBBBBBBBBBMMMMMMMMMBBBBBBBBBBBBBBBBBB",
   ],
   [
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                           BB",
-    "BgS          E B  A       E B       B    E    M E            XB",
-    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "BB                     BB",
+    "BB                     BB",
+    "BB                     BB",
+    "BB                   B BB",
+    "BgS        1         B XB",
+    "GGGGGGGGGGGGGGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
   [
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                           BB",
-    "BgS          E B  A       E B       B    E    M E            XB",
-    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "BB        BBBBBBBB        BBBBBBBB        BBBBBBBB         BB",
+    "BB        BbbbbbbB        BbbbbbbB        BbbbbbbB         BB",
+    "BB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB         BB",
+    "BB        Bbb3bbbB        Bb4wbbbB        BbbwbbbB    2    BB",
+    "BgS       bb33bb3b    E   b4wwbb3b   A  E b34w443b E    AA XB",
+    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBB",
+    "DDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDDLDDDDDDDD",
+    "DDDDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDDDDDDD",
   ],
-  [
-    "wwwwwwwwwwww",
-    "ww        ww",
-    "ww        ww",
-    "ww S  O   ww",
-    "wwwwwwwwwXww",
-  ],
-  [
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                        w w                                 B",
-    "BB                     m  wwwww                               B",
-    "BB                     R wwXwwwww        www                  B",
-    "BB                     R wwwwwwwwwwwwwwwwwwww                 B",
-    "BB                     R www wwwwwwwwwwwwwwwww                B",
-    "BB                     R ww    wwwwwwwwwwwwwww                B",
-    "BB                     R        wwwwwwwwwwwwww                B",
-    "BB                     R         wwwww S wwwww                B",
-    "BB                     R         ww    R    ww                B",
-    "BB                     R         ww    R    ww               BB",
-    "Bg                     R         mm    R    ww               XB",
-    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-  ],
+  [],
+  [],
   [
   "B                                                            B",
   "B                                                            B",
@@ -148,11 +93,46 @@ var levels = [
   "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMmMMMMMMGGGGGGGGGGGGGGGG",
   "DDDDDDDDDDDDDDDDMMMMMMMMMMMMMMMMMMMMMMMmMMMMMMDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmMDDDDDDDDDDDDDDDDDDDDD",
+  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmMDDDDDDDDDDDDDDDDDDDDD",
+  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmMDDDDDDDDDDDDDDDDDDDDD",
+  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmMDDDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMmMMMDDDDDDDDDDDDDDDDDDD",
+  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmmmmmMDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmmmmmMDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMmmPmmMDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMDDDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
+  [],
+  [],
+  [
+    "wwwwwwwwwwww",
+    "ww        ww",
+    "ww        ww",
+    "ww S  O   ww",
+    "wwwwwwwwwXww",
+  ],
+  [],
+  [
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                                                            B",
+    "BB                        w w                                 B",
+    "BB                     m  wwwww                               B",
+    "BB                     R wwXwwwww        www                  B",
+    "BB                     R wwwwwwwwwwwwwwwwwwww                 B",
+    "BB                     R www wwwwwwwwwwwwwwwww                B",
+    "BB                     R ww    wwwwwwwwwwwwwww                B",
+    "BB                     R        wwwwwwwwwwwwww                B",
+    "BB                     R         wwwww S wwwww                B",
+    "BB                     R         ww    R    ww                B",
+    "BB                     R         ww    R    ww               BB",
+    "Bg                     R         mm    R    ww               XB",
+    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
 ];
 
@@ -178,41 +158,64 @@ var levelInstructions = [
 var levelGoals = [
   [
     "You are Diomedes!",
-    "Use your god-like cunning",
-    "to steal Rhesus' prized",
-    "white horses.",
+    "Use your god-like strength",
+    "to win the Trojan War!",
+    "",
+    "Start by completing this tutorial.",
+    "Controls are to the left.",
+  ],
+  [
+    "Your first task:",
+    "",
+    "Defeat Dolon the Wolf!",
+  ],
+  [
+    "Now, enter Rhesus' camp",
+    "and steal his snow-white horses!",
   ],
   [
     "Escape with the horses!",
   ],
   [
+    "Celebrate your victory over Rhesus! :P",,
+  ],
+  [
+    "Now, demobilize Odysseus,",
+    "break into the citadel,",
+    "and capture the Palladium!",
+  ],
+  [
     "Escape with the Palladium!",
   ],
   [
-    "Inside the Trojan Horse",
-    "Odysseus doesn't",
-    "smell nice.",
-    "Go sack Troy!",
+    "Celebrate your victory AGAIN!",
   ],
   [
-    "Kill the Trojans!",
+    "The other heroes are all refusing to",
+    "fight. Exit the Trojan Horse yourself!",
   ],
   [
-    "Stuff",
+    "Kill all the Trojans!",
+  ],
+  [
+    "Celebrate the Greek victory against Troy!",
   ],
 ];
 
 function Init() {
   var levelHolding = [
     [],
+    [],
+    [],
     [
       new Horse().setPosition(0, -blockSize),
       new Horse().setPosition(0, -blockSize * 1.6),
     ],
+    [],
+    [],
     [
       new Palladium().setPosition(0, -blockSize),
     ],
-    [],
     [],
     [],
     [],
@@ -244,6 +247,9 @@ function Init() {
       }
       else if (block == "D") {
         entities.push(new Dirt().setPosition(x, y));
+      }
+      else if (block == "L") {
+        entities.push(new Gold().setPosition(x, y));
       }
       else if (block == "C") {
         entities.push(new CornerRope().setPosition(x, y));
@@ -284,6 +290,20 @@ function Init() {
         entities.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
+      else if (block == "3") {
+        entities.push(new BackgroundBrick().setPosition(x, y));
+        enemies.push(new EnemyKnight().setPosition(x, y));
+      }
+      else if (block == "4") {
+        entities.push(new BackgroundBrick().setPosition(x, y));
+        enemies.push(new EnemyArcher().setPosition(x, y));
+      }
+      else if (block == "1") {
+        enemies.push(new Dolon().setPosition(x, y));
+      }
+      else if (block == "2") {
+        enemies.push(new Rhesus().setPosition(x, y));
+      }
       else if (block == "O") {
         enemies.push(new Odysseus().setPosition(x, y));
       }
@@ -309,7 +329,6 @@ class Block {
     this.y = 0;
     this.size = blockSize;
     this.isCollidable = true;
-    this.damageVal = 0;
     this.color = "black";
     this.direction = 1;
   }
@@ -454,6 +473,13 @@ class Dirt extends Block {
   constructor() {
     super();
     this.color = "brown";
+  }
+}
+
+class Gold extends Block {
+  constructor() {
+    super();
+    this.color = "yellow";
   }
 }
 
@@ -881,6 +907,7 @@ class Knight {
           if (entities[j] instanceof Exit) {
             level++;
             Init();
+            return;
           }
           if (entities[j] instanceof Block && !entities[j].isCollidable) {
             continue;
@@ -890,7 +917,7 @@ class Knight {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
-                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction));
+                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
               }
               entities[j].vx += (this.direction * blockSize);
             }
@@ -939,6 +966,11 @@ class Knight {
           if (!(entities[j] instanceof Block) || entities[j].isCollidable) {
             failed = true;
           }
+          if (entities[j] instanceof Exit) {
+            level++;
+            Init();
+            return;
+          }
         }
       }
       if (failed) {
@@ -972,12 +1004,18 @@ class EnemyKnight extends Knight {
     this.maxAttackCooldown = 20;
     this.maxModeCooldown = 40;
     this.color = "red";
+    this.range = 5;
+  }
+
+  setRange(range) {
+    this.range = range;
+    return this;
   }
 
   tick() {
     if ((time % 20) == 0 && distance(this, player) <= (blockSize * 5)) {
       if (player.mode == 1) {
-        if (Math.random() < 0.5) {
+        if (Math.random() < 0.6) {
           this.goalMode = 2;
         }
         else {
@@ -1016,7 +1054,7 @@ class EnemyKnight extends Knight {
     }
     var num = this.vx;
     var speed = (this.maxSpeed * (1 - (this.mode / 4)));
-    if (distance(this, player) <= (blockSize * 5)) {
+    if (distance(this, player) <= (blockSize * this.range)) {
       if (this.x > player.x) {
         this.direction = -1;
         num -= this.speed;
@@ -1045,7 +1083,7 @@ class EnemyKnight extends Knight {
               entities[j].health -= this.attack;
               if (entities[j].health <= 0) {
                 toRemove.push(entities[j]);
-                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction));
+                entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
               }
               entities[j].vx += (this.direction * blockSize);
             }
@@ -1088,6 +1126,34 @@ class EnemyKnight extends Knight {
         this.attackCooldown = this.maxAttackCooldown;
       }
     }
+  }
+}
+
+class Dolon extends EnemyKnight {
+  constructor() {
+    super();
+    this.speed = (blockSize / 15);
+    this.health = 50;
+    this.maxHealth = 50;
+    this.maxAttackCooldown = 5;
+    this.attack = 20;
+    this.maxModeCooldown = 20;
+    this.size = (blockSize * 3 / 5);
+    this.range = 10;
+  }
+}
+
+class Rhesus extends EnemyKnight {
+  constructor() {
+    super();
+    this.speed = (blockSize / 30);
+    this.health = 250;
+    this.maxHealth = 250;
+    this.maxAttackCooldown = 40;
+    this.attack = 50;
+    this.maxModeCooldown = 80;
+    this.size = (blockSize * 6 / 5);
+    this.range = 10;
   }
 }
 
@@ -1260,7 +1326,7 @@ class Bullet {
             entities[i].health -= this.attack;
             if (entities[i].health <= 0) {
               toRemove.push(entities[i]);
-              entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y).setDirection(entities[i].direction));
+              entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y).setDirection(entities[i].direction).setSize(entities[i].size));
             }
             entities[i].vx += (this.vx * blockSize / 20);
             entities[i].vy += (this.vy * blockSize / 20);
@@ -1282,6 +1348,12 @@ function findMessage(e) {
   }
   else if (e instanceof Odysseus) {
     return "Odysseus";
+  }
+  else if (e instanceof Dolon) {
+    return "Dolon";
+  }
+  else if (e instanceof Rhesus) {
+    return "Rhesus";
   }
   else {
     return "Trojan";
