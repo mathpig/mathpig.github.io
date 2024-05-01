@@ -206,7 +206,7 @@ var levelGoals = [
   [
     "Now, demobilize Odysseus,",
     "break into the citadel,",
-    "and capture the Palladium!",
+    "and locate the Palladium!",
   ],
   [
     "Escape with the Palladium!",
