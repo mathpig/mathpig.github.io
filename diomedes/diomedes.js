@@ -24,172 +24,356 @@ function touches(e1, e2) {
 var keySet = {};
 
 var level = 0;
-var levels = [
-  [
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-    "BMMMB        bbbbbbbb        mmmmmmmmm                BbbbB",
-    "B3L4B        bbbbbbbb        mmmmmmmmm         B   B  BbbbB",
-    "BBBBB        bbbbbbbb        mmmmmmmmm         B   B  BBBBB",
-    "Bg0bB        bbbBbbbb        mmmmmmmmm        BBB BBB BbbXB",
-    "BBBbb        BbbBbBBbE       ammmmmmmmA   E   BBB BBB bbBBB",
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBMMMMMMMMMBBBBBBBBBBBBBBBBBBBBB",
-  ],
-  [
-    "BBBBB                       BB",
-    "BbbbB                       BB",
-    "Bb3bB                       BB",
-    "BBBBB                       BB",
-    "Bg0bB                     B BB",
-    "BBBbb B         1         B XB",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-  ],
-  [
-    "BBBBBB                                                        BBBBBB",
-    "BbbbbB                                                        BwbbwB",
-    "BbbbbB        BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
-    "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
-    "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
-    "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
-    "BBBbbb B      bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
-    "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
-    "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
-  ],
-  [
-    "MMMMMMMMM",
-    "MmmmmmmmM",
-    "XmHm7mHmM",
-    "MMMMMMMMM",
-  ],
-  [
-    "BBBBBB                                                          BBBBBB",
-    "BbbbbB    6 5 5                                                 BwbbwB",
-    "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
-    "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
-    "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
-    "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBb0gB",
-    "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
-    "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
-    "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
-    "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
-  ],
-  [
-    "BBBBBBBBBBBBBBBBB",
-    "MmmmmmmmmmmmmmmmM",
-    "MmmmmmmmmmmmmmmmM",
-    "MmmLmmLmmmLmmLmmM",
-    "MmBBBmBmBmBmBBBmM",
-    "M7mmLmmmLmmmLmmmX",
-    "MLmmmmHmmmHmmmmLM",
-    "MMMMMMMMMMMMMMMMM",
-  ],
-  [
-  "B                                                            B",
-  "B                                                            B",
-  "B                                                            B",
-  "B                                                            B",
-  "B                                                            B",
-  "B                                                            B",
-  "B                                                            B",
-  "B                                 6         6                B",
-  "B                                                            B",
-  "B                                BBBBbbbbbBBBBC              B",
-  "B                                BbbbBbbbBbbbBR              B",
-  "B                              5 BbbbbbbbbbbbBR              B",
-  "B                                BbbbbBBBbbbbBR              B",
-  "B                               BBbbbbbbbbbbbBR              B",
-  "B                               BbbbBbbbbbBbbBR              B",
-  "B                             6 BbbbbbbbbbbbbBR              B",
-  "B                               BbbbbbBBBbbbbBR              B",
-  "B                            5 BBbbbbbbbbbbbbBR              B",
-  "B                              BbbbbBbbbbbBbbBR              B",
-  "B                           6 BBbbbbbbbbbbbbbBR              B",
-  "B                             BbbbbbbbBBBbbbbBR              B",
-  "B                          5 BBbbbbbbbbbbbbbbBR              B",
-  "B                            BbbbbbbBbbbbbBbbBR              B",
-  "B                          ABBbbbbbbbbbbbbbbbBR              B",
-  "B                       6 EBBbbbbbbbbbBBBbbbbBR              B",
-  "B                         BBbbbbbbbbbbbbbbbbbBR              B",
-  "B                        MMmmmmmmmmmMm8m8mMmmMR              B",
-  "B                    5  MMmmmmmmmmmmmmmmmmmmmMR              B",
-  "B                      MMmmmmmmmmmmmmmMMMmmmmMR              B",
-  "B                6   MMMmmmmmmmmmmm8mmmMmmm8mMR              B",
-  "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
-  "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
-  "BB              WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR             BB",
-  "Bg          E B WWmemememaamemememMmmmmmmmmmMMRO     M    S gB",
-  "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMmMMMMMMGGGGGGGGGGGGGGGG",
-  "DDDDDMMMMMMMMDDDMMMMMMMMMMMMMMMMMMMMMMMmMMMMMMDDDDDDDDDDDDDDDD",
-  "DDDDDMmmmmmmMDDDMMMMMMMMDDDDDDDDDDDDDDMmMDDDDDDDDDDDDDDDDDDDDD",
-  "DDDDDMmmmmmmMDDDMmmmmmmMMDDDDDDMMMMMMMMmMDDDDMMMMMMMMMMDDDDDDD",
-  "DDDDDMMMMMmmMDDDMMMMMMmmMMMMMMMMmmmmmmMmMDDDDMmmmmmmmmMMMMMMMD",
-  "DDDDDDDDDMmmMDMMMMMMDMMmmMMmmmmMmmmmmmMmMDDDMMmMMMMmMMMMmmmmMD",
-  "DDDDDDDMMMMmMMMmmmmMDMmmmmmmmmmMMmmMMMMmMMMMMmmmmmMmmmmmmmmmMD",
-  "DMMMMMMMmmmmmmmmmmmMMMmMMMMMMMmmMMmMMmmmmmMMmmMMMMMMMmMMmmmmMD",
-  "DMmmmMMmmMMMMMMmmmmmmmmMDDDDDMmmmmmmmmmmmmMmmMMmmmmmmmMMMMMMMD",
-  "DXmPmmmmMMDmDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
-  "DMMMMMMMMDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMMMDDDDDDDDDDDDDDDDD",
-  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-  ],
-  [
-    "LLLLLLL",
-    "LmmmmmL",
-    "Xm7mPmL",
-    "LLLLLLL",
-  ],
-  [],
-  [
-    "BBBBBBBBBBBBBBBBB",
-    "MLmLmLmLmLmLmLmLM",
-    "MmmmmmmmmmmmmmmmM",
-    "MmmLmmLmPmLmmLmmM",
-    "MmBBBmBmBmBmBBBmM",
-    "M7mmLmmmLmmmLmmmX",
-    "MLmmmmHmmmHmmmmLM",
-    "MMMMMMMMMMMMMMMMM",
-  ],
-  [
-    "wwwwwwwwwwww",
-    "ww        ww",
-    "ww        ww",
-    "ww S  O   ww",
-    "wwwwwwwwwXww",
-  ],
-  [
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                                                            B",
-    "BB                        w w                                 B",
-    "BB                     m  wwwww                               B",
-    "BB                     R wwXwwwww        www                  B",
-    "BB                     R wwwwwwwwwwwwwwwwwwww                 B",
-    "BB                     R www wwwwwwwwwwwwwwwww                B",
-    "BB                     R ww    wwwwwwwwwwwwwww                B",
-    "BB                     R        wwwwwwwwwwwwww                B",
-    "BB                     R         wwwww S wwwww                B",
-    "BB                     R         ww    R    ww                B",
-    "BB                     R         ww    R    ww               BB",
-    "Bg                     R         mm    R    ww               XB",
-    "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-  ],
-  [
-    "MMMMMMMMMMMMMMMMM",
-    "MLLLLLLLLLLLLLLLM",
-    "MmmmmmmmmmmmmmmmM",
-    "MmmLmmLmPmLmmLmmM",
-    "MmBBBmBmBmBmBBBmM",
-    "M7mmLmmmLmmmLmmmM",
-    "MLLmmmHmmmHmmmLLM",
-    "MMMMMMMMMMMMMMMMM",
-  ],
+var LEVELS = [
+  {
+    "goal": [
+      "You are Diomedes!",
+      "Use your god-like strength",
+      "to win the Trojan War!",
+      "",
+      "Start by completing this tutorial.",
+      "Controls are on the left.",
+      "Walk to the right and enter the black exit.",
+    ],
+    "instructions": [
+      "\u2190 = left",
+      "\u2192 = right",
+    ],
+    "map": [
+      "BBBBBBBBBBBBB",
+      "B           B",
+      "B           B",
+      "B           B",
+      "B           B",
+      "BB         BB",
+      "BgS        XB",
+      "BBBBBBBBBBBBB",
+    ],
+  },
+  {
+    "goal": [
+      "Climb over the obstacle with a rope.",
+      "",
+      "Use up and down to jump and climb.",
+    ],
+    "instructions": [
+      "\u2190 = left",
+      "\u2192 = right",
+      "\u2191 = jump/climb",
+      "\u2193 = descend",
+    ],
+    "map": [
+      "BBBBBBBBBBBBBBBBBBBBBBB",
+      "B         R  R        B",
+      "B         R  R        B",
+      "B         R  R        B",
+      "B         RBBR        B",
+      "BB        RBBR       BB",
+      "BgS        BB        XB",
+      "BBBBBBBBBBBBBBBBBBBBBBB",
+    ],
+  },
+  {
+    "goal": [
+      "Use your skill with the sword to defeat",
+      "these Trojans combat!",
+      "",
+      "Press A to attack will moving toward",
+      "your enemies.",
+    ],
+    "map": [
+      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+      "BMMMB        bbbbbbbb        mmmmmmmmm                BbbbB",
+      "B3L4B        bbbbbbbb        mmmmmmmmm         B   B  BbbbB",
+      "BBBBB        bbbbbbbb        mmmmmmmmm         B   B  BBBBB",
+      "Bg0bB        bbbBbbbb        mmmmmmmmm        BBB BBB BbbXB",
+      "BBBbb        BbbBbBBbE       ammmmmmmmA   E   BBB BBB bbBBB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBMMMMMMMMMBBBBBBBBBBBBBBBBBBBBB",
+    ],
+  },
+  {
+    "goal": [
+      "Your first task:",
+      "",
+      "Defeat Dolon the Wolf!",
+    ],
+    "map": [
+      "BBBBB                       BB",
+      "BbbbB                       BB",
+      "Bb3bB                       BB",
+      "BBBBB                       BB",
+      "Bg0bB                     B BB",
+      "BBBbb B         1         B XB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    ],
+  },
+  {
+    "goal": [
+      "Now, break into Rhesus' camp",
+      "and steal his snow-white horses!",
+    ],
+    "map": [
+      "BBBBBB                                                        BBBBBB",
+      "BbbbbB                                                        BwbbwB",
+      "BbbbbB        BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
+      "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
+      "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
+      "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
+      "BBBbbb B      bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
+      "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
+      "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
+    ],
+  },
+  {
+    "goal": [
+      "You found the horses!",
+      "Exit the room to take them with you!",
+    ],
+    "map": [
+      "MMMMMMMMM",
+      "MmmmmmmmM",
+      "XmHm7mHmM",
+      "MMMMMMMMM",
+    ],
+  },
+  {
+    "goal": [
+      "Defeat Rhesus' best men",
+      "and escape with the horses!",
+    ],
+    "holding": function() {
+      return [
+        new Horse().setPosition(0, -blockSize),
+        new Horse().setPosition(0, -blockSize * 1.6),
+      ];
+    },
+    "map": [
+      "BBBBBB                                                          BBBBBB",
+      "BbbbbB    6 5 5                                                 BwbbwB",
+      "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
+      "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
+      "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
+      "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBb0gB",
+      "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
+      "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
+      "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
+    ],
+  },
+  {
+    "goal": [
+      "Celebrate your victory over Rhesus! :P",
+    ],
+    "map": [
+      "BBBBBBBBBBBBBBBBB",
+      "MmmmmmmmmmmmmmmmM",
+      "MmmmmmmmmmmmmmmmM",
+      "MmmLmmLmmmLmmLmmM",
+      "MmBBBmBmBmBmBBBmM",
+      "M7mmLmmmLmmmLmmmX",
+      "MLmmmmHmmmHmmmmLM",
+      "MMMMMMMMMMMMMMMMM",
+    ],
+  },
+  {
+    "goal": [
+      "Now, demobilize Odysseus,",
+      "break into the citadel,",
+      "and locate the Palladium!",
+    ],
+    "map": [
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                 6         6                B",
+      "B                                                            B",
+      "B                                BBBBbbbbbBBBBC              B",
+      "B                                BbbbBbbbBbbbBR              B",
+      "B                              5 BbbbbbbbbbbbBR              B",
+      "B                                BbbbbBBBbbbbBR              B",
+      "B                               BBbbbbbbbbbbbBR              B",
+      "B                               BbbbBbbbbbBbbBR              B",
+      "B                             6 BbbbbbbbbbbbbBR              B",
+      "B                               BbbbbbBBBbbbbBR              B",
+      "B                            5 BBbbbbbbbbbbbbBR              B",
+      "B                              BbbbbBbbbbbBbbBR              B",
+      "B                           6 BBbbbbbbbbbbbbbBR              B",
+      "B                             BbbbbbbbBBBbbbbBR              B",
+      "B                          5 BBbbbbbbbbbbbbbbBR              B",
+      "B                            BbbbbbbBbbbbbBbbBR              B",
+      "B                          ABBbbbbbbbbbbbbbbbBR              B",
+      "B                       6 EBBbbbbbbbbbBBBbbbbBR              B",
+      "B                         BBbbbbbbbbbbbbbbbbbBR              B",
+      "B                        MMmmmmmmmmmMm8m8mMmmMR              B",
+      "B                    5  MMmmmmmmmmmmmmmmmmmmmMR              B",
+      "B                      MMmmmmmmmmmmmmmMMMmmmmMR              B",
+      "B                6   MMMmmmmmmmmmmm8mmmMmmm8mMR              B",
+      "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
+      "B                MMMmmmmmmmmmmmmmmmMMMmmmMMMmMR              B",
+      "BB              WWmmmmmmmmmmmmmmmmmmmmmmmmmmmMR             BB",
+      "Bg          E B WWmemememaamemememMmmmmmmmmmMMRO     M    S gB",
+      "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMmMMMMMMGGGGGGGGGGGGGGGG",
+      "DDDDDMMMMMMMMDDDMMMMMMMMMMMMMMMMMMMMMMMmMMMMMMDDDDDDDDDDDDDDDD",
+      "DDDDDMmmmmmmMDDDMMMMMMMMDDDDDDDDDDDDDDMmMDDDDDDDDDDDDDDDDDDDDD",
+      "DDDDDMmmmmmmMDDDMmmmmmmMMDDDDDDMMMMMMMMmMDDDDMMMMMMMMMMDDDDDDD",
+      "DDDDDMMMMMmmMDDDMMMMMMmmMMMMMMMMmmmmmmMmMDDDDMmmmmmmmmMMMMMMMD",
+      "DDDDDDDDDMmmMDMMMMMMDMMmmMMmmmmMmmmmmmMmMDDDMMmMMMMmMMMMmmmmMD",
+      "DDDDDDDMMMMmMMMmmmmMDMmmmmmmmmmMMmmMMMMmMMMMMmmmmmMmmmmmmmmmMD",
+      "DMMMMMMMmmmmmmmmmmmMMMmMMMMMMMmmMMmMMmmmmmMMmmMMMMMMMmMMmmmmMD",
+      "DMmmmMMmmMMMMMMmmmmmmmmMDDDDDMmmmmmmmmmmmmMmmMMmmmmmmmMMMMMMMD",
+      "DXmmmmmmMMDmDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
+      "DMMMMMMMMDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMMMDDDDDDDDDDDDDDDDD",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    ],
+  },
+  {
+    "goal": [
+      "You found the Palladium!",
+      "Exit the room to take it with you!",
+    ],
+    "map": [
+      "LLLLLLL",
+      "LmmmmmL",
+      "Xm7mPmL",
+      "LLLLLLL",
+    ],
+  },
+  {
+    "goal": [
+      "Escape with the Palladium!",
+    ],
+    "holding": function() {
+      return [
+        new Palladium().setPosition(0, -blockSize),
+      ];
+    },
+    "map": [
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                                            B",
+      "B                                 6         6                B",
+      "B                                                            B",
+      "B                                BBBBbbbbbBBBBC              B",
+      "B                                BbbbBbbbBbbbBR              B",
+      "B                              5 BbbbbbbbbbbbBR              B",
+      "B                                BbbbbBBBbbbbBR              B",
+      "B                               BBbbbbbbbbbbbBR              B",
+      "B                               BbbbBbbbbbBbbBR              B",
+      "B                             6 BbbbbbbbbbbbbBR              B",
+      "B                               BbbbbbBBBbbbbBR              B",
+      "B                            5 BBbbbbbbbbbbbbBR              B",
+      "B                              BbbbbBbbbbbBbbBR              B",
+      "B                           6 BBbbbbbbbbbbbbbBR              B",
+      "B                             BbbbbbbbBBBbbbbBR              B",
+      "B                          5 BBbbbbbbbbbbbbbbBR              B",
+      "B                            BbbbbbbBbbbbbBbbBR              B",
+      "B                          ABBbbbbbbbbbbbbbbbBR              B",
+      "B                       6 EBBbbbbbbbbbBBBbbbbBR              B",
+      "B                         BBbbbbbbbbbbbbbbbbbBR              B",
+      "B                        MMmmmmmmmmmMm8m8mMmmMR              B",
+      "B                    5  MMmmmmmmmmmmmmmmmmmmmMR              B",
+      "B                      MMmmmmmmmmmmmmmMMMmmmmMR              B",
+      "B                6   MMMmmmmmmmmmmm8mmmMmmm8mMR              B",
+      "B                  MMMmmmmmmmmmmmmmmmMMMMMmmmMR              B",
+      "B                MMMmmmmmmmmmmmmmmmMMMmrmMMMmMR              B",
+      "BB              WWmmmmmmmmmmmmmmmmmmmmmrmmmmmMR             BB",
+      "Bg          E B WWmemememaamemememMmmmmrmmmmMMRO     M      XB",
+      "GGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMrMMMMMMGGGGGGGGGGGGGGGG",
+      "DDDDDMMMMMMMMDDDMMMMMMMMMMMMMMMMMMMMMMMrMMMMMMDDDDDDDDDDDDDDDD",
+      "DDDDDMmmmmmmMDDDMMMMMMMMDDDDDDDDDDDDDDMrMDDDDDDDDDDDDDDDDDDDDD",
+      "DDDDDMmmmmmmMDDDMmmmmmmMMDDDDDDMMMMMMMMrMDDDDMMMMMMMMMMDDDDDDD",
+      "DDDDDMMMMMmmMDDDMMMMMMmmMMMMMMMMmmmmmmMrMDDDDMmmmmmmmmMMMMMMMD",
+      "DDDDDDDDDMmmMDMMMMMMDMMmmMMmmmmMmmmmmmMrMDDDMMmMMMMmMMMMmmmmMD",
+      "DDDDDDDMMMMmMMMmmmmMDMmmmmmmmmmMMmmMMMMrMMMMMmmmmmMmmmmmmmmmMD",
+      "DMMMMMMMmmmmmmmmmmmMMMmMMMMMMMmmMMmMMmmrmmMMmmMMMMMMMmMMmmmmMD",
+      "DMmmmMMmmMMMMMMmmmmmmmmMDDDDDMmmmmmmmmmrmmMmmMMmmmmmmmMMMMMMMD",
+      "Dg7mmmmmMMDmDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
+      "DMMMMMMMMDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMMMDDDDDDDDDDDDDDDDD",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    ],
+  },
+  {
+    "goal": [
+      "Celebrate your victory AGAIN!",
+    ],
+    "map": [
+      "BBBBBBBBBBBBBBBBB",
+      "MLmLmLmLmLmLmLmLM",
+      "MmmmmmmmmmmmmmmmM",
+      "MmmLmmLmPmLmmLmmM",
+      "MmBBBmBmBmBmBBBmM",
+      "M7mmLmmmLmmmLmmmX",
+      "MLmmmmHmmmHmmmmLM",
+      "MMMMMMMMMMMMMMMMM",
+    ],
+  },
+  {
+    "goal": [
+      "The other heroes are all refusing to",
+      "fight. Exit the Trojan Horse yourself!",
+    ],
+    "map": [
+      "wwwwwwwwwwww",
+      "ww        ww",
+      "ww        ww",
+      "ww S  O   ww",
+      "wwwwwwwwwXww",
+    ],
+  },
+  {
+    "goal": [
+      "Sack Troy!",
+    ],
+    "map": [
+      "BB                                                            B",
+      "BB                                                            B",
+      "BB                                                            B",
+      "BB                                                            B",
+      "BB                                                            B",
+      "BB                                                            B",
+      "BB                        w w                                 B",
+      "BB                     m  wwwww                               B",
+      "BB                     R wwXwwwww        www                  B",
+      "BB                     R wwwwwwwwwwwwwwwwwwww                 B",
+      "BB                     R www wwwwwwwwwwwwwwwww                B",
+      "BB                     R ww    wwwwwwwwwwwwwww                B",
+      "BB                     R        wwwwwwwgwwwwww                B",
+      "BB                     R         wwwwwSR wwwww                B",
+      "BB                     R         ww    R    ww                B",
+      "BB                     R         ww    R    ww               BB",
+      "Bg                     R         mm    R    ww               XB",
+      "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    ],
+  },
+  {
+    "goal": [
+      "Celebrate the Greek victory against Troy!",
+    ],
+    "map": [
+      "MMMMMMMMMMMMMMMMM",
+      "MLLLLLLLLLLLLLLLM",
+      "MmmmmmmmmmmmmmmmM",
+      "MmmLmmLmPmLmmLmmM",
+      "MmBBBmBmBmBmBBBmM",
+      "M7mmLmmmLmmmLmmmM",
+      "MLLmmmHmmmHmmmLLM",
+      "MMMMMMMMMMMMMMMMM",
+    ],
+  },
 ];
 
-var basicInstructions = [
+var defaultInstructions = [
   "\u2190 = left",
   "\u2192 = right",
   "\u2191 = jump/climb",
@@ -197,100 +381,12 @@ var basicInstructions = [
   "A = attack",
 ];
 
-var levelInstructions = [
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-  basicInstructions,
-];
-
-var levelGoals = [
-  [
-    "You are Diomedes!",
-    "Use your god-like strength",
-    "to win the Trojan War!",
-    "",
-    "Start by completing this tutorial.",
-    "Controls are to the left.",
-  ],
-  [
-    "Your first task:",
-    "",
-    "Defeat Dolon the Wolf!",
-  ],
-  [
-    "Now, break into Rhesus' camp",
-    "and steal his snow-white horses!",
-  ],
-  [
-    "You found the horses!",
-    "Exit the room to take them with you!",
-  ],
-  [
-    "Defeat Rhesus' best men",
-    "and escape with the horses!",
-  ],
-  [
-    "Celebrate your victory over Rhesus! :P",
-  ],
-  [
-    "Now, demobilize Odysseus,",
-    "break into the citadel,",
-    "and locate the Palladium!",
-  ],
-  [
-    "You found the Palladium!",
-    "Exit the room to take it with you!",
-  ],
-  [
-    "Escape with the Palladium!",
-  ],
-  [
-    "Celebrate your victory AGAIN!",
-  ],
-  [
-    "The other heroes are all refusing to",
-    "fight. Exit the Trojan Horse yourself!",
-  ],
-  [
-    "Kill all the Trojans!",
-  ],
-  [
-    "Celebrate the Greek victory against Troy!",
-  ],
-];
-
 function Init() {
-  var levelHolding = [
-    [],
-    [],
-    [],
-    [],
-    [
-      new Horse().setPosition(0, -blockSize),
-      new Horse().setPosition(0, -blockSize * 1.6),
-    ],
-    [],
-    [],
-    [],
-    [
-      new Palladium().setPosition(0, -blockSize),
-    ],
-    [],
-    [],
-    [],
-    [],
-  ];
-
-  var map = levels[level];
+  var map = LEVELS[level]["map"];
+  var levelHolding = [];
+  if (LEVELS[level]["holding"]) {
+    levelHolding = LEVELS[level]["holding"]();
+  }
   entities = [];
   var enemies = [];
   for (var i = 0; i < map.length; ++i) {
@@ -323,6 +419,10 @@ function Init() {
         entities.push(new CornerRope().setPosition(x, y));
       }
       else if (block == "R") {
+        entities.push(new Rope().setPosition(x, y));
+      }
+      else if (block == "r") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
         entities.push(new Rope().setPosition(x, y));
       }
       else if (block == "W") {
@@ -388,16 +488,16 @@ function Init() {
       else if (block == "0") {
         entities.push(new BackgroundBrick().setPosition(x, y));
         player = new Knight().setPosition(x, y);
-        player.setHolding(levelHolding[level]);
+        player.setHolding(levelHolding);
       }
       else if (block == "7") {
         entities.push(new BackgroundMarble().setPosition(x, y));
         player = new Knight().setPosition(x, y);
-        player.setHolding(levelHolding[level]);
+        player.setHolding(levelHolding);
       }
       else if (block == "S") {
         player = new Knight().setPosition(x, y);
-        player.setHolding(levelHolding[level]);
+        player.setHolding(levelHolding);
       }
     }
   }
@@ -1525,7 +1625,7 @@ function Draw() {
   ctx.translate(screen.width / 2 - player.x, screen.height / 2 - player.y);
 
   ctx.save();
-  var map = levels[level];
+  var map = LEVELS[level]["map"];
   var path = new Path2D();
   path.rect(-blockSize / 2, -blockSize / 2, map[0].length * blockSize, map.length * blockSize);
   ctx.clip(path);
@@ -1560,7 +1660,10 @@ function Draw() {
 function DrawInstructions() {
   ctx.font = "bold 20px monospace";
   ctx.textAlign = "left";
-  var instructions = levelInstructions[level];
+  var instructions = LEVELS[level]["instructions"];
+  if (!instructions) {
+    instructions = defaultInstructions;
+  }
   var y = screen.height - instructions.length * 20 - 20;
   for (var i = 0; i < instructions.length; ++i) {
     ctx.fillStyle = "black";
@@ -1570,7 +1673,7 @@ function DrawInstructions() {
   }
   ctx.font = "bold 20px monospace";
   ctx.textAlign = "right";
-  var goal = levelGoals[level];
+  var goal = LEVELS[level]["goal"];
   var y = screen.height - goal.length * 20 - 20;
   for (var i = 0; i < goal.length; ++i) {
     ctx.fillStyle = "black";
