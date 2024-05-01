@@ -57,6 +57,12 @@ var levels = [
     "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
   ],
   [
+    "MMMMMMMMM",
+    "MmmmmmmmM",
+    "XmHm7mHmM",
+    "MMMMMMMMM",
+  ],
+  [
     "BBBBBB                                                          BBBBBB",
     "BbbbbB    6 5 5                                                 BwbbwB",
     "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
@@ -70,12 +76,12 @@ var levels = [
   ],
   [
     "BBBBBBBBBBBBBBBBB",
-    "MLmLmLmLmLmLmLmLM",
+    "MmmmmmmmmmmmmmmmM",
     "MmmmmmmmmmmmmmmmM",
     "MmmLmmLmmmLmmLmmM",
     "MmBBBmBmBmBmBBBmM",
     "M7mmLmmmLmmmLmmmX",
-    "MLmmmmmmmmmmmmmLM",
+    "MLmmmmHmmmHmmmmLM",
     "MMMMMMMMMMMMMMMMM",
   ],
   [
@@ -126,7 +132,23 @@ var levels = [
   "DMMMMMMMMDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMMMDDDDDDDDDDDDDDDDD",
   "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
+  [
+    "LLLLLLL",
+    "LmmmmmL",
+    "Xm7mPmL",
+    "LLLLLLL",
+  ],
   [],
+  [
+    "BBBBBBBBBBBBBBBBB",
+    "MLmLmLmLmLmLmLmLM",
+    "MmmmmmmmmmmmmmmmM",
+    "MmmLmmLmPmLmmLmmM",
+    "MmBBBmBmBmBmBBBmM",
+    "M7mmLmmmLmmmLmmmX",
+    "MLmmmmHmmmHmmmmLM",
+    "MMMMMMMMMMMMMMMMM",
+  ],
   [
     "wwwwwwwwwwww",
     "ww        ww",
@@ -134,8 +156,6 @@ var levels = [
     "ww S  O   ww",
     "wwwwwwwwwXww",
   ],
-  [],
-  [],
   [
     "BB                                                            B",
     "BB                                                            B",
@@ -157,6 +177,16 @@ var levels = [
     "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
+  [
+    "MMMMMMMMMMMMMMMMM",
+    "MLLLLLLLLLLLLLLLM",
+    "MmmmmmmmmmmmmmmmM",
+    "MmmLmmLmPmLmmLmmM",
+    "MmBBBmBmBmBmBBBmM",
+    "M7mmLmmmLmmmLmmmM",
+    "MLLmmmHmmmHmmmLLM",
+    "MMMMMMMMMMMMMMMMM",
+  ],
 ];
 
 var basicInstructions = [
@@ -168,6 +198,10 @@ var basicInstructions = [
 ];
 
 var levelInstructions = [
+  basicInstructions,
+  basicInstructions,
+  basicInstructions,
+  basicInstructions,
   basicInstructions,
   basicInstructions,
   basicInstructions,
@@ -197,6 +231,10 @@ var levelGoals = [
     "and steal his snow-white horses!",
   ],
   [
+    "You found the horses!",
+    "Exit the room to take them with you!",
+  ],
+  [
     "Defeat Rhesus' best men",
     "and escape with the horses!",
   ],
@@ -207,6 +245,10 @@ var levelGoals = [
     "Now, demobilize Odysseus,",
     "break into the citadel,",
     "and locate the Palladium!",
+  ],
+  [
+    "You found the Palladium!",
+    "Exit the room to take it with you!",
   ],
   [
     "Escape with the Palladium!",
@@ -231,10 +273,12 @@ function Init() {
     [],
     [],
     [],
+    [],
     [
       new Horse().setPosition(0, -blockSize),
       new Horse().setPosition(0, -blockSize * 1.6),
     ],
+    [],
     [],
     [],
     [
