@@ -33,7 +33,7 @@ var LEVELS = [
       "",
       "Start by completing this tutorial.",
       "Controls are on the left.",
-      "Walk to the right and enter the black exit.",
+      "Walk to the right and enter the black exit!",
     ],
     "instructions": [
       "\u2190 = left",
@@ -63,22 +63,22 @@ var LEVELS = [
       "\u2193 = descend",
     ],
     "map": [
-      "BBBBBBBBBBBBBBBBBBBBBBB",
-      "B         R  R        B",
-      "B         R  R        B",
-      "B         R  R        B",
-      "B         RBBR        B",
-      "BB        RBBR       BB",
-      "BgS        BB        XB",
-      "BBBBBBBBBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBB",
+      "B          R  R         B",
+      "B          R  R         B",
+      "B          R  R         B",
+      "B          RBBR         B",
+      "BB         RBBR        BB",
+      "BgS         BB         XB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBB",
     ],
   },
   {
     "goal": [
       "Use your skill with the sword to defeat",
-      "these Trojans combat!",
+      "these Trojans in combat!",
       "",
-      "Press A to attack will moving toward",
+      "Press A to attack while moving toward",
       "your enemies.",
     ],
     "map": [
@@ -227,7 +227,7 @@ var LEVELS = [
       "DDDDDDDMMMMmMMMmmmmMDMmmmmmmmmmMMmmMMMMmMMMMMmmmmmMmmmmmmmmmMD",
       "DMMMMMMMmmmmmmmmmmmMMMmMMMMMMMmmMMmMMmmmmmMMmmMMMMMMMmMMmmmmMD",
       "DMmmmMMmmMMMMMMmmmmmmmmMDDDDDMmmmmmmmmmmmmMmmMMmmmmmmmMMMMMMMD",
-      "DXmmmmmmMMDmDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
+      "DXmmmmmmMMDDDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
       "DMMMMMMMMDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMMMDDDDDDDDDDDDDDDDD",
       "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
     ],
@@ -297,7 +297,7 @@ var LEVELS = [
       "DDDDDDDMMMMmMMMmmmmMDMmmmmmmmmmMMmmMMMMrMMMMMmmmmmMmmmmmmmmmMD",
       "DMMMMMMMmmmmmmmmmmmMMMmMMMMMMMmmMMmMMmmrmmMMmmMMMMMMMmMMmmmmMD",
       "DMmmmMMmmMMMMMMmmmmmmmmMDDDDDMmmmmmmmmmrmmMmmMMmmmmmmmMMMMMMMD",
-      "Dg7mmmmmMMDmDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
+      "Dg7mmmmmMMDDDDMMMMMMMMMMDDDDDMMMMMMMMmmmmmmmMMMMMMMMMMMDDDDDDD",
       "DMMMMMMMMDDDDDDDDDDDDDDDDDDDDDDDDDDDMMMMMMMMMDDDDDDDDDDDDDDDDD",
       "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
     ],
@@ -323,11 +323,11 @@ var LEVELS = [
       "fight. Exit the Trojan Horse yourself!",
     ],
     "map": [
-      "wwwwwwwwwwww",
-      "ww        ww",
-      "ww        ww",
-      "ww S  O   ww",
-      "wwwwwwwwwXww",
+      "wwwwwwwwwww",
+      "ww       ww",
+      "ww   J   ww",
+      "wwS9   T ww",
+      "wwwwwwwwXww",
     ],
   },
   {
@@ -484,6 +484,15 @@ function Init() {
       }
       else if (block == "O") {
         enemies.push(new Odysseus().setPosition(x, y));
+      }
+      else if (block == "9") {
+        enemies.push(new Odysseus().setPosition(x, y).setRange(0));
+      }
+      else if (block == "J") {
+        enemies.push(new Ajax().setPosition(x, y).setRange(0));
+      }
+      else if (block == "T") {
+        enemies.push(new Teucer().setPosition(x, y).setRange(0));
       }
       else if (block == "0") {
         entities.push(new BackgroundBrick().setPosition(x, y));
@@ -1216,7 +1225,7 @@ class EnemyKnight extends Knight {
     if (this.lastAttacked >= 200) {
       this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
     } 
-    if ((time % 20) == 0 && distance(this, player) <= (blockSize * 5)) {
+    if ((time % 20) == 0 && distance(this, player) <= (blockSize * this.range)) {
       if (player.mode == 1) {
         if (Math.random() < 0.6) {
           this.goalMode = 2;
@@ -1375,6 +1384,16 @@ class StrongKnight extends EnemyKnight {
   }
 }
 
+class Ajax extends EnemyKnight {
+  constructor() {
+    super();
+    this.health = 500;
+    this.maxHealth = 500;
+    this.size = (blockSize * 2);
+    this.color = "purple";
+  }
+}
+
 class EnemyArcher extends EnemyKnight {
   constructor() {
     super();
@@ -1408,12 +1427,14 @@ class EnemyArcher extends EnemyKnight {
       this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
     }
     this.mode = 0;
-    this.direction = Math.sign(player.x - this.x);
-    if (this.attackCooldown <= 0 && distance(this, player) <= (blockSize * this.range)) {
-      var bvx = this.bulletSpeed * (player.x - this.x) / distance(this, player) + (Math.random() - 0.5) * this.accuracy;
-      var bvy = this.bulletSpeed * (player.y - this.y) / distance(this, player) + (Math.random() - 0.5) * this.accuracy;
-      entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(this.attack).setSize(this.bulletSize).setColor(this.bulletColor).setSource(this));
-      this.attackCooldown = this.maxAttackCooldown;
+    if (distance(this, player) <= (blockSize * this.range)) {
+      this.direction = Math.sign(player.x - this.x);
+      if (this.attackCooldown <= 0) {
+        var bvx = this.bulletSpeed * (player.x - this.x) / distance(this, player) + (Math.random() - 0.5) * this.accuracy;
+        var bvy = this.bulletSpeed * (player.y - this.y) / distance(this, player) + (Math.random() - 0.5) * this.accuracy;
+        entities.push(new Bullet().setPosition(this.x, this.y).setVelocity(bvx, bvy).setAttack(this.attack).setSize(this.bulletSize).setColor(this.bulletColor).setSource(this));
+        this.attackCooldown = this.maxAttackCooldown;
+      }
     }
     this.vx *= (9 / 10);
     if (Math.abs(this.vx) < 1) {
@@ -1480,6 +1501,7 @@ class StrongArcher extends EnemyArcher {
     this.maxAttackCooldown = 80;
     this.size = (blockSize * 6 / 5);
     this.bulletSpeed = 15;
+    this.bulletSize = 6;
     this.range = 20;
     this.accuracy = 0;
   }
@@ -1496,6 +1518,16 @@ class Odysseus extends EnemyArcher {
     this.bulletSpeed = 5;
     this.range = 10;
     this.accuracy = 1;
+  }
+}
+
+class Teucer extends EnemyArcher {
+  constructor() {
+    super();
+    this.health = 30;
+    this.maxHealth = 30;
+    this.size = (blockSize * 2 / 5);
+    this.color = "purple";
   }
 }
 
@@ -1592,8 +1624,20 @@ function findMessage(e) {
   else if (e instanceof Rhesus) {
     return "Rhesus";
   }
-  else if (e instanceof StrongKnight || e instanceof StrongArcher) {
-    return "S. Trojan";
+  else if (e instanceof Ajax) {
+    return "Ajax the Great";
+  }
+  else if (e instanceof Teucer) {
+    return "Teucer";
+  }
+  else if (e instanceof StrongKnight) {
+    return "Giant";
+  }
+  else if (e instanceof StrongArcher) {
+    return "Longbowman";
+  }
+  else if (e instanceof EnemyArcher) {
+    return "Archer";
   }
   else {
     return "Trojan";
@@ -1604,13 +1648,14 @@ function drawLabel(e) {
   if ((e instanceof Block) || (e instanceof Bullet) || e.labelCount >= 200) {
     return;
   }
+  var size = Math.max(e.size, 40);
   e.labelCount++;
   ctx.fillStyle = "orange";
-  ctx.fillRect(e.x - e.size, e.y - e.size * 5 / 4, e.size * 2, e.size / 2);
+  ctx.fillRect(e.x - size, e.y - size * 5 / 4, size * 2, size / 2);
   ctx.fillStyle = "blue";
   ctx.font = "bold 16px serif";
   ctx.textAlign = "center";
-  ctx.fillText(findMessage(e), e.x, e.y - e.size + 5);
+  ctx.fillText(findMessage(e), e.x, e.y - size + 5);
 }
 
 function Draw() {
