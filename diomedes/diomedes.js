@@ -44,7 +44,7 @@ var LEVELS = [
       "B           B",
       "B           B",
       "B           B",
-      "B           B",
+      "B          fB",
       "BB         BB",
       "BgS        XB",
       "BBBBBBBBBBBBB",
@@ -120,7 +120,7 @@ var LEVELS = [
       "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
       "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
       "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
-      "BBBbbb B      bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
+      "BBBbbb B      bb33bb3b  f E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
       "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
       "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
       "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
@@ -175,6 +175,60 @@ var LEVELS = [
       "M7mmLmmmLmmmLmmmX",
       "MLmmmmHmmmHmmmmLM",
       "MMMMMMMMMMMMMMMMM",
+    ],
+  },
+  // TODO: Build this level.
+  {
+    "goal": [
+      "Athena in her war-like rage has",
+      "filled your heart with valour.",
+      "",
+      "'Even such flame did she kindle",
+      "from his head and shoulders!'",
+    ],
+    "holding": function() {
+      return [
+        new Fire().setPosition(-blockSize / 20, -blockSize * 0.6),
+      ];
+    },
+    "map": [
+      "BBBBBB                                                          BBBBBB",
+      "BbbbbB    6 5 5                                                 BwbbwB",
+      "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
+      "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
+      "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
+      "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBb0gB",
+      "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
+      "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
+      "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
+    ],
+  },
+  // TODO: Build this level.
+  {
+    "goal": [
+      "Athena has given you the power",
+      "to tell god from man.",
+      "",
+      "Wound Aphrodite.",
+      "But touch no other god!",
+    ],
+    "holding": function() {
+      return [
+        new Fire().setPosition(-blockSize / 20, -blockSize * 0.6),
+      ];
+    },
+    "map": [
+      "BBBBBB                                                          BBBBBB",
+      "BbbbbB    6 5 5                                                 BwbbwB",
+      "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
+      "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
+      "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
+      "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBbsgB",
+      "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
+      "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
+      "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
     ],
   },
   {
@@ -450,6 +504,9 @@ function Init() {
       else if (block == "A") {
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
+      else if (block == "f") {
+        enemies.push(new Fire().setSize(blockSize).setPosition(x, y));
+      }
       else if (block == "e") {
         entities.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new EnemyKnight().setPosition(x, y));
@@ -507,6 +564,11 @@ function Init() {
       else if (block == "S") {
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding);
+      }
+      else if (block == "s") {
+        player = new Knight().setPosition(x, y);
+        player.setHolding(levelHolding);
+        player.setColor("rgb(255,255,100)");
       }
     }
   }
@@ -648,6 +710,71 @@ class BackgroundMarble extends Marble {
     this.isCollidable = false;
     this.colors["1"] = "rgb(" + String(Math.random() * 32 + 96) + ", " + String(Math.random() * 16 + 48) + ", " + String(Math.random() * 16 + 48) + ")";
     this.colors["2"] = "rgb(" + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 6 + 90) + ")";
+  }
+}
+
+class Fire extends Block {
+  constructor() {
+    super();
+    this.particles = new Float32Array();
+    this.colors = ["rgba(255,255,100,0.5)", "rgba(255,192,0,0.3)", "rgba(128,128,128,0.1)"];
+    this.gravity = 0;
+    this.counter = 0;
+    this.setParticles(200);
+    this.setGravity(0.001);
+  }
+
+  setParticles(n) {
+    this.particles = new Float32Array(n * 5);
+    var p = this.particles;
+    for (var i = 0; i < n; ++i) {
+      p[i * 5 + 0] = -100000;
+      p[i * 5 + 1] = -100000;
+      p[i * 5 + 4] = Math.random() * 3;
+    }
+  }
+
+  setGravity(g) {
+    this.gravity = blockSize * g;
+  }
+
+  draw() {
+    var sz = this.size / 10;
+    var p = this.particles;
+    var n = p.length;
+    for (var j = 0; j < this.colors.length; ++j) {
+      ctx.fillStyle = this.colors[j];
+      for (var i = 0; i < n; i += 5) {
+        if (Math.floor(p[i + 4]) == j) {
+          ctx.fillRect(p[i], p[i + 1], sz, sz);
+        }
+      }
+    }
+  }
+
+  tick() {
+    var g = this.gravity;
+    var p = this.particles;
+    var n = p.length;
+    var aging = 0.3;
+    var rx = this.x;
+    var ry = this.y + this.size / 2.6;
+    var sz = this.size;
+    for (var i = 0; i < n; i += 5) {
+      if (p[i + 4] < 2) {
+        p[i + 1] += g;
+        p[i] += p[i + 2];
+      }
+      p[i + 1] += p[i + 3];
+      p[i + 4] += aging;
+      if (p[i + 4] >= 3) {
+        p[i + 0] = rx;
+        p[i + 1] = ry;
+        p[i + 2] = (Math.random() - 0.5) * sz / 10;
+        p[i + 3] = (Math.random() - 1) * sz / 10;
+        p[i + 4] = 0;
+      }
+    }
   }
 }
 
@@ -1051,16 +1178,18 @@ class Knight {
   }
 
   draw() {
+    if (this.holding.length > 0) {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      for (var i = 0; i < this.holding.length; ++i) {
+        this.holding[i].draw();
+      }
+      ctx.restore();
+    }
+
     var colorMap = this.colorMaps[this.mode];
     this.colors["#"] = this.color;
     DrawPixels(this.x, this.y, this.size, colorMap, this.colors, this.direction);
-
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    for (var i = 0; i < this.holding.length; ++i) {
-      this.holding[i].draw();
-    }
-    ctx.restore();
 
     this.drawhealthbar();
   }
@@ -1074,6 +1203,9 @@ class Knight {
   }
 
   tick() {
+    for (var i = 0; i < this.holding.length; ++i) {
+      this.holding[i].tick();
+    }
     this.lastAttacked++;
     if (this.jumpCooldown <= 0 && this.lastAttacked >= 200) {
       this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
