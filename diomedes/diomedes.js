@@ -68,7 +68,16 @@ var levels = [
     "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
     "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
   ],
-  [],
+  [
+    "BBBBBBBBBBBBBBBBB",
+    "MLmLmLmLmLmLmLmLM",
+    "MmmmmmmmmmmmmmmmM",
+    "MmmLmmLmmmLmmLmmM",
+    "MmBBBmBmBmBmBBBmM",
+    "M7mmLmmmLmmmLmmmX",
+    "MLmmmmmmmmmmmmmLM",
+    "MMMMMMMMMMMMMMMMM",
+  ],
   [
   "B                                                            B",
   "B                                                            B",
@@ -328,12 +337,17 @@ function Init() {
       else if (block == "O") {
         enemies.push(new Odysseus().setPosition(x, y));
       }
-      else if (block == "S") {
+      else if (block == "0") {
+        entities.push(new BackgroundBrick().setPosition(x, y));
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding[level]);
       }
-      else if (block == "0") {
-        entities.push(new BackgroundBrick().setPosition(x, y));
+      else if (block == "7") {
+        entities.push(new BackgroundMarble().setPosition(x, y));
+        player = new Knight().setPosition(x, y);
+        player.setHolding(levelHolding[level]);
+      }
+      else if (block == "S") {
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding[level]);
       }
