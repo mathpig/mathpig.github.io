@@ -44,7 +44,7 @@ var LEVELS = [
       "B           B",
       "B           B",
       "B           B",
-      "B          fB",
+      "B           B",
       "BB         BB",
       "BgS        XB",
       "BBBBBBBBBBBBB",
@@ -52,7 +52,7 @@ var LEVELS = [
   },
   {
     "goal": [
-      "Climb over the obstacle with a rope.",
+      "Climb over the obstacles with ropes.",
       "",
       "Use up and down to jump and climb.",
     ],
@@ -63,14 +63,14 @@ var LEVELS = [
       "\u2193 = descend",
     ],
     "map": [
-      "BBBBBBBBBBBBBBBBBBBBBBBBB",
-      "B          R  R         B",
-      "B          R  R         B",
-      "B          R  R         B",
-      "B          RBBR         B",
-      "BB         RBBR        BB",
-      "BgS         BB         XB",
-      "BBBBBBBBBBBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBBBB",
+      "B          R  RBB         B",
+      "B          R  RBB         B",
+      "B          R  RBB         B",
+      "B          RBBR           B",
+      "BB         RBBR          BB",
+      "BgS         BB           XB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBBBB",
     ],
   },
   {
@@ -120,7 +120,7 @@ var LEVELS = [
       "BbbbbB        BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
       "BBBBBB        BbbbbbbB        Bbb4bbbB        Bbb4bbbB        BBBBBB",
       "Bg0bBB        bbb3bbbb        bb4wbbbb        bbbwbbbb   2    BBbbXB",
-      "BBBbbb B      bb33bb3b  f E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
+      "BBBbbb B      bb33bb3b    E   b4wwbb3b   A  E b34w443bE    AA bbbBBB",
       "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
       "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
       "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
@@ -168,10 +168,10 @@ var LEVELS = [
     ],
     "map": [
       "BBBBBBBBBBBBBBBBB",
-      "MmmmmmmmmmmmmmmmM",
-      "MmmmmmmmmmmmmmmmM",
-      "MmmLmmLmmmLmmLmmM",
-      "MmBBBmBmBmBmBBBmM",
+      "BbbbbbbbbbbbbbbbB",
+      "BbbbbbbbbbbbbbbbB",
+      "BbbLbbLbbbLbbLbbB",
+      "BbBBBbBbBbBbBBBbB",
       "M7mmLmmmLmmmLmmmX",
       "MLmmmmHmmmHmmmmLM",
       "MMMMMMMMMMMMMMMMM",
@@ -716,6 +716,7 @@ class BackgroundMarble extends Marble {
 class Fire extends Block {
   constructor() {
     super();
+    this.isCollidable = false;
     this.particles = new Float32Array();
     this.colors = ["rgba(255,255,100,0.5)", "rgba(255,192,0,0.3)", "rgba(128,128,128,0.1)"];
     this.gravity = 0;
@@ -1002,6 +1003,15 @@ class CornerRope extends Rope {
   }
 }
 
+function noBossesLeft() {
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Knight && entities[i].isBoss) {
+      return false;
+    }
+  }
+  return true;
+}
+
 class Knight {
   constructor() {
     this.maxSpeed = (blockSize / 10);
@@ -1025,11 +1035,12 @@ class Knight {
     this.colors = {
       "S": "silver",
       "D": "#ffffB0",
+      "H": "#B06000",
     };
-    this.colorMaps = [[" S  ###    ",
-                       " S  ###    ",
-                       " S  ###    ",
-                       "SS   #     ",
+    this.colorMaps = [[" S  HHH    ",
+                       " S  HH     ",
+                       " S  HHH    ",
+                       "SS   #H    ",
                        "SS## # ##  ",
                        "SS #####   ",
                        "SS   #     ",
@@ -1037,10 +1048,10 @@ class Knight {
                        " S #   #   ",
                        " S #   #   ",
                        " S #   #   "],
-                      ["    ###  S ",
-                       "    ###  S ",
-                       "    ###  S ",
-                       "     #   SS",
+                      ["    HHH  S ",
+                       "    HH   S ",
+                       "    HHH  S ",
+                       "     #H  SS",
                        "  ## # ##SS",
                        "   ##### SS",
                        "     #   SS",
@@ -1048,10 +1059,10 @@ class Knight {
                        "   #   # S ",
                        "   #   # S ",
                        "   #   # S "],
-                      ["S  ###     ",
-                       "S  ###     ",
-                       "S  ###     ",
-                       "S   #      ",
+                      ["S  HHH     ",
+                       "S  HH      ",
+                       "S  HHH     ",
+                       "S   #H     ",
                        "S## # #DDDD",
                        "S #####    ",
                        "S   #      ",
@@ -1059,10 +1070,10 @@ class Knight {
                        "S #   #    ",
                        "S #   #    ",
                        "S #   #    "],
-                      ["    ###    ",
-                       "    ###    ",
-                       "    ###    ",
-                       "     #     ",
+                      ["    HHH    ",
+                       "    HH     ",
+                       "    HHH    ",
+                       "     #H    ",
                        "  ## # ##  ",
                        "   #####   ",
                        "     #     ",
@@ -1072,6 +1083,7 @@ class Knight {
                        "   #   #   "]];
     this.direction = 1;
     this.lastAttacked = 0;
+    this.isBoss = false;
     this.labelCount = 0;
     this.holding = [];
   }
@@ -1243,7 +1255,7 @@ class Knight {
           if (entities[j] === this) {
             continue;
           }
-          if (entities[j] instanceof Exit) {
+          if (entities[j] instanceof Exit && noBossesLeft()) {
             level++;
             Init();
             return;
@@ -1306,7 +1318,7 @@ class Knight {
           if (!(entities[j] instanceof Block) || entities[j].isCollidable) {
             failed = true;
           }
-          if (entities[j] instanceof Exit) {
+          if (entities[j] instanceof Exit && noBossesLeft()) {
             level++;
             Init();
             return;
@@ -1485,6 +1497,7 @@ class Dolon extends EnemyKnight {
     this.maxModeCooldown = 20;
     this.size = (blockSize * 3 / 5);
     this.range = 10;
+    this.isBoss = true;
   }
 }
 
@@ -1499,6 +1512,7 @@ class Rhesus extends EnemyKnight {
     this.maxModeCooldown = 80;
     this.size = (blockSize * 8 / 5);
     this.range = 10;
+    this.isBoss = true;
   }
 }
 
@@ -1531,10 +1545,10 @@ class EnemyArcher extends EnemyKnight {
     super();
     this.colors["B"] = "brown";
     this.colors["A"] = "black";
-    this.colorMaps = [["   ###    B",
-                       "   ###   BS",
-                       "   ###  B S",
-                       "    #   B S",
+    this.colorMaps = [["   HHH    B",
+                       "   HH    BS",
+                       "   HHH  B S",
+                       "    #H  B S",
                        " ## # ##BAA",
                        "  ##### B S",
                        "    #   B S",
