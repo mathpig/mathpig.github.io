@@ -7,6 +7,7 @@ const blockSize = 50;
 
 var time = 0;
 
+var backdrop = [];
 var entities = [];
 var toRemove = [];
 
@@ -442,6 +443,7 @@ function Init() {
     levelHolding = LEVELS[level]["holding"]();
   }
   entities = [];
+  backdrop = [];
   var enemies = [];
   for (var i = 0; i < map.length; ++i) {
     for (var j = 0; j < map[i].length; ++j) {
@@ -452,13 +454,13 @@ function Init() {
         entities.push(new Brick().setPosition(x, y));
       }
       else if (block == "b") {
-        entities.push(new BackgroundBrick().setPosition(x, y));
+        backdrop.push(new BackgroundBrick().setPosition(x, y));
       }
       else if (block == "M") {
         entities.push(new Marble().setPosition(x, y));
       }
       else if (block == "m") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
       }
       else if (block == "G") {
         entities.push(new Grass().setPosition(x, y));
@@ -476,7 +478,7 @@ function Init() {
         entities.push(new Rope().setPosition(x, y));
       }
       else if (block == "r") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
         entities.push(new Rope().setPosition(x, y));
       }
       else if (block == "W") {
@@ -492,7 +494,7 @@ function Init() {
         entities.push(new Exit().setPosition(x, y));
       }
       else if (block == "H") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
         entities.push(new Horse().setPosition(x, y));
       }
       else if (block == "w") {
@@ -505,22 +507,22 @@ function Init() {
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
       else if (block == "f") {
-        enemies.push(new Fire().setSize(blockSize).setPosition(x, y));
+        backdrop.push(new Fire().setSize(blockSize).setPosition(x, y));
       }
       else if (block == "e") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new EnemyKnight().setPosition(x, y));
       }
       else if (block == "a") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
       else if (block == "3") {
-        entities.push(new BackgroundBrick().setPosition(x, y));
+        backdrop.push(new BackgroundBrick().setPosition(x, y));
         enemies.push(new EnemyKnight().setPosition(x, y));
       }
       else if (block == "4") {
-        entities.push(new BackgroundBrick().setPosition(x, y));
+        backdrop.push(new BackgroundBrick().setPosition(x, y));
         enemies.push(new EnemyArcher().setPosition(x, y));
       }
       else if (block == "5") {
@@ -530,7 +532,7 @@ function Init() {
         enemies.push(new StrongArcher().setPosition(x, y));
       }
       else if (block == "8") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
         enemies.push(new StrongArcher().setPosition(x, y));
       }
       else if (block == "1") {
@@ -552,12 +554,12 @@ function Init() {
         enemies.push(new Teucer().setPosition(x, y).setRange(0));
       }
       else if (block == "0") {
-        entities.push(new BackgroundBrick().setPosition(x, y));
+        backdrop.push(new BackgroundBrick().setPosition(x, y));
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding);
       }
       else if (block == "7") {
-        entities.push(new BackgroundMarble().setPosition(x, y));
+        backdrop.push(new BackgroundMarble().setPosition(x, y));
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding);
       }
@@ -1826,6 +1828,11 @@ function Draw() {
   ctx.fill();
   ctx.restore();
 
+  for (var i = 0; i < backdrop.length; ++i) {
+    if (distance(player, backdrop[i]) < radius) {
+      backdrop[i].draw();
+    }
+  }
   for (var i = 0; i < entities.length; ++i) {
     if (distance(player, entities[i]) < radius) {
       entities[i].draw();
@@ -1877,6 +1884,9 @@ function DrawInstructions() {
 function Tick() {
   time++;
   toRemove = [];
+  for (var i = 0; i < backdrop.length; ++i) {
+    backdrop[i].tick();
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
