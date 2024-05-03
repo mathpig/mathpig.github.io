@@ -7,8 +7,8 @@ const blockSize = 50;
 
 var time = 0;
 
-var backdrop = [];
 var entities = [];
+var backdrop = [];
 var toRemove = [];
 
 var player;
@@ -84,7 +84,7 @@ var LEVELS = [
     ],
     "map": [
       "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-      "BMMMB        bbbbbbbb        mmmmmmmmm                BbbbB",
+      "BMmMB        bbbbbbbb        mmmmmmmmm                BbbbB",
       "B3L4B        bbbbbbbb        mmmmmmmmm         B   B  BbbbB",
       "BBBBB        bbbbbbbb        mmmmmmmmm         B   B  BBBBB",
       "Bg0bB        bbbBbbbb        mmmmmmmmm        BBB BBB BbbXB",
@@ -178,7 +178,23 @@ var LEVELS = [
       "MMMMMMMMMMMMMMMMM",
     ],
   },
-  // TODO: Build this level.
+  {
+    "goal": [
+      "The next day in battle...",
+    ],
+    "map": [
+      "BB                                           BB",
+      "BB                                           BB",
+      "BB                                           BB",
+      "BB                                           BB",
+      "BB                     6                     BB",
+      "BB    w        A               A        w    BB",
+      "BB   ww        w  5 5  w  5 5  w        ww   BB",
+      "BgS wwww  EEE  w       w       w  EEE  wwww  XB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    ],
+  },
   {
     "goal": [
       "Athena in her war-like rage has",
@@ -186,6 +202,9 @@ var LEVELS = [
       "",
       "'Even such flame did she kindle",
       "from his head and shoulders!'",
+      "",
+      "Thin the ranks of the Trojans",
+      "and prepare for a challenge...",
     ],
     "holding": function() {
       return [
@@ -193,26 +212,24 @@ var LEVELS = [
       ];
     },
     "map": [
-      "BBBBBB                                                          BBBBBB",
-      "BbbbbB    6 5 5                                                 BwbbwB",
-      "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
-      "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
-      "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
-      "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBb0gB",
-      "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
-      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
-      "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
-      "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
+      "BB                              6                              BB",
+      "BB                                                             BB",
+      "BB                              6                              BB",
+      "BB                                                             BB",
+      "BB                     6   5  6 w 6  5   6                     BB",
+      "BB    w        A                w                A        w    BB",
+      "BB   ww        w  5 5  w 5 5 5 www 5 5 5 w  5 5  w        ww   BB",
+      "BgS wwww  EEE  w       w       www       w       w  EEE  wwww  XB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
     ],
   },
-  // TODO: Build this level.
   {
     "goal": [
       "Athena has given you the power",
-      "to tell god from man.",
+      "to tell god from man!",
       "",
-      "Wound Aphrodite.",
-      "But touch no other god!",
+      "Wound Ares, who leads the Trojan charge!",
     ],
     "holding": function() {
       return [
@@ -220,16 +237,16 @@ var LEVELS = [
       ];
     },
     "map": [
-      "BBBBBB                                                          BBBBBB",
-      "BbbbbB    6 5 5                                                 BwbbwB",
-      "BbbbbB          BBBBBBBB        BBBBBBBB        BBBBBBBB        Bb44bB",
-      "BbbbbB    6     BbbbbbbB        BbbbbbbB        BbbbbbbB        B3ww3B",
-      "BBBBBB          BbbbbbbB        BbbbbbbB        BbbbbbbB        BBBBBB",
-      "BXbbBB    wA    bbbbbbbb        bb4wbbbb        bbbwbbbb        BBbsgB",
-      "BBBbbb    wwA   bb3bbb3b      E bbwwbb3b A      bbbwb4bb    E B bbbBBB",
-      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBB",
-      "DDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDDDDLDDDDDDDLDDDDDDDDDDDDLDDDDDDDDLDDD",
-      "DDDDDDDDLDDDDDDLDDDDDDDDDDDDDDDDDDDDLDDDDDDDDDLDLDDDDDDDDDDDDLDDDDLDDD",
+      "BB                                                          BB",
+      "BB                                                          BB",
+      "BB                                                          BB",
+      "BB                                                          BB",
+      "BB                     6                                    BB",
+      "BB    w        A               A        w                   BB",
+      "BB   ww        w  5 5  w  5 5  w        ww         !        BB",
+      "Bgs wwww  EEE  w       w       w  EEE  wwww                 XB",
+      "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
     ],
   },
   {
@@ -378,11 +395,11 @@ var LEVELS = [
       "fight. Exit the Trojan Horse yourself!",
     ],
     "map": [
-      "wwwwwwwwwww",
-      "ww       ww",
-      "ww   J   ww",
-      "wwS9   T ww",
-      "wwwwwwwwXww",
+      "wwwwwwwwwwwwwww",
+      "ww           ww",
+      "ww           ww",
+      "wwS 9 N J T  ww",
+      "wwwwwwwwwwwwXww",
     ],
   },
   {
@@ -541,11 +558,17 @@ function Init() {
       else if (block == "2") {
         enemies.push(new Rhesus().setPosition(x, y));
       }
+      else if (block == "!") {
+        enemies.push(new Ares().setPosition(x, y));
+      }
       else if (block == "O") {
         enemies.push(new Odysseus().setPosition(x, y));
       }
       else if (block == "9") {
         enemies.push(new Odysseus().setPosition(x, y).setRange(0));
+      }
+      else if (block == "N") {
+        enemies.push(new Menelaus().setPosition(x, y).setRange(0));
       }
       else if (block == "J") {
         enemies.push(new Ajax().setPosition(x, y).setRange(0));
@@ -570,7 +593,7 @@ function Init() {
       else if (block == "s") {
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding);
-        player.setColor("rgb(255,255,100)");
+        player.setColor("rgb(255, 255, 0)");
       }
     }
   }
@@ -710,8 +733,8 @@ class BackgroundMarble extends Marble {
   constructor() {
     super();
     this.isCollidable = false;
-    this.colors["1"] = "rgb(" + String(Math.random() * 32 + 96) + ", " + String(Math.random() * 16 + 48) + ", " + String(Math.random() * 16 + 48) + ")";
-    this.colors["2"] = "rgb(" + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 8 + 120) + ", " + String(Math.random() * 6 + 90) + ")";
+    this.colors["1"] = "rgb(" + String(Math.random() * 24 + 72) + ", " + String(Math.random() * 12 + 36) + ", " + String(Math.random() * 12 + 36) + ")";
+    this.colors["2"] = "rgb(" + String(Math.random() * 6 + 90) + ", " + String(Math.random() * 6 + 90) + ", " + String(Math.random() * 4.5 + 67.5) + ")";
   }
 }
 
@@ -1022,7 +1045,7 @@ class Knight {
     this.vx = 0;
     this.vy = 0;
     this.size = (blockSize * 4 / 5);
-    this.color = "blue";
+    this.color = "rgb(0, 128, 255)";
     this.health = 250;
     this.maxHealth = this.health;
     this.jumpCooldown = 0;
@@ -1084,7 +1107,7 @@ class Knight {
                        "   #   #   ",
                        "   #   #   "]];
     this.direction = 1;
-    this.lastAttacked = 0;
+    this.lastAttacked = 1000;
     this.isBoss = false;
     this.labelCount = 0;
     this.holding = [];
@@ -1205,7 +1228,9 @@ class Knight {
     this.colors["#"] = this.color;
     DrawPixels(this.x, this.y, this.size, colorMap, this.colors, this.direction);
 
-    this.drawhealthbar();
+    if (this.lastAttacked < 200) {
+      this.drawhealthbar();
+    }
   }
 
   drawhealthbar() {
@@ -1532,12 +1557,35 @@ class StrongKnight extends EnemyKnight {
   }
 }
 
+class Ares extends EnemyKnight {
+  constructor() {
+    super();
+    this.speed = (blockSize / 15);
+    this.health = 1000;
+    this.maxHealth = 1000;
+    this.maxAttackCooldown = 10;
+    this.attack = 50;
+    this.maxModeCooldown = 5;
+    this.size = (blockSize * 2);
+    this.range = 25;
+    this.isBoss = true;
+  }
+}
+
+class Menelaus extends EnemyKnight {
+  constructor() {
+    super();
+    this.health = 300;
+    this.maxHealth = 300;
+    this.color = "purple";
+  }
+}
+
 class Ajax extends EnemyKnight {
   constructor() {
     super();
-    this.health = 500;
-    this.maxHealth = 500;
-    this.size = (blockSize * 2);
+    this.health = 200;
+    this.maxHealth = 200;
     this.color = "purple";
   }
 }
@@ -1772,8 +1820,14 @@ function findMessage(e) {
   else if (e instanceof Rhesus) {
     return "Rhesus";
   }
+  else if (e instanceof Ares) {
+    return "Ares";
+  }
+  else if (e instanceof Menelaus) {
+    return "Menelaus";
+  }
   else if (e instanceof Ajax) {
-    return "Ajax the Great";
+    return "Ajax Oileus";
   }
   else if (e instanceof Teucer) {
     return "Teucer";
