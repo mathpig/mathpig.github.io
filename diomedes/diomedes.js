@@ -6,6 +6,7 @@ var ctx = screen.getContext("2d");
 const blockSize = 50;
 
 var time = 0;
+var deathTime = 0;
 
 var entities = [];
 var backdrop = [];
@@ -42,10 +43,10 @@ var LEVELS = [
     ],
     "map": [
       "BBBBBBBBBBBBB",
-      "B           B",
-      "B           B",
-      "B           B",
-      "B           B",
+      "BB         BB",
+      "BB         BB",
+      "BB         BB",
+      "BB         BB",
       "BB         BB",
       "BgS        XB",
       "BBBBBBBBBBBBB",
@@ -65,10 +66,10 @@ var LEVELS = [
     ],
     "map": [
       "BBBBBBBBBBBBBBBBBBBBBBBBBBB",
-      "B          R  RBB         B",
-      "B          R  RBB         B",
-      "B          R  RBB         B",
-      "B          RBBR           B",
+      "BB         R  RBB        BB",
+      "BB         R  RBB        BB",
+      "BB         R  RBB        BB",
+      "BB         RBBR          BB",
       "BB         RBBR          BB",
       "BgS         BB           XB",
       "BBBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -146,8 +147,8 @@ var LEVELS = [
     ],
     "holding": function() {
       return [
-        new Horse().setPosition(0, -blockSize),
-        new Horse().setPosition(0, -blockSize * 1.6),
+        new Horse().setPosition(-player.size / 9, -player.size * 0.6).setSize(player.size),
+        new Horse().setPosition(-player.size / 9, -player.size * 1.2).setSize(-player.size),
       ];
     },
     "map": [
@@ -208,7 +209,7 @@ var LEVELS = [
     ],
     "holding": function() {
       return [
-        new Fire().setPosition(-blockSize / 20, -blockSize * 0.6),
+        new Fire().setPosition(-player.size * 0.05, -player.size * 2 / 3).setSize(player.size),
       ];
     },
     "map": [
@@ -233,7 +234,7 @@ var LEVELS = [
     ],
     "holding": function() {
       return [
-        new Fire().setPosition(-blockSize / 20, -blockSize * 0.6),
+        new Fire().setPosition(-player.size * 0.05, -player.size * 2 / 3).setSize(player.size),
       ];
     },
     "map": [
@@ -322,7 +323,7 @@ var LEVELS = [
     ],
     "holding": function() {
       return [
-        new Palladium().setPosition(0, -blockSize),
+        new Palladium().setPosition(0, -this.size).setSize(this.size),
       ];
     },
     "map": [
@@ -396,9 +397,9 @@ var LEVELS = [
     ],
     "map": [
       "wwwwwwwwwwwwwww",
-      "ww           ww",
-      "ww           ww",
-      "wwS 9 N J T  ww",
+      "ww###########ww",
+      "ww###########ww",
+      "ww$#9#N#J#T##ww",
       "wwwwwwwwwwwwXww",
     ],
   },
@@ -407,25 +408,24 @@ var LEVELS = [
       "Sack Troy!",
     ],
     "map": [
-      "BB                                                            B",
-      "BB                                                            B",
-      "BB                                                            B",
-      "BB                                                            B",
-      "BB                                                            B",
-      "BB                                                            B",
-      "BB                        w w                                 B",
-      "BB                     m  wwwww                               B",
-      "BB                     R wwXwwwww        www                  B",
-      "BB                     R wwwwwwwwwwwwwwwwwwww                 B",
-      "BB                     R www wwwwwwwwwwwwwwwww                B",
-      "BB                     R ww    wwwwwwwwwwwwwww                B",
-      "BB                     R        wwwwwwwgwwwwww                B",
-      "BB                     R         wwwwwSR wwwww                B",
-      "BB                     R         ww    R    ww                B",
-      "BB                     R         ww    R    ww               BB",
-      "Bg                     R         mm    R    ww               XB",
-      "GGGGGGGGGGGGGGGGGMMMMMGGGGMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGG",
-      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+      "BB                                                     6                              BB",
+      "BB                                                                                    BB",
+      "BB                                                     6 5                            BB",
+      "BB                                                                                    BB",
+      "BB                         w w                         6 5 5                          BB",
+      "BB                       wwwww                                                        BB",
+      "BB          www        wwwwwXww                        6 5 5 5                        BB",
+      "BB         wwwwwwwwwwwwwwwwwwww                                                       BB",
+      "BB        wwwwwwwwwwwwwwwww www        A               6 5 5 5 5                      BB",
+      "BB        wwwwww######www    ww        AE                                             BB",
+      "BB        wwwwww#####$ww               AEE             6 5 5 5 5 5                    BB",
+      "BB        wwwwwwCwwwwww                AEEE                                           BB",
+      "BB        ww    R    ww                AEEEE           6 5 5 5 5 5 5                  BB",
+      "BB        ww    R    ww                AEEEEE                                         BB",
+      "BB        ww    R    ww                AEEEEEE         6 5 5 5 5 5 5 5                BB",
+      "Bg        bb    R    bb                AEEEEEEE                               *       XB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
     ],
   },
   {
@@ -459,6 +459,8 @@ function Init() {
   if (LEVELS[level]["holding"]) {
     levelHolding = LEVELS[level]["holding"]();
   }
+  time = 0;
+  deathTime = 0;
   entities = [];
   backdrop = [];
   var enemies = [];
@@ -484,6 +486,9 @@ function Init() {
       }
       else if (block == "D") {
         entities.push(new Dirt().setPosition(x, y));
+      }
+      else if (block == "#") {
+        backdrop.push(new BackgroundDirt().setPosition(x, y));
       }
       else if (block == "L") {
         entities.push(new Gold().setPosition(x, y));
@@ -565,16 +570,23 @@ function Init() {
         enemies.push(new Odysseus().setPosition(x, y));
       }
       else if (block == "9") {
+        backdrop.push(new BackgroundDirt().setPosition(x, y));
         enemies.push(new Odysseus().setPosition(x, y).setRange(0));
       }
       else if (block == "N") {
+        backdrop.push(new BackgroundDirt().setPosition(x, y));
         enemies.push(new Menelaus().setPosition(x, y).setRange(0));
       }
       else if (block == "J") {
+        backdrop.push(new BackgroundDirt().setPosition(x, y));
         enemies.push(new Ajax().setPosition(x, y).setRange(0));
       }
       else if (block == "T") {
+        backdrop.push(new BackgroundDirt().setPosition(x, y));
         enemies.push(new Teucer().setPosition(x, y).setRange(0));
+      }
+      else if (block == "*") {
+        enemies.push(new Priam().setPosition(x, y));
       }
       else if (block == "0") {
         backdrop.push(new BackgroundBrick().setPosition(x, y));
@@ -594,6 +606,11 @@ function Init() {
         player = new Knight().setPosition(x, y);
         player.setHolding(levelHolding);
         player.setColor("rgb(255, 255, 0)");
+      }
+      else if (block == "$") {
+        backdrop.push(new BackgroundDirt().setPosition(x, y));
+        player = new Knight().setPosition(x, y);
+        player.setHolding(levelHolding);
       }
     }
   }
@@ -743,7 +760,7 @@ class Fire extends Block {
     super();
     this.isCollidable = false;
     this.particles = new Float32Array();
-    this.colors = ["rgba(255,255,100,0.5)", "rgba(255,192,0,0.3)", "rgba(128,128,128,0.1)"];
+    this.colors = ["rgba(255, 255, 100, 0.5)", "rgba(255, 192, 0, 0.3)", "rgba(128, 128, 128, 0.1)"];
     this.gravity = 0;
     this.counter = 0;
     this.setParticles(200);
@@ -823,6 +840,14 @@ class Dirt extends Block {
   constructor() {
     super();
     this.color = "brown";
+  }
+}
+
+class BackgroundDirt extends Dirt {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.color = "rgb(64, 32, 0)";
   }
 }
 
@@ -1241,10 +1266,14 @@ class Knight {
     ctx.fillRect(this.x - this.size / 2 + val, this.y - 7 * this.size / 10, this.size - val, this.size / 10);
   }
 
-  tick() {
+  tickHolding() {
     for (var i = 0; i < this.holding.length; ++i) {
       this.holding[i].tick();
     }
+  }
+
+  tick() {
+    this.tickHolding();
     this.lastAttacked++;
     if (this.jumpCooldown <= 0 && this.lastAttacked >= 200) {
       this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
@@ -1298,10 +1327,10 @@ class Knight {
                 toRemove.push(entities[j]);
                 entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
               }
-              entities[j].vx += (this.direction * blockSize);
+              entities[j].vx += (this.direction * blockSize) * Math.pow((this.size / entities[j].size), 2);
             }
             else {
-              entities[j].vx += (this.direction * blockSize / 2);
+              entities[j].vx += (this.direction * blockSize / 2) * Math.pow((this.size / entities[j].size), 2);
             }
             this.attackCooldown = this.maxAttackCooldown;
           }
@@ -1392,6 +1421,7 @@ class EnemyKnight extends Knight {
   }
 
   tick() {
+    this.tickHolding();
     this.lastAttacked++;
     if (this.lastAttacked >= 200) {
       this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
@@ -1469,10 +1499,10 @@ class EnemyKnight extends Knight {
                 toRemove.push(entities[j]);
                 entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
               }
-              entities[j].vx += (this.direction * blockSize);
+              entities[j].vx += (this.direction * blockSize) * Math.pow((this.size / entities[j].size), 2);
             }
             else {
-              entities[j].vx += (this.direction * blockSize / 2);
+              entities[j].vx += (this.direction * blockSize / 2) * Math.pow((this.size / entities[j].size), 2);
             }
           }
           failed = true;
@@ -1561,14 +1591,15 @@ class Ares extends EnemyKnight {
   constructor() {
     super();
     this.speed = (blockSize / 15);
-    this.health = 1000;
-    this.maxHealth = 1000;
-    this.maxAttackCooldown = 10;
+    this.health = 500;
+    this.maxHealth = 500;
+    this.maxAttackCooldown = 20;
     this.attack = 50;
-    this.maxModeCooldown = 5;
+    this.maxModeCooldown = 20;
     this.size = (blockSize * 2);
     this.range = 25;
     this.isBoss = true;
+    this.holding = [new Fire().setPosition(-this.size * 0.05, -this.size * 2 / 3).setSize(this.size)];
   }
 }
 
@@ -1587,6 +1618,21 @@ class Ajax extends EnemyKnight {
     this.health = 200;
     this.maxHealth = 200;
     this.color = "purple";
+  }
+}
+
+class Priam extends EnemyKnight {
+  constructor() {
+    super();
+    this.speed = (blockSize / 30);
+    this.health = 50;
+    this.maxHealth = 50;
+    this.maxAttackCooldown = 40;
+    this.attack = 5;
+    this.maxModeCooldown = 40;
+    this.size = (blockSize * 3 / 5);
+    this.range = 10;
+    this.isBoss = true;
   }
 }
 
@@ -1618,6 +1664,7 @@ class EnemyArcher extends EnemyKnight {
   }
 
   tick() {
+    this.tickHolding();
     this.lastAttacked++;
     if (this.jumpCooldown <= 0 && this.lastAttacked >= 200) {
       this.health = Math.min(this.health + (this.maxHealth / 1000), this.maxHealth);
@@ -1832,6 +1879,9 @@ function findMessage(e) {
   else if (e instanceof Teucer) {
     return "Teucer";
   }
+  else if (e instanceof Priam) {
+    return "Priam";
+  }
   else if (e instanceof StrongKnight) {
     return "Giant";
   }
@@ -1937,6 +1987,9 @@ function DrawInstructions() {
 
 function Tick() {
   time++;
+  if (player.health <= 0) {
+    deathTime++;
+  }
   toRemove = [];
   for (var i = 0; i < backdrop.length; ++i) {
     backdrop[i].tick();
@@ -1948,6 +2001,9 @@ function Tick() {
     entities.splice(entities.indexOf(toRemove[i]), 1);
   }
   Draw();
+  if (deathTime >= 200) {
+    Init();
+  }
 }
 
 Init();
