@@ -1831,21 +1831,22 @@ class Bullet {
     for (var i = 0; i < entities.length; ++i) {
       if (touches(this, entities[i]) && entities[i] !== this && entities[i] !== this.source && (!(entities[i] instanceof Block) || entities[i].isCollidable)) {
         toRemove.push(this);
-        if (!(entities[i] instanceof Block)) {
-          if (entities[i] instanceof EnemyArcher || (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3))) {
-            entities[i].health -= this.attack;
-            entities[i].lastAttacked = 0;
-            if (entities[i].health <= 0) {
-              toRemove.push(entities[i]);
-              entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y).setDirection(entities[i].direction).setSize(entities[i].size));
-            }
-            entities[i].vx += (this.vx * Math.pow(blockSize / entities[i].size, 2));
-            entities[i].vx += (this.vy * Math.pow(blockSize / entities[i].size, 2));
+        if (!(entities[i] instanceof Knight)) {
+          break;
+        }
+        if (entities[i] instanceof EnemyArcher || (((Math.sign(this.vx) == entities[i].direction) && (entities[i].mode == 1 || entities[i].mode == 3)) || (Math.sign(this.vx) != entities[i].direction) && (entities[i].mode == 0 || entities[i].mode == 2 || entities[i].mode == 3))) {
+          entities[i].health -= this.attack;
+          entities[i].lastAttacked = 0;
+          if (entities[i].health <= 0) {
+            toRemove.push(entities[i]);
+            entities.push(new DeadBody().setPosition(entities[i].x, entities[i].y).setDirection(entities[i].direction).setSize(entities[i].size));
           }
-          else {
-            entities[i].vx += (this.vx * Math.pow(blockSize / entities[i].size, 2) / 2);
-            entities[i].vx += (this.vy * Math.pow(blockSize / entities[i].size, 2) / 2);
-          }
+          entities[i].vx += (this.vx * Math.pow(blockSize / entities[i].size, 2));
+          entities[i].vx += (this.vy * Math.pow(blockSize / entities[i].size, 2));
+        }
+        else {
+          entities[i].vx += (this.vx * Math.pow(blockSize / entities[i].size, 2) / 2);
+          entities[i].vx += (this.vy * Math.pow(blockSize / entities[i].size, 2) / 2);
         }
         break;
       }
