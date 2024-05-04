@@ -323,7 +323,7 @@ var LEVELS = [
     ],
     "holding": function() {
       return [
-        new Palladium().setPosition(0, -this.size).setSize(this.size),
+        new Palladium().setPosition(0, -player.size).setSize(player.size),
       ];
     },
     "map": [
@@ -437,7 +437,7 @@ var LEVELS = [
       "MLLLLLLLLLLLLLLLM",
       "MmmmmmmmmmmmmmmmM",
       "MmmLmmLmPmLmmLmmM",
-      "MmBBBmBmBmBmBBBmM",
+      "MmMMMmMmMmMmMMMmM",
       "M7mmLmmmLmmmLmmmM",
       "MLLmmmHmmmHmmmLLM",
       "MMMMMMMMMMMMMMMMM",
@@ -942,7 +942,6 @@ class Gate extends PixelBlock {
 class Palladium extends Block {
   constructor() {
     super();
-    this.color = "brown";
     this.colorMap = ["B B B B B",
                      " SSSSSSS ",
                      "BWWWWWWWB",
