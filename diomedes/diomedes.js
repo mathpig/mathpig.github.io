@@ -1326,10 +1326,10 @@ class Knight {
                 toRemove.push(entities[j]);
                 entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
               }
-              entities[j].vx += (this.direction * blockSize) * Math.pow((this.size / entities[j].size), 2);
+              entities[j].vx += this.direction * Math.min(blockSize * Math.pow((this.size / entities[j].size), 2), 50);
             }
             else {
-              entities[j].vx += (this.direction * blockSize / 2) * Math.pow((this.size / entities[j].size), 2);
+              entities[j].vx += this.direction * Math.min(blockSize * Math.pow((this.size / entities[j].size), 2), 50) / 2;
             }
             this.attackCooldown = this.maxAttackCooldown;
           }
@@ -1498,10 +1498,10 @@ class EnemyKnight extends Knight {
                 toRemove.push(entities[j]);
                 entities.push(new DeadBody().setPosition(entities[j].x, entities[j].y).setDirection(entities[j].direction).setSize(entities[j].size));
               }
-              entities[j].vx += (this.direction * blockSize) * Math.pow((this.size / entities[j].size), 2);
+              entities[j].vx += this.direction * Math.min(blockSize * Math.pow((this.size / entities[j].size), 2), 50);
             }
             else {
-              entities[j].vx += (this.direction * blockSize / 2) * Math.pow((this.size / entities[j].size), 2);
+              entities[j].vx += this.direction * Math.min(blockSize * Math.pow((this.size / entities[j].size), 2), 50) / 2;
             }
           }
           failed = true;
