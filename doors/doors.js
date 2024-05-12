@@ -9,6 +9,8 @@ var entities = [];
 var otherEntities = [];
 var player;
 
+var lightsOut = false;
+
 function inInterval(val, a, b) {
   return (val >= a && val <= b);
 }
@@ -170,6 +172,9 @@ class Brick extends Block {
 
   distToClosestLightSource() {
     var best = distance(this, player);
+    if (lightsOut) {
+      return best * 5;
+    }
     for (var i in entities) {
       if (entities[i] instanceof Light) {
         best = Math.min(best, distance(this, entities[i]) / 2);
@@ -215,11 +220,23 @@ class BackgroundBrick extends Brick {
   }
 }
 
-class Light extends Block {
+class Light extends Brick {
   constructor() {
     super();
-    this.color = "rgb(255, 255, 128)";
+    this.defaultColor = [255, 255, 128];
     this.isCollidable = false;
+  }
+
+  draw() {
+    var dist = Math.max(1, this.distToClosestLightSource() / blockSize);
+    if (lightsOut) {
+      dist = Math.max(dist, blockSize / 5);
+    }
+    ctx.fillStyle = "rgb(" +
+                      String(Math.round(this.defaultColor[0] / dist)) + "," +
+                      String(Math.round(this.defaultColor[1] / dist)) + "," +
+                      String(Math.round(this.defaultColor[2] / dist)) + ")";
+    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
 }
 
@@ -368,6 +385,9 @@ function Draw() {
 }
 
 function Tick() {
+  if (Math.random() < 0.0025) {
+    lightsOut = !lightsOut;
+  }
   for (var i = 0; i < otherEntities.length; ++i) {
     otherEntities[i].tick();
   }
