@@ -68,9 +68,9 @@ var map = [
   "BHHHBHBHBHHHBHHHHHHHHHBHHHBHBHHHHHHHBHHHB",
   "BBBHBBBBBHBBBBBBBBBBBBBBBHBHBBBHBHBHBBBBB",
   "BHHHHHBHHHHHBHHHHHBHBHHHBHHHHHHHBHBHHHBHB BBBBB",
-  "BBBHBBBBBBBBBHBBBHBHBHBHBBBHBBBBBBBHBHBHBBBHHHB",
-  "BHHHHHHHHHHHHHBHHHHHHHBHHHBHHHBHHHHHBHHHHHHHHHB",
-  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHHHB", 
+  "BBBHBBBBBBBBBHBBBHBHBHBHBBBHBBBBBBBHBHBHBBBLLLB",
+  "BHHHHHHHHHHHHHBHHHHHHHBHHHBHHHBHHHHHBHHHHHHLLLB",
+  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBLLLB", 
   "                                          BBBBB", 
 ];
 
@@ -90,10 +90,18 @@ function Init() {
         entities[val] = new Brick().setPosition(x, y);
       }
       else if (block == "H") {
-        entities[val] = new BackgroundBrick().setPosition(x, y);
+        if (Math.random() < 0.01) {
+          entities[val] = new Light().setPosition(x, y);
+        }
+        else {
+          entities[val] = new BackgroundBrick().setPosition(x, y);
+        }
+      }
+      else if (block == "L") {
+        entities[val] = new Light().setPosition(x, y);
       }
       else if (block == "S") {
-        entities[val] = new BackgroundBrick().setPosition(x, y);
+        entities[val] = new Light().setPosition(x, y);
         player = new Knight().setPosition(x, y);
       }
     }
@@ -160,8 +168,18 @@ class Brick extends Block {
     this.color2 = "rgb(0, 0, 0)";
   }
 
+  distToClosestLightSource() {
+    var best = distance(this, player);
+    for (var i in entities) {
+      if (entities[i] instanceof Light) {
+        best = Math.min(best, distance(this, entities[i]) / 2);
+      }
+    }
+    return best;
+  }
+
   draw() {
-    var dist = Math.max(1, Math.sqrt(distance(this, player)) * 10 / blockSize);
+    var dist = Math.max(1, this.distToClosestLightSource() / blockSize);
     ctx.fillStyle = "rgb(" +
                       String(Math.round(this.defaultColor[0] / dist)) + "," +
                       String(Math.round(this.defaultColor[1] / dist)) + "," +
@@ -194,6 +212,14 @@ class BackgroundBrick extends Brick {
     super();
     this.isCollidable = false;
     this.defaultColor = [64, 32, 0];
+  }
+}
+
+class Light extends Block {
+  constructor() {
+    super();
+    this.color = "rgb(255, 255, 128)";
+    this.isCollidable = false;
   }
 }
 
