@@ -173,7 +173,7 @@ class Brick extends Block {
   distToClosestLightSource() {
     var best = distance(this, player);
     if (lightsOut) {
-      return best * 5;
+      return best * 2;
     }
     for (var i in entities) {
       if (entities[i] instanceof Light) {
