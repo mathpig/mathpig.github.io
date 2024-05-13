@@ -340,7 +340,7 @@ class Player {
       failed = false;
       for (var j = 0; j < otherEntities.length; ++j) {
         if (otherEntities[j] !== this && touches(this, otherEntities[j])) {
-          if (!otherEntities[j].isEnemy) {
+          if (this.isEnemy != otherEntities[j].isEnemy) {
             hasLost = true;
           }
           failed = true;
@@ -373,7 +373,7 @@ class Player {
       failed = false;
       for (var j = 0; j < otherEntities.length; ++j) {
         if (otherEntities[j] !== this && touches(this, otherEntities[j])) {
-          if (!otherEntities[j].isEnemy) {
+          if (this.isEnemy != otherEntities[j].isEnemy) {
             hasLost = true;
           }
           failed = true;
