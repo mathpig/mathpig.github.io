@@ -22,6 +22,8 @@ var smilerColors = {
 };
 
 var hasLost = false;
+var hasWon = false;
+
 var lightsOut = false;
 
 function inInterval(val, a, b) {
@@ -83,9 +85,9 @@ var map = [
   "BHHHBHBHBHHHBHHHHHHHHHBHHHBHBHHHHHHHBHHHB",
   "BBBHBBBBBHBBBBBBBBBBBBBBBHBHBBBHBHBHBBBBB",
   "BHHHHHBHHHHHBHHHHHBHBHHHBHHHHHHHBHBHHHBHB BBBBB",
-  "BBBHBBBBBBBBBHBBBHBHBHBHBBBHBBBBBBBHBHBHBBBHHHB",
-  "BHHHHHHHHHHHHHBHHHHHHHBHHHBHHHBHHHHHBHHHHHHHLHB",
-  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHHHB", 
+  "BBBHBBBBBBBBBHBBBHBHBHBHBBBHBBBBBBBHBHBHBBBLLLB",
+  "BHHHHHHHHHHHHHBHHHHHHHBHHHBHHHBHHHHHBHHHHHHLELB",
+  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBLLLB", 
   "                                          BBBBB", 
 ];
 
@@ -120,6 +122,9 @@ function Init() {
       else if (block == "S") {
         entities[val] = new Light().setPosition(x, y);
         player = new Player().setPosition(x, y);
+      }
+      else {
+        entities[val] = new Exit().setPosition(x, y);
       }
     }
   }
@@ -251,7 +256,14 @@ class Light extends Brick {
                       String(Math.round(this.defaultColor[0] / dist)) + "," +
                       String(Math.round(this.defaultColor[1] / dist)) + "," +
                       String(Math.round(this.defaultColor[2] / dist)) + ")";
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
+  }
+}
+
+class Exit extends Light {
+  constructor() {
+    super();
+    this.defaultColor = [0, 255, 0];
   }
 }
 
@@ -343,6 +355,9 @@ class Player {
           if (this.isEnemy != otherEntities[j].isEnemy) {
             hasLost = true;
           }
+          if (!this.isEnemy && otherEntities[j] instanceof Exit) {
+            hasWon = true;
+          }
           failed = true;
           break;
         }
@@ -375,6 +390,9 @@ class Player {
         if (otherEntities[j] !== this && touches(this, otherEntities[j])) {
           if (this.isEnemy != otherEntities[j].isEnemy) {
             hasLost = true;
+          }
+          if (!this.isEnemy && otherEntities[j] instanceof Exit) {
+            hasWon = true;
           }
           failed = true;
           break;
@@ -434,7 +452,7 @@ function doCasts(maxDist) {
   var rays = 1800;
   var increment = 10;
   var toDraw = new Set();
-  var toDraw2 = [];
+  var toDraw2 = new Set();
   for (var angle = 0; angle < rays; ++angle) {
     var ang = (angle * 2 * Math.PI / rays);
     var x = player.x;
@@ -448,8 +466,8 @@ function doCasts(maxDist) {
       }
       toDraw.add(e);
       for (var i = 0; i < otherEntities.length; ++i) {
-        if (isInside(x, y, otherEntities[i])) {
-          toDraw2.push(otherEntities[i]);
+        if (isInside(x, y, otherEntities[i]) || distance(player, otherEntities[i]) <= (5 * blockSize)) {
+          toDraw2.add(String(Math.round(otherEntities[i].x)) + "," + String(Math.round(otherEntities[i].y)));
         }
       }
       if (entities[e].isCollidable) {
@@ -460,8 +478,10 @@ function doCasts(maxDist) {
   for (var i of toDraw) {
     entities[i].draw();
   }
-  for (var i = 0; i < toDraw2.length; ++i) {
-    toDraw2[i].draw();
+  for (var i = 0; i < otherEntities.length; ++i) {
+    if (toDraw2.has(String(Math.round(otherEntities[i].x)) + "," + String(Math.round(otherEntities[i].y)))) {
+      otherEntities[i].draw();
+    }
   }
 }
 
@@ -470,7 +490,7 @@ function Draw() {
   screen.height = window.innerHeight;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
-  if (hasLost) {
+  if (hasLost || hasWon) {
     for (var i = 0; i < smilerColorMap.length; ++i) {
       for (var j = 0; j < smilerColorMap[0].length; ++j) {
         ctx.fillStyle = smilerColors[smilerColorMap[i][j]];
@@ -496,7 +516,7 @@ function Tick() {
     Draw();
     return;
   }
-  if (Math.random() < 0.0025 && time >= 400) {
+  if (Math.random() < 0.0025 && time >= 200) {
     lightsOut = !lightsOut;
     if (lightsOut) {
       for (i in entities) {
