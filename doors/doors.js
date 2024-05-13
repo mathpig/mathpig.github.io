@@ -412,7 +412,7 @@ class Smiler extends Player {
   }
 
   getDir() {
-    if (this.hasBumped || Math.random() < 0.01) {
+    if (this.hasBumped || Math.random() < 0.025) {
       this.direction = (this.direction + 2 * Math.round(Math.random()) + 1) % 4;
     }
     if (this.direction == 0) {
