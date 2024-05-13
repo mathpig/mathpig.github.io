@@ -20,6 +20,10 @@ var smilerColors = {
   " ": "rgb(0, 0, 0)",
   "W": "rgb(255, 255, 255)",
 };
+var invertedSmilerColors = {
+  " ": "rgb(255, 255, 255)",
+  "W": "rgb(0, 0, 0)",
+};
 
 var hasLost = false;
 var hasWon = false;
@@ -338,9 +342,13 @@ class Player {
       for (var x = -1; x <= 1; ++x) {
         for (var y = -1; y <= 1; ++y) {
           var e = entities[findBlock(this.x + blockSize * x, this.y + blockSize * y)];
-          if (touches(this, e) && e.isCollidable) {
-            failed = true;
-            break;
+          if (touches(this, e)) {
+            if (e instanceof Exit && !this.isEnemy) {
+              hasWon = true;
+            }
+            if (e.isCollidable) {
+              failed = true;
+            }
           }
         }
       }
@@ -355,11 +363,7 @@ class Player {
           if (this.isEnemy != otherEntities[j].isEnemy) {
             hasLost = true;
           }
-          if (!this.isEnemy && otherEntities[j] instanceof Exit) {
-            hasWon = true;
-          }
           failed = true;
-          break;
         }
       }
       if (failed) {
@@ -374,9 +378,13 @@ class Player {
       for (var x = -1; x <= 1; ++x) {
         for (var y = -1; y <= 1; ++y) {
           var e = entities[findBlock(this.x + blockSize * x, this.y + blockSize * y)];
-          if (touches(this, e) && e.isCollidable) {
-            failed = true;
-            break;
+          if (touches(this, e)) {
+            if (e instanceof Exit && !this.isEnemy) {
+              hasWon = true;
+            }
+            if (e.isCollidable) {
+              failed = true;
+            }
           }
         }
       }
@@ -391,11 +399,7 @@ class Player {
           if (this.isEnemy != otherEntities[j].isEnemy) {
             hasLost = true;
           }
-          if (!this.isEnemy && otherEntities[j] instanceof Exit) {
-            hasWon = true;
-          }
           failed = true;
-          break;
         }
       }
       if (failed) {
@@ -485,21 +489,29 @@ function doCasts(maxDist) {
   }
 }
 
+function jumpScare(colorMap, colors) {
+  for (var i = 0; i < colorMap.length; ++i) {
+    for (var j = 0; j < colorMap[0].length; ++j) {
+      ctx.fillStyle = colors[colorMap[i][j]];
+      ctx.fillRect(screen.width / 2 - screen.height / 2 + j * screen.height / colorMap[0].length - 1,
+                   i * screen.height / colorMap.length - 1,
+                   screen.height / colorMap[0].length + 2,
+                   screen.height / colorMap.length + 2);
+    }
+  }
+}
+
 function Draw() {
   screen.width = window.innerWidth;
   screen.height = window.innerHeight;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
-  if (hasLost || hasWon) {
-    for (var i = 0; i < smilerColorMap.length; ++i) {
-      for (var j = 0; j < smilerColorMap[0].length; ++j) {
-        ctx.fillStyle = smilerColors[smilerColorMap[i][j]];
-        ctx.fillRect(screen.width / 2 - screen.height / 2 + j * screen.height / smilerColorMap[0].length - 1,
-                     i * screen.height / smilerColorMap.length - 1,
-                     screen.height / smilerColorMap[0].length + 2,
-                     screen.height / smilerColorMap.length + 2);
-      }
-    }
+  if (hasLost) {
+    jumpScare(smilerColorMap, smilerColors);
+    return;
+  }
+  if (hasWon) {
+    jumpScare(smilerColorMap, invertedSmilerColors);
     return;
   }
   ctx.save();
