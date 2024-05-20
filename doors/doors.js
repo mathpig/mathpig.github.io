@@ -313,7 +313,26 @@ class Player {
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
 
-  getDir() {
+  inRoom() {
+    var corners = 0;
+    for (var x = -1; x <= 1; ++x) {
+      if (x == 0) {
+        continue;
+      }
+      for (var y = -1; y <= 1; ++y) {
+        if (y == 0) {
+          continue;
+        }
+        var e = entities[findBlock(this.x + blockSize * x, this.y + blockSize * y)];
+        if (e.isCollidable) {
+          corners++;
+        }
+      }
+    }
+    return (corners < 4);
+  }
+
+  getVelocity() {
     var vx = 0;
     if (keySet["ArrowLeft"]) {
       vx--;
@@ -332,12 +351,12 @@ class Player {
   }
 
   tick() {
-    var val = this.getDir();
     this.hasBumped = false;
-    var val1 = val[0];
-    var val2 = val[1];
-    for (var i = 0; i < this.speed; ++i) {
-      this.x += val1;
+    var val = this.getVelocity();
+    var vx = this.speed * val[0];
+    var vy = this.speed * val[1];
+    for (var i = 0; i < Math.abs(vx); ++i) {
+      this.x += Math.sign(vx);
       var failed = false;
       for (var x = -1; x <= 1; ++x) {
         for (var y = -1; y <= 1; ++y) {
@@ -354,7 +373,7 @@ class Player {
       }
       if (failed) {
         this.hasBumped = true;
-        this.x -= val1;
+        this.x -= Math.sign(vx);
         break;
       }
       failed = false;
@@ -368,12 +387,12 @@ class Player {
       }
       if (failed) {
         this.hasBumped = true;
-        this.x -= val1;
+        this.x -= Math.sign(vx);
         break;
       }
     }
-    for (var i = 0; i < this.speed; ++i) {
-      this.y += val2;
+    for (var i = 0; i < Math.abs(vy); ++i) {
+      this.y += Math.sign(vy);
       var failed = false;
       for (var x = -1; x <= 1; ++x) {
         for (var y = -1; y <= 1; ++y) {
@@ -390,7 +409,7 @@ class Player {
       }
       if (failed) {
         this.hasBumped = true;
-        this.y -= val2;
+        this.y -= Math.sign(vy);
         break;
       }
       failed = false;
@@ -404,7 +423,7 @@ class Player {
       }
       if (failed) {
         this.hasBumped = true;
-        this.y -= val2;
+        this.y -= Math.sign(vy);
         break;
       }
     }
@@ -419,6 +438,8 @@ class Smiler extends Player {
     this.direction = Math.floor(Math.random() * 4);
     this.colorMap = smilerColorMap;
     this.colors = smilerColors;
+    this.wasInRoom = false;
+    this.hasBumpedInRoom = false;
   }
 
   draw() {
@@ -433,7 +454,12 @@ class Smiler extends Player {
     }
   }
 
-  getDir() {
+  moveRoom() {
+    var angle = Math.atan2(this.y - player.y, player.x - this.x);
+    return [Math.cos(angle), Math.sin(angle)];
+  }
+
+  moveMaze() {
     if (this.hasBumped || Math.random() < 0.025) {
       this.direction = (this.direction + 2 * Math.round(Math.random()) + 1) % 4;
     }
@@ -448,6 +474,24 @@ class Smiler extends Player {
     }
     else {
       return [-1, 0];
+    }
+  }
+
+  getVelocity() {
+    if (this.inRoom()) {
+      if (this.hasBumped && this.wasInRoom) {
+        this.hasBumpedInRoom = true;
+      }
+      if (this.hasBumpedInRoom) {
+        return moveMaze();
+      }
+      this.wasInRoom = true;
+      return moveRoom();
+    }
+    else {
+      this.wasInRoom = false;
+      this.hasBumpedInRoom = false;
+      return moveMaze();
     }
   }
 }
@@ -524,7 +568,7 @@ var time = 0;
 
 function Tick() {
   time++;
-  if (hasLost) {
+  if (hasLost || hasWon) {
     Draw();
     return;
   }
