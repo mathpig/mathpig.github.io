@@ -518,7 +518,7 @@ class Smiler extends Player {
   }
 
   moveRoom() {
-    var angle = Math.atan2(this.y - player.y, player.x - this.x);
+    var angle = Math.atan2(player.y - this.y, player.x - this.x);
     return [Math.cos(angle), Math.sin(angle)];
   }
 
@@ -546,6 +546,9 @@ class Smiler extends Player {
         this.hasBumpedInRoom = true;
       }
       if (this.hasBumpedInRoom) {
+        if (Math.random() < 0.025) {
+          this.hasBumpedInRoom = false;
+        }
         return this.moveMaze();
       }
       this.wasInRoom = true;
