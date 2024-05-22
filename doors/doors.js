@@ -147,13 +147,57 @@ var levels = [
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
+  [
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+    "TTStttttTTWWWWttttttTTttwwwwTTwwwwttttttTT",
+    "TTttttttTTWWWWttttttTTttwwwwTTwwwwttttttTT",
+    "TTTTTTttTTTTTTttTTttTTttTTTTTTTTTTttTTWWTT",
+    "TTTTTTttTTTTTTttTTttTTttTTTTTTTTTTttTTWWTT",
+    "TTwwwwttTTwwwwwwTTttTTttttttttttttttTTWWTT",
+    "TTwwwwttTTwwwwwwTTttTTttttttttttttttTTWWTT",
+    "TTTTTTttTTTTTTTTTTttTTttTTttTTTTTTTTTTTTTT",
+    "TTTTTTttTTTTTTTTTTttTTttTTttTTTTTTTTTTTTTT",
+    "TTttttttwwwwwwwwwwttttttTTttTTttTTttwwwwTT",
+    "TTttttttwwwwwwwwwwttttttTTttTTttTTttwwwwTT",
+    "TTttTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
+    "TTttTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
+    "TTttTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
+    "TTttTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
+    "TTttTTTTTTwwTTTTTTTTTTttTTWWTTttTTTTTTttTT",
+    "TTttTTTTTTwwTTTTTTTTTTttTTWWTTttTTTTTTttTT",
+    "TTttTTwwWWWWWWwwwwwwwwttTTWWTTttttttTTttTT",
+    "TTttTTwwWWWWWWwwwwwwwwttTTWWTTttttttTTttTT",
+    "TTTTTTwwTTTTTTwwTTTTTTttTTTTTTTTTTttTTttTT",
+    "TTTTTTwwTTTTTTwwTTTTTTttTTTTTTTTTTttTTttTT",
+    "TTttttttTTttttttTTttTTttttttTTttTTttttttTT",
+    "TTttttttTTttttttTTttTTttttttTTttTTttttttTT",
+    "TTttTTTTTTttTTttTTttTTttTTTTTTttTTTTTTwwTT",
+    "TTttTTTTTTttTTttTTttTTttTTTTTTttTTTTTTwwTT",
+    "TTttTTttttttTTttTTwwwwwwwwwwTTttttttTTwwTT",
+    "TTEtTTttttttTTttTTwwwwwwwwwwTTttttttTTwwTT",
+    "TTTTTTttTTttTTttTTTTTTTTTTTTTTwwTTttTTwwTT",
+    "TTTTTTttTTttTTttTTTTTTTTTTTTTTwwTTttTTwwTT",
+    "TTwwwwttTTttTTttttttTTttTTttttwwTTttTTWWTT",
+    "TTwwwwttTTttTTttttttTTttTTttttwwTTttTTWWTT",
+    "TTTTTTTTTTTTTTttTTttTTttTTTTTTwwTTTTTTWWTT",
+    "TTTTTTTTTTTTTTttTTttTTttTTTTTTwwTTTTTTWWTT",
+    "TTttttttttttttttTTttttttTTWWWWwwwwwwTTWWTT",
+    "TTttttttttttttttTTttttttTTWWWWwwwwwwTTWWTT",
+    "TTttTTTTTTTTTTttTTttTTTTTTTTTTwwTTwwTTTTTT",
+    "TTttTTTTTTTTTTttTTttTTTTTTTTTTwwTTwwTTTTTT",
+    "TTttWWWWTTttttttTTwwwwwwwwwwwwwwTTwwwwwwTT",
+    "TTttWWWWTTttttttTTwwwwwwwwwwwwwwTTwwwwwwTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+  ],
 ];
 
-var shouldAddLights = {0: true, 1: false};
-var lightsRemainOut = {0: false, 1: true};
-var safeTime = {0: 200, 1: 100};
-var lightFlickerRate = {0: 0.0025, 1: 1};
-var seeThroughWalls = {0: false, 1: true};
+var shouldAddLights = {0: true, 1: false, 2: false};
+var lightsRemainOut = {0: false, 1: true, 2: false};
+var safeTime = {0: 200, 1: 100, 2: 0};
+var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0};
+var seeThroughWalls = {0: false, 1: true, 2: false};
 
 function Init() {
   var map = levels[level];
@@ -182,6 +226,23 @@ function Init() {
         else {
           entities[val] = new BackgroundBrick().setPosition(x, y);
         }
+      }
+      else if (block == "T") {
+        entities[val] = new Tile().setPosition(x, y);
+      }
+      else if (block == "t") {
+        if (shouldAddLights[level] && Math.random() < 0.01) {
+          entities[val] = new Light().setPosition(x, y);
+        }
+        else {
+          entities[val] = new BackgroundTile().setPosition(x, y);
+        }
+      }
+      else if (block == "w") {
+        entities[val] = new Water().setPosition(x, y);
+      }
+      else if (block == "W") {
+        entities[val] = new DeepWater().setPosition(x, y);
       }
       else if (block == "L") {
         entities[val] = new Light().setPosition(x, y);
@@ -307,6 +368,38 @@ class BackgroundBrick extends Brick {
   }
 }
 
+class Tile extends Block {
+  constructor() {
+    super();
+    this.color = "rgb(180, 192, 180)";
+    this.color2 = "rgb(128, 128, 128)";
+  }
+
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
+    ctx.strokeStyle = this.color2;
+    ctx.lineWidth = (blockSize / 25);
+    ctx.beginPath();
+    for (var i = 0; i < 5; ++i) {
+      ctx.moveTo(this.x - this.size / 2, this.y - this.size / 2 + this.size * i / 4);
+      ctx.lineTo(this.x + this.size / 2, this.y - this.size / 2 + this.size * i / 4);
+      ctx.moveTo(this.x - this.size / 2 + this.size * i / 4, this.y - this.size / 2);
+      ctx.lineTo(this.x - this.size / 2 + this.size * i / 4, this.y + this.size / 2);
+    }
+    ctx.stroke();
+  }
+}
+
+class BackgroundTile extends Tile {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.color = "rgb(120, 128, 120)";
+    this.color2 = "rgb(96, 96, 96)";
+  }
+}
+
 class Light extends Brick {
   constructor() {
     super();
@@ -324,6 +417,22 @@ class Light extends Brick {
                       String(Math.round(this.defaultColor[1] / dist)) + "," +
                       String(Math.round(this.defaultColor[2] / dist)) + ")";
     ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
+  }
+}
+
+class Water extends BackgroundTile {
+  constructor() {
+    super();
+    this.color = "rgb(128, 255, 223)";
+    this.color2 = "rgb(128, 192, 176)";
+  }
+}
+
+class DeepWater extends Block {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.color = "rgb(64, 128, 112)";
   }
 }
 
