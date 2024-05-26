@@ -237,11 +237,11 @@ var levels = [
   ],
 ];
 
-var shouldAddLights = {0: true, 1: false, 2: false, 3: true};
+var lightFrequency = {0: 0.01, 1: 0, 2: 0, 3: 0.025};
 var lightsRemainOut = {0: false, 1: true, 2: false, 3: false};
-var safeTime = {0: 200, 1: 100, 2: 0, 3: 0};
-var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0, 3: 0};
-var entityAbundance = {0: 1, 1: 1, 2: 0, 3: 0};
+var safeTime = {0: 200, 1: 100, 2: 0, 3: 400};
+var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0, 3: 0.01};
+var entityAbundance = {0: 1, 1: 1, 2: 0, 3: 0.5};
 var seeThroughWalls = {0: false, 1: true, 2: false, 3: false};
 var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "same"};
 
@@ -266,7 +266,7 @@ function Init() {
         entities[val] = new Brick().setPosition(x, y);
       }
       else if (block == "H") {
-        if (shouldAddLights[level] && Math.random() < 0.01) {
+        if (Math.random() < lightFrequency[level]) {
           entities[val] = new Light().setPosition(x, y);
         }
         else {
@@ -277,7 +277,7 @@ function Init() {
         entities[val] = new Tile().setPosition(x, y);
       }
       else if (block == "t") {
-        if (shouldAddLights[level] && Math.random() < 0.01) {
+        if (Math.random() < lightFrequency[level]) {
           entities[val] = new Light().setPosition(x, y);
         }
         else {
@@ -288,7 +288,7 @@ function Init() {
         entities[val] = new DarkTile().setPosition(x, y);
       }
       else if (block == "d") {
-        if (shouldAddLights[level] && Math.random() < 0.01) {
+        if (Math.random() < lightFrequency[level]) {
           entities[val] = new Light().setPosition(x, y);
         }
         else {
