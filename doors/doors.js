@@ -96,7 +96,7 @@ var levels = [
     "BHHHHHBHHHHHBHHHHHBHBHHHBHHHHHHHBHBHHHBHBLLLB",
     "BBBHBBBBBBBBBHBBBHBHBHBHBBBHBBBBBBBHBHBHBLELB",
     "BHHHHHHHHHHHHHBHHHHHHHBHHHBHHHBHHHHHBHHHBLLLB",
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", 
+    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
   [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -160,10 +160,10 @@ var levels = [
     "TTTTTTttTTTTTTTTTTttTTttTTttTTTTTTTTTTTTTT",
     "TTttttttwwwwwwwwwwttttttTTttTTttTTttwwwwTT",
     "TTttttttwwwwwwwwwwttttttTTttTTttTTttwwwwTT",
-    "TTttTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
-    "TTttTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
-    "TTttTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
-    "TTttTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
+    "TTwwTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
+    "TTwwTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
+    "TTwwTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
+    "TTwwTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
     "TTttTTTTTTwwTTTTTTTTTTttTTWWTTttTTTTTTttTT",
     "TTttTTTTTTwwTTTTTTTTTTttTTWWTTttTTTTTTttTT",
     "TTttTTwwWWWWWWwwwwwwwwttTTWWTTttttttTTttTT",
@@ -191,13 +191,59 @@ var levels = [
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
   ],
+  [
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDLdddddDDMMMMddddddDDddmmmmDDmmmmddddddDD",
+    "DDddddddDDMMMMddddddDDddmmmmDDmmmmddddddDD",
+    "DDDDDDddDDDDDDddDDddDDddDDDDDDDDDDddDDMMDD",
+    "DDDDDDddDDDDDDddDDddDDddDDDDDDDDDDddDDMMDD",
+    "DDmmmmddDDmmmmmmDDddDDddddddddddddddDDMMDD",
+    "DDmmmmddDDmmmmmmDDddDDddddddddddddddDDMMDD",
+    "DDDDDDddDDDDDDDDDDddDDddDDddDDDDDDDDDDDDDD",
+    "DDDDDDddDDDDDDDDDDddDDddDDddDDDDDDDDDDDDDD",
+    "DDddddddmmmmmmmmmmddddddDDddDDddDDddmmmmDD",
+    "DDddddddmmmmmmmmmmddddddDDddDDddDDddmmmmDD",
+    "DDmmDDddDDDDDDDDDDDDDDddDDDDDDddDDddDDDDDD",
+    "DDmmDDddDDDDDDDDDDDDDDddDDDDDDddDDddDDDDDD",
+    "DDmmDDddDDmmDDddddddddddmmmmmmddddddDDddDD",
+    "DDmmDDddDDmmDDddddddddddmmmmmmddddddDDddDD",
+    "DDddDDDDDDmmDDDDDDDDDDddDDMMDDddDDDDDDddDD",
+    "DDddDDDDDDmmDDDDDDDDDDddDDMMDDddDDDDDDddDD",
+    "DDddDDmmMMMMMMmmmmmmmmddDDMMDDddddddDDddDD",
+    "DDddDDmmMMMMMMmmmmmmmmddDDMMDDddddddDDddDD",
+    "DDDDDDmmDDDDDDmmDDDDDDddDDDDDDDDDDddDDddDD",
+    "DDDDDDmmDDDDDDmmDDDDDDddDDDDDDDDDDddDDddDD",
+    "DDddddddDDddddddDDddDDddddddDDddDDddddddDD",
+    "DDddddddDDddddddDDddDDddddddDDddDDddddddDD",
+    "DDddDDDDDDddDDddDDddDDddDDDDDDddDDDDDDmmDD",
+    "DDddDDDDDDddDDddDDddDDddDDDDDDddDDDDDDmmDD",
+    "DDddDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
+    "DDLdDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
+    "DDDDDDddDDddDDddDDDDDDDDDDDDDDmmDDddDDmmDD",
+    "DDDDDDddDDddDDddDDDDDDDDDDDDDDmmDDddDDmmDD",
+    "DDmmmmddDDddDDddddddDDddDDddddmmDDddDDMMDD",
+    "DDmmmmddDDddDDddddddDDddDDddddmmDDdEDDMMDD",
+    "DDDDDDDDDDDDDDddDDddDDddDDDDDDmmDDDDDDMMDD",
+    "DDDDDDDDDDDDDDddDDddDDddDDDDDDmmDDDDDDMMDD",
+    "DDddddddddddddddDDddddddDDMMMMmmmmmmDDMMDD",
+    "DDddddddddddddddDDddddddDDMMMMmmmmmmDDMMDD",
+    "DDddDDDDDDDDDDddDDddDDDDDDDDDDmmDDmmDDDDDD",
+    "DDddDDDDDDDDDDddDDddDDDDDDDDDDmmDDmmDDDDDD",
+    "DDddMMMMDDddddddDDmmmmmmmmmmmmmmDDmmmmmmDD",
+    "DDddMMMMDDddddddDDmmmmmmmmmmmmmmDDmmmmmmDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+  ],
 ];
 
-var shouldAddLights = {0: true, 1: false, 2: false};
-var lightsRemainOut = {0: false, 1: true, 2: false};
-var safeTime = {0: 200, 1: 100, 2: 0};
-var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0};
-var seeThroughWalls = {0: false, 1: true, 2: false};
+var shouldAddLights = {0: true, 1: false, 2: false, 3: true};
+var lightsRemainOut = {0: false, 1: true, 2: false, 3: false};
+var safeTime = {0: 200, 1: 100, 2: 0, 3: 0};
+var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0, 3: 0};
+var entityAbundance = {0: 1, 1: 1, 2: 0, 3: 0};
+var seeThroughWalls = {0: false, 1: true, 2: false, 3: false};
+var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "same"};
 
 function Init() {
   var map = levels[level];
@@ -238,18 +284,37 @@ function Init() {
           entities[val] = new BackgroundTile().setPosition(x, y);
         }
       }
+      else if (block == "D") {
+        entities[val] = new DarkTile().setPosition(x, y);
+      }
+      else if (block == "d") {
+        if (shouldAddLights[level] && Math.random() < 0.01) {
+          entities[val] = new Light().setPosition(x, y);
+        }
+        else {
+          entities[val] = new DarkBackgroundTile().setPosition(x, y);
+        }
+      }
       else if (block == "w") {
         entities[val] = new Water().setPosition(x, y);
       }
       else if (block == "W") {
         entities[val] = new DeepWater().setPosition(x, y);
       }
+      else if (block == "m") {
+        entities[val] = new DarkWater().setPosition(x, y);
+      }
+      else if (block == "M") {
+        entities[val] = new DarkDeepWater().setPosition(x, y);
+      }
       else if (block == "L") {
         entities[val] = new Light().setPosition(x, y);
       }
       else if (block == "S") {
         entities[val] = new Light().setPosition(x, y);
-        player = new Player().setPosition(x, y);
+        if (specialSpawn[level] == "default") {
+          player = new Player().setPosition(x, y);
+        }
       }
       else {
         entities[val] = new Exit().setPosition(x, y);
@@ -284,6 +349,8 @@ class Block {
     this.size = blockSize;
     this.isCollidable = true;
     this.color = "black";
+    this.defaultColor = [0, 0, 0];
+    this.isLightBlock = false;
   }
 
   setPosition(x, y) {
@@ -297,14 +364,69 @@ class Block {
     return this;
   }
 
-  setDoCollision(doCollision) {
-    this.doCollision = doCollision;
+  setIsCollidable(isCollidable) {
+    this.isCollidable = isCollidable;
     return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  setDefaultColor(defaultColor) {
+    this.defaultColor = defaultColor;
+    return this;
+  }
+
+  setIsLightBlock(isLightBlock) {
+    this.isLightBlock = isLightBlock;
+    return this;
+  }
+
+  findBrightness() {
+    var brightness = 1 / ((distance(this, player) / blockSize) ** 2);
+    if (lightsOut) {
+      return Math.min(brightness / 2, 1);
+    }
+    for (var x = -5; x <= 5; ++x) {
+      for (var y = -5; y <= 5; ++y) {
+        var e = entities[findBlock(this.x + blockSize * x, this.y + blockSize * y)];
+        if (e instanceof Light) {
+          brightness += 2 / ((distance(this, e) / blockSize) ** 2);
+        }
+      }
+    }
+    return Math.min(brightness, 1);
+  }
+
+  findLineColor() {
+    if (this.isLightBlock) {
+      var brightness = this.findBrightness();
+      return "rgb(" +
+               String(Math.round(this.lineColor[0] * brightness)) + "," +
+               String(Math.round(this.lineColor[1] * brightness)) + "," +
+               String(Math.round(this.lineColor[2] * brightness)) + ")";
+    }
+    else {
+      return this.lineColor;
+    }
+  }
+
+  specialDraw() {
   }
 
   draw() {
     ctx.fillStyle = this.color;
+    if (this.isLightBlock) {
+      var brightness = this.findBrightness();
+      ctx.fillStyle = "rgb(" +
+                        String(Math.round(this.color[0] * brightness)) + "," +
+                        String(Math.round(this.color[1] * brightness)) + "," +
+                        String(Math.round(this.color[2] * brightness)) + ")";
+    }
     ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
+    this.specialDraw();
   }
 
   tick() {
@@ -314,31 +436,13 @@ class Block {
 class Brick extends Block {
   constructor() {
     super();
-    this.defaultColor = [128, 64, 0];
-    this.color2 = "rgb(0, 0, 0)";
+    this.color = [128, 64, 0];
+    this.isLightBlock = true;
+    this.lineColor = [0, 0, 0];
   }
 
-  distToClosestLightSource() {
-    var best = distance(this, player);
-    if (lightsOut) {
-      return best * 2;
-    }
-    for (var i in entities) {
-      if (entities[i] instanceof Light) {
-        best = Math.min(best, distance(this, entities[i]) / 2);
-      }
-    }
-    return best;
-  }
-
-  draw() {
-    var dist = Math.max(1, this.distToClosestLightSource() / blockSize);
-    ctx.fillStyle = "rgb(" +
-                      String(Math.round(this.defaultColor[0] / dist)) + "," +
-                      String(Math.round(this.defaultColor[1] / dist)) + "," +
-                      String(Math.round(this.defaultColor[2] / dist)) + ")";
-    ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-    ctx.strokeStyle = this.color2;
+  specialDraw() {
+    ctx.strokeStyle = this.findLineColor();
     ctx.lineWidth = (blockSize / 10);
     ctx.beginPath();
     ctx.moveTo(this.x - this.size / 2, this.y - this.size / 2);
@@ -364,7 +468,7 @@ class BackgroundBrick extends Brick {
   constructor() {
     super();
     this.isCollidable = false;
-    this.defaultColor = [64, 32, 0];
+    this.color = [64, 32, 0];
   }
 }
 
@@ -372,13 +476,11 @@ class Tile extends Block {
   constructor() {
     super();
     this.color = "rgb(180, 192, 180)";
-    this.color2 = "rgb(128, 128, 128)";
+    this.lineColor = "rgb(128, 128, 128)";
   }
 
-  draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
-    ctx.strokeStyle = this.color2;
+  specialDraw() {
+    ctx.strokeStyle = this.findLineColor();
     ctx.lineWidth = (blockSize / 25);
     ctx.beginPath();
     for (var i = 0; i < 5; ++i) {
@@ -396,27 +498,34 @@ class BackgroundTile extends Tile {
     super();
     this.isCollidable = false;
     this.color = "rgb(120, 128, 120)";
-    this.color2 = "rgb(96, 96, 96)";
+    this.lineColor = "rgb(96, 96, 96)";
   }
 }
 
-class Light extends Brick {
+class DarkTile extends Tile {
   constructor() {
     super();
-    this.defaultColor = [255, 255, 128];
-    this.isCollidable = false;
+    this.color = [180, 192, 180];
+    this.lineColor = [128, 128, 128];
+    this.isLightBlock = true;
   }
+}
 
-  draw() {
-    var dist = Math.max(1, this.distToClosestLightSource() / blockSize);
-    if (lightsOut) {
-      dist = Math.max(dist, blockSize / 5);
-    }
-    ctx.fillStyle = "rgb(" +
-                      String(Math.round(this.defaultColor[0] / dist)) + "," +
-                      String(Math.round(this.defaultColor[1] / dist)) + "," +
-                      String(Math.round(this.defaultColor[2] / dist)) + ")";
-    ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
+class DarkBackgroundTile extends BackgroundTile {
+  constructor() {
+    super();
+    this.color = [120, 128, 120];
+    this.lineColor = [96, 96, 96];
+    this.isLightBlock = true;
+  }
+}
+
+class Light extends Block {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.color = [255, 255, 128];
+    this.isLightBlock = true;
   }
 }
 
@@ -424,7 +533,7 @@ class Water extends BackgroundTile {
   constructor() {
     super();
     this.color = "rgb(128, 255, 223)";
-    this.color2 = "rgb(128, 192, 176)";
+    this.lineColor = "rgb(128, 192, 176)";
   }
 }
 
@@ -436,10 +545,27 @@ class DeepWater extends Block {
   }
 }
 
+class DarkWater extends Water {
+  constructor() {
+    super();
+    this.color = [128, 255, 223];
+    this.lineColor = [128, 192, 176];
+    this.isLightBlock = true;
+  }
+}
+
+class DarkDeepWater extends DeepWater {
+  constructor() {
+    super();
+    this.color = [64, 128, 112];
+    this.isLightBlock = true;
+  }
+}
+
 class Exit extends Light {
   constructor() {
     super();
-    this.defaultColor = [0, 255, 0];
+    this.color = [0, 255, 0];
   }
 }
 
@@ -737,7 +863,7 @@ function Draw() {
   }
   ctx.save();
   ctx.translate(screen.width / 2 + player.size / 2 - player.x, screen.height / 2 + player.size / 2 - player.y);
-  doCasts(5 * blockSize);
+  doCasts(6 * blockSize);
   ctx.restore();
 }
 
@@ -765,7 +891,7 @@ function Tick() {
     lightsOut = !lightsOut;
     if (lightsOut) {
       for (i in entities) {
-        if (entities[i] instanceof Light) {
+        if (entities[i] instanceof Light && Math.random() < entityAbundance[level]) {
           otherEntities.push(new Smiler().setPosition(entities[i].x, entities[i].y));
         }
       }
@@ -777,7 +903,9 @@ function Tick() {
   for (var i = 0; i < otherEntities.length; ++i) {
     otherEntities[i].tick();
   }
-  Draw();
+  if (!hasLost && !hasWon) {
+    Draw();
+  }
 }
 
 Init();
