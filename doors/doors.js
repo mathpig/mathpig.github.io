@@ -349,7 +349,6 @@ class Block {
     this.size = blockSize;
     this.isCollidable = true;
     this.color = "black";
-    this.defaultColor = [0, 0, 0];
     this.isLightBlock = false;
   }
 
@@ -371,11 +370,6 @@ class Block {
 
   setColor(color) {
     this.color = color;
-    return this;
-  }
-
-  setDefaultColor(defaultColor) {
-    this.defaultColor = defaultColor;
     return this;
   }
 
