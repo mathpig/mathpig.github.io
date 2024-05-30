@@ -219,7 +219,7 @@ var levels = [
     "DDddDDDDDDddDDddDDddDDddDDDDDDddDDDDDDmmDD",
     "DDddDDDDDDddDDddDDddDDddDDDDDDddDDDDDDmmDD",
     "DDddDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
-    "DDLdDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
+    "DDSdDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
     "DDDDDDddDDddDDddDDDDDDDDDDDDDDmmDDddDDmmDD",
     "DDDDDDddDDddDDddDDDDDDDDDDDDDDmmDDddDDmmDD",
     "DDmmmmddDDddDDddddddDDddDDddddmmDDddDDMMDD",
@@ -248,8 +248,6 @@ var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "same"};
 function Init() {
   var map = levels[level];
   entities = {};
-  hasLost = false;
-  hasWon = false;
   lightsOut = false;
   time = 0;
   freezeTime = 0;
@@ -312,7 +310,7 @@ function Init() {
       }
       else if (block == "S") {
         entities[val] = new Light().setPosition(x, y);
-        if (specialSpawn[level] == "default") {
+        if (specialSpawn[level] == "default" || hasLost) {
           player = new Player().setPosition(x, y);
         }
       }
@@ -322,6 +320,8 @@ function Init() {
     }
   }
   otherEntities = [player];
+  hasLost = false;
+  hasWon = false;
 }
 
 function findBlock(x, y) {
