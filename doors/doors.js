@@ -235,15 +235,80 @@ var levels = [
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
     "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
   ],
+  [
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRFFFFFFFFFFFFFFFRRRFFFRRRFFFRRR",
+    "RRRFLFFFFFFFFFFFLFRRRFLFRRRFLFRRR",
+    "RRRFFFFFFFFFFFFFFFRRRFFFRRRFFFRRR",
+    "RRRFFFRRRRRRRRRFFFRRRFFFRRRFFFRRR",
+    "RRRFFFRRRRRRRRRFFFRRRFFFRRRFFFRRR",
+    "RRRFFFRRRRRRRRRFFFRRRFFFRRRFFFRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRFLFFFFFFFFFFFFFFFFFLFRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRFFFRRRFFFRRRFFFFFFFFFRRR",
+    "RRRFSFRRRFLFRRRFFFRRRFLFFFFFLFRRR",
+    "RRRFFFRRRFFFRRRFFFRRRFFFFFFFFFRRR",
+    "RRRRRRRRRFFFRRRFFFRRRFFFRRRRRRRRR",
+    "RRRRRRRRRFFFRRRFFFRRRFFFRRRRRRRRR",
+    "RRRRRRRRRFFFRRRFFFRRRFFFRRRRRRRRR",
+    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
+    "RRRFLFRRRFFFRRRFLFFFFFFFFFFFLFRRR",
+    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
+    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
+    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFLFRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
+    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
+    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
+    "RRRFFFFFFFFFRRRFFFFFFFFFFFFFFFRRR",
+    "RRRFFFFFFFLFRRRFLFFFFFFFFFFFLFRRR",
+    "RRRFFFFFFFFFRRRFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFRRRFFFRRR",
+    "RRRFLFRRRFLFFFFFFFFFFFLFRRRFLFRRR",
+    "RRRFFFRRRFFFFFFFFFFFFFFFRRRFFFRRR",
+    "RRRRRRRRRRRRRRRRRRRRRFFFRRRFFFRRR",
+    "RRRRRRRRRRRRRRRRRRRRRFFFRRRFFFRRR",
+    "RRRRRRRRRRRRRRRRRRRRRFFFRRRFFFRRR",
+    "RRRFFFFFFFFFRRRFFFRRRFFFFFFFFFRRR",
+    "RRRFLFFFFFLFRRRFLFRRRFLFFFFFFFRRR",
+    "RRRFFFFFFFFFRRRFFFRRRFFFFFFFFFRRR",
+    "RRRFFFRRRFFFRRRFFFRRRRRRRRRFFFRRR",
+    "RRRFFFRRRFFFRRRFFFRRRRRRRRRFFFRRR",
+    "RRRFFFRRRFFFRRRFFFRRRRRRRRRFFFRRR",
+    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRFEFRRRFFFFFFFFFFFFFLFRRR",
+    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
+    "RRRFFFFFFFFFFFFFFFFFFFFFFFFFFFRRR",
+    "RRRFLFFFFFFFFFFFFFFFFFFFFFFFLFRRR",
+    "RRRFFFFFFFFFFFFFFFFFFFFFFFFFFFRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+  ],
 ];
 
-var lightFrequency = {0: 0.01, 1: 0, 2: 0, 3: 0.025};
-var lightsRemainOut = {0: false, 1: true, 2: false, 3: false};
-var safeTime = {0: 200, 1: 100, 2: 0, 3: 400};
-var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0, 3: 0.01};
-var entityAbundance = {0: 1, 1: 1, 2: 0, 3: 0.5};
-var seeThroughWalls = {0: false, 1: true, 2: false, 3: false};
-var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "same"};
+var lightFrequency = {0: 0.01, 1: 0, 2: 0, 3: 0.025, 4: 0};
+var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false};
+var safeTime = {0: 200, 1: 100, 2: 0, 3: 400, 4: 200};
+var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0, 3: 0.01, 4: 0.025};
+var entityAbundance = {0: 1, 1: 1, 2: 0, 3: 0.5, 4: 1};
+var seeThroughWalls = {0: false, 1: true, 2: false, 3: false, 4: false};
+var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "same", 4: "default"};
 
 function Init() {
   var map = levels[level];
@@ -305,12 +370,23 @@ function Init() {
       else if (block == "M") {
         entities[val] = new DarkDeepWater().setPosition(x, y);
       }
+      else if (block == "R") {
+        entities[val] = new HotelWallpaper().setPosition(x, y);
+      }
+      else if (block == "F") {
+        entities[val] = new HotelCarpet().setPosition(x, y);
+      }
       else if (block == "L") {
         entities[val] = new Light().setPosition(x, y);
       }
       else if (block == "S") {
-        entities[val] = new Light().setPosition(x, y);
-        if (specialSpawn[level] == "default" || hasLost) {
+        if (specialSpawn[level] == "hotel") {
+          entities[val] = new HotelCarpet().setPosition(x, y);
+        }
+        else {
+          entities[val] = new Light().setPosition(x, y);
+        }
+        if (specialSpawn[level] != "same" || hasLost) {
           player = new Player().setPosition(x, y);
         }
       }
@@ -394,31 +470,24 @@ class Block {
     return Math.min(brightness, 1);
   }
 
-  findLineColor() {
+  addLighting(color) {
     if (this.isLightBlock) {
       var brightness = this.findBrightness();
       return "rgb(" +
-               String(Math.round(this.lineColor[0] * brightness)) + "," +
-               String(Math.round(this.lineColor[1] * brightness)) + "," +
-               String(Math.round(this.lineColor[2] * brightness)) + ")";
+               String(Math.round(color[0] * brightness)) + "," +
+               String(Math.round(color[1] * brightness)) + "," +
+               String(Math.round(color[2] * brightness)) + ")";
     }
     else {
-      return this.lineColor;
+      return color;
     }
   }
-
+      
   specialDraw() {
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    if (this.isLightBlock) {
-      var brightness = this.findBrightness();
-      ctx.fillStyle = "rgb(" +
-                        String(Math.round(this.color[0] * brightness)) + "," +
-                        String(Math.round(this.color[1] * brightness)) + "," +
-                        String(Math.round(this.color[2] * brightness)) + ")";
-    }
+    ctx.fillStyle = this.addLighting(this.color);
     ctx.fillRect(this.x - this.size / 2 - 1, this.y - this.size / 2 - 1, this.size + 2, this.size + 2);
     this.specialDraw();
   }
@@ -436,7 +505,7 @@ class Brick extends Block {
   }
 
   specialDraw() {
-    ctx.strokeStyle = this.findLineColor();
+    ctx.strokeStyle = this.addLighting(this.lineColor);
     ctx.lineWidth = (blockSize / 10);
     ctx.beginPath();
     ctx.moveTo(this.x - this.size / 2, this.y - this.size / 2);
@@ -458,6 +527,41 @@ class Brick extends Block {
   }
 }
 
+class TextureBlock extends Block {
+  constructor() {
+    super();
+    this.colorMap = [[]];
+    this.colors = {};
+  }
+
+  setColorMap(colorMap) {
+    this.colorMap = colorMap;
+    return this;
+  }
+
+  setColors(colors) {
+    this.colors = colors;
+    return this;
+  }
+
+  draw() {
+    var realColors = {};
+    for (var i in this.colors) {
+      realColors[i] = this.addLighting(this.colors[i]);
+    }
+    for (var i = 0; i < this.colorMap[0].length; ++i) {
+      for (var j = 0; j < this.colorMap.length; ++j) {
+        ctx.fillStyle = realColors[this.colorMap[j][i]];
+        ctx.fillRect(this.x - this.size / 2 + this.size * i / this.colorMap[0].length - 1,
+                     this.y - this.size / 2 + this.size * j / this.colorMap.length - 1,
+                     this.size / this.colorMap[0].length + 2,
+                     this.size / this.colorMap.length + 2);
+      }
+    }
+    this.specialDraw();
+  }
+}
+
 class BackgroundBrick extends Brick {
   constructor() {
     super();
@@ -474,7 +578,7 @@ class Tile extends Block {
   }
 
   specialDraw() {
-    ctx.strokeStyle = this.findLineColor();
+    ctx.strokeStyle = this.addLighting(this.lineColor);
     ctx.lineWidth = (blockSize / 25);
     ctx.beginPath();
     for (var i = 0; i < 5; ++i) {
@@ -553,6 +657,51 @@ class DarkDeepWater extends DeepWater {
     super();
     this.color = [64, 128, 112];
     this.isLightBlock = true;
+  }
+}
+
+class HotelWallpaper extends TextureBlock {
+  constructor() {
+    super();
+    this.isLightBlock = true;
+    this.colorMap = [
+      "                ",
+      "   ##      ##   ",
+      "   ##      ##   ",
+      " # ## #  # ## # ",
+      "  ####    ####  ",
+      "                ",
+      "   ##      ##   ",
+      "   ##      ##   ",
+      " # ## #  # ## # ",
+      "  ####    ####  ",
+      "                ",
+      "   ##      ##   ",
+      "   ##      ##   ",
+      " # ## #  # ## # ",
+      "  ####    ####  ",
+      "                ",
+    ];
+    this.colors = {
+      " ": [128, 0, 0],
+      "#": [128, 128, 0],
+    };
+  }
+}
+
+class HotelCarpet extends HotelWallpaper {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.colorMap = [
+      "       ",
+      "  # #  ",
+      " #   # ",
+      " ##### ",
+      " #   # ",
+      "  # #  ",
+      "       ",
+    ];
   }
 }
 
@@ -808,13 +957,6 @@ function doCasts(maxDist) {
         continue;
       }
       toDraw.add(e);
-      if (!seeThroughWalls[level]) {
-        for (var j = 0; j < otherEntities.length; ++j) {
-          if (isInside(x, y, otherEntities[j]) || distance(player, otherEntities[j]) <= (5 * blockSize)) {
-            toDraw2.add(String(Math.round(otherEntities[j].x)) + "," + String(Math.round(otherEntities[j].y)));
-          }
-        }
-      }
       if (entities[e].isCollidable) {
         break;
       }
@@ -824,8 +966,27 @@ function doCasts(maxDist) {
     entities[i].draw();
   }
   for (var i = 0; i < otherEntities.length; ++i) {
-    if (seeThroughWalls[level] || toDraw2.has(String(Math.round(otherEntities[i].x)) + "," + String(Math.round(otherEntities[i].y)))) {
+    if (seeThroughWalls[level]) {
       otherEntities[i].draw();
+      continue;
+    }
+    var ang = Math.atan2(otherEntities[i].y - player.y, otherEntities[i].x - player.x);
+    var x = player.x;
+    var y = player.y;
+    for (var j = 0; j < (maxDist / increment); ++j) {
+      x += increment * Math.cos(ang);
+      y += increment * Math.sin(ang);
+      var e = findBlock(x, y);
+      if (e == "") {
+        continue;
+      }
+      if (entities[e].isCollidable) {
+        break;
+      }
+      if (isInside(x, y, otherEntities[i])) {
+        otherEntities[i].draw();
+        break;
+      }
     }
   }
 }
@@ -885,7 +1046,7 @@ function Tick() {
     lightsOut = !lightsOut;
     if (lightsOut) {
       for (i in entities) {
-        if (entities[i] instanceof Light && Math.random() < entityAbundance[level]) {
+        if (entities[i] instanceof Light && distance(entities[i], player) > (6 * blockSize) && Math.random() < entityAbundance[level]) {
           otherEntities.push(new Smiler().setPosition(entities[i].x, entities[i].y));
         }
       }

@@ -4,10 +4,12 @@ var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
 var center = [0, 0];
-var resolution = 8;
+var resolution = 1;
 
 function f(a, b) {
-  return 128 + Math.sin(a / 64) * 64 + Math.sin(b / 64) * 64;
+  a /= 40;
+  b /= 40;
+  return 128 + a * a - b * b;
 }
 
 var colors = [[0, 0, 0],
@@ -58,14 +60,6 @@ function Draw() {
     }
   }
   ctx.restore();
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 8;
-  ctx.beginPath();
-  ctx.moveTo(screen.width / 2, 0);
-  ctx.lineTo(screen.width / 2, screen.height);
-  ctx.moveTo(0, screen.height / 2);
-  ctx.lineTo(screen.width, screen.height / 2);
-  ctx.stroke();
 }
 
 Draw();
