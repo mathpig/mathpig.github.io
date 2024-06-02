@@ -148,6 +148,50 @@ var levels = [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
   [
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "AAaaaaaaaaaaaaaaaaaSAAMMMMMMMMaaaaaaaaaaAA",
+    "AAaaaaaaaaaaaaaaaaaaAAMMMMMMMMaaaaaaaaaaAA",
+    "AAaaAAAAAAAAAAAAAAAAAAAAAAAAAAaaAAAAAAaaAA",
+    "AAaaAAAAAAAAAAAAAAAAAAAAAAAAAAaaAAAAAAaaAA",
+    "AAMMaaaaaaaaMMaaAAaaAAaaMMaaaaMMaaaaAAaaAA",
+    "AAMMaaaaaaaaMMaaAAaaAAaaMMaaaaMMaaaaAAaaAA",
+    "AAAAAAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAAAAA",
+    "AAAAAAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAAAAA",
+    "AAaaAAaaAAaaAAMMAAaaaaaaAAaaaaMMaaaaaaaaAA",
+    "AAaaAAaaAAaaAAMMAAaaaaaaAAaaaaMMaaaaaaaaAA",
+    "AAaaAAMMAAAAAAAAAAaaAAAAAAAAAAAAAAaaAAAAAA",
+    "AAaaAAMMAAAAAAAAAAaaAAAAAAAAAAAAAAaaAAAAAA",
+    "AAMMMMMMaaaaaaaaAAaaAAMMAAMMMMaaaaaaaaaaAA",
+    "AAMMMMMMaaaaaaaaAAaaAAMMAAMMMMaaaaaaaaaaAA",
+    "AAAAAAAAAAaaAAAAAAMMAAMMAAaaAAaaAAAAAAaaAA",
+    "AAAAAAAAAAaaAAAAAAMMAAMMAAaaAAaaAAAAAAaaAA",
+    "AAaaAAaaAAaaAAaaaaMMAAaaAAaaAAaaAAaaaaMMAA",
+    "AAaaAAaaAAaaAAaaaaMMAAaaAAaaAAaaAAaaaaMMAA",
+    "AAaaAAaaAAaaAAMMAAAAAAaaAAaaAAAAAAaaAAaaAA",
+    "AAaaAAaaAAaaAAMMAAAAAAaaAAaaAAAAAAaaAAaaAA",
+    "AAMMaaaaMMaaaaMMaaaaaaaaAAaaaaaaAAaaAAaaAA",
+    "AAMMaaaaMMaaaaMMaaaaaaaaAAaaaaaaAAaaAAaaAA",
+    "AAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAaaAAAAAA",
+    "AAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAaaAAAAAA",
+    "AAaaAAaaAAaaAAaaAAaaaaaaaaaaaaMMMMaaAAaaAA",
+    "AAaaAAaaAAaaAAaaAAaaaaaaaaaaaaMMMMaaAAaaAA",
+    "AAaaAAAAAAAAAAaaAAaaAAAAAAaaAAAAAAAAAAaaAA",
+    "AAaaAAAAAAAAAAaaAAaaAAAAAAaaAAAAAAAAAAaaAA",
+    "AAaaMMaaAAMMAAaaAAMMAAaaaaaaAAaaaaaaaaaaAA",
+    "AAaaMMaaAAMMAAaaAAMMAAaaaaaaAAaaaaaaaaaaAA",
+    "AAAAAAAAAAaaAAaaAAaaAAAAAAMMAAAAAAAAAAaaAA",
+    "AAAAAAAAAAaaAAaaAAaaAAAAAAMMAAAAAAAAAAaaAA",
+    "AAaaAAaaAAaaaaMMAAaaAAaEAAMMaaaaMMaaaaaaAA",
+    "AAaaAAaaAAaaaaMMAAaaAAaaAAMMaaaaMMaaaaaaAA",
+    "AAaaAAaaAAAAAAAAAAaaAAaaAAAAAAAAAAaaAAaaAA",
+    "AAaaAAaaAAAAAAAAAAaaAAaaAAAAAAAAAAaaAAaaAA",
+    "AAaaaaMMaaaaaaaaaaaaMMaaAAMMMMaaaaaaAAaaAA",
+    "AAaaaaMMaaaaaaaaaaaaMMaaAAMMMMaaaaaaAAaaAA",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  ],
+  [
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
     "TTStttttTTWWWWttttttTTttwwwwTTwwwwttttttTT",
@@ -302,13 +346,13 @@ var levels = [
   ],
 ];
 
-var lightFrequency = {0: 0.01, 1: 0, 2: 0, 3: 0.025, 4: 0};
-var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false};
-var safeTime = {0: 200, 1: 100, 2: 0, 3: 400, 4: 200};
-var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0, 3: 0.01, 4: 0.025};
-var entityAbundance = {0: 1, 1: 1, 2: 0, 3: 0.5, 4: 1};
-var seeThroughWalls = {0: false, 1: true, 2: false, 3: false, 4: false};
-var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "same", 4: "default"};
+var lightFrequency = {0: 0.01, 1: 0, 2: 0.025, 3: 0, 4: 0.025, 5: 0};
+var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
+var safeTime = {0: 200, 1: 100, 2: 200, 3: 0, 4: 400, 5: 200};
+var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0.005, 3: 0, 4: 0.01, 5: 0.025};
+var entityAbundance = {0: 1, 1: 1, 2: 0.5, 3: 0, 4: 0.5, 5: 1};
+var seeThroughWalls = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
+var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "default", 4: "same", 5: "default"};
 
 function Init() {
   var map = levels[level];
@@ -369,6 +413,17 @@ function Init() {
       }
       else if (block == "M") {
         entities[val] = new DarkDeepWater().setPosition(x, y);
+      }
+      else if (block == "A") {
+        entities[val] = new Slate().setPosition(x, y);
+      }
+      else if (block == "a") {
+        if (Math.random() < lightFrequency[level]) {
+          entities[val] = new Light().setPosition(x, y);
+        }
+        else {
+          entities[val] = new BackgroundSlate().setPosition(x, y);
+        }
       }
       else if (block == "R") {
         entities[val] = new HotelWallpaper().setPosition(x, y);
@@ -657,6 +712,35 @@ class DarkDeepWater extends DeepWater {
     super();
     this.color = [64, 128, 112];
     this.isLightBlock = true;
+  }
+}
+
+class Slate extends TextureBlock {
+  constructor() {
+    super();
+    this.isLightBlock = true;
+    this.colorMap = [];
+    for (var i = 0; i < 4; ++i) {
+      this.colorMap.push("");
+      for (var j = 0; j < 4; ++j) {
+        this.colorMap[i] += String(1 + Math.floor(Math.random() * 2));
+      }
+    }
+    this.colors = {
+      "1": [128, 128, 128],
+      "2": [96, 96, 96],
+    };
+  }
+}
+
+class BackgroundSlate extends Slate {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.colors = {
+      "1": [64, 64, 64],
+      "2": [48, 48, 48],
+    };
   }
 }
 
