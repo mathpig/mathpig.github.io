@@ -1,5 +1,116 @@
 "use strict";
 
+function shuffle(arr) {
+  for (var i = (arr.length - 1); i >= 0; --i) {
+    var index = Math.floor(Math.random() * (i + 1));
+    var val = arr[i];
+    arr[i] = arr[index];
+    arr[index] = val;
+  }
+  return arr;
+}
+
+function printMap(map) {
+  var s = "";
+  for (var i = 0; i < map.length; ++i) {
+    for (var j = 0; j < map[i].length; ++j) {
+      if (map[i][j] == map[0][0]) {
+        s += "##";
+      }
+      else if (map[i][j] == map[1][1]) {
+        s += "--";
+      }
+      else {
+        s += (map[i][j] + map[i][j]);
+      }
+    }
+    s += "\n";
+  }
+  console.log(s);
+}
+
+function chooseTiles(tiles) {
+  var val = Math.random();
+  var count = 0;
+  for (var i = 0; i < tiles.length; ++i) {
+    count += tiles[i][1];
+    if (count > val) {
+      return i;
+    }
+  }
+  return 0;
+}
+
+function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, endTile) {
+  var map = [];
+  for (var i = 0; i <= (2 * height); ++i) {
+    map.push([]);
+    for (var j = 0; j <= (2 * width); ++j) {
+      if ((i % 2) == 0 || (j % 2) == 0) {
+        map[i].push(wallTile);
+      }
+      else {
+        map[i].push(" ");
+      }
+    }
+  }
+  var toDo = [[-1, -1, 1, 1]];
+  var lastVector = [0, 0];
+  var tileSet = String(chooseTiles(floorTiles));
+  while (toDo.length > 0) {
+    toDo = shuffle(toDo);
+    var val = toDo.pop();
+    var oldY = y;
+    var oldX = x;
+    var y = val[2];
+    var x = val[3];
+    lastVector = [y - oldY, x - oldX];
+    if (y < 0 || x < 0 || y >= map.length || x >= map[0].length || (map[y][x] != " " && map[y][x] != wallTile)) {
+      continue;
+    }
+    if (val[0] != -1 && val[1] != -1) {
+      map[Math.round((val[0] + val[2]) / 2)][Math.round((val[1] + val[3]) / 2)] = tileSet;
+    }
+    map[y][x] = tileSet;
+    var newStuff = [[y, x, y - 2, x], [y, x, y, x + 2], [y, x, y + 2, x], [y, x, y, x - 2]];
+    if ((Math.abs(lastVector[0]) != 2 || lastVector[1] != 0) &&
+        (lastVector[0] != 0 || Math.abs(lastVector[1]) != 2)) {
+      tileSet = String(chooseTiles(floorTiles));
+    }
+    for (var i = 0; i < newStuff.length; ++i) {
+      toDo.push(newStuff[i]);
+    }
+  }
+  var newMap = [];
+  for (var i = 0; i < (tileSize * map.length); ++i) {
+    newMap.push([]);
+    for (var j = 0; j < (tileSize * map[0].length); ++j) {
+      var val = map[Math.floor(i / tileSize)][Math.floor(j / tileSize)];
+      if (val == wallTile) {
+        newMap[i].push(val);
+        continue;
+      }
+      newMap[i].push(floorTiles[parseInt(val)][0][chooseTiles(floorTiles[parseInt(val)][0])][0]);
+    }
+  }
+  map = newMap;
+  var y = Math.floor(Math.random() * map.length);
+  var x = Math.floor(Math.random() * map[0].length);
+  while (map[y][x] == wallTile) {
+    y = Math.floor(Math.random() * map.length);
+    x = Math.floor(Math.random() * map[0].length);
+  }
+  map[y][x] = startTile;
+  var y = Math.floor(Math.random() * map.length);
+  var x = Math.floor(Math.random() * map[0].length);
+  while (map[y][x] == wallTile) {
+    y = Math.floor(Math.random() * map.length);
+    x = Math.floor(Math.random() * map[0].length);
+  }
+  map[y][x] = endTile;
+  return map;
+}
+
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
@@ -33,71 +144,11 @@ var lightsOut = false;
 var time = 0;
 var freezeTime = 0;
 
-function inInterval(val, a, b) {
-  return (val >= a && val <= b);
-}
-
-function isInside(x, y, e) {
-  return (inInterval(x, e.x - e.size / 2, e.x + e.size / 2) &&
-          inInterval(y, e.y - e.size / 2, e.y + e.size / 2));
-}
-
-function intervalTouches(a, b, c, d) {
-  return (b > c && d > a);
-}
-
-function touches(e1, e2) {
-  return (intervalTouches(e1.x - e1.size / 2, e1.x + e1.size / 2, e2.x - e2.size / 2, e2.x + e2.size / 2) &&
-          intervalTouches(e1.y - e1.size / 2, e1.y + e1.size / 2, e2.y - e2.size / 2, e2.y + e2.size / 2));
-}
-
 var keySet = {};
 
 var level = 0;
 var levels = [
-  [
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-    "BSHHHHHHHHBHHHBHBHBHHHHHHHHHBHBHBHBHHHHHBHB",
-    "BBBBBHBBBHBBBHBHBHBBBBBBBHBHBHBHBHBBBBBHBHB",
-    "BHHHHHHHBHBHHHBHHHBHBHBHHHBHHHHHBHBHHHBHBHB",
-    "BHBBBBBBBBBHBBBHBBBHBHBBBBBBBHBBBHBHBBBHBHB",
-    "BHHHHHBHHHBHHHBHHHHHHHHHBHHHHHBHHHHHHHHHBHB",
-    "BHBBBBBHBBBHBBBHBBBBBHBBBHBHBBBBBHBBBBBHBHB",
-    "BHHHBHHHBHHHHHBHBHHHBHHHBHBHHHHHHHBHHHHHBHB",
-    "BBBHBHBBBHBHBBBHBBBHBBBHBHBBBHBBBBBBBBBHBHB",
-    "BHHHHHHHBHBHHHHHHHHHBHHHBHBHHHBHHHBHHHHHBHB",
-    "BHBHBBBHBBBBBHBHBBBHBBBBBBBBBHBBBHBBBBBHBHB",
-    "BHBHHHBHBHHHBHBHBHBHBHHHHHHHHHHHBHBHHHBHBHB",
-    "BBBBBHBHBBBHBBBBBHBHBBBBBHBBBHBHBHBHBHBBBHB",
-    "BHHHHHBHBHHHHHBHHHHHHHBHHHBHBHBHHHHHBHBHHHB",
-    "BHBBBBBHBBBBBHBHBBBHBHBBBHBHBHBBBBBBBBBHBHB",
-    "BHHHHHBHHHBHHHHHBHHHBHHHHHBHHHBHBHBHHHHHBHB",
-    "BHBBBBBBBBBBBBBBBBBBBBBHBBBHBBBHBHBHBBBBBHB",
-    "BHHHHHBHHHHHHHHHBHHHBHHHBHHHBHHHBHBHHHHHBHB",
-    "BBBBBHBHBHBBBBBBBHBBBHBHBBBBBBBHBHBBBHBHBHB",
-    "BHBHHHHHBHBHBHHHBHHHHHBHHHHHBHHHHHHHHHBHBHB",
-    "BHBHBBBHBHBHBHBBBHBHBBBBBBBBBBBBBHBBBBBHBHB",
-    "BHHHBHHHBHHHHHHHBHBHHHHHHHBHHHHHHHHHBHBHBHB",
-    "BHBBBHBBBBBBBHBBBHBBBBBBBBBBBHBBBBBHBHBHBHB",
-    "BHHHBHHHHHBHBHHHHHBHHHBHHHBHHHBHBHBHBHHHBHB",
-    "BHBHBBBBBHBHBHBBBBBBBHBHBHBBBHBHBHBHBBBHBHB",
-    "BHBHBHHHHHHHBHHHBHBHHHHHBHHHHHBHHHHHHHBHBHB",
-    "BHBHBBBBBBBBBHBHBHBBBHBHBHBBBHBBBHBBBBBBBHB",
-    "BHBHHHHHBHHHBHBHHHBHBHBHBHHHBHBHHHHHHHHHBHB",
-    "BHBBBHBBBHBBBHBBBHBHBHBBBBBBBBBHBBBBBBBHBHB",
-    "BHHHBHBHHHHHBHBHBHHHHHBHBHHHBHBHHHHHBHHHBHB",
-    "BHBBBHBHBBBBBBBHBHBBBHBHBHBHBHBBBHBBBBBHBHB",
-    "BHBHHHBHBHHHBHHHHHBHHHHHHHBHHHHHBHBHHHBHBHB",
-    "BBBBBHBHBHBHBBBHBHBBBBBHBBBBBBBBBBBHBHBHBHB",
-    "BHHHHHHHHHBHBHBHBHBHBHHHHHBHHHHHBHHHBHBHBHB",
-    "BHBBBHBHBHBBBHBBBHBHBBBHBBBHBBBBBHBBBHBBBHB",
-    "BHHHBHBHBHHHBHHHHHHHHHBHHHBHBHHHHHHHBHHHBHB",
-    "BBBHBBBBBHBBBBBBBBBBBBBBBHBHBBBHBHBHBBBBBHBBB",
-    "BHHHHHBHHHHHBHHHHHBHBHHHBHHHHHHHBHBHHHBHBLLLB",
-    "BBBHBBBBBBBBBHBBBHBHBHBHBBBHBBBBBBBHBHBHBLELB",
-    "BHHHHHHHHHHHHHBHHHHHHHBHHHBHHHBHHHHHBHHHBLLLB",
-    "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-  ],
+  generateMap(10, 10, 1, "B", [[[["H", 1]], 1]], "S", "E"),
   [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
@@ -147,50 +198,7 @@ var levels = [
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
-  [
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "AAaaaaaaaaaaaaaaaaaSAAMMMMMMMMaaaaaaaaaaAA",
-    "AAaaaaaaaaaaaaaaaaaaAAMMMMMMMMaaaaaaaaaaAA",
-    "AAaaAAAAAAAAAAAAAAAAAAAAAAAAAAaaAAAAAAaaAA",
-    "AAaaAAAAAAAAAAAAAAAAAAAAAAAAAAaaAAAAAAaaAA",
-    "AAMMaaaaaaaaMMaaAAaaAAaaMMaaaaMMaaaaAAaaAA",
-    "AAMMaaaaaaaaMMaaAAaaAAaaMMaaaaMMaaaaAAaaAA",
-    "AAAAAAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAAAAA",
-    "AAAAAAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAAAAA",
-    "AAaaAAaaAAaaAAMMAAaaaaaaAAaaaaMMaaaaaaaaAA",
-    "AAaaAAaaAAaaAAMMAAaaaaaaAAaaaaMMaaaaaaaaAA",
-    "AAaaAAMMAAAAAAAAAAaaAAAAAAAAAAAAAAaaAAAAAA",
-    "AAaaAAMMAAAAAAAAAAaaAAAAAAAAAAAAAAaaAAAAAA",
-    "AAMMMMMMaaaaaaaaAAaaAAMMAAMMMMaaaaaaaaaaAA",
-    "AAMMMMMMaaaaaaaaAAaaAAMMAAMMMMaaaaaaaaaaAA",
-    "AAAAAAAAAAaaAAAAAAMMAAMMAAaaAAaaAAAAAAaaAA",
-    "AAAAAAAAAAaaAAAAAAMMAAMMAAaaAAaaAAAAAAaaAA",
-    "AAaaAAaaAAaaAAaaaaMMAAaaAAaaAAaaAAaaaaMMAA",
-    "AAaaAAaaAAaaAAaaaaMMAAaaAAaaAAaaAAaaaaMMAA",
-    "AAaaAAaaAAaaAAMMAAAAAAaaAAaaAAAAAAaaAAaaAA",
-    "AAaaAAaaAAaaAAMMAAAAAAaaAAaaAAAAAAaaAAaaAA",
-    "AAMMaaaaMMaaaaMMaaaaaaaaAAaaaaaaAAaaAAaaAA",
-    "AAMMaaaaMMaaaaMMaaaaaaaaAAaaaaaaAAaaAAaaAA",
-    "AAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAaaAAAAAA",
-    "AAaaAAaaAAaaAAaaAAAAAAaaAAAAAAAAAAaaAAAAAA",
-    "AAaaAAaaAAaaAAaaAAaaaaaaaaaaaaMMMMaaAAaaAA",
-    "AAaaAAaaAAaaAAaaAAaaaaaaaaaaaaMMMMaaAAaaAA",
-    "AAaaAAAAAAAAAAaaAAaaAAAAAAaaAAAAAAAAAAaaAA",
-    "AAaaAAAAAAAAAAaaAAaaAAAAAAaaAAAAAAAAAAaaAA",
-    "AAaaMMaaAAMMAAaaAAMMAAaaaaaaAAaaaaaaaaaaAA",
-    "AAaaMMaaAAMMAAaaAAMMAAaaaaaaAAaaaaaaaaaaAA",
-    "AAAAAAAAAAaaAAaaAAaaAAAAAAMMAAAAAAAAAAaaAA",
-    "AAAAAAAAAAaaAAaaAAaaAAAAAAMMAAAAAAAAAAaaAA",
-    "AAaaAAaaAAaaaaMMAAaaAAaEAAMMaaaaMMaaaaaaAA",
-    "AAaaAAaaAAaaaaMMAAaaAAaaAAMMaaaaMMaaaaaaAA",
-    "AAaaAAaaAAAAAAAAAAaaAAaaAAAAAAAAAAaaAAaaAA",
-    "AAaaAAaaAAAAAAAAAAaaAAaaAAAAAAAAAAaaAAaaAA",
-    "AAaaaaMMaaaaaaaaaaaaMMaaAAMMMMaaaaaaAAaaAA",
-    "AAaaaaMMaaaaaaaaaaaaMMaaAAMMMMaaaaaaAAaaAA",
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  ],
+  generateMap(10, 10, 2, "A", [[[["a", 0.9], ["M", 0.1]], 1]], "S", "E"),
   [
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
@@ -350,9 +358,27 @@ var lightFrequency = {0: 0.01, 1: 0, 2: 0.025, 3: 0, 4: 0.025, 5: 0};
 var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
 var safeTime = {0: 200, 1: 100, 2: 200, 3: 0, 4: 400, 5: 200};
 var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0.005, 3: 0, 4: 0.01, 5: 0.025};
-var entityAbundance = {0: 1, 1: 1, 2: 0.5, 3: 0, 4: 0.5, 5: 1};
+var entityAbundance = {0: 1, 1: 1, 2: 0.25, 3: 0, 4: 0.5, 5: 1};
 var seeThroughWalls = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
 var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "default", 4: "same", 5: "default"};
+
+function inInterval(val, a, b) {
+  return (val >= a && val <= b);
+}
+
+function isInside(x, y, e) {
+  return (inInterval(x, e.x - e.size / 2, e.x + e.size / 2) &&
+          inInterval(y, e.y - e.size / 2, e.y + e.size / 2));
+}
+
+function intervalTouches(a, b, c, d) {
+  return (b > c && d > a);
+}
+
+function touches(e1, e2) {
+  return (intervalTouches(e1.x - e1.size / 2, e1.x + e1.size / 2, e2.x - e2.size / 2, e2.x + e2.size / 2) &&
+          intervalTouches(e1.y - e1.size / 2, e1.y + e1.size / 2, e2.y - e2.size / 2, e2.y + e2.size / 2));
+}
 
 function Init() {
   var map = levels[level];
@@ -740,6 +766,47 @@ class BackgroundSlate extends Slate {
     this.colors = {
       "1": [64, 64, 64],
       "2": [48, 48, 48],
+    };
+  }
+}
+
+class Pipe extends TextureBlock {
+  constructor() {
+    super();
+    this.isLightBlock = true;
+    this.extensions = {
+      0: false,
+      1: false,
+      2: false,
+      3: false,
+    };
+    this.colorMap = [
+      "    ",
+      " ## ",
+      " ## ",
+      "    ",
+    ];
+    if (this.extensions[0]) {
+      this.colorMap[0] = " ## ";
+    }
+    if (this.extensions[1] && this.extensions[2]) {
+      this.colorMap[1] = "####";
+      this.colorMap[2] = "####";
+    }
+    else if (this.extensions[1]) {
+      this.colorMap[1] = " ###";
+      this.colorMap[2] = " ###";
+    }
+    else if (this.extensions[2]) {
+      this.colorMap[1] = "### ";
+      this.colorMap[2] = "### ";
+    }
+    if (this.extensions[3]) {
+      this.colorMap[3] = " ## ";
+    }
+    this.colors = {
+      " ": [136, 120, 56],
+      "#": [160, 128, 0],
     };
   }
 }
