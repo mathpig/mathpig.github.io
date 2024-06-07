@@ -94,16 +94,16 @@ function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, e
     }
   }
   map = newMap;
-  var y = Math.floor(Math.random() * map.length);
-  var x = Math.floor(Math.random() * map[0].length);
-  while (map[y][x] == wallTile) {
-    y = Math.floor(Math.random() * map.length);
-    x = Math.floor(Math.random() * map[0].length);
+  var sy = Math.floor(Math.random() * map.length);
+  var sx = Math.floor(Math.random() * map[0].length);
+  while (map[sy][sx] == wallTile) {
+    sy = Math.floor(Math.random() * map.length);
+    sx = Math.floor(Math.random() * map[0].length);
   }
-  map[y][x] = startTile;
+  map[sy][sx] = startTile;
   var y = Math.floor(Math.random() * map.length);
   var x = Math.floor(Math.random() * map[0].length);
-  while (map[y][x] == wallTile) {
+  while (map[y][x] == wallTile || (Math.abs(sy - y) + Math.abs(sx - x)) <= Math.floor((map.length + map[0].length) / 4)) {
     y = Math.floor(Math.random() * map.length);
     x = Math.floor(Math.random() * map[0].length);
   }
@@ -148,7 +148,7 @@ var keySet = {};
 
 var level = 0;
 var levels = [
-  generateMap(10, 10, 1, "B", [[[["H", 1]], 1]], "S", "E"),
+  generateMap(10, 10, 1, "B", [[[["H", 0.99], ["L", 0.01]], 1]], "S", "E"),
   [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
@@ -198,169 +198,17 @@ var levels = [
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
-  generateMap(10, 10, 2, "A", [[[["a", 0.9], ["M", 0.1]], 1]], "S", "E"),
-  [
-    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
-    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
-    "TTStttttTTWWWWttttttTTttwwwwTTwwwwttttttTT",
-    "TTttttttTTWWWWttttttTTttwwwwTTwwwwttttttTT",
-    "TTTTTTttTTTTTTttTTttTTttTTTTTTTTTTttTTWWTT",
-    "TTTTTTttTTTTTTttTTttTTttTTTTTTTTTTttTTWWTT",
-    "TTwwwwttTTwwwwwwTTttTTttttttttttttttTTWWTT",
-    "TTwwwwttTTwwwwwwTTttTTttttttttttttttTTWWTT",
-    "TTTTTTttTTTTTTTTTTttTTttTTttTTTTTTTTTTTTTT",
-    "TTTTTTttTTTTTTTTTTttTTttTTttTTTTTTTTTTTTTT",
-    "TTttttttwwwwwwwwwwttttttTTttTTttTTttwwwwTT",
-    "TTttttttwwwwwwwwwwttttttTTttTTttTTttwwwwTT",
-    "TTwwTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
-    "TTwwTTttTTTTTTTTTTTTTTttTTTTTTttTTttTTTTTT",
-    "TTwwTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
-    "TTwwTTttTTwwTTttttttttttwwwwwwttttttTTttTT",
-    "TTttTTTTTTwwTTTTTTTTTTttTTWWTTttTTTTTTttTT",
-    "TTttTTTTTTwwTTTTTTTTTTttTTWWTTttTTTTTTttTT",
-    "TTttTTwwWWWWWWwwwwwwwwttTTWWTTttttttTTttTT",
-    "TTttTTwwWWWWWWwwwwwwwwttTTWWTTttttttTTttTT",
-    "TTTTTTwwTTTTTTwwTTTTTTttTTTTTTTTTTttTTttTT",
-    "TTTTTTwwTTTTTTwwTTTTTTttTTTTTTTTTTttTTttTT",
-    "TTttttttTTttttttTTttTTttttttTTttTTttttttTT",
-    "TTttttttTTttttttTTttTTttttttTTttTTttttttTT",
-    "TTttTTTTTTttTTttTTttTTttTTTTTTttTTTTTTwwTT",
-    "TTttTTTTTTttTTttTTttTTttTTTTTTttTTTTTTwwTT",
-    "TTttTTttttttTTttTTwwwwwwwwwwTTttttttTTwwTT",
-    "TTEtTTttttttTTttTTwwwwwwwwwwTTttttttTTwwTT",
-    "TTTTTTttTTttTTttTTTTTTTTTTTTTTwwTTttTTwwTT",
-    "TTTTTTttTTttTTttTTTTTTTTTTTTTTwwTTttTTwwTT",
-    "TTwwwwttTTttTTttttttTTttTTttttwwTTttTTWWTT",
-    "TTwwwwttTTttTTttttttTTttTTttttwwTTttTTWWTT",
-    "TTTTTTTTTTTTTTttTTttTTttTTTTTTwwTTTTTTWWTT",
-    "TTTTTTTTTTTTTTttTTttTTttTTTTTTwwTTTTTTWWTT",
-    "TTttttttttttttttTTttttttTTWWWWwwwwwwTTWWTT",
-    "TTttttttttttttttTTttttttTTWWWWwwwwwwTTWWTT",
-    "TTttTTTTTTTTTTttTTttTTTTTTTTTTwwTTwwTTTTTT",
-    "TTttTTTTTTTTTTttTTttTTTTTTTTTTwwTTwwTTTTTT",
-    "TTttWWWWTTttttttTTwwwwwwwwwwwwwwTTwwwwwwTT",
-    "TTttWWWWTTttttttTTwwwwwwwwwwwwwwTTwwwwwwTT",
-    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
-    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
-  ],
-  [
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-    "DDLdddddDDMMMMddddddDDddmmmmDDmmmmddddddDD",
-    "DDddddddDDMMMMddddddDDddmmmmDDmmmmddddddDD",
-    "DDDDDDddDDDDDDddDDddDDddDDDDDDDDDDddDDMMDD",
-    "DDDDDDddDDDDDDddDDddDDddDDDDDDDDDDddDDMMDD",
-    "DDmmmmddDDmmmmmmDDddDDddddddddddddddDDMMDD",
-    "DDmmmmddDDmmmmmmDDddDDddddddddddddddDDMMDD",
-    "DDDDDDddDDDDDDDDDDddDDddDDddDDDDDDDDDDDDDD",
-    "DDDDDDddDDDDDDDDDDddDDddDDddDDDDDDDDDDDDDD",
-    "DDddddddmmmmmmmmmmddddddDDddDDddDDddmmmmDD",
-    "DDddddddmmmmmmmmmmddddddDDddDDddDDddmmmmDD",
-    "DDmmDDddDDDDDDDDDDDDDDddDDDDDDddDDddDDDDDD",
-    "DDmmDDddDDDDDDDDDDDDDDddDDDDDDddDDddDDDDDD",
-    "DDmmDDddDDmmDDddddddddddmmmmmmddddddDDddDD",
-    "DDmmDDddDDmmDDddddddddddmmmmmmddddddDDddDD",
-    "DDddDDDDDDmmDDDDDDDDDDddDDMMDDddDDDDDDddDD",
-    "DDddDDDDDDmmDDDDDDDDDDddDDMMDDddDDDDDDddDD",
-    "DDddDDmmMMMMMMmmmmmmmmddDDMMDDddddddDDddDD",
-    "DDddDDmmMMMMMMmmmmmmmmddDDMMDDddddddDDddDD",
-    "DDDDDDmmDDDDDDmmDDDDDDddDDDDDDDDDDddDDddDD",
-    "DDDDDDmmDDDDDDmmDDDDDDddDDDDDDDDDDddDDddDD",
-    "DDddddddDDddddddDDddDDddddddDDddDDddddddDD",
-    "DDddddddDDddddddDDddDDddddddDDddDDddddddDD",
-    "DDddDDDDDDddDDddDDddDDddDDDDDDddDDDDDDmmDD",
-    "DDddDDDDDDddDDddDDddDDddDDDDDDddDDDDDDmmDD",
-    "DDddDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
-    "DDSdDDddddddDDddDDmmmmmmmmmmDDddddddDDmmDD",
-    "DDDDDDddDDddDDddDDDDDDDDDDDDDDmmDDddDDmmDD",
-    "DDDDDDddDDddDDddDDDDDDDDDDDDDDmmDDddDDmmDD",
-    "DDmmmmddDDddDDddddddDDddDDddddmmDDddDDMMDD",
-    "DDmmmmddDDddDDddddddDDddDDddddmmDDdEDDMMDD",
-    "DDDDDDDDDDDDDDddDDddDDddDDDDDDmmDDDDDDMMDD",
-    "DDDDDDDDDDDDDDddDDddDDddDDDDDDmmDDDDDDMMDD",
-    "DDddddddddddddddDDddddddDDMMMMmmmmmmDDMMDD",
-    "DDddddddddddddddDDddddddDDMMMMmmmmmmDDMMDD",
-    "DDddDDDDDDDDDDddDDddDDDDDDDDDDmmDDmmDDDDDD",
-    "DDddDDDDDDDDDDddDDddDDDDDDDDDDmmDDmmDDDDDD",
-    "DDddMMMMDDddddddDDmmmmmmmmmmmmmmDDmmmmmmDD",
-    "DDddMMMMDDddddddDDmmmmmmmmmmmmmmDDmmmmmmDD",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-    "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-  ],
-  [
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRFFFFFFFFFFFFFFFRRRFFFRRRFFFRRR",
-    "RRRFLFFFFFFFFFFFLFRRRFLFRRRFLFRRR",
-    "RRRFFFFFFFFFFFFFFFRRRFFFRRRFFFRRR",
-    "RRRFFFRRRRRRRRRFFFRRRFFFRRRFFFRRR",
-    "RRRFFFRRRRRRRRRFFFRRRFFFRRRFFFRRR",
-    "RRRFFFRRRRRRRRRFFFRRRFFFRRRFFFRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRFLFFFFFFFFFFFFFFFFFLFRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRFFFRRRFFFRRRFFFFFFFFFRRR",
-    "RRRFSFRRRFLFRRRFFFRRRFLFFFFFLFRRR",
-    "RRRFFFRRRFFFRRRFFFRRRFFFFFFFFFRRR",
-    "RRRRRRRRRFFFRRRFFFRRRFFFRRRRRRRRR",
-    "RRRRRRRRRFFFRRRFFFRRRFFFRRRRRRRRR",
-    "RRRRRRRRRFFFRRRFFFRRRFFFRRRRRRRRR",
-    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
-    "RRRFLFRRRFFFRRRFLFFFFFFFFFFFLFRRR",
-    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
-    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
-    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFLFRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
-    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
-    "RRRFFFRRRFFFRRRRRRRRRFFFRRRRRRRRR",
-    "RRRFFFFFFFFFRRRFFFFFFFFFFFFFFFRRR",
-    "RRRFFFFFFFLFRRRFLFFFFFFFFFFFLFRRR",
-    "RRRFFFFFFFFFRRRFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFRRRFFFRRR",
-    "RRRFLFRRRFLFFFFFFFFFFFLFRRRFLFRRR",
-    "RRRFFFRRRFFFFFFFFFFFFFFFRRRFFFRRR",
-    "RRRRRRRRRRRRRRRRRRRRRFFFRRRFFFRRR",
-    "RRRRRRRRRRRRRRRRRRRRRFFFRRRFFFRRR",
-    "RRRRRRRRRRRRRRRRRRRRRFFFRRRFFFRRR",
-    "RRRFFFFFFFFFRRRFFFRRRFFFFFFFFFRRR",
-    "RRRFLFFFFFLFRRRFLFRRRFLFFFFFFFRRR",
-    "RRRFFFFFFFFFRRRFFFRRRFFFFFFFFFRRR",
-    "RRRFFFRRRFFFRRRFFFRRRRRRRRRFFFRRR",
-    "RRRFFFRRRFFFRRRFFFRRRRRRRRRFFFRRR",
-    "RRRFFFRRRFFFRRRFFFRRRRRRRRRFFFRRR",
-    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRFEFRRRFFFFFFFFFFFFFLFRRR",
-    "RRRFFFRRRFFFRRRFFFFFFFFFFFFFFFRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFRRRRRRRRRFFFRRRRRRRRRRRRRRR",
-    "RRRFFFFFFFFFFFFFFFFFFFFFFFFFFFRRR",
-    "RRRFLFFFFFFFFFFFFFFFFFFFFFFFLFRRR",
-    "RRRFFFFFFFFFFFFFFFFFFFFFFFFFFFRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-  ],
+  generateMap(10, 10, 2, "A", [[[["a", 0.875], ["M", 0.1], ["L", 0.025]], 1]], "S", "E"),
+  generateMap(10, 10, 2, "T", [[[["t", 1]], 0.5], [[["w", 1]], 0.4], [[["W", 1]], 0.1]], "S", "E"),
+  generateMap(10, 10, 2, "D", [[[["d", 1]], 0.5], [[["m", 1]], 0.4], [[["M", 1]], 0.1]], "S", "E"),
+  generateMap(10, 10, 3, "R", [[[["F", 0.975], ["L", 0.025]], 1]], "S", "E"),
 ];
 
-var lightFrequency = {0: 0.01, 1: 0, 2: 0.025, 3: 0, 4: 0.025, 5: 0};
 var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
 var safeTime = {0: 200, 1: 100, 2: 200, 3: 0, 4: 400, 5: 200};
 var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0.005, 3: 0, 4: 0.01, 5: 0.025};
 var entityAbundance = {0: 1, 1: 1, 2: 0.25, 3: 0, 4: 0.5, 5: 1};
 var seeThroughWalls = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
-var specialSpawn = {0: "default", 1: "default", 2: "default", 3: "default", 4: "same", 5: "default"};
 
 function inInterval(val, a, b) {
   return (val >= a && val <= b);
@@ -399,34 +247,19 @@ function Init() {
         entities[val] = new Brick().setPosition(x, y);
       }
       else if (block == "H") {
-        if (Math.random() < lightFrequency[level]) {
-          entities[val] = new Light().setPosition(x, y);
-        }
-        else {
-          entities[val] = new BackgroundBrick().setPosition(x, y);
-        }
+        entities[val] = new BackgroundBrick().setPosition(x, y);
       }
       else if (block == "T") {
         entities[val] = new Tile().setPosition(x, y);
       }
       else if (block == "t") {
-        if (Math.random() < lightFrequency[level]) {
-          entities[val] = new Light().setPosition(x, y);
-        }
-        else {
-          entities[val] = new BackgroundTile().setPosition(x, y);
-        }
+        entities[val] = new BackgroundTile().setPosition(x, y);
       }
       else if (block == "D") {
         entities[val] = new DarkTile().setPosition(x, y);
       }
       else if (block == "d") {
-        if (Math.random() < lightFrequency[level]) {
-          entities[val] = new Light().setPosition(x, y);
-        }
-        else {
-          entities[val] = new DarkBackgroundTile().setPosition(x, y);
-        }
+        entities[val] = new DarkBackgroundTile().setPosition(x, y);
       }
       else if (block == "w") {
         entities[val] = new Water().setPosition(x, y);
@@ -444,12 +277,7 @@ function Init() {
         entities[val] = new Slate().setPosition(x, y);
       }
       else if (block == "a") {
-        if (Math.random() < lightFrequency[level]) {
-          entities[val] = new Light().setPosition(x, y);
-        }
-        else {
-          entities[val] = new BackgroundSlate().setPosition(x, y);
-        }
+        entities[val] = new BackgroundSlate().setPosition(x, y);
       }
       else if (block == "R") {
         entities[val] = new HotelWallpaper().setPosition(x, y);
@@ -461,15 +289,8 @@ function Init() {
         entities[val] = new Light().setPosition(x, y);
       }
       else if (block == "S") {
-        if (specialSpawn[level] == "hotel") {
-          entities[val] = new HotelCarpet().setPosition(x, y);
-        }
-        else {
-          entities[val] = new Light().setPosition(x, y);
-        }
-        if (specialSpawn[level] != "same" || hasLost) {
-          player = new Player().setPosition(x, y);
-        }
+        entities[val] = new Light().setPosition(x, y);
+        player = new Player().setPosition(x, y);
       }
       else {
         entities[val] = new Exit().setPosition(x, y);
