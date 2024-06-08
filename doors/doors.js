@@ -41,7 +41,7 @@ function chooseTiles(tiles) {
   return 0;
 }
 
-function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, endTile) {
+function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, endTile, hallwayBonus) {
   var map = [];
   for (var i = 0; i <= (2 * height); ++i) {
     map.push([]);
@@ -73,8 +73,13 @@ function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, e
     }
     map[y][x] = tileSet;
     var newStuff = [[y, x, y - 2, x], [y, x, y, x + 2], [y, x, y + 2, x], [y, x, y, x - 2]];
-    if ((Math.abs(lastVector[0]) != 2 || lastVector[1] != 0) &&
-        (lastVector[0] != 0 || Math.abs(lastVector[1]) != 2)) {
+    if ((Math.abs(lastVector[0]) == 2 && lastVector[1] == 0) ||
+        (lastVector[0] == 0 && Math.abs(lastVector[1]) == 2)) {
+      for (var i = 0; i < hallwayBonus; ++i) {
+        newStuff.push([y, x, y + lastVector[0], x + lastVector[1]]);
+      }
+    }
+    else {
       tileSet = String(chooseTiles(floorTiles));
     }
     for (var i = 0; i < newStuff.length; ++i) {
@@ -148,7 +153,7 @@ var keySet = {};
 
 var level = 0;
 var levels = [
-  generateMap(10, 10, 1, "B", [[[["H", 0.99], ["L", 0.01]], 1]], "S", "E"),
+  generateMap(10, 10, 1, "B", [[[["H", 0.99], ["L", 0.01]], 1]], "S", "E", 0),
   [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
@@ -198,17 +203,18 @@ var levels = [
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
-  generateMap(10, 10, 2, "A", [[[["a", 0.875], ["M", 0.1], ["L", 0.025]], 1]], "S", "E"),
-  generateMap(10, 10, 2, "T", [[[["t", 1]], 0.5], [[["w", 1]], 0.4], [[["W", 1]], 0.1]], "S", "E"),
-  generateMap(10, 10, 2, "D", [[[["d", 0.975], ["L", 0.025]], 0.5], [[["m", 1]], 0.4], [[["M", 1]], 0.1]], "S", "E"),
-  generateMap(10, 10, 3, "R", [[[["F", 0.99], ["L", 0.01]], 1]], "S", "E"),
+  generateMap(10, 10, 2, "A", [[[["a", 0.875], ["M", 0.1], ["L", 0.025]], 1]], "S", "E", 0),
+  generateMap(15, 15, 1, "P", [[[["a", 0.85], ["M", 0.1], ["L", 0.05]], 1]], "S", "E", 3),
+  generateMap(10, 10, 2, "T", [[[["t", 1]], 0.5], [[["w", 1]], 0.4], [[["W", 1]], 0.1]], "S", "E", 0),
+  generateMap(10, 10, 2, "D", [[[["d", 0.975], ["L", 0.025]], 0.5], [[["m", 1]], 0.4], [[["M", 1]], 0.1]], "S", "E", 0),
+  generateMap(10, 10, 3, "R", [[[["F", 0.99], ["L", 0.01]], 1]], "S", "E", 0),
 ];
 
-var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
-var safeTime = {0: 200, 1: 100, 2: 200, 3: 0, 4: 400, 5: 200};
-var lightFlickerRate = {0: 0.0025, 1: 1, 2: 0.005, 3: 0, 4: 0.01, 5: 0.025};
-var entityAbundance = {0: 1, 1: 1, 2: 0.25, 3: 0, 4: 0.5, 5: 1};
-var seeThroughWalls = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false};
+var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false, 6: false};
+var safeTime = {0: 200, 1: 100, 2: 400, 3: 200, 4: 0, 5: 400, 6: 200};
+var lightFlickerRate = {0: 0.005, 1: 1, 2: 0.0025, 3: 0.005, 4: 0, 5: 0.01, 6: 0.025};
+var entityAbundance = {0: 1, 1: 1, 2: 0.25, 3: 0.5, 4: 0, 5: 0.5, 6: 1};
+var seeThroughWalls = {0: false, 1: true, 2: false, 3: true, 4: false, 5: false, 6: false};
 
 function inInterval(val, a, b) {
   return (val >= a && val <= b);
@@ -278,6 +284,22 @@ function Init() {
       }
       else if (block == "a") {
         entities[val] = new BackgroundSlate().setPosition(x, y);
+      }
+      else if (block == "P") {
+        var extensions = {};
+        if (i > 0 && map[i - 1][j] == "P") {
+          extensions[0] = true;
+        }
+        if (j < (map[i].length - 1) && map[i][j + 1] == "P") {
+          extensions[1] = true;
+        }
+        if (i < (map.length - 1) && map[i + 1][j] == "P") {
+          extensions[2] = true;
+        }
+        if (j > 0 && map[i][j - 1] == "P") {
+          extensions[3] = true;
+        }
+        entities[val] = new Pipe().setPosition(x, y).setExtensions(extensions);
       }
       else if (block == "R") {
         entities[val] = new HotelWallpaper().setPosition(x, y);
@@ -595,40 +617,39 @@ class Pipe extends TextureBlock {
   constructor() {
     super();
     this.isLightBlock = true;
-    this.extensions = {
-      0: false,
-      1: false,
-      2: false,
-      3: false,
-    };
     this.colorMap = [
       "    ",
       " ## ",
       " ## ",
       "    ",
     ];
-    if (this.extensions[0]) {
-      this.colorMap[0] = " ## ";
-    }
-    if (this.extensions[1] && this.extensions[2]) {
-      this.colorMap[1] = "####";
-      this.colorMap[2] = "####";
-    }
-    else if (this.extensions[1]) {
-      this.colorMap[1] = " ###";
-      this.colorMap[2] = " ###";
-    }
-    else if (this.extensions[2]) {
-      this.colorMap[1] = "### ";
-      this.colorMap[2] = "### ";
-    }
-    if (this.extensions[3]) {
-      this.colorMap[3] = " ## ";
-    }
     this.colors = {
       " ": [136, 120, 56],
       "#": [160, 128, 0],
     };
+  }
+
+  setExtensions(extensions) {
+    this.extensions = extensions;
+    if (0 in this.extensions) {
+      this.colorMap[0] = " ## ";
+    }
+    if (1 in this.extensions && 3 in this.extensions) {
+      this.colorMap[1] = "####";
+      this.colorMap[2] = "####";
+    }
+    else if (1 in this.extensions) {
+      this.colorMap[1] = " ###";
+      this.colorMap[2] = " ###";
+    }
+    else if (3 in this.extensions) {
+      this.colorMap[1] = "### ";
+      this.colorMap[2] = "### ";
+    }
+    if (2 in this.extensions) {
+      this.colorMap[3] = " ## ";
+    }
+    return this;
   }
 }
 
