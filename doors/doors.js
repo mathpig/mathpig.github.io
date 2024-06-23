@@ -10,18 +10,21 @@ function shuffle(arr) {
   return arr;
 }
 
-function printMap(map) {
+function printMap(map, wallTile, startTile, endTile) {
   var s = "";
   for (var i = 0; i < map.length; ++i) {
     for (var j = 0; j < map[i].length; ++j) {
-      if (map[i][j] == map[0][0]) {
+      if (map[i][j] == wallTile) {
         s += "##";
       }
-      else if (map[i][j] == map[1][1]) {
-        s += "--";
+      else if (map[i][j] == startTile) {
+        s += "SS";
+      }
+      else if (map[i][j] == endTile) {
+        s += "EE";
       }
       else {
-        s += (map[i][j] + map[i][j]);
+        s += "--";
       }
     }
     s += "\n";
@@ -108,7 +111,7 @@ function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, e
   map[sy][sx] = startTile;
   var y = Math.floor(Math.random() * map.length);
   var x = Math.floor(Math.random() * map[0].length);
-  while (map[y][x] == wallTile || (Math.abs(sy - y) + Math.abs(sx - x)) <= Math.floor((map.length + map[0].length) / 4)) {
+  while (map[y][x] == wallTile || map[y][x] == startTile) {
     y = Math.floor(Math.random() * map.length);
     x = Math.floor(Math.random() * map[0].length);
   }
@@ -203,8 +206,8 @@ var levels = [
     "BHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
   ],
-  generateMap(10, 10, 2, "A", [[[["a", 0.875], ["M", 0.1], ["L", 0.025]], 1]], "S", "E", 0),
-  generateMap(15, 15, 1, "P", [[[["a", 0.85], ["M", 0.1], ["L", 0.05]], 1]], "S", "E", 3),
+  generateMap(10, 10, 2, "A", [[[["a", 0.94], ["M", 0.05], ["L", 0.01]], 1]], "S", "E", 0),
+  generateMap(15, 15, 1, "P", [[[["a", 0.85], ["M", 0.125], ["L", 0.025]], 1]], "S", "E", 3),
   generateMap(10, 10, 2, "T", [[[["t", 1]], 0.5], [[["w", 1]], 0.4], [[["W", 1]], 0.1]], "S", "E", 0),
   generateMap(10, 10, 2, "D", [[[["d", 0.975], ["L", 0.025]], 0.5], [[["m", 1]], 0.4], [[["M", 1]], 0.1]], "S", "E", 0),
   generateMap(10, 10, 3, "R", [[[["F", 0.99], ["L", 0.01]], 1]], "S", "E", 0),
@@ -624,8 +627,8 @@ class Pipe extends TextureBlock {
       "    ",
     ];
     this.colors = {
-      " ": [136, 120, 56],
-      "#": [160, 128, 0],
+      " ": [128, 64, 0],
+      "#": [64, 32, 0],
     };
   }
 
