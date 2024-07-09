@@ -48,11 +48,13 @@ function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
 }
 
-function convert(omino, x, y, color1, color2) {
+function convert(omino, x, y, colors) {
   var blocks = [];
   for (var i = 0; i < omino.length; ++i) {
     for (var j = 0; j < omino[0].length; ++j) {
-      if (omino[i][j] == "#") {
+      if (omino[i][j] in colors) {
+        var color1 = colors[omino[i][j]][0];
+        var color2 = colors[omino[i][j]][1];
         blocks.push(new Block().setPosition(blockSize * j + Math.round(blockSize / 2) + x,
                                             blockSize * i + Math.round(blockSize / 2) + y).setColor(color1, color2));
       }
@@ -76,8 +78,17 @@ function generateFailmino() {
                " ##  ##  ####  #####  #####  ",
                " ##  ##  ####  ##     ####   ",
                " ##  ##   ##   ##     ## ##  ",
-               "  ####    ##   ###### ##  ## "];
-  var blocks = convert(omino, Math.round(screen.width / 2) - omino[0].length * Math.round(blockSize / 2), -384, "rgb(255, 255, 255)", "rgb(128, 128, 128)");
+               "  ####    ##   ###### ##  ## ",
+               "                             ",
+               "                             ",
+               "                             ",
+               "                             ",
+               "-----------------------------"];
+  var colors = {
+    "#": ["rgb(255, 255, 255)", "rgb(128, 128, 128)"],
+    "-": ["rgb(0, 0, 0)", "rgb(0, 0, 0)"],
+  };
+  var blocks = convert(omino, Math.round(screen.width / 2) - omino[0].length * Math.round(blockSize / 2), -384, colors);
   return new Omino().setBlocks(blocks).setSpeed(2);
 }
 
@@ -193,7 +204,7 @@ function generateOmino(axisAligned) {
     else {
       var x = randint(blockSize * lowerBound, blockSize * upperBound);
     }
-    var blocks = convert(omino, x, -128, color1, color2);
+    var blocks = convert(omino, x, -128, {"#": [color1, color2]});
     var result = new Omino().setBlocks(blocks);
     var failed = false;
     for (var i = 0; i < entities.length; ++i) {
