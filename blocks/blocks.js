@@ -145,7 +145,7 @@ function generateOmino(axisAligned) {
       color1 += ", ";
       color2 += ", ";
     }
-    var val = randint(32, 255);
+    var val = randint(64, 255);
     color1 += String(val);
     color2 += String(Math.round(val / 2));
   }
