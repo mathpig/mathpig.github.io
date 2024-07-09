@@ -11,6 +11,8 @@ var toRemove = [];
 
 var destroyTime = 0;
 
+var hasLost = false;
+
 function intervalTouches(a, b, c, d) {
   return (b > c && d > a);
 }
@@ -18,6 +20,15 @@ function intervalTouches(a, b, c, d) {
 function touches(e1, e2) {
   return (intervalTouches(e1.x - e1.size / 2, e1.x + e1.size / 2, e2.x - e2.size / 2, e2.x + e2.size / 2) &&
           intervalTouches(e1.y - e1.size / 2, e1.y + e1.size / 2, e2.y - e2.size / 2, e2.y + e2.size / 2));
+}
+
+function playerTouches(e) {
+  for (var i = 0; i < e.blocks.length; ++i) {
+    if (touches(player, e.blocks[i])) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function ominoTouches(e1, e2) {
@@ -303,22 +314,32 @@ class Omino {
         }
       }
     }
+    if (playerTouches(this)) {
+      player.vy = Math.max(this.speed, Math.abs(player.vy));
+      while (playerTouches(this)) {
+        player.y++;
+      }
+      if (player.y > (screen.height - Math.round(player.size / 2))) {
+        hasLost = true;
+      }
+      for (var i = 0; i < entities.length; ++i) {
+        if (entities[i] instanceof Omino && playerTouches(entities[i])) {
+          hasLost = true;
+          break;
+        }
+      }
+    }
   }
 }
 
-/*
-class Knight {
+class Player {
   constructor() {
-    this.speed = blockSize / 10;
+    this.speed = Math.round(blockSize / 8);
     this.x = 0;
     this.y = 0;
     this.vy = 0;
-    this.size = blockSize * 0.8;
+    this.size = Math.round(blockSize * 3 / 4);
     this.color = "blue";
-    this.health = 100;
-    this.maxHealth = this.health;
-    this.stunCountdown = 0;
-    this.stunCount = 0;
     this.jumpCountdown = 0;
     this.maxJumpCountdown = 10;
   }
@@ -349,26 +370,6 @@ class Knight {
     return this;
   }
 
-  setHealth(health) {
-    this.health = health;
-    return this;
-  }
-
-  setMaxHealth(maxHealth) {
-    this.maxHealth = maxHealth;
-    return this;
-  }
-
-  setStunCountdown(stunCountdown) {
-    this.stunCountdown = stunCountdown;
-    return this;
-  }
-
-  setStunCount(stunCount) {
-    this.stunCount = stunCount;
-    return this;
-  }
-
   setJumpCountdown(jumpCountdown) {
     this.jumpCountdown = jumpCountdown;
     return this;
@@ -381,57 +382,31 @@ class Knight {
 
   draw() {
     ctx.fillStyle = this.color;
-    if (this.stunCountdown > 0) {
-      ctx.fillStyle = "gray";
-    }
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-    this.drawhealthbar();
-  }
-
-  drawhealthbar() {
-    var val = (this.health / this.maxHealth) * this.size;
-    ctx.fillStyle = "lime";
-    ctx.fillRect(this.x - this.size / 2, this.y - 4 * this.size / 5, val, this.size / 5);
-    ctx.fillStyle = "darkred";
-    ctx.fillRect(this.x - this.size / 2 + val, this.y - 4 * this.size / 5, this.size - val, this.size / 5);
   }
 
   tick() {
-    if (this.stunCountdown > 0) {
-      this.stunCountdown--;
-      this.health++;
-    }
-    var oldX = this.x;
     var val = 0;
-    if (this.stunCountdown == 0) {
-      if (keySet["ArrowLeft"]) {
-        val--;
-      }
-      if (keySet["ArrowRight"]) {
-        val++;
-      }
+    if (keySet["ArrowLeft"]) {
+      val--;
     }
+    if (keySet["ArrowRight"]) {
+      val++;
+    }
+    var failed = false;
     for (var i = 0; i < this.speed; ++i) {
       this.x += val;
-      var touchedEntities = [];
+      if (this.x < Math.round(this.size / 2) || this.x > (screen.width - Math.round(this.size / 2))) {
+        this.x -= val;
+        break;
+      }
       for (var j = 0; j < entities.length; ++j) {
-        if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
-          touchedEntities.push(entities[j]);
+        if (entities[j] !== this && playerTouches(entities[j])) {
+          failed = true;
+          break;
         }
       }
-      if (touchedEntities.length > 0) {
-        if (this.stunCountdown == 0) {
-          var worstLoss = 1000;
-          for (var j = 0; j < touchedEntities.length; ++j) {
-            worstLoss = Math.min(worstLoss, touchedEntities[j].damageVal);
-          }
-          this.health -= worstLoss;
-          if (this.health <= 0) {
-            this.health = 0;
-            this.stunCountdown = this.maxHealth;
-            this.stunCount++;
-          }
-        }
+      if (failed) {
         this.x -= val;
         break;
       }
@@ -440,19 +415,22 @@ class Knight {
     this.vy *= 0.95;
     var val = Math.sign(this.vy);
     var vy = Math.abs(this.vy);
+    var failed = false;
     for (var i = 0; i < vy; ++i) {
       this.y += val;
-      var touchedEntities = [];
-      for (var j = 0; j < entities.length; ++j) {
-        if (touches(this, entities[j]) && entities[j] instanceof Block && entities[j].isCollidable) {
-          touchedEntities.push(entities[j]);
+      if (this.y > (screen.height - Math.round(this.size / 2))) {
+        failed = true;
+      }
+      if (!failed) {
+        for (var j = 0; j < entities.length; ++j) {
+          if (entities[j] !== this && playerTouches(entities[j])) {
+            failed = true;
+            break;
+          }
         }
       }
-      if (touchedEntities.length == 0) {
-        this.jumpCountdown = this.maxJumpCountdown;
-      }
-      if (touchedEntities.length > 0) {
-        if (this.vy > 0 && this.stunCountdown == 0) {
+      if (failed) {
+        if (this.vy > 0) {
           this.jumpCountdown--;
         }
         else {
@@ -460,31 +438,24 @@ class Knight {
         }
         this.vy = 0;
         if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
-          this.vy -= (blockSize / 2);
-        }
-        if (this.stunCountdown == 0) {
-          var worstLoss = 1000;
-          for (var j = 0; j < touchedEntities.length; ++j) {
-            worstLoss = Math.min(worstLoss, touchedEntities[j].damageVal);
-          }
-          this.health -= worstLoss;
-          if (this.health <= 0) {
-            this.health = 0;
-            this.stunCountdown = this.maxHealth;
-            this.stunCount++;
-          }
+          this.vy -= Math.round(blockSize / 2);
         }
         this.y -= val;
         break;
       }
+      else {
+        this.jumpCountdown = this.maxJumpCountdown;
+      }
     }
   }
 }
-*/
 
 function Draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
+  if (hasLost) {
+    return;
+  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
@@ -492,6 +463,10 @@ function Draw() {
 
 var time = 0;
 function Tick() {
+  if (hasLost) {
+    Draw();
+    return;
+  }
   time++;
   if ((time % 10) == 0) {
     entities.push(generateOmino(true));
@@ -501,10 +476,10 @@ function Tick() {
     entities[i].tick();
   }
   destroyTime++;
-  if (destroyTime == 100) {
+  if (destroyTime >= 100) {
     destroyTime = 0;
     for (var i = 0; i < entities.length; ++i) {
-      if (!entities[i].frozen) {
+      if (!(entities[i] instanceof Omino) || !entities[i].frozen) {
         continue;
       }
       if (Math.random() < 0.25) {
@@ -523,7 +498,8 @@ function Tick() {
   Draw();
 }
 
-// var player = new Knight().setPosition(1025, 425);
+var player = new Player().setPosition(screen.width / 2, screen.height / 2);
+entities.push(player);
 
 setInterval(Tick, 25);
 

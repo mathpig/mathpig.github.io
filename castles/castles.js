@@ -277,7 +277,6 @@ class Knight {
       this.stunCountdown--;
       this.health++;
     }
-    var oldX = this.x;
     var val = 0;
     if (this.stunCountdown == 0) {
       if (keySet["ArrowLeft"]) {
