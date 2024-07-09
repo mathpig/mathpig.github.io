@@ -7,6 +7,9 @@ const blockSpeed = 4;
 const blockSize = 16;
 
 var entities = [];
+var toRemove = [];
+
+var destroyTime = 0;
 
 function intervalTouches(a, b, c, d) {
   return (b > c && d > a);
@@ -34,6 +37,30 @@ function randint(a, b) {
 
 function generateOmino(axisAligned) {
   var ominos = [
+    [
+      ["#"],
+    ],
+    [
+      ["##"],
+      ["#",
+       "#"],
+    ],
+    [
+      ["###"],
+      ["#",
+       "#",
+       "#"],
+    ],
+    [
+      ["# ",
+       "##"],
+      ["##",
+       "# "],
+      ["##",
+       " #"],
+      [" #",
+       "##"],
+    ],
     [
       ["##",
        "##"],
@@ -100,13 +127,6 @@ function generateOmino(axisAligned) {
   var omino = ominoType[randint(0, ominoType.length - 1)];
   var lowerBound = 0;
   var upperBound = (50 - omino[0].length);
-  if (axisAligned) {
-    var x = blockSize * randint(lowerBound, upperBound);
-  }
-  else {
-    var x = randint(blockSize * lowerBound, blockSize * upperBound);
-  }
-  var blocks = [];
   var color1 = "rgb(";
   var color2 = "rgb(";
   for (var i = 0; i < 3; ++i) {
@@ -120,15 +140,35 @@ function generateOmino(axisAligned) {
   }
   color1 += ")";
   color2 += ")";
-  for (var i = 0; i < omino.length; ++i) {
-    for (var j = 0; j < omino[0].length; ++j) {
-      if (omino[i][j] == "#") {
-        blocks.push(new Block().setPosition(blockSize * j + Math.round(blockSize / 2) + x,
-                                            blockSize * i + Math.round(blockSize / 2) - 100).setColor(color1, color2));
+  while (true) {
+    if (axisAligned) {
+      var x = blockSize * randint(lowerBound, upperBound);
+    }
+    else {
+      var x = randint(blockSize * lowerBound, blockSize * upperBound);
+    }
+    var blocks = [];
+    for (var i = 0; i < omino.length; ++i) {
+      for (var j = 0; j < omino[0].length; ++j) {
+        if (omino[i][j] == "#") {
+          blocks.push(new Block().setPosition(blockSize * j + Math.round(blockSize / 2) + x,
+                                              blockSize * i + Math.round(blockSize / 2) - 100).setColor(color1, color2));
+        }
       }
     }
+    var result = new Omino().setBlocks(blocks);
+    var failed = false;
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i] instanceof Omino && ominoTouches(result, entities[i])) {
+        failed = true;
+        break;
+      }
+    }
+    if (failed) {
+      continue;
+    }
+    return result;
   }
-  return new Omino().setBlocks(blocks);
 }
 
 var keySet = {};
@@ -165,13 +205,20 @@ class Block {
     return this;
   }
 
-  draw() {
-    ctx.fillStyle = this.borderColor;
+  draw(useWhite) {
+    if (useWhite) {
+      ctx.fillStyle = "rgb(255, 255, 255)";
+    }
+    else {
+      ctx.fillStyle = this.borderColor;
+    }
     ctx.fillRect(this.x - this.size / 2 - 1,
                  this.y - this.size / 2 - 1,
                  this.size + 1,
                  this.size + 1);
-    ctx.fillStyle = this.color;
+    if (!useWhite) {
+      ctx.fillStyle = this.color;
+    }
     ctx.fillRect(this.x - this.size / 2 + this.borderSize / 2 - 1,
                  this.y - this.size / 2 + this.borderSize / 2 - 1,
                  this.size - this.borderSize + 1,
@@ -185,8 +232,15 @@ class Block {
 
 class Omino {
   constructor() {
+    this.speed = randint(Math.round(blockSpeed / 2), Math.round(blockSpeed * 3 / 2));
     this.blocks = [];
     this.frozen = false;
+    this.countdown = -1;
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
+    return this;
   }
 
   setBlocks(blocks) {
@@ -199,21 +253,33 @@ class Omino {
     return this;
   }
 
+  setCountdown(countdown) {
+    this.countdown = countdown;
+    return this;
+  }
+
   draw() {
     for (var i = 0; i < this.blocks.length; ++i) {
-      this.blocks[i].draw();
+      this.blocks[i].draw((this.countdown % 10) >= 5);
     }
   }
 
-  freeze() {
-    this.frozen = true;
+  freeze(shouldStop) {
+    this.frozen = shouldStop;
     for (var i = 0; i < this.blocks.length; ++i) {
       this.blocks[i].fall(-1);
     }
   }
 
   tick() {
-    for (var count = 0; count < blockSpeed; ++count) {
+    if (this.countdown > 0) {
+      this.countdown--;
+      if (this.countdown == 0) {
+        toRemove.push(this);
+        return;
+      }
+    }
+    for (var count = 0; count < this.speed; ++count) {
       if (this.frozen) {
         return;
       }
@@ -222,7 +288,8 @@ class Omino {
       }
       for (var i = 0; i < this.blocks.length; ++i) {
         if (this.blocks[i].y > (screen.height - Math.round(blockSize / 2))) {
-          this.freeze();
+          destroyTime = 0;
+          this.freeze(true);
           break;
         }
       }
@@ -230,8 +297,8 @@ class Omino {
         if (!(entities[i] instanceof Omino) || entities[i] === this) {
           continue;
         }
-        if (ominoTouches(this, entities[i]) && entities[i].frozen) {
-          this.freeze();
+        if (ominoTouches(this, entities[i])) {
+          this.freeze(entities[i].frozen);
           break;
         }
       }
@@ -426,11 +493,32 @@ function Draw() {
 var time = 0;
 function Tick() {
   time++;
-  if ((time % 20) == 0) {
+  if ((time % 10) == 0) {
     entities.push(generateOmino(true));
   }
+  toRemove = [];
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
+  }
+  destroyTime++;
+  if (destroyTime == 100) {
+    destroyTime = 0;
+    for (var i = 0; i < entities.length; ++i) {
+      if (!entities[i].frozen) {
+        continue;
+      }
+      if (Math.random() < 0.25) {
+        entities[i].countdown = 20;
+      }
+    }
+  }
+  if (toRemove.length > 0) {
+    for (var i = 0; i < entities.length; ++i) {
+      entities[i].frozen = false;
+    }
+  }
+  for (var i = 0; i < toRemove.length; ++i) {
+    entities.splice(entities.indexOf(toRemove[i]), 1);
   }
   Draw();
 }
