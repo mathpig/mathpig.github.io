@@ -556,7 +556,7 @@ function Tick() {
     entities[i].tick();
   }
   Draw();
-  killcount.innerHTML = "</br>Score: " + String(1000 * kills + time);
+  killcount.innerHTML = "</br>&nbsp;Score: " + String(1000 * kills + time);
 }
 
 var player = new Player().setPosition(0, 0);

@@ -6,6 +6,8 @@ var ctx = screen.getContext("2d");
 const blockSpeed = 4;
 const blockSize = 16;
 
+var player;
+
 var entities = [];
 var toRemove = [];
 
@@ -44,6 +46,39 @@ function ominoTouches(e1, e2) {
 
 function randint(a, b) {
   return a + Math.floor(Math.random() * (b - a + 1));
+}
+
+function convert(omino, x, y, color1, color2) {
+  var blocks = [];
+  for (var i = 0; i < omino.length; ++i) {
+    for (var j = 0; j < omino[0].length; ++j) {
+      if (omino[i][j] == "#") {
+        blocks.push(new Block().setPosition(blockSize * j + Math.round(blockSize / 2) + x,
+                                            blockSize * i + Math.round(blockSize / 2) + y).setColor(color1, color2));
+      }
+    }
+  }
+  return blocks;
+}
+
+function generateFailmino() {
+  var omino = [" ####    ##   ##    ## ######",
+               "##      ####  ###  ### ##    ",
+               "##      #  #  ######## ##    ",
+               "## ### ##  ## ## ## ## ##### ",
+               "##  ## ###### ##    ## ##    ",
+               "##  ## ##  ## ##    ## ##    ",
+               " ##### ##  ## ##    ## ######",
+               "                             ",
+               "  ####  ##  ## ###### #####  ",
+               " ##  ## ##  ## ##     ##  ## ",
+               " ##  ## ##  ## ##     ##  ## ",
+               " ##  ##  ####  #####  #####  ",
+               " ##  ##  ####  ##     ####   ",
+               " ##  ##   ##   ##     ## ##  ",
+               "  ####    ##   ###### ##  ## "];
+  var blocks = convert(omino, Math.round(screen.width / 2) - omino[0].length * Math.round(blockSize / 2), -384, "rgb(255, 255, 255)", "rgb(128, 128, 128)");
+  return new Omino().setBlocks(blocks).setSpeed(2);
 }
 
 function generateOmino(axisAligned) {
@@ -158,15 +193,7 @@ function generateOmino(axisAligned) {
     else {
       var x = randint(blockSize * lowerBound, blockSize * upperBound);
     }
-    var blocks = [];
-    for (var i = 0; i < omino.length; ++i) {
-      for (var j = 0; j < omino[0].length; ++j) {
-        if (omino[i][j] == "#") {
-          blocks.push(new Block().setPosition(blockSize * j + Math.round(blockSize / 2) + x,
-                                              blockSize * i + Math.round(blockSize / 2) - 100).setColor(color1, color2));
-        }
-      }
-    }
+    var blocks = convert(omino, x, -128, color1, color2);
     var result = new Omino().setBlocks(blocks);
     var failed = false;
     for (var i = 0; i < entities.length; ++i) {
@@ -453,27 +480,36 @@ class Player {
 function Draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
-  if (hasLost) {
-    return;
-  }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].draw();
   }
 }
 
 var time = 0;
+var lostTime = 0;
 function Tick() {
+  if (hasLost) {
+    if (lostTime == 0) {
+      entities = [generateFailmino()];
+    }
+    lostTime++;
+    if (lostTime >= 400) {
+      Init();
+    }
+  }
+  else {
+    time++;
+    if ((time % 10) == 0) {
+      entities.push(generateOmino(true));
+    }
+    toRemove = [];
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    entities[i].tick();
+  }
   if (hasLost) {
     Draw();
     return;
-  }
-  time++;
-  if ((time % 10) == 0) {
-    entities.push(generateOmino(true));
-  }
-  toRemove = [];
-  for (var i = 0; i < entities.length; ++i) {
-    entities[i].tick();
   }
   destroyTime++;
   if (destroyTime >= 100) {
@@ -496,11 +532,18 @@ function Tick() {
     entities.splice(entities.indexOf(toRemove[i]), 1);
   }
   Draw();
+  score.innerHTML = "</br>&nbsp;Score: " + String(time);
 }
 
-var player = new Player().setPosition(screen.width / 2, screen.height / 2);
-entities.push(player);
+function Init() {
+  hasLost = false;
+  time = 0;
+  lostTime = 0;
+  player = new Player().setPosition(screen.width / 2, screen.height / 2);
+  entities = [player];
+}
 
+Init();
 setInterval(Tick, 25);
 
 window.onkeydown = function(e) {
