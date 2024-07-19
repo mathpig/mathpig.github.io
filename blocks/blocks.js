@@ -11,6 +11,8 @@ var player;
 var entities = [];
 var toRemove = [];
 
+var time = 0;
+var lostTime = 0;
 var destroyTime = 0;
 
 var hasLost = false;
@@ -81,9 +83,22 @@ function generateTank(axisAligned) {
                " # ",
                " # "];
   var colors = {"#": ["rgb(0, 128, 0)", "rgb(0, 64, 0)"]};
-  var x = generateXCoord(omino.length, axisAligned);
-  var blocks = convert(omino, x, -128, colors);
-  return new Tank().setBlocks(blocks).setSpeed(3);
+  while (true) {
+    var x = generateXCoord(omino[0].length, axisAligned);
+    var blocks = convert(omino, x, -128, colors);
+    var result = new Tank().setBlocks(blocks).setSpeed(randint(Math.round(blockSpeed / 2), blockSpeed));
+    var failed = false;
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i] instanceof Tank && ominoTouches(result, entities[i])) {
+        failed = true;
+        break;
+      }
+    }
+    if (failed) {
+      continue;
+    }
+    return result;
+  }
 }
 
 function generateFailmino() {
@@ -610,8 +625,6 @@ function Draw() {
   }
 }
 
-var time = 0;
-var lostTime = 0;
 function Tick() {
   if (hasLost) {
     if (lostTime == 0) {
@@ -674,8 +687,10 @@ function Init() {
   hasLost = false;
   time = 0;
   lostTime = 0;
+  destroyTime = 0;
   player = new Player().setPosition(screen.width / 2, screen.height / 2);
   entities = [player];
+  toRemove = [];
 }
 
 Init();
