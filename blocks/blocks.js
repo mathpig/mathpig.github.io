@@ -24,9 +24,9 @@ function touches(e1, e2) {
           intervalTouches(e1.y - e1.size / 2, e1.y + e1.size / 2, e2.y - e2.size / 2, e2.y + e2.size / 2));
 }
 
-function playerTouches(e) {
-  for (var i = 0; i < e.blocks.length; ++i) {
-    if (touches(player, e.blocks[i])) {
+function objectTouches(e1, e2) {
+  for (var i = 0; i < e1.blocks.length; ++i) {
+    if (touches(e1.blocks[i], e2)) {
       return true;
     }
   }
@@ -61,6 +61,29 @@ function convert(omino, x, y, colors) {
     }
   }
   return blocks;
+}
+
+function generateXCoord(width, axisAligned) {
+  var lowerBound = 0;
+  var upperBound = (50 - width);
+  if (axisAligned) {
+    return blockSize * randint(lowerBound, upperBound);
+  }
+  else {
+    return randint(blockSize * lowerBound, blockSize * upperBound);
+  }
+}
+
+function generateTank(axisAligned) {
+  var omino = [" # ",
+               "###",
+               "###",
+               " # ",
+               " # "];
+  var colors = {"#": ["rgb(0, 128, 0)", "rgb(0, 64, 0)"]};
+  var x = generateXCoord(omino.length, axisAligned);
+  var blocks = convert(omino, x, -128, colors);
+  return new Tank().setBlocks(blocks).setSpeed(3);
 }
 
 function generateFailmino() {
@@ -182,8 +205,6 @@ function generateOmino(axisAligned) {
   ];
   var ominoType = ominos[randint(0, ominos.length - 1)];
   var omino = ominoType[randint(0, ominoType.length - 1)];
-  var lowerBound = 0;
-  var upperBound = (50 - omino[0].length);
   var color1 = "rgb(";
   var color2 = "rgb(";
   for (var i = 0; i < 3; ++i) {
@@ -198,17 +219,12 @@ function generateOmino(axisAligned) {
   color1 += ")";
   color2 += ")";
   while (true) {
-    if (axisAligned) {
-      var x = blockSize * randint(lowerBound, upperBound);
-    }
-    else {
-      var x = randint(blockSize * lowerBound, blockSize * upperBound);
-    }
+    var x = generateXCoord(omino[0].length, axisAligned);
     var blocks = convert(omino, x, -128, {"#": [color1, color2]});
     var result = new Omino().setBlocks(blocks);
     var failed = false;
     for (var i = 0; i < entities.length; ++i) {
-      if (entities[i] instanceof Omino && ominoTouches(result, entities[i])) {
+      if (entities[i].isOmino() && ominoTouches(result, entities[i])) {
         failed = true;
         break;
       }
@@ -252,6 +268,10 @@ class Block {
     this.color = color;
     this.borderColor = borderColor;
     return this;
+  }
+
+  isOmino() {
+    return false;
   }
 
   draw(useWhite) {
@@ -307,6 +327,10 @@ class Omino {
     return this;
   }
 
+  isOmino() {
+    return true;
+  }
+
   draw() {
     for (var i = 0; i < this.blocks.length; ++i) {
       this.blocks[i].draw((this.countdown % 10) >= 5);
@@ -343,28 +367,102 @@ class Omino {
         }
       }
       for (var i = 0; i < entities.length; ++i) {
-        if (!(entities[i] instanceof Omino) || entities[i] === this) {
-          continue;
-        }
-        if (ominoTouches(this, entities[i])) {
+        if (entities[i].isOmino() && entities[i] !== this && ominoTouches(this, entities[i])) {
           this.freeze(entities[i].frozen);
           break;
         }
       }
     }
-    if (playerTouches(this)) {
+    if (objectTouches(this, player)) {
       player.vy = Math.max(this.speed, Math.abs(player.vy));
-      while (playerTouches(this)) {
+      while (objectTouches(this, player)) {
         player.y++;
       }
       if (player.y > (screen.height - Math.round(player.size / 2))) {
-        hasLost = true;
+        toRemove.push(player);
+        return;
       }
       for (var i = 0; i < entities.length; ++i) {
-        if (entities[i] instanceof Omino && playerTouches(entities[i])) {
-          hasLost = true;
+        if (entities[i].isOmino() && objectTouches(entities[i], player)) {
+          toRemove.push(player);
           break;
         }
+      }
+    }
+  }
+}
+
+class Tank extends Omino {
+  constructor() {
+    super();
+    this.minBulletSpeed = Math.round(blockSpeed * 3 / 2);
+    this.maxBulletSpeed = Math.round(blockSpeed * 5 / 2);
+  }
+
+  setBulletSpeed(minBulletSpeed, maxBulletSpeed) {
+    this.minBulletSpeed = minBulletSpeed;
+    this.maxBulletSpeed = maxBulletSpeed;
+    return this;
+  }
+
+  isOmino() {
+    return false;
+  }
+
+  tick() {
+    var failed = true;
+    for (var i = 0; i < this.blocks.length; ++i) {
+      this.blocks[i].fall(this.speed);
+      if (this.blocks[i].y < (screen.height + 128)) {
+        failed = false;
+      }
+    }
+    if (failed) {
+      toRemove.push(this);
+    }
+    if ((time % 20) == 0) {
+      entities.push(new Bullet().setPosition(this.blocks[0].x, this.blocks[0].y + blockSize * 5).setSpeed(randint(this.minBulletSpeed, this.maxBulletSpeed)));
+    }
+  }
+}
+
+class Bullet extends Block {
+  constructor() {
+    super();
+    this.speed = 0;
+    this.color = "rgb(255, 255, 255)";
+    this.borderColor = "rgb(255, 255, 255)";
+    this.size = Math.round(blockSize / 2);
+    this.borderSize = Math.round(blockSize / 4);
+  }
+
+  setSpeed(speed) {
+    this.speed = speed;
+    return this;
+  }
+
+  tick() {
+    this.y += this.speed;
+    if (this.y >= (screen.height + 128)) {
+      toRemove.push(this);
+      return;
+    }
+    for (var i = 0; i < entities.length; ++i) {
+      if (entities[i] instanceof Bullet) {
+        continue;
+      }
+      if (entities[i] instanceof Omino && objectTouches(entities[i], this)) {
+        toRemove.push(this);
+        if (entities[i] instanceof Tank) {
+          toRemove.push(entities[i]);
+        }
+        else if (entities[i].countdown < 0) {
+          entities[i].countdown = 20;
+        }
+      }
+      else if (entities[i] instanceof Player && touches(this, entities[i])) {
+        toRemove.push(this);
+        toRemove.push(entities[i]);
       }
     }
   }
@@ -418,6 +516,10 @@ class Player {
     return this;
   }
 
+  isOmino() {
+    return false;
+  }
+
   draw() {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
@@ -439,7 +541,7 @@ class Player {
         break;
       }
       for (var j = 0; j < entities.length; ++j) {
-        if (entities[j] !== this && playerTouches(entities[j])) {
+        if (entities[j].isOmino() && objectTouches(entities[j], this)) {
           failed = true;
           break;
         }
@@ -461,7 +563,7 @@ class Player {
       }
       if (!failed) {
         for (var j = 0; j < entities.length; ++j) {
-          if (entities[j] !== this && playerTouches(entities[j])) {
+          if (entities[j].isOmino() && objectTouches(entities[j], this)) {
             failed = true;
             break;
           }
@@ -492,7 +594,19 @@ function Draw() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, screen.width, screen.height);
   for (var i = 0; i < entities.length; ++i) {
-    entities[i].draw();
+    if (entities[i].isOmino()) {
+      entities[i].draw();
+    }
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Tank || entities[i] instanceof Bullet) {
+      entities[i].draw();
+    }
+  }
+  for (var i = 0; i < entities.length; ++i) {
+    if (entities[i] instanceof Player) {
+      entities[i].draw();
+    }
   }
 }
 
@@ -511,32 +625,42 @@ function Tick() {
   else {
     time++;
     if ((time % 10) == 0) {
-      entities.push(generateOmino(true));
+      if (Math.random() < 0.05) {
+        entities.push(generateTank(true));
+      }
+      else {
+        entities.push(generateOmino(true));
+      }
     }
     toRemove = [];
   }
   for (var i = 0; i < entities.length; ++i) {
     entities[i].tick();
   }
+  if (toRemove.indexOf(player) != -1) {
+    hasLost = true;
+  }
   if (hasLost) {
     Draw();
     return;
   }
   destroyTime++;
-  if (destroyTime >= 100) {
+  if (destroyTime >= 80) {
     destroyTime = 0;
     for (var i = 0; i < entities.length; ++i) {
-      if (!(entities[i] instanceof Omino) || !entities[i].frozen) {
-        continue;
-      }
-      if (Math.random() < 0.25) {
+      if (entities[i].isOmino() && entities[i].frozen && Math.random() < 0.25 && entities[i].countdown < 0) {
         entities[i].countdown = 20;
       }
     }
   }
-  if (toRemove.length > 0) {
-    for (var i = 0; i < entities.length; ++i) {
-      entities[i].frozen = false;
+  for (var i = 0; i < toRemove.length; ++i) {
+    if (toRemove[i].isOmino()) {
+      for (var j = 0; j < entities.length; ++j) {
+        if (entities[j].isOmino()) {
+          entities[j].frozen = false;
+        }
+      }
+      break;
     }
   }
   for (var i = 0; i < toRemove.length; ++i) {
