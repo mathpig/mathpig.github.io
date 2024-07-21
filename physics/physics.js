@@ -16,6 +16,17 @@ function touches(e1, e2) {
          intervalTouches(e1.y - e1.sizeY / 2, e1.y + e1.sizeY / 2, e2.y - e2.sizeY / 2, e2.y + e2.sizeY / 2);
 }
 
+function collide(v1, v2, m1, m2, cr, isWall) {
+  var val = (m1 * v1 + m2 * v2);
+  if (isWall) {
+    return [-cr * v1, 0];
+  }
+  return [
+    (cr * m2 * (v2 - v1) + val) / (m1 + m2),
+    (cr * m1 * (v1 - v2) + val) / (m1 + m2),
+  ];
+}
+
 class Entity {
   constructor() {
     this.x = 0;
@@ -67,6 +78,18 @@ class Entity {
     ctx.fillRect(this.x - this.sizeX / 2, this.y - this.sizeY / 2, this.sizeX, this.sizeY);
   }
 
+  collideX(e) {
+    var val = collide(this.vx, e.vx, this.sizeX * this.sizeY, e.sizeX * e.sizeY, 0, e.isWall);
+    this.vx = val[0];
+    e.vx = val[1];
+  }
+
+  collideY(e) {
+    var val = collide(this.vy, e.vy, this.sizeX * this.sizeY, e.sizeX * e.sizeY, 0, e.isWall);
+    this.vy = val[0];
+    e.vy = val[1];
+  }
+
   tick() {
     if (this.isWall) {
       return;
@@ -75,10 +98,7 @@ class Entity {
     this.x += this.vx;
     for (var i = 0; i < entities.length; ++i) {
       if (entities[i] !== this && touches(this, entities[i])) {
-        if (!entities[i].isWall) {
-          entities[i].vx += this.vx / 2;
-        }
-        this.vx = -this.vx / 2;
+        this.collideX(entities[i]);
         this.x = oldX;
         break;
       }
@@ -87,10 +107,7 @@ class Entity {
     this.y += this.vy;
     for (var i = 0; i < entities.length; ++i) {
       if (entities[i] !== this && touches(this, entities[i])) {
-        if (!entities[i].isWall) {
-          entities[i].vy += this.vy / 2;
-        }
-        this.vy = -this.vy / 2;
+        this.collideY(entities[i]);
         this.y = oldY;
         break;
       }
@@ -98,12 +115,17 @@ class Entity {
     this.vx *= 0.9;
     this.vy *= 0.9;
     if (this.gravityAffected) {
-      this.vy += 0.1;
+      this.vy += 0.5;
     }
   }
 }
 
 class Player extends Entity {
+  constructor() {
+    super();
+    this.sizeY = 40;
+  }
+
   tick() {
     if (keySet["ArrowUp"]) {
       this.vy -= 1;
