@@ -382,7 +382,15 @@ class Block {
   }
 
   findBrightness() {
-    var brightness = 1 / ((distance(this, player) / blockSize) ** 2);
+    if (!this.isLightBlock) {
+      return 1;
+    }
+    if (distance(this, player) == 0) {
+      var brightness = 1;
+    }
+    else {
+      var brightness = 1 / ((distance(this, player) / blockSize) ** 2);
+    }
     if (lightsOut) {
       return Math.min(brightness / 2, 1);
     }
@@ -398,16 +406,14 @@ class Block {
   }
 
   addLighting(color) {
-    if (this.isLightBlock) {
-      var brightness = this.findBrightness();
-      return "rgb(" +
-               String(Math.round(color[0] * brightness)) + "," +
-               String(Math.round(color[1] * brightness)) + "," +
-               String(Math.round(color[2] * brightness)) + ")";
-    }
-    else {
+    if (!this.isLightBlock) {
       return color;
     }
+    var brightness = this.findBrightness();
+    return "rgb(" +
+             String(Math.round(color[0] * brightness)) + "," +
+             String(Math.round(color[1] * brightness)) + "," +
+             String(Math.round(color[2] * brightness)) + ")";
   }
       
   specialDraw() {
@@ -426,31 +432,14 @@ class Block {
 class Brick extends Block {
   constructor() {
     super();
-    this.color = [128, 64, 0];
     this.isLightBlock = true;
-    this.lineColor = [0, 0, 0];
   }
 
-  specialDraw() {
-    ctx.strokeStyle = this.addLighting(this.lineColor);
-    ctx.lineWidth = (blockSize / 10);
-    ctx.beginPath();
-    ctx.moveTo(this.x - this.size / 2, this.y - this.size / 2);
-    ctx.lineTo(this.x + this.size / 2, this.y - this.size / 2);
-    ctx.lineTo(this.x + this.size / 2, this.y + this.size / 2);
-    ctx.lineTo(this.x - this.size / 2, this.y + this.size / 2);
-    ctx.lineTo(this.x - this.size / 2, this.y - this.size / 2);
-    ctx.moveTo(this.x - this.size / 2, this.y - this.size / 4);
-    ctx.lineTo(this.x + this.size / 2, this.y - this.size / 4);
-    ctx.moveTo(this.x - this.size / 2, this.y);
-    ctx.lineTo(this.x + this.size / 2, this.y);
-    ctx.moveTo(this.x - this.size / 2, this.y + this.size / 4);
-    ctx.lineTo(this.x + this.size / 2, this.y + this.size / 4);
-    ctx.moveTo(this.x, this.y - this.size / 2);
-    ctx.lineTo(this.x, this.y - this.size / 4);
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x, this.y + this.size / 4);
-    ctx.stroke();
+  draw() {
+    var brightness = this.findBrightness();
+    ctx.globalAlpha = brightness;
+    ctx.drawImage(document.getElementById("brick"), this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.globalAlpha = 1;
   }
 }
 
@@ -493,7 +482,10 @@ class BackgroundBrick extends Brick {
   constructor() {
     super();
     this.isCollidable = false;
-    this.color = [64, 32, 0];
+  }
+
+  findBrightness() {
+    return super.findBrightness() / 2;
   }
 }
 
