@@ -353,6 +353,7 @@ class Block {
     this.isCollidable = true;
     this.color = "black";
     this.isLightBlock = false;
+    this.imageID = "";
   }
 
   setPosition(x, y) {
@@ -378,6 +379,11 @@ class Block {
 
   setIsLightBlock(isLightBlock) {
     this.isLightBlock = isLightBlock;
+    return this;
+  }
+
+  setImageID(imageID) {
+    this.imageID = imageID;
     return this;
   }
 
@@ -415,7 +421,14 @@ class Block {
              String(Math.round(color[1] * brightness)) + "," +
              String(Math.round(color[2] * brightness)) + ")";
   }
-      
+
+  drawImage() {
+    var brightness = this.findBrightness();
+    ctx.globalAlpha = brightness;
+    ctx.drawImage(document.getElementById(this.imageID), this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.globalAlpha = 1;
+  }
+
   specialDraw() {
   }
 
@@ -433,13 +446,11 @@ class Brick extends Block {
   constructor() {
     super();
     this.isLightBlock = true;
+    this.imageID = "brick";
   }
 
   draw() {
-    var brightness = this.findBrightness();
-    ctx.globalAlpha = brightness;
-    ctx.drawImage(document.getElementById("brick"), this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-    ctx.globalAlpha = 1;
+    this.drawImage();
   }
 }
 
@@ -454,54 +465,6 @@ class BackgroundBrick extends Brick {
   }
 }
 
-class Tile extends Block {
-  constructor() {
-    super();
-    this.color = "rgb(180, 192, 180)";
-    this.lineColor = "rgb(128, 128, 128)";
-  }
-
-  specialDraw() {
-    ctx.strokeStyle = this.addLighting(this.lineColor);
-    ctx.lineWidth = (blockSize / 25);
-    ctx.beginPath();
-    for (var i = 0; i < 5; ++i) {
-      ctx.moveTo(this.x - this.size / 2, this.y - this.size / 2 + this.size * i / 4);
-      ctx.lineTo(this.x + this.size / 2, this.y - this.size / 2 + this.size * i / 4);
-      ctx.moveTo(this.x - this.size / 2 + this.size * i / 4, this.y - this.size / 2);
-      ctx.lineTo(this.x - this.size / 2 + this.size * i / 4, this.y + this.size / 2);
-    }
-    ctx.stroke();
-  }
-}
-
-class BackgroundTile extends Tile {
-  constructor() {
-    super();
-    this.isCollidable = false;
-    this.color = "rgb(120, 128, 120)";
-    this.lineColor = "rgb(96, 96, 96)";
-  }
-}
-
-class DarkTile extends Tile {
-  constructor() {
-    super();
-    this.color = [180, 192, 180];
-    this.lineColor = [128, 128, 128];
-    this.isLightBlock = true;
-  }
-}
-
-class DarkBackgroundTile extends BackgroundTile {
-  constructor() {
-    super();
-    this.color = [120, 128, 120];
-    this.lineColor = [96, 96, 96];
-    this.isLightBlock = true;
-  }
-}
-
 class Light extends Block {
   constructor() {
     super();
@@ -511,11 +474,51 @@ class Light extends Block {
   }
 }
 
-class Water extends BackgroundTile {
+class Tile extends Block {
   constructor() {
     super();
-    this.color = "rgb(128, 255, 223)";
-    this.lineColor = "rgb(128, 192, 176)";
+    this.imageID = "poolTile";
+  }
+
+  draw() {
+    this.drawImage();
+  }
+}
+
+class BackgroundTile extends Tile {
+  constructor() {
+    super();
+    this.isCollidable = false;
+  }
+
+  findBrightness() {
+    return super.findBrightness() * 3 / 4;
+  }
+}
+
+class DarkTile extends Tile {
+  constructor() {
+    super();
+    this.isLightBlock = true;
+  }
+}
+
+class DarkBackgroundTile extends BackgroundTile {
+  constructor() {
+    super();
+    this.isLightBlock = true;
+  }
+}
+
+class Water extends Block {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.imageID = "water";
+  }
+
+  draw() {
+    this.drawImage();
   }
 }
 
