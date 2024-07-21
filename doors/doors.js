@@ -10,11 +10,11 @@ function shuffle(arr) {
   return arr;
 }
 
-function printMap(map, wallTile, startTile, endTile) {
+function printMap(map, startTile, endTile) {
   var s = "";
   for (var i = 0; i < map.length; ++i) {
     for (var j = 0; j < map[i].length; ++j) {
-      if (map[i][j] == wallTile) {
+      if (map[i][j] == map[0][0]) {
         s += "##";
       }
       else if (map[i][j] == startTile) {
@@ -443,41 +443,6 @@ class Brick extends Block {
   }
 }
 
-class TextureBlock extends Block {
-  constructor() {
-    super();
-    this.colorMap = [[]];
-    this.colors = {};
-  }
-
-  setColorMap(colorMap) {
-    this.colorMap = colorMap;
-    return this;
-  }
-
-  setColors(colors) {
-    this.colors = colors;
-    return this;
-  }
-
-  draw() {
-    var realColors = {};
-    for (var i in this.colors) {
-      realColors[i] = this.addLighting(this.colors[i]);
-    }
-    for (var i = 0; i < this.colorMap[0].length; ++i) {
-      for (var j = 0; j < this.colorMap.length; ++j) {
-        ctx.fillStyle = realColors[this.colorMap[j][i]];
-        ctx.fillRect(this.x - this.size / 2 + this.size * i / this.colorMap[0].length - 1,
-                     this.y - this.size / 2 + this.size * j / this.colorMap.length - 1,
-                     this.size / this.colorMap[0].length + 2,
-                     this.size / this.colorMap.length + 2);
-      }
-    }
-    this.specialDraw();
-  }
-}
-
 class BackgroundBrick extends Brick {
   constructor() {
     super();
@@ -576,6 +541,41 @@ class DarkDeepWater extends DeepWater {
     super();
     this.color = [64, 128, 112];
     this.isLightBlock = true;
+  }
+}
+
+class TextureBlock extends Block {
+  constructor() {
+    super();
+    this.colorMap = [[]];
+    this.colors = {};
+  }
+
+  setColorMap(colorMap) {
+    this.colorMap = colorMap;
+    return this;
+  }
+
+  setColors(colors) {
+    this.colors = colors;
+    return this;
+  }
+
+  draw() {
+    var realColors = {};
+    for (var i in this.colors) {
+      realColors[i] = this.addLighting(this.colors[i]);
+    }
+    for (var i = 0; i < this.colorMap[0].length; ++i) {
+      for (var j = 0; j < this.colorMap.length; ++j) {
+        ctx.fillStyle = realColors[this.colorMap[j][i]];
+        ctx.fillRect(this.x - this.size / 2 + this.size * i / this.colorMap[0].length - 1,
+                     this.y - this.size / 2 + this.size * j / this.colorMap.length - 1,
+                     this.size / this.colorMap[0].length + 2,
+                     this.size / this.colorMap.length + 2);
+      }
+    }
+    this.specialDraw();
   }
 }
 
