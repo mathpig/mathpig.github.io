@@ -49,6 +49,7 @@ while (toDo.length > 0) {
   if (y < 0 || x < 0 || y >= map.length || x >= map[0].length || map[y][x] == "-") {
     continue;
   }
+  printMap();
   if (val[0] != -1 && val[1] != -1) {
     map[Math.round((val[0] + val[2]) / 2)][Math.round((val[1] + val[3]) / 2)] = "-";
   }
