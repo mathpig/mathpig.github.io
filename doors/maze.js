@@ -55,14 +55,12 @@ while (toDo.length > 0) {
   }
   map[y][x] = "-";
   var newStuff = [[y, x, y - 2, x], [y, x, y, x + 2], [y, x, y + 2, x], [y, x, y, x - 2]];
-/*
   if ((Math.abs(lastVector[0]) == 2 && lastVector[1] == 0) ||
       (lastVector[0] == 0 && Math.abs(lastVector[1]) == 2)) {
     for (var i = 0; i < 2; ++i) {
       newStuff.push([y, x, y + lastVector[0], x + lastVector[1]]);
     }
   }
-*/
   for (var i = 0; i < newStuff.length; ++i) {
     toDo.push(newStuff[i]);
   }
