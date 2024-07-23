@@ -210,7 +210,7 @@ var levels = [
   generateMap(15, 15, 1, "P", [[[["a", 0.85], ["M", 0.125], ["L", 0.025]], 1]], "S", "E", 3),
   generateMap(10, 10, 2, "T", [[[["t", 1]], 0.5], [[["w", 1]], 0.4], [[["W", 1]], 0.1]], "S", "E", 0),
   generateMap(10, 10, 2, "D", [[[["d", 0.975], ["L", 0.025]], 0.5], [[["m", 1]], 0.4], [[["M", 1]], 0.1]], "S", "E", 0),
-  generateMap(10, 10, 3, "R", [[[["F", 0.99], ["L", 0.01]], 1]], "S", "E", 0),
+  generateMap(10, 10, 3, "R", [[[["F", 0.975], ["L", 0.025]], 1]], "S", "E", 0),
 ];
 
 var lightsRemainOut = {0: false, 1: true, 2: false, 3: false, 4: false, 5: false, 6: false};
@@ -474,6 +474,13 @@ class Light extends Block {
   }
 }
 
+class Exit extends Light {
+  constructor() {
+    super();
+    this.color = [0, 255, 0];
+  }
+}
+
 class Tile extends Block {
   constructor() {
     super();
@@ -544,6 +551,31 @@ class DarkDeepWater extends DeepWater {
     super();
     this.color = [64, 128, 112];
     this.isLightBlock = true;
+  }
+}
+
+class HotelWallpaper extends Block {
+  constructor() {
+    super();
+    this.isLightBlock = true;
+    this.imageID = "wallpaper";
+  }
+
+  draw() {
+    this.drawImage();
+  }
+}
+
+class HotelCarpet extends Block {
+  constructor() {
+    super();
+    this.isCollidable = false;
+    this.isLightBlock = true;
+    this.imageID = "carpet";
+  }
+
+  draw() {
+    this.drawImage();
   }
 }
 
@@ -648,58 +680,6 @@ class Pipe extends TextureBlock {
       this.colorMap[3] = " ## ";
     }
     return this;
-  }
-}
-
-class HotelWallpaper extends TextureBlock {
-  constructor() {
-    super();
-    this.isLightBlock = true;
-    this.colorMap = [
-      "                ",
-      "   ##      ##   ",
-      "   ##      ##   ",
-      " # ## #  # ## # ",
-      "  ####    ####  ",
-      "                ",
-      "   ##      ##   ",
-      "   ##      ##   ",
-      " # ## #  # ## # ",
-      "  ####    ####  ",
-      "                ",
-      "   ##      ##   ",
-      "   ##      ##   ",
-      " # ## #  # ## # ",
-      "  ####    ####  ",
-      "                ",
-    ];
-    this.colors = {
-      " ": [128, 0, 0],
-      "#": [128, 128, 0],
-    };
-  }
-}
-
-class HotelCarpet extends HotelWallpaper {
-  constructor() {
-    super();
-    this.isCollidable = false;
-    this.colorMap = [
-      "       ",
-      "  # #  ",
-      " #   # ",
-      " ##### ",
-      " #   # ",
-      "  # #  ",
-      "       ",
-    ];
-  }
-}
-
-class Exit extends Light {
-  constructor() {
-    super();
-    this.color = [0, 255, 0];
   }
 }
 
