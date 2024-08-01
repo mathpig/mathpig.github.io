@@ -335,7 +335,7 @@ class Knight {
         }
         this.vy = 0;
         if (this.jumpCountdown <= 0 && keySet["ArrowUp"]) {
-          this.vy -= (blockSize / 0.5);
+          this.vy -= (blockSize / 3);
         }
         if (this.stunCountdown == 0) {
           var worstLoss = 1000;
