@@ -122,7 +122,7 @@ function generateMap(width, height, tileSize, wallTile, floorTiles, startTile, e
 var screen = document.getElementById("screen");
 var ctx = screen.getContext("2d");
 
-const blockSize = 50;
+const blockSize = 75;
 
 var entities = {};
 var otherEntities = [];
@@ -395,7 +395,7 @@ class Block {
       var brightness = 1;
     }
     else {
-      var brightness = 1 / ((distance(this, player) / blockSize) ** 2);
+      var brightness = 5 / ((distance(this, player) / blockSize) ** 2);
     }
     if (lightsOut) {
       return Math.min(brightness / 2, 1);
@@ -404,7 +404,7 @@ class Block {
       for (var y = -5; y <= 5; ++y) {
         var e = entities[findBlock(this.x + blockSize * x, this.y + blockSize * y)];
         if (e instanceof Light) {
-          brightness += 2 / ((distance(this, e) / blockSize) ** 2);
+          brightness += 2.5 / ((distance(this, e) / blockSize) ** 2);
         }
       }
     }
@@ -912,8 +912,8 @@ class Smiler extends Player {
 }
 
 function doCasts(maxDist) {
-  var rays = 1800;
-  var increment = 10;
+  var rays = 720;
+  var increment = 2;
   var toDraw = new Set();
   var toDraw2 = new Set();
   for (var angle = 0; angle < rays; ++angle) {
